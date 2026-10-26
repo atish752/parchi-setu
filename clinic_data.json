@@ -58,7 +58,7 @@
     "leaves": {},
     "onboarded": true,
     "createdAt": "2026-10-26T06:00:00.000Z",
-    "updatedAt": "2026-10-26T09:54:52.430Z"
+    "updatedAt": "2026-10-26T09:59:54.154Z"
   },
   "queue": [],
   "clinics": {
@@ -121,7 +121,7 @@
       "leaves": {},
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-10-26T09:54:52.430Z"
+      "updatedAt": "2026-10-26T09:59:54.154Z"
     },
     "clinic_patna_central_99": {
       "id": "clinic_patna_central_99",
@@ -210,7 +210,7 @@
       },
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-10-26T09:54:52.423Z"
+      "updatedAt": "2026-10-26T09:59:54.146Z"
     }
   }
 }
