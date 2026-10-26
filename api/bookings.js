@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
 
   if (method === 'POST') {
     const body = await parseBody(req);
-    if (!body || !body.name || !body.phone) {
+    if (!body || !body.name || (!body.phone && body.source !== 'Walk-in')) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ error: 'Name and phone are required' }));

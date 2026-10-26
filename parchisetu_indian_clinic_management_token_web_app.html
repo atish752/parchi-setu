@@ -122,18 +122,7 @@
       <!-- Right Action Cluster: Onboarding / Share Link / Language / Role Toggle -->
       <div class="flex items-center gap-2 ml-auto flex-wrap">
         
-        <!-- Clinic Signup / Switch Account Button -->
-        <button 
-          onclick="openClinicAuthModal()" 
-          id="clinicAuthHeaderBtn"
-          class="btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
-          title="Naya Clinic Shuru Karein ya Login Karein"
-        >
-          <i class="fa-solid fa-plus-circle text-[#25D366]"></i>
-          <span class="hidden sm:inline">Naya Clinic</span>
-        </button>
-
-        <!-- Onboarding & Clinic Setup Button -->
+        <!-- Clinic Setup / Onboarding Button -->
         <button 
           onclick="openClinicOnboardingModal()" 
           id="clinicOnboardHeaderBtn"
@@ -149,10 +138,10 @@
           onclick="openOnboardingSuccessModal()" 
           id="headerShareLinkBtn"
           class="btn-tactile bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#a7f3d0] border border-[#25D366]/50 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
-          title="Get Patient Booking Link & QR"
+          title="Get Patient Booking Link & QR Code"
         >
-          <i class="fa-solid fa-share-nodes text-[#25D366]"></i>
-          <span class="hidden md:inline">Booking Link</span>
+          <i class="fa-solid fa-qrcode text-[#25D366]"></i>
+          <span class="hidden md:inline">QR & Link</span>
         </button>
 
         <!-- Language Toggle: Hinglish vs English -->
@@ -166,8 +155,30 @@
           <span id="langToggleLabel">Hinglish (आसान)</span>
         </button>
 
-        <!-- Role Switcher Pill (Compounder Desk vs Patient QR Link) -->
-        <div id="roleSelectorPill" class="bg-emerald-950/80 p-1 rounded-xl border border-emerald-700/60 flex items-center text-xs font-bold">
+        <!-- Clinic Auth / User Account Section -->
+        <div id="headerAuthContainer" class="flex items-center gap-1.5">
+          <button 
+            onclick="openClinicAuthModal()" 
+            id="clinicAuthHeaderBtn"
+            class="btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+            title="Clinic Sign In / Naya Clinic Account"
+          >
+            <i class="fa-solid fa-circle-user text-[#25D366]"></i>
+            <span id="authHeaderBtnLabel" class="hidden sm:inline">Sign In / Register</span>
+          </button>
+          <button 
+            onclick="handleUserSignOut()" 
+            id="headerSignOutBtn"
+            class="hidden btn-tactile bg-rose-950/60 hover:bg-rose-900/80 text-rose-200 border border-rose-700/60 px-2 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition"
+            title="Sign Out of Clinic Account"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hidden md:inline">Logout</span>
+          </button>
+        </div>
+
+        <!-- Hidden Role Switcher (Hidden in clinic view - default is always Compounder Desk) -->
+        <div id="roleSelectorPill" class="hidden bg-emerald-950/80 p-1 rounded-xl border border-emerald-700/60 items-center text-xs font-bold">
           <button 
             onclick="switchAppRole('clinic')" 
             id="roleBtnClinic"
@@ -191,53 +202,51 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- WHATSAPP-STYLE 4-TAB NAVIGATION BAR (ONLY IN CLINIC DESK MODE)      -->
+    <!-- COMPACT 4-TAB NAVIGATION BAR (COMPRESSED TO MAXIMIZE WORKSPACE)     -->
     <!-- =================================================================== -->
-    <nav id="clinicNavTabs" class="bg-[#075E54] border-t border-emerald-800/80">
+    <nav id="clinicNavTabs" class="bg-[#075E54] border-t border-emerald-800/80 shadow-xs">
       <div class="max-w-6xl mx-auto grid grid-cols-4 text-center">
         
-        <!-- Tab 1: Aaj Ki Line (Live Queue) -->
+        <!-- Tab 1: Live Queue -->
         <button 
           onclick="switchClinicTab('queue')" 
           id="tabBtn-queue"
-          class="py-3 px-1 font-extrabold text-xs sm:text-sm border-b-4 border-[#25D366] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition bg-white/5"
+          class="py-1 sm:py-1.5 px-1 font-black text-[11px] sm:text-xs border-b-2 border-[#25D366] text-white flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition bg-white/10"
         >
-          <div class="relative">
-            <i class="fa-solid fa-users-line text-base sm:text-lg text-[#25D366]"></i>
-          </div>
-          <span data-i18n="tabQueue">1. Aaj Ki Line</span>
-          <span id="navBadgeWaiting" class="bg-[#25D366] text-slate-950 text-[11px] font-black px-1.5 py-0.2 rounded-full">2</span>
+          <i class="fa-solid fa-users-line text-xs sm:text-sm text-[#25D366]"></i>
+          <span data-i18n="tabQueue" class="truncate">Live Queue</span>
+          <span id="navBadgeWaiting" class="bg-[#25D366] text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full leading-tight">0</span>
         </button>
 
-        <!-- Tab 2: Calendar & QR Slots -->
+        <!-- Tab 2: Slots & QR -->
         <button 
           onclick="switchClinicTab('calendar')" 
           id="tabBtn-calendar"
-          class="py-3 px-1 font-bold text-xs sm:text-sm border-b-4 border-transparent text-emerald-100/80 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition"
+          class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition"
         >
-          <i class="fa-regular fa-calendar-check text-base sm:text-lg"></i>
-          <span data-i18n="tabCalendar">2. Slots & QR</span>
+          <i class="fa-regular fa-calendar-check text-xs sm:text-sm"></i>
+          <span data-i18n="tabCalendar" class="truncate">Slots & QR</span>
         </button>
 
-        <!-- Tab 3: Patient Register (Khata) -->
+        <!-- Tab 3: Patients Directory -->
         <button 
           onclick="switchClinicTab('register')" 
           id="tabBtn-register"
-          class="py-3 px-1 font-bold text-xs sm:text-sm border-b-4 border-transparent text-emerald-100/80 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition"
+          class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition"
         >
-          <i class="fa-solid fa-address-book text-base sm:text-lg"></i>
-          <span data-i18n="tabRegister">3. Patient Khata</span>
+          <i class="fa-solid fa-address-book text-xs sm:text-sm"></i>
+          <span data-i18n="tabRegister" class="truncate">Patients Directory</span>
         </button>
 
-        <!-- Tab 4: Aaj Ka Galla (Cash & UPI Hisaab) -->
+        <!-- Tab 4: Daily Checkbook -->
         <button 
           onclick="switchClinicTab('galla')" 
           id="tabBtn-galla"
-          class="py-3 px-1 font-bold text-xs sm:text-sm border-b-4 border-transparent text-emerald-100/80 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition"
+          class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition"
         >
-          <i class="fa-solid fa-indian-rupee-sign text-base sm:text-lg"></i>
-          <span data-i18n="tabGalla">4. Aaj Ka Galla</span>
-          <span id="navBadgeBaaki" class="hidden sm:inline-block bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full">₹</span>
+          <i class="fa-solid fa-indian-rupee-sign text-xs sm:text-sm"></i>
+          <span data-i18n="tabGalla" class="truncate">Daily Checkbook</span>
+          <span id="navBadgeBaaki" class="hidden sm:inline-block bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full leading-tight">₹</span>
         </button>
 
       </div>
@@ -245,51 +254,51 @@
   </header>
 
   <!-- ===================================================================== -->
-  <!-- MAIN WORKSPACE CONTAINER                                              -->
+  <!-- MAIN WORKSPACE CONTAINER (COMPACT PADDING FOR MORE VISIBLE CONTENT)   -->
   <!-- ===================================================================== -->
-  <main class="flex-1 max-w-6xl w-full mx-auto px-2.5 sm:px-5 py-4 pb-24">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-2 sm:px-4 pt-1.5 sm:pt-2 pb-16">
 
     <!-- =================================================================== -->
     <!-- VIEW 1: CLINIC DESK (COMPOUNDER & DOCTOR INTERFACE)                 -->
     <!-- =================================================================== -->
-    <div id="viewClinicDesk" class="space-y-4">
+    <div id="viewClinicDesk" class="space-y-3 sm:space-y-3.5">
 
       <!-- ================================================================= -->
       <!-- TAB 1: "AAJ KI LINE" (LIVE TOKEN QUEUE + 3-SECOND ENTRY BAR)      -->
       <!-- ================================================================= -->
-      <section id="clinicTab-queue" class="space-y-4">
+      <section id="clinicTab-queue" class="space-y-3 sm:space-y-3.5">
 
         <!-- 1A. LIVE CABIN STATUS HERO CARD (STICKY FEEL, ZERO CONFUSION) -->
-        <div class="bg-gradient-to-r from-[#075E54] via-[#0b6b5e] to-[#128C7E] rounded-2xl p-4 sm:p-5 text-white shadow-lg border border-emerald-600/40 relative overflow-hidden">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+        <div class="bg-gradient-to-r from-[#075E54] via-[#0b6b5e] to-[#128C7E] rounded-2xl p-3 sm:p-3.5 text-white shadow-lg border border-emerald-600/40 relative overflow-hidden">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 relative z-10">
             
             <!-- Current Patient Inside Cabin Info -->
-            <div class="flex items-start sm:items-center gap-3.5">
-              <div id="cabinTokenCircle" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0">
-                <span class="text-[10px] uppercase tracking-wider font-extrabold opacity-80">TOKEN</span>
-                <span id="cabinTokenNumber" class="text-2xl sm:text-3xl leading-none">#12</span>
+            <div class="flex items-center gap-3">
+              <div id="cabinTokenCircle" class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0">
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold opacity-80 leading-none">TOKEN</span>
+                <span id="cabinTokenNumber" class="text-xl sm:text-2xl leading-none font-black mt-0.5">#12</span>
               </div>
 
               <div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="bg-[#25D366] text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide flex items-center gap-1">
-                    <i class="fa-solid fa-circle text-[8px]"></i>
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <span class="bg-[#25D366] text-slate-950 text-[10px] sm:text-xs font-black px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wide flex items-center gap-1">
+                    <i class="fa-solid fa-circle text-[6px]"></i>
                     <span data-i18n="liveInCabinBadge">ABHI DOCTOR KE PAAS (IN CABIN)</span>
                   </span>
-                  <span id="cabinPatientSource" class="bg-white/15 text-emerald-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                  <span id="cabinPatientSource" class="bg-white/15 text-emerald-100 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full">
                     🚶 Walk-in
                   </span>
-                  <span id="doctorLateLiveBadge" class="hidden bg-amber-400 text-slate-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                  <span id="doctorLateLiveBadge" class="hidden bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded-full">
                     ⏳ Doctor 30m Late
                   </span>
                 </div>
 
-                <h2 id="cabinPatientName" class="text-xl sm:text-2xl font-black mt-1 tracking-tight">
-                  Rameshwar Prasad <span class="text-emerald-200 font-semibold text-base sm:text-lg">(54M)</span>
+                <h2 id="cabinPatientName" class="text-lg sm:text-xl font-black mt-0.5 tracking-tight">
+                  Rameshwar Prasad <span class="text-emerald-200 font-semibold text-sm sm:text-base">(54M)</span>
                 </h2>
 
-                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs sm:text-sm text-emerald-100">
-                  <span id="cabinPatientReason" class="bg-black/25 px-2.5 py-0.5 rounded-lg font-semibold">
+                <div class="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-emerald-100">
+                  <span id="cabinPatientReason" class="bg-black/25 px-2 py-0.5 rounded-lg font-semibold">
                     🩸 BP / Sugar Check
                   </span>
                   <span>•</span>
@@ -305,24 +314,24 @@
             </div>
 
             <!-- Giant 1-Tap Cabin Action Buttons -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <div class="flex flex-row items-center gap-2">
               <!-- Secondary: Ring Bell / Voice Call -->
               <button 
                 onclick="announceCurrentToken()" 
-                class="btn-tactile bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold px-4 py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition"
+                class="btn-tactile bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
                 title="Rings Clinic Bell & Announces Token Number"
               >
-                <i class="fa-solid fa-volume-high text-amber-300 text-base"></i>
-                <span id="ringBellBtnText">🔔 Awaz Lagayein (#12)</span>
+                <i class="fa-solid fa-volume-high text-amber-300 text-sm"></i>
+                <span id="ringBellBtnText">🔔 Awaz (#12)</span>
               </button>
 
               <!-- Primary Giant Button: Done & Call Next -->
               <button 
                 onclick="completeCurrentAndCallNext()" 
                 id="callNextGiantBtn"
-                class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-5 py-3.5 rounded-xl text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition"
+                class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm sm:text-base shadow-md flex items-center justify-center gap-2 transition"
               >
-                <i class="fa-solid fa-circle-check text-xl"></i>
+                <i class="fa-solid fa-circle-check text-base sm:text-lg"></i>
                 <span id="callNextBtnText">✔ Ho Gaya • Agla Bulao (#13) ➔</span>
               </button>
             </div>
@@ -331,59 +340,59 @@
         </div>
 
         <!-- 1B. 3-SECOND "FAST WALK-IN ENTRY BAR" (BEATS PEN & PAPER) -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-600/30">
-          <div class="flex items-center justify-between mb-3">
+        <div class="bg-white rounded-2xl p-3 sm:p-3.5 shadow-md border-2 border-emerald-600/30">
+          <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
-              <span class="w-7 h-7 rounded-lg bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-sm">
+              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-xs">
                 <i class="fa-solid fa-bolt"></i>
               </span>
-              <h3 class="font-extrabold text-sm sm:text-base text-slate-800" data-i18n="fastEntryTitle">
+              <h3 class="font-extrabold text-xs sm:text-sm text-slate-800" data-i18n="fastEntryTitle">
                 ⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)
               </h3>
             </div>
-            <span class="text-xs font-bold bg-emerald-50 text-[#075E54] px-2.5 py-1 rounded-full border border-emerald-200">
-              <span data-i18n="nextTokenLabel">Agla Token:</span> <strong id="nextAvailableTokenPreview" class="text-sm">#15</strong>
+            <span class="text-[11px] sm:text-xs font-bold bg-emerald-50 text-[#075E54] px-2 py-0.5 rounded-full border border-emerald-200">
+              <span data-i18n="nextTokenLabel">Agla Token:</span> <strong id="nextAvailableTokenPreview" class="text-xs sm:text-sm">#15</strong>
             </span>
           </div>
 
           <!-- Row 1: Name, Age/Gender, Mobile -->
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 mb-3">
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2">
             <!-- Patient Name with Voice Mic Button -->
             <div class="sm:col-span-5 relative">
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPatientName">1. Mareez Ka Naam (Patient Name) *</label>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelPatientName">1. Mareez Ka Naam (Patient Name) *</label>
               <div class="relative flex items-center">
                 <input 
                   type="text" 
                   id="walkinName" 
                   placeholder="Eg. Sunita Devi / Rahul Kumar" 
                   onkeydown="if(event.key==='Enter') createFastWalkIn()"
-                  class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm sm:text-base"
+                  class="w-full pl-3 pr-9 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-xs sm:text-sm"
                 />
                 <button 
                   type="button"
                   onclick="simulateVoiceInput()" 
-                  class="absolute right-2 w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#075E54] flex items-center justify-center transition"
+                  class="absolute right-1.5 w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#075E54] flex items-center justify-center transition"
                   title="Boliye (Voice Dictation Simulation)"
                 >
-                  <i id="voiceMicIcon" class="fa-solid fa-microphone text-sm"></i>
+                  <i id="voiceMicIcon" class="fa-solid fa-microphone text-xs"></i>
                 </button>
               </div>
             </div>
 
             <!-- Age & Gender Quick Input -->
             <div class="sm:col-span-3">
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelAgeGender">2. Umar / Gender</label>
-              <div class="flex gap-1.5">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelAgeGender">2. Umar / Gender</label>
+              <div class="flex gap-1">
                 <input 
                   type="number" 
                   id="walkinAge" 
                   placeholder="Age (35)" 
                   min="1" max="115"
-                  class="w-2/3 px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm sm:text-base"
+                  class="w-2/3 px-2.5 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-xs sm:text-sm"
                 />
                 <select 
                   id="walkinGender" 
-                  class="w-1/3 px-2 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] text-sm"
+                  class="w-1/3 px-1.5 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] text-xs sm:text-sm"
                 >
                   <option value="M">M</option>
                   <option value="F">F</option>
@@ -393,35 +402,35 @@
 
             <!-- Mobile Number -->
             <div class="sm:col-span-4">
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelMobile">3. Mobile No. (Optional)</label>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelMobile">3. Mobile No. (Optional)</label>
               <div class="relative">
                 <input 
                   type="tel" 
                   id="walkinPhone" 
                   maxlength="10"
                   placeholder="98XXXXXXXX (WhatsApp)" 
-                  class="w-full pl-3.5 pr-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm sm:text-base"
+                  class="w-full pl-3 pr-2.5 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-xs sm:text-sm"
                 />
               </div>
             </div>
           </div>
 
           <!-- Row 2: 1-Tap Takleef (Reason) Chips -->
-          <div class="mb-3">
-            <span class="block text-[11px] font-bold text-slate-500 uppercase mb-1.5" data-i18n="labelReasonChips">
+          <div class="mb-2">
+            <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelReasonChips">
               4. Takleef Chunein (1-Tap Reason — No Typing):
             </span>
-            <div id="walkinReasonChips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <div id="walkinReasonChips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
               <!-- Populated dynamically by JS -->
             </div>
           </div>
 
           <!-- Row 3: 1-Tap Fee + Payment Mode + Giant "+ Give Token" Button -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center pt-2 border-t border-slate-100">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center pt-2 border-t border-slate-100">
             
             <!-- 1-Tap Fee Selector Pills -->
             <div class="lg:col-span-5">
-              <span class="block text-[11px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelFeeSelect">5. Doctor Fees:</span>
+              <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelFeeSelect">5. Doctor Fees:</span>
               <div id="walkinFeePills" class="grid grid-cols-4 gap-1.5">
                 <!-- Populated by JS -->
               </div>
@@ -429,19 +438,19 @@
 
             <!-- 1-Tap Payment Mode Pills (Cash / UPI / Baaki) -->
             <div class="lg:col-span-4">
-              <span class="block text-[11px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPaymentMode">6. Paisa Kaise Aaya:</span>
+              <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPaymentMode">6. Paisa Kaise Aaya:</span>
               <div id="walkinPayModePills" class="grid grid-cols-3 gap-1.5">
                 <!-- Populated by JS -->
               </div>
             </div>
 
             <!-- Giant Submit Token Button -->
-            <div class="lg:col-span-3 pt-1 lg:pt-4">
+            <div class="lg:col-span-3 pt-1 lg:pt-3">
               <button 
                 onclick="createFastWalkIn()" 
-                class="btn-tactile w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-black py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 text-base transition"
+                class="btn-tactile w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-black py-2.5 px-3 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm sm:text-base transition"
               >
-                <i class="fa-solid fa-plus-circle text-[#25D366] text-lg"></i>
+                <i class="fa-solid fa-plus-circle text-[#25D366] text-base"></i>
                 <span id="giveTokenBtnText">Token Dein (#15)</span>
               </button>
             </div>
@@ -1313,166 +1322,219 @@
   </aside>
 
   <!-- ===================================================================== -->
-  <!-- MODAL 0: CLINIC PORTAL (SIGNUP & LOGIN FOR NEW / EXISTING CLINICS)    -->
+  <!-- MODAL 0: CLINIC PORTAL (FIREBASE GOOGLE & EMAIL AUTHENTICATION)       -->
   <!-- ===================================================================== -->
   <div id="clinicAuthModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border-4 border-[#075E54] my-auto">
       
       <!-- Header -->
       <div class="bg-gradient-to-r from-[#075E54] to-[#128C7E] text-white p-5 text-center relative">
-        <button onclick="closeClinicAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white">
+        <button onclick="closeClinicAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition">
           ✕
         </button>
-        <div class="w-16 h-16 rounded-2xl bg-white p-1 mx-auto shadow-md mb-2 overflow-hidden">
+        <div class="w-14 h-14 rounded-2xl bg-white p-1 mx-auto shadow-md mb-2 overflow-hidden">
           <img src="logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='favicon.svg';" />
         </div>
         <h3 class="text-xl font-black">ParchiSetu Clinic Portal</h3>
-        <p class="text-xs text-emerald-100 mt-0.5">Apne clinic ka account banayein ya login karein</p>
+        <p class="text-xs text-emerald-100 mt-0.5">Google account ya Email se sign in karke apna clinic chalayein</p>
 
         <!-- Tabs: Signup vs Login -->
         <div class="grid grid-cols-2 gap-2 mt-4 bg-emerald-950/60 p-1 rounded-xl">
           <button 
             type="button" 
-            onclick="switchAuthTab('signup')" 
-            id="authTabSignup" 
+            onclick="switchAuthTab('login')" 
+            id="authTabLogin" 
             class="py-1.5 rounded-lg text-xs font-black bg-[#25D366] text-slate-950 shadow-xs"
           >
-            Naya Clinic Sign Up
+            Clinic Login
           </button>
           <button 
             type="button" 
-            onclick="switchAuthTab('login')" 
-            id="authTabLogin" 
+            onclick="switchAuthTab('signup')" 
+            id="authTabSignup" 
             class="py-1.5 rounded-lg text-xs font-bold text-emerald-100 hover:text-white"
           >
-            Clinic Login
+            Naya Clinic Sign Up
           </button>
         </div>
       </div>
 
-      <!-- Tab 1: New Clinic Sign Up -->
-      <form id="clinicSignupForm" onsubmit="event.preventDefault(); handleClinicSignup();" class="p-5 space-y-3.5">
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-            Clinic Ka Naam (Clinic Name) *
-          </label>
-          <input 
-            type="text" 
-            id="authSignupClinicName" 
-            required 
-            placeholder="e.g. Sanjeevani Family Clinic" 
-            class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
-          />
+      <div class="p-5 space-y-4">
+
+        <!-- Prominent Google Sign-In Button -->
+        <button 
+          type="button" 
+          onclick="handleGoogleSignIn()" 
+          id="btnGoogleSignIn"
+          class="btn-tactile w-full py-3 px-4 bg-white hover:bg-slate-50 text-slate-800 font-extrabold rounded-2xl border-2 border-slate-300 shadow-sm flex items-center justify-center gap-3 transition"
+        >
+          <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span id="btnGoogleSignInText">Continue with Google</span>
+        </button>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-3">
+          <div class="flex-1 h-px bg-slate-200"></div>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">या Email se login / register karein</span>
+          <div class="flex-1 h-px bg-slate-200"></div>
         </div>
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-            Doctor Sahab Ka Naam *
-          </label>
-          <input 
-            type="text" 
-            id="authSignupDoctorName" 
-            required 
-            placeholder="e.g. Dr. Rajesh Sharma" 
-            class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
-          />
-        </div>
+        <!-- Auth Status/Error Alert -->
+        <div id="authAlertBox" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
 
-        <div class="grid grid-cols-2 gap-2.5">
+        <!-- Tab 1: Clinic Login Form (Email & Password) -->
+        <form id="clinicLoginForm" onsubmit="event.preventDefault(); handleClinicEmailLogin();" class="space-y-3.5">
           <div>
             <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-              Mobile / WhatsApp *
-            </label>
-            <input 
-              type="tel" 
-              id="authSignupPhone" 
-              required 
-              maxlength="10" 
-              placeholder="9835012345" 
-              class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-              Shahar (City) *
+              Email Address / Clinic ID *
             </label>
             <input 
               type="text" 
-              id="authSignupCity" 
+              id="authLoginEmail" 
               required 
-              placeholder="Patna, Bihar" 
-              class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
+              placeholder="e.g. doctor@clinic.com ya clinic_sanjeevani_01" 
+              class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
             />
           </div>
-        </div>
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-            Login PIN / Password *
-          </label>
-          <input 
-            type="password" 
-            id="authSignupPassword" 
-            required 
-            placeholder="Create PIN or Password" 
-            class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
-          />
-        </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-extrabold text-slate-700 uppercase">
+                Password *
+              </label>
+              <button 
+                type="button" 
+                onclick="handleForgotPassword()" 
+                class="text-[11px] font-bold text-[#128C7E] hover:underline"
+              >
+                Forgot Password?
+              </button>
+            </div>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="authLoginPassword" 
+                required 
+                placeholder="Apna password dalein" 
+                class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
+              />
+              <button 
+                type="button" 
+                onclick="togglePasswordVisibility('authLoginPassword', this)" 
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
 
-        <button 
-          type="submit" 
-          class="btn-tactile w-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3 px-4 rounded-xl shadow-md text-sm flex items-center justify-center gap-2 mt-2 transition"
-        >
-          <i class="fa-solid fa-hospital-user text-base"></i>
-          <span>Naya Clinic Banayein & Setup Shuru Karein ➔</span>
-        </button>
-        <p class="text-[11px] text-slate-500 text-center">
-          ✨ Zero dummy data ke sath naya clinic fresh shuru hoga.
-        </p>
-      </form>
+          <!-- Hidden legacy input to support legacy test scripts -->
+          <input type="hidden" id="authLoginClinicId" value="" />
 
-      <!-- Tab 2: Existing Clinic Login -->
-      <form id="clinicLoginForm" onsubmit="event.preventDefault(); handleClinicLogin();" class="hidden p-5 space-y-3.5">
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-            Clinic ID ya Registered Mobile Number *
-          </label>
-          <input 
-            type="text" 
-            id="authLoginClinicId" 
-            required 
-            placeholder="e.g. clinic_sanjeevani_01 ya 9835012345" 
-            class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
-          />
-        </div>
+          <button 
+            type="submit" 
+            id="btnLoginSubmit"
+            class="btn-tactile w-full bg-[#075E54] hover:bg-[#128C7E] text-white font-black py-3 px-4 rounded-xl shadow-md text-sm flex items-center justify-center gap-2 mt-2 transition"
+          >
+            <i class="fa-solid fa-right-to-bracket text-base"></i>
+            <span>Compounder Desk Mein Login Karein ➔</span>
+          </button>
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-            PIN ya Password *
-          </label>
-          <input 
-            type="password" 
-            id="authLoginPassword" 
-            required 
-            placeholder="Apna PIN / Password dalein" 
-            class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
-          />
-        </div>
+          <!-- Quick Test Demo Button -->
+          <div class="pt-1 text-center">
+            <button 
+              type="button" 
+              onclick="handleDemoLogin()" 
+              class="text-xs text-emerald-800 hover:text-emerald-950 font-bold underline flex items-center justify-center gap-1.5 mx-auto"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+              <span>⚡ Demo Clinic se Turant Shuru Karein (Without Login)</span>
+            </button>
+          </div>
+        </form>
 
-        <button 
-          type="submit" 
-          class="btn-tactile w-full bg-[#075E54] hover:bg-[#128C7E] text-white font-black py-3 px-4 rounded-xl shadow-md text-sm flex items-center justify-center gap-2 mt-2 transition"
-        >
-          <i class="fa-solid fa-right-to-bracket text-base"></i>
-          <span>Compounder Desk Mein Login Karein ➔</span>
-        </button>
-      </form>
+        <!-- Tab 2: New Clinic Sign Up Form -->
+        <form id="clinicSignupForm" onsubmit="event.preventDefault(); handleClinicEmailSignup();" class="hidden space-y-3.5">
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+              Doctor / Clinic Admin Ka Naam *
+            </label>
+            <input 
+              type="text" 
+              id="authSignupDoctorName" 
+              required 
+              placeholder="e.g. Dr. Rajesh Sharma" 
+              class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+              Email Address *
+            </label>
+            <input 
+              type="email" 
+              id="authSignupEmail" 
+              required 
+              placeholder="e.g. doctor@clinic.com" 
+              class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+              Create Password (कम से कम 6 अक्षर) *
+            </label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="authSignupPassword" 
+                required 
+                minlength="6"
+                placeholder="Minimum 6 characters" 
+                class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E]"
+              />
+              <button 
+                type="button" 
+                onclick="togglePasswordVisibility('authSignupPassword', this)" 
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Legacy inputs to support existing tests -->
+          <input type="hidden" id="authSignupClinicName" value="" />
+          <input type="hidden" id="authSignupPhone" value="" />
+          <input type="hidden" id="authSignupCity" value="" />
+
+          <button 
+            type="submit" 
+            id="btnSignupSubmit"
+            class="btn-tactile w-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3 px-4 rounded-xl shadow-md text-sm flex items-center justify-center gap-2 mt-2 transition"
+          >
+            <i class="fa-solid fa-user-plus text-base"></i>
+            <span>Account Banayein & Onboarding Shuru Karein ➔</span>
+          </button>
+
+          <p class="text-[11px] text-slate-500 text-center">
+            Account banne ke baad aap step-by-step clinic timing, fees aur QR setup karenge.
+          </p>
+        </form>
+
+      </div>
 
     </div>
   </div>
 
   <!-- ===================================================================== -->
-  <!-- MODAL 1: CLINIC ONBOARDING & SIGNUP WIZARD                             -->
+  <!-- MODAL 1: CLINIC ONBOARDING & SETUP WIZARD (STEP-BY-STEP)              -->
   <!-- ===================================================================== -->
   <div id="clinicOnboardingModal" class="fixed inset-0 bg-slate-950/75 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border-4 border-[#075E54] my-auto flex flex-col max-h-[92vh]">
@@ -1484,16 +1546,16 @@
         </button>
         <div class="flex items-center gap-2">
           <span class="bg-[#25D366] text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-            Clinic Onboarding
+            Step-by-Step Setup
           </span>
-          <span class="text-xs text-emerald-200">Doctor & Clinic Registration</span>
+          <span class="text-xs text-emerald-200" id="onboardStepCounter">Step 1 of 4: Clinic Details</span>
         </div>
-        <h2 class="text-xl sm:text-2xl font-black mt-1">Doctor Clinic Signup & Setup</h2>
+        <h2 class="text-xl sm:text-2xl font-black mt-1">Complete Your Clinic Profile</h2>
         <p class="text-xs text-emerald-100 mt-0.5">
-          Fill your clinic details, doctor profile, visiting slots & timings. Once completed, your shareable patient booking link will be generated!
+          Fill your clinic details, location, timings & fees. Once complete, your shareable QR Standee & Google Maps link will be ready!
         </p>
 
-        <!-- Quick Demo Autofill Button -->
+        <!-- Quick Autofill Demo Button -->
         <div class="mt-3 flex items-center gap-2">
           <button 
             type="button" 
@@ -1512,31 +1574,39 @@
           </button>
         </div>
 
-        <!-- 3-Step Wizard Navigation Pills -->
-        <div class="grid grid-cols-3 gap-1.5 mt-4 pt-3 border-t border-emerald-600/50">
+        <!-- 4-Step Wizard Navigation Pills -->
+        <div class="grid grid-cols-4 gap-1.5 mt-4 pt-3 border-t border-emerald-600/50 text-center">
           <button 
             type="button" 
             onclick="switchOnboardStep(1)" 
             id="onboardStepTab-1" 
-            class="py-1.5 px-2 rounded-xl text-center text-xs font-black bg-[#25D366] text-slate-950 transition flex items-center justify-center gap-1"
+            class="py-1.5 px-1 rounded-xl text-center text-[11px] sm:text-xs font-black bg-[#25D366] text-slate-950 transition flex items-center justify-center gap-1 truncate"
           >
-            <span>1. Clinic Info</span>
+            <span>1. Clinic</span>
           </button>
           <button 
             type="button" 
             onclick="switchOnboardStep(2)" 
             id="onboardStepTab-2" 
-            class="py-1.5 px-2 rounded-xl text-center text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1"
+            class="py-1.5 px-1 rounded-xl text-center text-[11px] sm:text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1 truncate"
           >
-            <span>2. Doctor & Fees</span>
+            <span>2. Location</span>
           </button>
           <button 
             type="button" 
             onclick="switchOnboardStep(3)" 
             id="onboardStepTab-3" 
-            class="py-1.5 px-2 rounded-xl text-center text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1"
+            class="py-1.5 px-1 rounded-xl text-center text-[11px] sm:text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1 truncate"
           >
-            <span>3. Visiting Slots</span>
+            <span>3. Timings</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="switchOnboardStep(4)" 
+            id="onboardStepTab-4" 
+            class="py-1.5 px-1 rounded-xl text-center text-[11px] sm:text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1 truncate"
+          >
+            <span>4. Fees</span>
           </button>
         </div>
       </div>
@@ -1544,13 +1614,13 @@
       <!-- Wizard Form Body (Scrollable) -->
       <form id="clinicOnboardingForm" onsubmit="event.preventDefault(); submitClinicOnboarding();" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
         
-        <!-- STEP 1: CLINIC INFO -->
+        <!-- STEP 1: CLINIC DETAILS -->
         <div id="onboardStepContent-1" class="space-y-4">
           <div class="border-b border-slate-200 pb-2">
             <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-              <i class="fa-solid fa-hospital text-[#128C7E]"></i> Step 1: Clinic Profile & Address
+              <i class="fa-solid fa-hospital text-[#128C7E]"></i> Step 1: Clinic Details & Brand
             </h3>
-            <p class="text-xs text-slate-500">This information will be displayed on the Patient Booking Page & Token Slips.</p>
+            <p class="text-xs text-slate-500">Apne clinic ka naam, specialty aur primary contact number darj karein.</p>
           </div>
 
           <div>
@@ -1600,6 +1670,31 @@
 
           <div>
             <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+              Clinic WhatsApp / Mobile No. *
+            </label>
+            <input 
+              type="tel" 
+              id="onboardClinicPhone" 
+              required 
+              maxlength="10"
+              placeholder="e.g. 9835012345" 
+              class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] text-sm"
+            />
+            <p class="text-[11px] text-slate-500 mt-1">Mareezon ke WhatsApp par parchi slip aur updates bhejne ke liye use hoga.</p>
+          </div>
+        </div>
+
+        <!-- STEP 2: CLINIC LOCATION & MAP -->
+        <div id="onboardStepContent-2" class="hidden space-y-4">
+          <div class="border-b border-slate-200 pb-2">
+            <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-[#128C7E]"></i> Step 2: Clinic Location & Google Maps
+            </h3>
+            <p class="text-xs text-slate-500">Clinic ka pata aur Google Maps link darj karein taaki mareez asani se pahunch sakein.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
               Clinic Address & Landmark (पता व चौराहा/लैंडमार्क) *
             </label>
             <input 
@@ -1611,7 +1706,7 @@
             />
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
                 City & State (शहर / राज्य) *
@@ -1626,20 +1721,7 @@
             </div>
             <div>
               <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-                WhatsApp / Mobile No. *
-              </label>
-              <input 
-                type="tel" 
-                id="onboardClinicPhone" 
-                required 
-                maxlength="10"
-                placeholder="e.g. 9835012345" 
-                class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] text-sm"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
-                UPI ID for QR Payments
+                UPI ID for QR Payments (Optional)
               </label>
               <input 
                 type="text" 
@@ -1650,28 +1732,138 @@
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1 flex items-center justify-between">
-              <span>Google Maps Location / Business Profile Link (Optional)</span>
-              <span class="text-[10px] text-emerald-700 font-bold">For Google Maps Patients</span>
+          <div class="bg-blue-50/70 p-3.5 rounded-2xl border border-blue-200 space-y-2">
+            <label class="block text-xs font-extrabold text-blue-900 uppercase flex items-center justify-between">
+              <span>Google Maps Profile / Location Link (Optional)</span>
+              <span class="text-[10px] text-blue-700 font-bold">Google Maps Direction Button</span>
             </label>
             <input 
               type="url" 
               id="onboardClinicMapUrl" 
-              placeholder="e.g. https://maps.app.goo.gl/... ya Google Maps profile link" 
-              class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-semibold text-slate-900 focus:outline-none focus:border-[#128C7E] text-sm"
+              placeholder="e.g. https://maps.app.goo.gl/... ya Google Maps profile URL" 
+              class="w-full px-3.5 py-2.5 bg-white border-2 border-blue-200 rounded-xl font-semibold text-slate-900 focus:outline-none focus:border-blue-600 text-sm"
             />
-            <p class="text-[10px] text-slate-500 mt-1">
-              Yeh link mareezon ko aapke booking page par 'Google Maps Directions' button provide karega.
+            <p class="text-[11px] text-blue-800">
+              Yeh link mareez ke digital token pass par 'Google Maps Directions' button provide karega.
             </p>
           </div>
         </div>
 
-        <!-- STEP 2: DOCTOR INFO & FEES -->
-        <div id="onboardStepContent-2" class="hidden space-y-4">
+        <!-- STEP 3: VISITING HOURS & TIMINGS -->
+        <div id="onboardStepContent-3" class="hidden space-y-4">
           <div class="border-b border-slate-200 pb-2">
             <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-              <i class="fa-solid fa-user-doctor text-[#128C7E]"></i> Step 2: Doctor Profile & Consultation Fees
+              <i class="fa-solid fa-clock text-[#128C7E]"></i> Step 3: OPD Timings & Visiting Slots
+            </h3>
+            <p class="text-xs text-slate-500">Configure clinic shift timings, slot intervals and daily capacity for online tokens.</p>
+          </div>
+
+          <!-- Morning Shift Box -->
+          <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-sun text-amber-500 text-lg"></i>
+                <h4 class="font-black text-sm text-slate-900">☀️ Subah OP (Morning Shift)</h4>
+              </div>
+              <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-700">
+                <input type="checkbox" id="onboardMorningEnabled" checked class="w-4 h-4 text-emerald-600 rounded" />
+                <span>Enable Morning Shift</span>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Start Time</label>
+                <input type="text" id="onboardMorningStart" value="10:00 AM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">End Time</label>
+                <input type="text" id="onboardMorningEnd" value="02:00 PM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Slot Duration</label>
+                <select id="onboardMorningSlotMins" class="w-full px-2 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs">
+                  <option value="10">10 Mins</option>
+                  <option value="15" selected>15 Mins</option>
+                  <option value="20">20 Mins</option>
+                  <option value="30">30 Mins</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Max Tokens</label>
+                <input type="number" id="onboardMorningCapacity" value="25" min="5" max="100" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Evening Shift Box -->
+          <div class="bg-indigo-50/60 p-4 rounded-2xl border border-indigo-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-moon text-indigo-500 text-lg"></i>
+                <h4 class="font-black text-sm text-slate-900">🌙 Shaam OP (Evening Shift)</h4>
+              </div>
+              <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-700">
+                <input type="checkbox" id="onboardEveningEnabled" checked class="w-4 h-4 text-emerald-600 rounded" />
+                <span>Enable Evening Shift</span>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Start Time</label>
+                <input type="text" id="onboardEveningStart" value="05:00 PM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">End Time</label>
+                <input type="text" id="onboardEveningEnd" value="09:00 PM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Slot Duration</label>
+                <select id="onboardEveningSlotMins" class="w-full px-2 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs">
+                  <option value="10">10 Mins</option>
+                  <option value="15" selected>15 Mins</option>
+                  <option value="20">20 Mins</option>
+                  <option value="30">30 Mins</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Max Tokens</label>
+                <input type="number" id="onboardEveningCapacity" value="30" min="5" max="100" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Working Days & Avg Consultation Time -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1.5">
+                Open Working Days (दिन)
+              </label>
+              <div class="flex flex-wrap gap-1.5" id="onboardDaysContainer">
+                <!-- Checkboxes populated via JS -->
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1.5">
+                Avg Consultation Time / Patient
+              </label>
+              <select id="onboardAvgConsultMins" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-800 text-sm">
+                <option value="5">5 Mins (Fast Checkup / Reports)</option>
+                <option value="10" selected>10 Mins (Standard OPD)</option>
+                <option value="15">15 Mins (Detailed Diagnosis)</option>
+                <option value="20">20 Mins (Specialist / Pediatric)</option>
+              </select>
+              <p class="text-[10px] text-slate-500 mt-1">Used to calculate live estimated waiting time for online patients.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: DOCTOR PROFILE & CONSULTATION FEES -->
+        <div id="onboardStepContent-4" class="hidden space-y-4">
+          <div class="border-b border-slate-200 pb-2">
+            <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-user-doctor text-[#128C7E]"></i> Step 4: Doctor Profile & Consultation Fees
             </h3>
             <p class="text-xs text-slate-500">Doctor credentials and consultation charges displayed during token booking.</p>
           </div>
@@ -1791,7 +1983,7 @@
                 <h4 class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
                   <i class="fa-solid fa-user-doctor"></i> Anya Doctor (Additional Doctors - Up to 5)
                 </h4>
-                <p class="text-[11px] text-slate-500">Agar clinic mein 1 se zyada doctor hain toh yahan jodein. Patient book karte waqt doctor chun sakega.</p>
+                <p class="text-[11px] text-slate-500">Agar clinic mein 1 se zyada doctor hain toh yahan jodein.</p>
               </div>
               <button 
                 type="button" 
@@ -1809,116 +2001,6 @@
             </div>
           </div>
 
-        </div>
-
-        <!-- STEP 3: VISITING HOURS & LIVE BOOKING SLOTS -->
-        <div id="onboardStepContent-3" class="hidden space-y-4">
-          <div class="border-b border-slate-200 pb-2">
-            <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-              <i class="fa-solid fa-clock text-[#128C7E]"></i> Step 3: Patients Visiting Hours & Live Booking Slots
-            </h3>
-            <p class="text-xs text-slate-500">Configure clinic shift timings, slot intervals and daily capacity for online tokens.</p>
-          </div>
-
-          <!-- Morning Shift Box -->
-          <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 space-y-3">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-sun text-amber-500 text-lg"></i>
-                <h4 class="font-black text-sm text-slate-900">☀️ Subah OP (Morning Shift)</h4>
-              </div>
-              <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-700">
-                <input type="checkbox" id="onboardMorningEnabled" checked class="w-4 h-4 text-emerald-600 rounded" />
-                <span>Enable Morning Shift</span>
-              </label>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Start Time</label>
-                <input type="text" id="onboardMorningStart" value="10:00 AM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">End Time</label>
-                <input type="text" id="onboardMorningEnd" value="02:00 PM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Slot Duration</label>
-                <select id="onboardMorningSlotMins" class="w-full px-2 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs">
-                  <option value="10">10 Mins</option>
-                  <option value="15" selected>15 Mins</option>
-                  <option value="20">20 Mins</option>
-                  <option value="30">30 Mins</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Max Tokens</label>
-                <input type="number" id="onboardMorningCapacity" value="25" min="5" max="100" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Evening Shift Box -->
-          <div class="bg-indigo-50/60 p-4 rounded-2xl border border-indigo-200 space-y-3">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-moon text-indigo-500 text-lg"></i>
-                <h4 class="font-black text-sm text-slate-900">🌙 Shaam OP (Evening Shift)</h4>
-              </div>
-              <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-700">
-                <input type="checkbox" id="onboardEveningEnabled" checked class="w-4 h-4 text-emerald-600 rounded" />
-                <span>Enable Evening Shift</span>
-              </label>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Start Time</label>
-                <input type="text" id="onboardEveningStart" value="05:00 PM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">End Time</label>
-                <input type="text" id="onboardEveningEnd" value="09:00 PM" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Slot Duration</label>
-                <select id="onboardEveningSlotMins" class="w-full px-2 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs">
-                  <option value="10">10 Mins</option>
-                  <option value="15" selected>15 Mins</option>
-                  <option value="20">20 Mins</option>
-                  <option value="30">30 Mins</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Max Tokens</label>
-                <input type="number" id="onboardEveningCapacity" value="30" min="5" max="100" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Working Days & Avg Consultation Time -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1.5">
-                Open Working Days (दिन)
-              </label>
-              <div class="flex flex-wrap gap-1.5" id="onboardDaysContainer">
-                <!-- Checkboxes populated via JS -->
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1.5">
-                Avg Consultation Time / Patient
-              </label>
-              <select id="onboardAvgConsultMins" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-800 text-sm">
-                <option value="5">5 Mins (Fast Checkup / Reports)</option>
-                <option value="10" selected>10 Mins (Standard OPD)</option>
-                <option value="15">15 Mins (Detailed Diagnosis)</option>
-                <option value="20">20 Mins (Specialist / Pediatric)</option>
-              </select>
-              <p class="text-[10px] text-slate-500 mt-1">Used to calculate live estimated waiting time for online patients.</p>
-            </div>
-          </div>
         </div>
 
       </form>
@@ -1950,7 +2032,7 @@
             onclick="stepOnboard(1)" 
             class="px-5 py-2.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm shadow-md transition"
           >
-            Next: Doctor Profile ➔
+            Next: Location ➔
           </button>
           <button 
             type="button" 
@@ -1958,7 +2040,7 @@
             onclick="submitClinicOnboarding()" 
             class="hidden btn-tactile px-6 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs sm:text-sm shadow-lg transition"
           >
-            <i class="fa-solid fa-circle-check"></i> Complete & Get Link ➔
+            <i class="fa-solid fa-circle-check"></i> Complete Setup & Get QR ➔
           </button>
         </div>
       </div>
@@ -1967,28 +2049,72 @@
   </div>
 
   <!-- ===================================================================== -->
-  <!-- MODAL 2: ONBOARDING SUCCESS & PATIENT BOOKING LINK GENERATOR           -->
+  <!-- MODAL 2: ONBOARDING SUCCESS & PATIENT BOOKING LINK & QR LAUNCHPAD     -->
   <!-- ===================================================================== -->
   <div id="onboardingSuccessModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border-4 border-[#25D366] my-auto">
       
       <!-- Celebration Header -->
-      <div class="bg-gradient-to-br from-[#075E54] to-[#128C7E] text-white p-6 text-center relative">
+      <div class="bg-gradient-to-br from-[#075E54] to-[#128C7E] text-white p-5 text-center relative">
         <button onclick="closeOnboardingSuccessModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white">
           ✕
         </button>
-        <div class="w-16 h-16 rounded-full bg-[#25D366] text-slate-950 font-black text-3xl flex items-center justify-center mx-auto shadow-lg animate-bounce">
+        <div class="w-14 h-14 rounded-full bg-[#25D366] text-slate-950 font-black text-2xl flex items-center justify-center mx-auto shadow-lg animate-bounce">
           <i class="fa-solid fa-check"></i>
         </div>
-        <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-3 py-0.5 rounded-full uppercase mt-3 inline-block">
-          Clinic Live & Ready to Use
+        <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-3 py-0.5 rounded-full uppercase mt-2 inline-block">
+          🎉 Clinic Account Live & Ready to Roll Out!
         </span>
-        <h3 class="text-xl sm:text-2xl font-black mt-2" id="successClinicTitle">Sanjeevani Family Clinic</h3>
+        <h3 class="text-xl font-black mt-1.5" id="successClinicTitle">Sanjeevani Family Clinic</h3>
         <p class="text-xs text-emerald-100" id="successDoctorTitle">Dr. Rajesh Sharma (MBBS, MD)</p>
       </div>
 
-      <div class="p-5 sm:p-6 space-y-4">
+      <div class="p-5 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
         
+        <!-- Live QR Code Presentation Card -->
+        <div class="bg-white rounded-2xl p-4 border-2 border-emerald-300 shadow-sm text-center space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
+              <i class="fa-solid fa-qrcode text-[#25D366]"></i> Clinic OPD Token QR Code
+            </span>
+            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Scan & Book</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 py-1">
+            <div id="successQrContainer" class="w-36 h-36 bg-white p-2 border-2 border-[#25D366] rounded-2xl shadow-sm flex items-center justify-center flex-shrink-0">
+              <img 
+                id="successQrImg" 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fparchisetu.in" 
+                alt="Clinic Booking QR" 
+                class="w-full h-full object-contain"
+              />
+            </div>
+            <div class="text-left space-y-2 flex-1">
+              <p class="text-xs font-bold text-slate-700">
+                Is QR code ko apne clinic ke main gate ya reception desk par print karke lagayein, taaki aane wale mareez phone se scan karke token le sakein!
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <button 
+                  type="button" 
+                  onclick="printClinicQRStandee()" 
+                  class="btn-tactile px-3.5 py-2 bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs rounded-xl flex items-center gap-1.5 shadow-xs transition"
+                >
+                  <i class="fa-solid fa-print text-[#25D366]"></i>
+                  <span>Print Standee Poster</span>
+                </button>
+                <button 
+                  type="button" 
+                  onclick="downloadQRCodeImage()" 
+                  class="btn-tactile px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl flex items-center gap-1.5 transition"
+                >
+                  <i class="fa-solid fa-download"></i>
+                  <span>Download QR</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Link Share Card -->
         <div class="bg-emerald-50 rounded-2xl p-4 border-2 border-emerald-300 space-y-2.5">
           <div class="flex items-center justify-between">
@@ -2031,7 +2157,7 @@
           </div>
 
           <p class="text-[11px] text-slate-600">
-            Send this link to patients on WhatsApp or put on Google Maps. Patients can book visiting slots from home and receive their live token number.
+            Yeh link mareezon ko WhatsApp par bhejein ya Google Maps profile par dalein. Mareez ghar baithe token le sakte hain aur live line dekh sakte hain.
           </p>
         </div>
 
@@ -2054,7 +2180,7 @@
             <span class="text-[10px] font-bold bg-blue-200 text-blue-950 px-2 py-0.5 rounded-full">Google Maps Traffic</span>
           </div>
           <p class="text-[11px] text-blue-800">
-            Is link ko apne Google Business Profile (Google Map) ke <strong>'Appointment Link'</strong> mein paste karein, taaki maps se aane wale mareez direct token book kar sakein!
+            Is link ko apne Google Business Profile (Google Map) ke <strong>'Appointment Link'</strong> mein paste karein, taaki maps se khojne wale mareez seedha token book kar sakein!
           </p>
           <button 
             type="button" 
@@ -2066,12 +2192,12 @@
           </button>
         </div>
 
-        <!-- QR Standee Preview & Quick Actions -->
-        <div class="grid grid-cols-2 gap-2.5 pt-2">
+        <!-- Quick Actions Grid -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
           <button 
             type="button" 
             onclick="closeOnboardingSuccessModal(); openQRStandeeModal();" 
-            class="btn-tactile py-3 px-3 rounded-xl border-2 border-slate-200 hover:border-[#128C7E] bg-slate-50 font-extrabold text-xs text-slate-800 flex items-center justify-center gap-1.5 transition"
+            class="btn-tactile py-2.5 px-3 rounded-xl border-2 border-slate-200 hover:border-[#128C7E] bg-slate-50 font-extrabold text-xs text-slate-800 flex items-center justify-center gap-1.5 transition"
           >
             <i class="fa-solid fa-qrcode text-[#128C7E]"></i>
             <span>Clinic QR Standee</span>
@@ -2079,7 +2205,7 @@
           <button 
             type="button" 
             onclick="testOpenPatientPage()" 
-            class="btn-tactile py-3 px-3 rounded-xl border-2 border-emerald-300 hover:bg-emerald-50 bg-white font-extrabold text-xs text-[#075E54] flex items-center justify-center gap-1.5 transition"
+            class="btn-tactile py-2.5 px-3 rounded-xl border-2 border-emerald-300 hover:bg-emerald-50 bg-white font-extrabold text-xs text-[#075E54] flex items-center justify-center gap-1.5 transition"
           >
             <i class="fa-solid fa-mobile-screen-button text-[#25D366]"></i>
             <span>Test Patient View</span>
@@ -2093,7 +2219,7 @@
           class="w-full py-3 bg-[#075E54] hover:bg-[#128C7E] text-white font-black rounded-2xl text-xs sm:text-sm transition flex items-center justify-center gap-2"
         >
           <i class="fa-solid fa-desktop"></i>
-          <span>Open Compounder Desk & Live Queue</span>
+          <span>Open Compounder Desk & Start OPD ➔</span>
         </button>
 
       </div>
@@ -2402,8 +2528,8 @@
         rolePatient: 'Patient QR Link',
         tabQueue: '1. Aaj Ki Line',
         tabCalendar: '2. Slots & QR',
-        tabRegister: '3. Patient Khata',
-        tabGalla: '4. Aaj Ka Galla',
+        tabRegister: '3. Patients Directory',
+        tabGalla: '4. Daily Checkbook',
         liveInCabinBadge: 'ABHI DOCTOR KE PAAS (IN CABIN)',
         openParchiBtn: 'Parchi / Vitals Kholein',
         fastEntryTitle: '⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)',
@@ -2441,8 +2567,8 @@
         rolePatient: 'Patient QR Link',
         tabQueue: '1. Live Queue',
         tabCalendar: '2. Slots & QR',
-        tabRegister: '3. Patient Directory',
-        tabGalla: '4. Daily Cashbook',
+        tabRegister: '3. Patients Directory',
+        tabGalla: '4. Daily Checkbook',
         liveInCabinBadge: 'CURRENTLY IN DOCTOR CABIN',
         openParchiBtn: 'Open Rx & Vitals',
         fastEntryTitle: '⚡ 3-Second Fast Walk-In Token Entry',
@@ -2699,7 +2825,6 @@
         if (currentOnboardStep === 1) {
           const name = document.getElementById('onboardClinicName').value.trim();
           const phone = document.getElementById('onboardClinicPhone').value.trim();
-          const address = document.getElementById('onboardClinicAddress').value.trim();
           if (!name) {
             showToast('⚠️ Kripya Clinic Ka Naam bharein!', 'warning');
             document.getElementById('onboardClinicName').focus();
@@ -2710,12 +2835,27 @@
             document.getElementById('onboardClinicPhone').focus();
             return;
           }
+        } else if (currentOnboardStep === 2) {
+          const address = document.getElementById('onboardClinicAddress').value.trim();
+          const city = document.getElementById('onboardClinicCity').value.trim();
           if (!address) {
             showToast('⚠️ Kripya Clinic Ka Pata & Landmark bharein!', 'warning');
             document.getElementById('onboardClinicAddress').focus();
             return;
           }
-        } else if (currentOnboardStep === 2) {
+          if (!city) {
+            showToast('⚠️ Kripya Shahar (City & State) bharein!', 'warning');
+            document.getElementById('onboardClinicCity').focus();
+            return;
+          }
+        } else if (currentOnboardStep === 3) {
+          const mEnabled = document.getElementById('onboardMorningEnabled').checked;
+          const eEnabled = document.getElementById('onboardEveningEnabled').checked;
+          if (!mEnabled && !eEnabled) {
+            showToast('⚠️ Kam se kam 1 shift (Subah ya Shaam) enable hona chahiye!', 'warning');
+            return;
+          }
+        } else if (currentOnboardStep === 4) {
           const docName = document.getElementById('onboardDoctorName').value.trim();
           const docDegree = document.getElementById('onboardDoctorDegree').value.trim();
           const fee = document.getElementById('onboardFeeNormal').value.trim();
@@ -2738,16 +2878,31 @@
       }
 
       currentOnboardStep = stepNum;
-      for (let s = 1; s <= 3; s++) {
+      for (let s = 1; s <= 4; s++) {
         const content = document.getElementById(`onboardStepContent-${s}`);
         const tab = document.getElementById(`onboardStepTab-${s}`);
-        if (s === stepNum) {
-          content.classList.remove('hidden');
-          tab.className = 'py-1.5 px-2 rounded-xl text-center text-xs font-black bg-[#25D366] text-slate-950 transition flex items-center justify-center gap-1';
-        } else {
-          content.classList.add('hidden');
-          tab.className = 'py-1.5 px-2 rounded-xl text-center text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1';
+        if (content) {
+          if (s === stepNum) content.classList.remove('hidden');
+          else content.classList.add('hidden');
         }
+        if (tab) {
+          if (s === stepNum) {
+            tab.className = 'py-1.5 px-1 rounded-xl text-center text-[11px] sm:text-xs font-black bg-[#25D366] text-slate-950 transition flex items-center justify-center gap-1 truncate shadow-xs';
+          } else {
+            tab.className = 'py-1.5 px-1 rounded-xl text-center text-[11px] sm:text-xs font-bold bg-white/10 hover:bg-white/20 text-emerald-100 transition flex items-center justify-center gap-1 truncate';
+          }
+        }
+      }
+
+      const counter = document.getElementById('onboardStepCounter');
+      const stepLabels = {
+        1: 'Step 1 of 4: Clinic Details',
+        2: 'Step 2 of 4: Clinic Location',
+        3: 'Step 3 of 4: OPD Timings',
+        4: 'Step 4 of 4: Doctor & Fees'
+      };
+      if (counter && stepLabels[stepNum]) {
+        counter.textContent = stepLabels[stepNum];
       }
 
       const prevBtn = document.getElementById('onboardPrevBtn');
@@ -2755,25 +2910,36 @@
       const submitBtn = document.getElementById('onboardSubmitBtn');
 
       if (stepNum === 1) {
-        prevBtn.classList.add('hidden');
-        nextBtn.classList.remove('hidden');
-        nextBtn.textContent = 'Next: Doctor Profile ➔';
-        submitBtn.classList.add('hidden');
+        if (prevBtn) prevBtn.classList.add('hidden');
+        if (nextBtn) {
+          nextBtn.classList.remove('hidden');
+          nextBtn.textContent = 'Next: Location ➔';
+        }
+        if (submitBtn) submitBtn.classList.add('hidden');
       } else if (stepNum === 2) {
-        prevBtn.classList.remove('hidden');
-        nextBtn.classList.remove('hidden');
-        nextBtn.textContent = 'Next: Visiting Slots ➔';
-        submitBtn.classList.add('hidden');
+        if (prevBtn) prevBtn.classList.remove('hidden');
+        if (nextBtn) {
+          nextBtn.classList.remove('hidden');
+          nextBtn.textContent = 'Next: Timings & Slots ➔';
+        }
+        if (submitBtn) submitBtn.classList.add('hidden');
+      } else if (stepNum === 3) {
+        if (prevBtn) prevBtn.classList.remove('hidden');
+        if (nextBtn) {
+          nextBtn.classList.remove('hidden');
+          nextBtn.textContent = 'Next: Doctor & Fees ➔';
+        }
+        if (submitBtn) submitBtn.classList.add('hidden');
       } else {
-        prevBtn.classList.remove('hidden');
-        nextBtn.classList.add('hidden');
-        submitBtn.classList.remove('hidden');
+        if (prevBtn) prevBtn.classList.remove('hidden');
+        if (nextBtn) nextBtn.classList.add('hidden');
+        if (submitBtn) submitBtn.classList.remove('hidden');
       }
     }
 
     function stepOnboard(delta) {
       const next = currentOnboardStep + delta;
-      if (next >= 1 && next <= 3) {
+      if (next >= 1 && next <= 4) {
         switchOnboardStep(next);
       }
     }
@@ -2978,26 +3144,46 @@
     }
 
     async function submitClinicOnboarding() {
-      const name = document.getElementById('onboardClinicName').value.trim();
-      const docName = document.getElementById('onboardDoctorName').value.trim();
-      const phone = document.getElementById('onboardClinicPhone').value.trim();
-      const address = document.getElementById('onboardClinicAddress').value.trim();
-      const mapUrl = document.getElementById('onboardGoogleMapsLink') ? document.getElementById('onboardGoogleMapsLink').value.trim() : '';
+      const name = (document.getElementById('onboardClinicName')?.value || '').trim();
+      const phone = (document.getElementById('onboardClinicPhone')?.value || '').trim();
+      const tagline = (document.getElementById('onboardClinicTagline')?.value || '').trim();
+      const category = document.getElementById('onboardClinicCategory')?.value || 'General Medicine';
+      const address = (document.getElementById('onboardClinicAddress')?.value || '').trim();
+      const city = (document.getElementById('onboardClinicCity')?.value || '').trim() || 'Patna, Bihar';
+      const mapEl = document.getElementById('onboardClinicMapUrl') || document.getElementById('onboardGoogleMapsLink');
+      const mapUrl = mapEl ? mapEl.value.trim() : '';
+      const upiId = (document.getElementById('onboardClinicUpi')?.value || '').trim();
 
+      const docName = (document.getElementById('onboardDoctorName')?.value || '').trim();
+      const degree = (document.getElementById('onboardDoctorDegree')?.value || '').trim() || 'MBBS';
+      const regNo = (document.getElementById('onboardDoctorRegNo')?.value || '').trim();
+      const exp = parseInt(document.getElementById('onboardDoctorExp')?.value, 10) || 10;
+      const normalFee = parseInt(document.getElementById('onboardFeeNormal')?.value, 10) || 300;
+      const followupFee = parseInt(document.getElementById('onboardFeeFollowup')?.value, 10) || 200;
+      const emergencyFee = parseInt(document.getElementById('onboardFeeEmergency')?.value, 10) || 500;
+
+      // Validation across steps
       if (!name) {
         switchOnboardStep(1);
-        document.getElementById('onboardClinicName').focus();
+        document.getElementById('onboardClinicName')?.focus();
         showToast('⚠️ Kripya Clinic Ka Naam bharein!', 'warning');
         return;
       }
-      if (!phone || !address) {
+      if (!phone) {
         switchOnboardStep(1);
-        showToast('⚠️ Kripya Clinic Ka Mobile & Pata bharein!', 'warning');
+        document.getElementById('onboardClinicPhone')?.focus();
+        showToast('⚠️ Kripya Clinic Ka Mobile No. bharein!', 'warning');
+        return;
+      }
+      if (!address) {
+        switchOnboardStep(2);
+        document.getElementById('onboardClinicAddress')?.focus();
+        showToast('⚠️ Kripya Clinic Ka Pata (Address) bharein!', 'warning');
         return;
       }
       if (!docName) {
-        switchOnboardStep(2);
-        document.getElementById('onboardDoctorName').focus();
+        switchOnboardStep(4);
+        document.getElementById('onboardDoctorName')?.focus();
         showToast('⚠️ Kripya Doctor Sahab Ka Naam bharein!', 'warning');
         return;
       }
@@ -3011,63 +3197,77 @@
       const mainDoc = {
         id: 'doc_1',
         name: docName,
-        degree: document.getElementById('onboardDoctorDegree').value.trim() || 'MBBS',
-        specialty: clinicProfile.category || 'General Medicine',
-        regNo: document.getElementById('onboardDoctorRegNo').value.trim(),
-        fee: parseInt(document.getElementById('onboardFeeNormal').value, 10) || 300,
+        degree: degree,
+        specialty: category,
+        regNo: regNo,
+        fee: normalFee,
         isMain: true
       };
 
       const validAddtl = (onboardAdditionalDoctors || []).filter(d => d.name && d.name.trim().length > 0);
       const allDoctors = [mainDoc, ...validAddtl];
 
+      // Current Firebase user if logged in
+      const currentUser = (window.ParchiFirebase && window.ParchiFirebase.getCurrentUser)
+        ? window.ParchiFirebase.getCurrentUser()
+        : null;
+      const ownerUid = currentUser ? currentUser.uid : (clinicProfile.ownerUid || '');
+      const ownerEmail = currentUser ? currentUser.email : (clinicProfile.ownerEmail || '');
+
       clinicProfile = {
         ...clinicProfile,
         id: clinicProfile.id || ('clinic_' + Date.now()),
         name,
-        tagline: document.getElementById('onboardClinicTagline').value.trim(),
-        category: document.getElementById('onboardClinicCategory').value,
+        tagline,
+        category,
         address,
-        city: document.getElementById('onboardClinicCity').value.trim(),
+        city,
         phone,
         whatsapp: phone,
-        upiId: document.getElementById('onboardClinicUpi').value.trim(),
-        mapUrl: mapUrl,
+        upiId,
+        mapUrl,
+        ownerUid,
+        ownerEmail,
         doctorName: docName,
-        doctorDegree: document.getElementById('onboardDoctorDegree').value.trim() || 'MBBS',
-        doctorRegNo: document.getElementById('onboardDoctorRegNo').value.trim(),
-        experienceYears: parseInt(document.getElementById('onboardDoctorExp').value, 10) || 10,
+        doctorDegree: degree,
+        doctorRegNo: regNo,
+        experienceYears: exp,
         doctors: allDoctors,
         fees: {
-          normal: parseInt(document.getElementById('onboardFeeNormal').value, 10) || 300,
-          followup: parseInt(document.getElementById('onboardFeeFollowup').value, 10) || 200,
-          emergency: parseInt(document.getElementById('onboardFeeEmergency').value, 10) || 500,
+          normal: normalFee,
+          followup: followupFee,
+          emergency: emergencyFee,
           report: 0
         },
         visitingHours: {
           morning: {
-            enabled: document.getElementById('onboardMorningEnabled').checked,
-            start: document.getElementById('onboardMorningStart').value.trim() || '10:00 AM',
-            end: document.getElementById('onboardMorningEnd').value.trim() || '02:00 PM',
-            slotDurationMins: parseInt(document.getElementById('onboardMorningSlotMins').value, 10) || 15,
-            maxTokens: parseInt(document.getElementById('onboardMorningCapacity').value, 10) || 25
+            enabled: document.getElementById('onboardMorningEnabled')?.checked ?? true,
+            start: document.getElementById('onboardMorningStart')?.value.trim() || '10:00 AM',
+            end: document.getElementById('onboardMorningEnd')?.value.trim() || '02:00 PM',
+            slotDurationMins: parseInt(document.getElementById('onboardMorningSlotMins')?.value, 10) || 15,
+            maxTokens: parseInt(document.getElementById('onboardMorningCapacity')?.value, 10) || 25
           },
           evening: {
-            enabled: document.getElementById('onboardEveningEnabled').checked,
-            start: document.getElementById('onboardEveningStart').value.trim() || '05:00 PM',
-            end: document.getElementById('onboardEveningEnd').value.trim() || '09:00 PM',
-            slotDurationMins: parseInt(document.getElementById('onboardEveningSlotMins').value, 10) || 15,
-            maxTokens: parseInt(document.getElementById('onboardEveningCapacity').value, 10) || 30
+            enabled: document.getElementById('onboardEveningEnabled')?.checked ?? true,
+            start: document.getElementById('onboardEveningStart')?.value.trim() || '05:00 PM',
+            end: document.getElementById('onboardEveningEnd')?.value.trim() || '09:00 PM',
+            slotDurationMins: parseInt(document.getElementById('onboardEveningSlotMins')?.value, 10) || 15,
+            maxTokens: parseInt(document.getElementById('onboardEveningCapacity')?.value, 10) || 30
           },
           daysOpen: days.length > 0 ? days : ALL_WEEK_DAYS,
-          avgConsultationMins: parseInt(document.getElementById('onboardAvgConsultMins').value, 10) || 10
+          avgConsultationMins: parseInt(document.getElementById('onboardAvgConsultMins')?.value, 10) || 10
         },
+        leaves: clinicProfile.leaves || {},
         onboarded: true,
         updatedAt: new Date().toISOString()
       };
 
+      // FRESH START: Zero dummy data for newly onboarded clinic
+      todayQueue = [];
+      patientRegister = [];
       selectedWalkinFee = clinicProfile.fees.normal;
       saveLocalClinic();
+      saveLocalQueue();
 
       // Sync with server if active
       if (window.location.protocol.startsWith('http')) {
@@ -3084,13 +3284,23 @@
               saveLocalClinic();
             }
           }
+          await fetch('/api/queue/reset', { method: 'POST' });
         } catch (e) {
           console.warn('Sync clinic error:', e);
         }
       }
 
+      // Sync with Firebase Firestore and record mapping
       if (window.ParchiFirebase) {
-        ParchiFirebase.syncClinic(clinicProfile);
+        try {
+          await window.ParchiFirebase.syncClinic(clinicProfile);
+          if (ownerUid) {
+            await window.ParchiFirebase.saveUserClinicMapping(ownerUid, clinicProfile.id, ownerEmail || clinicProfile.ownerEmail || '', clinicProfile.name);
+          }
+          window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+        } catch (fbErr) {
+          console.warn('Firebase sync clinic error:', fbErr);
+        }
       }
 
       if (syncChannel) {
@@ -3120,14 +3330,45 @@
     function openOnboardingSuccessModal() {
       updateClinicBranding();
       const modal = document.getElementById('onboardingSuccessModal');
+      if (!modal) return;
+
+      const titleEl = document.getElementById('successClinicTitle');
+      const docEl = document.getElementById('successDoctorTitle');
+      if (titleEl) titleEl.textContent = clinicProfile.name || 'Apka Clinic';
+      if (docEl) docEl.textContent = `${clinicProfile.doctorName || 'Doctor'} (${clinicProfile.doctorDegree || 'MBBS'})`;
+
+      const link = getShareablePatientLink(false);
+      const linkInput = document.getElementById('successPatientLinkInput');
+      if (linkInput) linkInput.value = link;
+
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}`;
+      const qrImg = document.getElementById('successQrImg');
+      const qrContainer = document.getElementById('successQrContainer');
+      if (qrImg) {
+        qrImg.src = qrUrl;
+      } else if (qrContainer) {
+        qrContainer.innerHTML = `<img id="successQrImg" src="${qrUrl}" alt="Clinic Booking QR" class="w-full h-full object-contain" />`;
+      }
+
+      const lanSection = document.getElementById('lanUrlSection');
+      const lanDisplay = document.getElementById('lanUrlDisplay');
+      if (clinicProfile.network && clinicProfile.network.lanUrl) {
+        if (lanSection) lanSection.classList.remove('hidden');
+        if (lanDisplay) lanDisplay.textContent = `${clinicProfile.network.lanUrl}/?role=patient&clinic=${clinicProfile.id}`;
+      } else if (lanSection) {
+        lanSection.classList.add('hidden');
+      }
+
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
 
     function closeOnboardingSuccessModal() {
       const modal = document.getElementById('onboardingSuccessModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
     }
 
     function copyPatientBookingLink() {
@@ -3137,11 +3378,11 @@
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(link).then(() => {
-          btnText.textContent = 'Copied! ✓';
-          btn.classList.add('bg-emerald-600');
+          if (btnText) btnText.textContent = 'Copied! ✓';
+          if (btn) btn.classList.add('bg-emerald-600');
           setTimeout(() => {
-            btnText.textContent = 'Copy';
-            btn.classList.remove('bg-emerald-600');
+            if (btnText) btnText.textContent = 'Copy';
+            if (btn) btn.classList.remove('bg-emerald-600');
           }, 2000);
           showToast('📋 Patient Booking Link copied to clipboard!');
         }).catch(() => fallbackCopy(link));
@@ -3183,19 +3424,158 @@
     }
 
     function shareClinicBookingOnWhatsApp() {
-      const link = getShareablePatientLink(true);
-      const morning = clinicProfile.visitingHours.morning;
-      const evening = clinicProfile.visitingHours.evening;
+      const link = getShareablePatientLink(false);
+      const morning = clinicProfile.visitingHours?.morning;
+      const evening = clinicProfile.visitingHours?.evening;
       const text = `🏥 *${clinicProfile.name}* (${clinicProfile.doctorName})\n` +
         `📍 ${clinicProfile.address}, ${clinicProfile.city}\n\n` +
         `⏰ *OPD Timings:*\n` +
-        `☀️ Subah: ${morning.enabled ? `${morning.start} - ${morning.end}` : 'Band'}\n` +
-        `🌙 Shaam: ${evening.enabled ? `${evening.start} - ${evening.end}` : 'Band'}\n\n` +
+        `☀️ Subah: ${morning && morning.enabled ? `${morning.start} - ${morning.end}` : 'Band'}\n` +
+        `🌙 Shaam: ${evening && evening.enabled ? `${evening.start} - ${evening.end}` : 'Band'}\n\n` +
         `👉 *Online Token & Live Cabin Tracker Link:*\n${link}\n\n` +
         `Ghar baithe token lein aur clinic aane ka samay track karein! 🙏`;
 
       const encoded = encodeURIComponent(text);
       window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    }
+
+    function printClinicQRStandee() {
+      const link = getShareablePatientLink(false);
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
+      const morning = clinicProfile.visitingHours?.morning;
+      const evening = clinicProfile.visitingHours?.evening;
+      const mStr = morning && morning.enabled ? `${morning.start} - ${morning.end}` : '';
+      const eStr = evening && evening.enabled ? `${evening.start} - ${evening.end}` : '';
+      const timingStr = [mStr ? `Subah: ${mStr}` : '', eStr ? `Shaam: ${eStr}` : ''].filter(Boolean).join(' | ');
+
+      const printWin = window.open('', '_blank', 'width=800,height=900');
+      if (!printWin) {
+        showToast('⚠️ Pop-up blocked! Kripya browser pop-ups allow karein.', 'warning');
+        return;
+      }
+
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Clinic OPD Token Standee - ${clinicProfile.name}</title>
+          <style>
+            @page { size: A4 portrait; margin: 12mm; }
+            * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+            body { background: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+            .poster {
+              width: 100%; max-width: 650px; background: #ffffff; border: 8px solid #075E54; border-radius: 28px;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; text-align: center;
+            }
+            .header { background: #075E54; color: #ffffff; padding: 28px 20px 22px; }
+            .badge {
+              display: inline-block; background: #25D366; color: #022c22; font-size: 13px; font-weight: 900;
+              padding: 4px 14px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+            }
+            .clinic-name { font-size: 32px; font-weight: 900; line-height: 1.2; letter-spacing: -0.5px; }
+            .doctor-name { font-size: 18px; font-weight: 700; color: #a7f3d0; margin-top: 6px; }
+            .body-section { padding: 30px 24px; }
+            .headline { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 6px; }
+            .subheadline { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 24px; }
+            .qr-card {
+              display: inline-block; padding: 14px; border: 4px solid #25D366; border-radius: 22px;
+              background: #ffffff; box-shadow: 0 8px 24px rgba(37,211,102,0.18); margin-bottom: 20px;
+            }
+            .qr-card img { width: 280px; height: 280px; display: block; }
+            .instructions {
+              display: flex; justify-content: center; gap: 14px; margin-top: 10px; margin-bottom: 20px;
+            }
+            .step-pill {
+              background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 8px 12px;
+              font-size: 12px; font-weight: 800; color: #166534; text-align: left;
+            }
+            .step-pill strong { display: block; font-size: 13px; color: #075E54; }
+            .timing-box {
+              background: #f1f5f9; border-radius: 14px; padding: 12px; margin: 10px 0; font-size: 13px; font-weight: 800; color: #334155;
+            }
+            .footer {
+              background: #0f172a; color: #94a3b8; padding: 16px 20px; font-size: 12px; font-weight: 600;
+              display: flex; justify-content: space-between; align-items: center;
+            }
+            .footer-url { color: #25D366; font-weight: 800; font-family: monospace; }
+            @media print {
+              body { background: #ffffff; padding: 0; }
+              .poster { border-width: 6px; box-shadow: none; max-width: 100%; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="poster">
+            <div class="header">
+              <div class="badge">Official OPD Booking Standee</div>
+              <div class="clinic-name">${clinicProfile.name || 'Clinic'}</div>
+              <div class="doctor-name">${clinicProfile.doctorName || 'Doctor'} ${clinicProfile.doctorDegree ? `(${clinicProfile.doctorDegree})` : ''}</div>
+            </div>
+            <div class="body-section">
+              <div class="headline">📱 Line Mein Khade Mat Rahiye!</div>
+              <div class="subheadline">Camera se QR Code Scan Karein aur Instant Token lein</div>
+              <div class="qr-card">
+                <img src="${qrUrl}" alt="Clinic Token QR Code" />
+              </div>
+              <div class="instructions">
+                <div class="step-pill">
+                  <strong>1. Scan QR</strong>
+                  Phone camera se scan karein
+                </div>
+                <div class="step-pill">
+                  <strong>2. Apna Naam Bharein</strong>
+                  Instant token number mil jayega
+                </div>
+                <div class="step-pill">
+                  <strong>3. Live Status Dekhein</strong>
+                  Ghar ya cabin ke bahar se track karein
+                </div>
+              </div>
+              ${timingStr ? `<div class="timing-box">⏰ <strong>OPD Timings:</strong> ${timingStr}</div>` : ''}
+              <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 8px;">
+                📍 ${clinicProfile.address || ''}${clinicProfile.city ? ', ' + clinicProfile.city : ''} ${clinicProfile.phone ? ' | 📞 ' + clinicProfile.phone : ''}
+              </div>
+            </div>
+            <div class="footer">
+              <span>Powered by <strong>ParchiSetu</strong> • Digital Clinic Assistant</span>
+              <span class="footer-url">${link}</span>
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              setTimeout(function() { window.print(); }, 400);
+            };
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWin.document.close();
+    }
+
+    async function downloadQRCodeImage() {
+      const link = getShareablePatientLink(false);
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}`;
+      try {
+        showToast('⏳ Downloading QR code...');
+        const response = await fetch(qrUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        const clinicSlug = (clinicProfile.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
+        a.download = `parchisetu_${clinicSlug}_qr.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+        showToast('✅ Clinic QR Code download ho gaya!');
+      } catch (e) {
+        console.warn('Download QR error:', e);
+        window.open(qrUrl, '_blank');
+        showToast('📋 QR Code opened in new tab.');
+      }
     }
 
     function testOpenPatientPage() {
@@ -3226,22 +3606,309 @@
     function switchAuthTab(tab) {
       const formSignup = document.getElementById('clinicSignupForm');
       const formLogin = document.getElementById('clinicLoginForm');
-      const btnSignup = document.getElementById('authTabBtnSignup');
-      const btnLogin = document.getElementById('authTabBtnLogin');
+      const btnSignup = document.getElementById('authTabSignup') || document.getElementById('authTabBtnSignup');
+      const btnLogin = document.getElementById('authTabLogin') || document.getElementById('authTabBtnLogin');
 
       if (tab === 'signup') {
         if (formSignup) formSignup.classList.remove('hidden');
         if (formLogin) formLogin.classList.add('hidden');
-        if (btnSignup) btnSignup.className = 'py-3 font-extrabold text-xs sm:text-sm border-b-2 border-[#075E54] text-[#075E54] transition flex items-center justify-center gap-1.5';
-        if (btnLogin) btnLogin.className = 'py-3 font-bold text-xs sm:text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1.5';
+        if (btnSignup) btnSignup.className = 'py-1.5 rounded-lg text-xs font-black bg-[#25D366] text-slate-950 shadow-xs';
+        if (btnLogin) btnLogin.className = 'py-1.5 rounded-lg text-xs font-bold text-emerald-100 hover:text-white';
       } else {
         if (formSignup) formSignup.classList.add('hidden');
         if (formLogin) formLogin.classList.remove('hidden');
-        if (btnLogin) btnLogin.className = 'py-3 font-extrabold text-xs sm:text-sm border-b-2 border-[#075E54] text-[#075E54] transition flex items-center justify-center gap-1.5';
-        if (btnSignup) btnSignup.className = 'py-3 font-bold text-xs sm:text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1.5';
+        if (btnLogin) btnLogin.className = 'py-1.5 rounded-lg text-xs font-black bg-[#25D366] text-slate-950 shadow-xs';
+        if (btnSignup) btnSignup.className = 'py-1.5 rounded-lg text-xs font-bold text-emerald-100 hover:text-white';
       }
     }
 
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (btn) btn.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+      } else {
+        input.type = 'password';
+        if (btn) btn.innerHTML = '<i class="fa-regular fa-eye"></i>';
+      }
+    }
+
+    function updateHeaderAuthUI(user) {
+      const label = document.getElementById('authHeaderBtnLabel');
+      const signOutBtn = document.getElementById('headerSignOutBtn');
+      const headerBtn = document.getElementById('clinicAuthHeaderBtn');
+
+      if (user) {
+        const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Doctor');
+        if (label) label.textContent = displayName;
+        if (signOutBtn) signOutBtn.classList.remove('hidden');
+        if (headerBtn) headerBtn.title = `Logged in as ${user.email || user.displayName}`;
+      } else {
+        if (label) label.textContent = 'Sign In / Register';
+        if (signOutBtn) signOutBtn.classList.add('hidden');
+        if (headerBtn) headerBtn.title = 'Clinic Sign In / Naya Clinic Account';
+      }
+    }
+
+    async function handleUserSignOut() {
+      if (confirm('Kya aap ParchiSetu Clinic account se sign out karna chahte hain?')) {
+        if (window.ParchiFirebase && window.ParchiFirebase.signOutUser) {
+          try {
+            await window.ParchiFirebase.signOutUser();
+          } catch (e) {
+            console.warn('Sign out error:', e);
+          }
+        }
+        updateHeaderAuthUI(null);
+        showToast('👋 Sign out safal! Guest mode active.');
+      }
+    }
+
+    function handleDemoLogin() {
+      closeClinicAuthModal();
+      switchAppRole('clinic');
+      refreshAllViews();
+      showToast('⚡ Demo mode active! Sanjeevani Family Clinic Desk open hai.');
+    }
+
+    async function handleForgotPassword() {
+      const email = (document.getElementById('authLoginEmail')?.value || '').trim();
+      if (!email || !email.includes('@')) {
+        showToast('⚠️ Kripya upar Email address bharein jisme reset link bhejna hai.', 'warning');
+        const emailInput = document.getElementById('authLoginEmail');
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (window.ParchiFirebase && window.ParchiFirebase.sendPasswordReset) {
+        try {
+          await window.ParchiFirebase.sendPasswordReset(email);
+          showToast(`📩 Password reset link ${email} par bhej diya gaya hai!`);
+        } catch (e) {
+          console.error('Reset password error:', e);
+          showToast('⚠️ ' + (e.message || 'Password reset request fail ho gayi.'), 'error');
+        }
+      } else {
+        showToast(`📩 Password reset request sent for ${email}.`);
+      }
+    }
+
+    async function handleGoogleSignIn() {
+      const btn = document.getElementById('btnGoogleSignIn');
+      const btnText = document.getElementById('btnGoogleSignInText');
+      const alertBox = document.getElementById('authAlertBox');
+      if (alertBox) alertBox.classList.add('hidden');
+
+      if (!window.ParchiFirebase || !window.ParchiFirebase.signInWithGoogle) {
+        showToast('⚠️ Firebase Auth initialize nahi hua hai. Demo mode use karein.', 'warning');
+        return;
+      }
+
+      const origText = btnText ? btnText.textContent : '';
+      if (btnText) btnText.textContent = 'Signing in with Google...';
+      if (btn) btn.disabled = true;
+
+      try {
+        const user = await window.ParchiFirebase.signInWithGoogle();
+        if (user) {
+          showToast(`👋 Swagatam, ${user.displayName || user.email}!`);
+          updateHeaderAuthUI(user);
+
+          // Check if clinic mapping exists for this user
+          let userClinic = null;
+          try {
+            userClinic = await window.ParchiFirebase.getClinicForUser(user);
+          } catch (e) {
+            console.warn('getClinicForUser warning:', e);
+          }
+
+          if (userClinic && (userClinic.name || userClinic.id)) {
+            clinicProfile = userClinic;
+            saveLocalClinic();
+            if (window.location.protocol.startsWith('http')) {
+              try {
+                await fetch('/api/clinic', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(clinicProfile)
+                });
+              } catch (e) {}
+            }
+            if (window.ParchiFirebase && clinicProfile.id) {
+              window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+            }
+            closeClinicAuthModal();
+            switchAppRole('clinic');
+            refreshAllViews();
+            showToast('✅ Apka Clinic account load ho gaya!');
+          } else {
+            // New clinic owner -> prefill doctor name and open onboarding
+            closeClinicAuthModal();
+            if (user.displayName) {
+              const docNameInput = document.getElementById('onboardDoctorName');
+              if (docNameInput && !docNameInput.value) {
+                docNameInput.value = user.displayName.startsWith('Dr.') ? user.displayName : `Dr. ${user.displayName}`;
+              }
+            }
+            openClinicOnboardingModal();
+            showToast('🎉 Google Sign-in Safal! Kripya apne clinic ki details set karein.');
+          }
+        }
+      } catch (err) {
+        console.error('Google Sign-in error:', err);
+        const msg = err.message || 'Google Sign-in fail ho gaya. Kripya punah prayas karein.';
+        if (alertBox) {
+          alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+          alertBox.textContent = '⚠️ ' + msg;
+          alertBox.classList.remove('hidden');
+        } else {
+          showToast('⚠️ ' + msg, 'error');
+        }
+      } finally {
+        if (btnText) btnText.textContent = origText;
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function handleClinicEmailLogin() {
+      const emailOrId = (document.getElementById('authLoginEmail')?.value || document.getElementById('authLoginClinicId')?.value || '').trim();
+      const pwd = (document.getElementById('authLoginPassword')?.value || '').trim();
+      const alertBox = document.getElementById('authAlertBox');
+      const submitBtn = document.getElementById('btnLoginSubmit');
+      if (alertBox) alertBox.classList.add('hidden');
+
+      if (!emailOrId) {
+        showToast('⚠️ Kripya Email ya Clinic ID bharein!', 'warning');
+        return;
+      }
+
+      // If it looks like an email and Firebase is available, authenticate with Firebase
+      if (emailOrId.includes('@') && window.ParchiFirebase && window.ParchiFirebase.signInWithEmail) {
+        if (!pwd) {
+          showToast('⚠️ Kripya Password bharein!', 'warning');
+          return;
+        }
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+          const user = await window.ParchiFirebase.signInWithEmail(emailOrId, pwd);
+          if (user) {
+            updateHeaderAuthUI(user);
+            let userClinic = null;
+            try {
+              userClinic = await window.ParchiFirebase.getClinicForUser(user);
+            } catch (e) {
+              console.warn('getClinicForUser warning:', e);
+            }
+
+            if (userClinic && (userClinic.name || userClinic.id)) {
+              clinicProfile = userClinic;
+              saveLocalClinic();
+              if (window.location.protocol.startsWith('http')) {
+                try {
+                  await fetch('/api/clinic', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clinicProfile)
+                  });
+                } catch (e) {}
+              }
+              if (window.ParchiFirebase && clinicProfile.id) {
+                window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+              }
+              closeClinicAuthModal();
+              switchAppRole('clinic');
+              refreshAllViews();
+              showToast('👋 Compounder Desk login safal!');
+              return;
+            } else {
+              closeClinicAuthModal();
+              openClinicOnboardingModal();
+              showToast('👋 Login safal! Kripya apne clinic ki details set karein.');
+              return;
+            }
+          }
+        } catch (err) {
+          console.error('Email signin error:', err);
+          const msg = (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential')
+            ? 'Galat Password ya Email! Kripya dobara check karein.'
+            : (err.message || 'Login fail ho gaya.');
+          if (alertBox) {
+            alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+            alertBox.textContent = '⚠️ ' + msg;
+            alertBox.classList.remove('hidden');
+          } else {
+            showToast('⚠️ ' + msg, 'error');
+          }
+          return;
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      }
+
+      // Fallback: Clinic ID / Phone matching (for legacy / offline clinic accounts)
+      await handleClinicLogin();
+    }
+
+    async function handleClinicEmailSignup() {
+      const docName = (document.getElementById('authSignupDoctorName')?.value || '').trim();
+      const email = (document.getElementById('authSignupEmail')?.value || '').trim();
+      const pwd = (document.getElementById('authSignupPassword')?.value || '').trim();
+      const alertBox = document.getElementById('authAlertBox');
+      const submitBtn = document.getElementById('btnSignupSubmit');
+      if (alertBox) alertBox.classList.add('hidden');
+
+      if (!docName || !email) {
+        showToast('⚠️ Kripya Doctor Ka Naam aur Email bharein!', 'warning');
+        return;
+      }
+      if (!pwd || pwd.length < 6) {
+        showToast('⚠️ Password kam se kam 6 akshar ka hona chahiye!', 'warning');
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        let user = null;
+        if (window.ParchiFirebase && window.ParchiFirebase.signUpWithEmail) {
+          try {
+            user = await window.ParchiFirebase.signUpWithEmail(email, pwd);
+          } catch (fbErr) {
+            console.error('Firebase signup error:', fbErr);
+            const msg = fbErr.code === 'auth/email-already-in-use'
+              ? 'Yeh email pehle se registered hai! Kripya Clinic Login tab se login karein.'
+              : (fbErr.message || 'Signup fail ho gaya.');
+            if (alertBox) {
+              alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+              alertBox.textContent = '⚠️ ' + msg;
+              alertBox.classList.remove('hidden');
+            } else {
+              showToast('⚠️ ' + msg, 'error');
+            }
+            return;
+          }
+        }
+
+        if (user) {
+          updateHeaderAuthUI(user);
+        }
+
+        const docNameInput = document.getElementById('onboardDoctorName');
+        if (docNameInput) docNameInput.value = docName;
+
+        closeClinicAuthModal();
+        openClinicOnboardingModal();
+        showToast('🎉 Account ban gaya! Step-by-step clinic details bharein.');
+      } catch (err) {
+        console.error('Signup error:', err);
+        showToast('⚠️ Error: ' + (err.message || 'An error occurred'), 'error');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    }
+
+    // Legacy handler preserved for test suite compatibility
     async function handleClinicSignup() {
       const cName = (document.getElementById('authSignupClinicName')?.value || '').trim();
       const dName = (document.getElementById('authSignupDoctorName')?.value || '').trim();
@@ -3301,8 +3968,8 @@
       }
 
       if (window.ParchiFirebase) {
-        ParchiFirebase.syncClinic(clinicProfile);
-        ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+        window.ParchiFirebase.syncClinic(clinicProfile);
+        window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
       }
 
       closeClinicAuthModal();
@@ -3312,8 +3979,9 @@
       setTimeout(() => openClinicOnboardingModal(), 400);
     }
 
+    // Legacy handler preserved for test suite compatibility
     async function handleClinicLogin() {
-      const idOrPhone = (document.getElementById('authLoginClinicId')?.value || '').trim();
+      const idOrPhone = (document.getElementById('authLoginClinicId')?.value || document.getElementById('authLoginEmail')?.value || '').trim();
       const pwd = (document.getElementById('authLoginPassword')?.value || '').trim();
 
       if (!idOrPhone) {
@@ -3429,7 +4097,7 @@
         viewClinic.classList.remove('hidden');
         viewPatient.classList.add('hidden');
         if (navTabs) navTabs.classList.remove('hidden');
-        if (roleSelector) roleSelector.classList.remove('hidden');
+        if (roleSelector) roleSelector.classList.add('hidden');
         if (btnClinic) btnClinic.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-[#25D366] text-slate-950 shadow-sm';
         if (btnPatient) btnPatient.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-emerald-100 hover:text-white';
         if (headerShareBtn) headerShareBtn.classList.remove('hidden');
@@ -3463,10 +4131,10 @@
         const btn = document.getElementById(`tabBtn-${t}`);
         if (t === tabName) {
           section.classList.remove('hidden');
-          btn.className = 'py-3 px-1 font-extrabold text-xs sm:text-sm border-b-4 border-[#25D366] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition bg-white/5';
+          btn.className = 'py-1 sm:py-1.5 px-1 font-black text-[11px] sm:text-xs border-b-2 border-[#25D366] text-white flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition bg-white/10';
         } else {
           section.classList.add('hidden');
-          btn.className = 'py-3 px-1 font-bold text-xs sm:text-sm border-b-4 border-transparent text-emerald-100/80 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition';
+          btn.className = 'py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition';
         }
       });
       refreshAllViews();
@@ -5418,6 +6086,11 @@
       if (window.ParchiFirebase) {
         try {
           window.ParchiFirebase.init();
+          if (window.ParchiFirebase.onAuthStateChanged) {
+            window.ParchiFirebase.onAuthStateChanged(user => {
+              updateHeaderAuthUI(user);
+            });
+          }
         } catch (e) {
           console.warn('Firebase initialization error:', e);
         }
@@ -5493,13 +6166,20 @@
         }
       }
 
-      if (roleParam === 'patient') {
+      const currentPath = (window.location.pathname || '').toLowerCase();
+      const isPatientPath = currentPath.startsWith('/book');
+      const isSignInRoute = currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1';
+      const isOnboardRoute = currentPath.includes('/onboard') || onboardParam === '1';
+
+      if (roleParam === 'patient' || isPatientPath) {
         switchAppRole('patient');
       } else {
         switchAppRole('clinic');
       }
 
-      if (onboardParam === '1' || clinicProfile.onboarded === false) {
+      if (isSignInRoute) {
+        setTimeout(() => openClinicAuthModal(), 200);
+      } else if (isOnboardRoute || clinicProfile.onboarded === false) {
         setTimeout(() => openClinicOnboardingModal(), 300);
       }
 

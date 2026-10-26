@@ -211,7 +211,144 @@ async function updateLiveStatusInFirestore(clinicId, statusData) {
   }
 }
 
+/**
+ * Sign in with Google Popup (Firebase Auth)
+ */
+async function signInWithGoogle() {
+  if (!initFirebase() || !fbAuth) {
+    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+  }
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  try {
+    const result = await fbAuth.signInWithPopup(provider);
+    return result.user;
+  } catch (err) {
+    if (err.code === 'auth/popup-blocked') {
+      console.warn('Google popup blocked, trying redirect...');
+      await fbAuth.signInWithRedirect(provider);
+      return null;
+    }
+    throw err;
+  }
+}
+
+/**
+ * Sign up with Email and Password
+ */
+async function signUpWithEmail(email, password, displayName = '') {
+  if (!initFirebase() || !fbAuth) {
+    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+  }
+  const result = await fbAuth.createUserWithEmailAndPassword(email.trim(), password);
+  if (result.user && displayName && displayName.trim()) {
+    try {
+      await result.user.updateProfile({ displayName: displayName.trim() });
+    } catch (e) {
+      console.warn('Failed to update displayName on user profile:', e.message);
+    }
+  }
+  return result.user;
+}
+
+/**
+ * Sign in with Email and Password
+ */
+async function signInWithEmail(email, password) {
+  if (!initFirebase() || !fbAuth) {
+    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+  }
+  const result = await fbAuth.signInWithEmailAndPassword(email.trim(), password);
+  return result.user;
+}
+
+/**
+ * Send Password Reset Email
+ */
+async function sendPasswordReset(email) {
+  if (!initFirebase() || !fbAuth) {
+    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+  }
+  await fbAuth.sendPasswordResetEmail(email.trim());
+}
+
+/**
+ * Sign out current user
+ */
+async function signOutUser() {
+  if (fbAuth) {
+    await fbAuth.signOut();
+  }
+}
+
+/**
+ * Listen to Auth State Changes
+ */
+function onAuthStateChanged(callback) {
+  if (!initFirebase() || !fbAuth) return () => {};
+  return fbAuth.onAuthStateChanged(callback);
+}
+
+/**
+ * Get current signed-in user
+ */
+function getCurrentUser() {
+  return fbAuth ? fbAuth.currentUser : null;
+}
+
+/**
+ * Find clinic profile associated with a Firebase user (accepts user object or uid string)
+ */
+async function getClinicForUser(user) {
+  if (!isFirebaseAvailable || !fbDb || !user) return null;
+  const uid = typeof user === 'string' ? user : (user && user.uid ? user.uid : '');
+  if (!uid) return null;
+  try {
+    // 1. Check user map doc
+    const userDoc = await fbDb.collection('users').doc(uid).get();
+    if (userDoc.exists && userDoc.data().clinicId) {
+      const cDoc = await fbDb.collection('clinics').doc(userDoc.data().clinicId).get();
+      if (cDoc.exists) return { id: cDoc.id, ...cDoc.data() };
+    }
+    // 2. Query clinics collection where ownerUid == uid
+    const qSnap = await fbDb.collection('clinics').where('ownerUid', '==', uid).limit(1).get();
+    if (!qSnap.empty) {
+      const doc = qSnap.docs[0];
+      return { id: doc.id, ...doc.data() };
+    }
+    // 3. Fallback: check document by uid directly
+    const directDoc = await fbDb.collection('clinics').doc(uid).get();
+    if (directDoc.exists) {
+      return { id: directDoc.id, ...directDoc.data() };
+    }
+  } catch (err) {
+    console.warn('Firebase getClinicForUser warning:', err.message);
+  }
+  return null;
+}
+
+/**
+ * Save user to clinic mapping in Firestore
+ */
+async function saveUserClinicMapping(uid, clinicId, email = '', clinicName = '') {
+  if (!isFirebaseAvailable || !fbDb || !uid) return false;
+  try {
+    const data = {
+      clinicId,
+      email: email || '',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (clinicName) data.clinicName = clinicName;
+    await fbDb.collection('users').doc(uid).set(data, { merge: true });
+    return true;
+  } catch (err) {
+    console.warn('Firebase saveUserClinicMapping error:', err.message);
+    return false;
+  }
+}
+
 // Auto-initialize when script loads
+
 if (typeof window !== 'undefined') {
   window.ParchiFirebase = {
     config: FIREBASE_CONFIG,
@@ -222,7 +359,16 @@ if (typeof window !== 'undefined') {
     syncClinic: syncClinicToFirestore,
     saveBooking: saveBookingToFirestore,
     updateBooking: updateBookingInFirestore,
-    updateLiveStatus: updateLiveStatusInFirestore
+    updateLiveStatus: updateLiveStatusInFirestore,
+    signInWithGoogle: signInWithGoogle,
+    signUpWithEmail: signUpWithEmail,
+    signInWithEmail: signInWithEmail,
+    sendPasswordReset: sendPasswordReset,
+    signOutUser: signOutUser,
+    onAuthStateChanged: onAuthStateChanged,
+    getCurrentUser: getCurrentUser,
+    getClinicForUser: getClinicForUser,
+    saveUserClinicMapping: saveUserClinicMapping
   };
 }
 
@@ -237,6 +383,16 @@ if (typeof module !== 'undefined' && module.exports) {
     syncClinicToFirestore,
     saveBookingToFirestore,
     updateBookingInFirestore,
-    updateLiveStatusInFirestore
+    updateLiveStatusInFirestore,
+    signInWithGoogle,
+    signUpWithEmail,
+    signInWithEmail,
+    sendPasswordReset,
+    signOutUser,
+    onAuthStateChanged,
+    getCurrentUser,
+    getClinicForUser,
+    saveUserClinicMapping
   };
 }
+

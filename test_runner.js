@@ -463,6 +463,84 @@ async function runTests() {
     assert.ok(html.includes('openClinicAuthModal()'), 'Must wire discreet staff button to openClinicAuthModal');
   })();
 
+  // 25. Sign-in and login direct routes
+  await test('GET /signin and GET /login serve HTML containing Clinic Auth Modal and Google Sign-In', async () => {
+    const resSignin = await makeRequest('GET', '/signin');
+    assert.strictEqual(resSignin.status, 200);
+    assert.ok(resSignin.body.includes('id="clinicAuthModal"'), 'Must serve page with clinicAuthModal');
+    assert.ok(resSignin.body.includes('handleGoogleSignIn()'), 'Must contain Google Sign-In handler');
+
+    const resLogin = await makeRequest('GET', '/login');
+    assert.strictEqual(resLogin.status, 200);
+    assert.ok(resLogin.body.includes('id="clinicAuthModal"'), 'Must serve page with clinicAuthModal on /login');
+  })();
+
+  // 26. firebase-sync.js getClinicForUser handles user object and UID string
+  await test('firebase-sync.js getClinicForUser safely accepts both User object and string UID', async () => {
+    const fb = require('./firebase-sync');
+    assert.ok(typeof fb.getClinicForUser === 'function', 'getClinicForUser must be exported');
+    
+    // When Firebase is not initialized (node env), it must safely return null without throwing TypeError
+    const resFromObj = await fb.getClinicForUser({ uid: 'usr_test_123' });
+    assert.strictEqual(resFromObj, null);
+
+    const resFromString = await fb.getClinicForUser('usr_test_123');
+    assert.strictEqual(resFromString, null);
+
+    const resFromNull = await fb.getClinicForUser(null);
+    assert.strictEqual(resFromNull, null);
+  })();
+
+  // 27. firebase-sync.js saveUserClinicMapping signature and export
+  await test('firebase-sync.js saveUserClinicMapping signature accepts uid, clinicId, email, and clinicName', async () => {
+    const fb = require('./firebase-sync');
+    assert.ok(typeof fb.saveUserClinicMapping === 'function', 'saveUserClinicMapping must be exported');
+    // Without firestore initialized, safely returns false without crashing
+    const res = await fb.saveUserClinicMapping('uid1', 'clinic1', 'doctor@example.com', 'My Clinic');
+    assert.strictEqual(res, false);
+  })();
+
+  // 28. Compact 4-Tab navigation bar and labels
+  await test('Compact 4-Tab navigation contains compressed layout and correct tab labels', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="tabBtn-queue"'), 'Must have tabBtn-queue');
+    assert.ok(html.includes('id="tabBtn-calendar"'), 'Must have tabBtn-calendar');
+    assert.ok(html.includes('id="tabBtn-register"'), 'Must have tabBtn-register');
+    assert.ok(html.includes('id="tabBtn-galla"'), 'Must have tabBtn-galla');
+    assert.ok(html.includes('Live Queue'), 'Must contain Live Queue');
+    assert.ok(html.includes('Slots &amp; QR') || html.includes('Slots & QR'), 'Must contain Slots & QR');
+    assert.ok(html.includes('Patients Directory'), 'Must contain Patients Directory');
+    assert.ok(html.includes('Daily Checkbook'), 'Must contain Daily Checkbook');
+    assert.ok(html.includes('py-1 sm:py-1.5'), 'Must use compressed py-1 sm:py-1.5 padding for tabs');
+  })();
+
+  // 29. Onboarding Success & QR Launchpad elements
+  await test('Onboarding Success Modal includes QR image, patient link, standee generator, and Google Maps guide', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="onboardingSuccessModal"'), 'Must have onboardingSuccessModal');
+    assert.ok(html.includes('id="successQrImg"'), 'Must have successQrImg element');
+    assert.ok(html.includes('id="successPatientLinkInput"'), 'Must have successPatientLinkInput');
+    assert.ok(html.includes('printClinicQRStandee()'), 'Must have printClinicQRStandee function');
+    assert.ok(html.includes('downloadQRCodeImage()'), 'Must have downloadQRCodeImage function');
+    assert.ok(html.includes('Google Maps Business Setup'), 'Must have Google Maps Business Setup guide');
+  })();
+
+  // 30. vercel.json rewrites verification
+  await test('vercel.json includes rewrites for /book, /clinic, /signin, /login, and /onboard', () => {
+    const vercelConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'vercel.json'), 'utf8'));
+    assert.ok(Array.isArray(vercelConfig.rewrites), 'vercel.json must have rewrites array');
+    const sources = vercelConfig.rewrites.map(r => r.source);
+    assert.ok(sources.includes('/signin'), 'Must have /signin rewrite');
+    assert.ok(sources.includes('/login'), 'Must have /login rewrite');
+    assert.ok(sources.includes('/onboard'), 'Must have /onboard rewrite');
+    assert.ok(sources.includes('/book'), 'Must have /book rewrite');
+    assert.ok(sources.includes('/clinic'), 'Must have /clinic rewrite');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

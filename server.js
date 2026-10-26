@@ -434,6 +434,7 @@ function startServer(port = PORT) {
     console.log(`🏥 Parchisetu Clinic & Token Web App is RUNNING LOCALLY!`);
     console.log(`=============================================================`);
     console.log(`👉 Local Computer:         http://localhost:${port}`);
+    console.log(`👉 Clinic Sign In / Portal:http://localhost:${port}/signin`);
     console.log(`👉 Direct Patient Link:    http://localhost:${port}/?role=patient`);
     console.log(`👉 Compounder Desk Link:   http://localhost:${port}/?role=clinic`);
     if (ips.length > 0) {
@@ -442,6 +443,7 @@ function startServer(port = PORT) {
       ips.forEach(ip => {
         console.log(`   http://${ip}:${port}`);
         console.log(`   Patient Link: http://${ip}:${port}/?role=patient`);
+        console.log(`   Sign In Link: http://${ip}:${port}/signin`);
       });
     }
     console.log(`=============================================================\n`);
