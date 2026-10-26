@@ -5493,7 +5493,8 @@
         }
       }
 
-      if (roleParam === 'patient') {
+      const isPatientPath = window.location.pathname.startsWith('/book');
+      if (roleParam === 'patient' || isPatientPath) {
         switchAppRole('patient');
       } else {
         switchAppRole('clinic');

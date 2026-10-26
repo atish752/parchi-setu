@@ -1,9 +1,8 @@
 {
-  "version": 2,
   "cleanUrls": true,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/book", "destination": "/index.html?role=patient" },
-    { "source": "/clinic", "destination": "/index.html?role=clinic" }
+    { "source": "/book", "destination": "/index.html" },
+    { "source": "/clinic", "destination": "/index.html" }
   ]
 }

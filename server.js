@@ -84,8 +84,6 @@ function loadData() {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
       appData = JSON.parse(raw);
-    } else {
-      saveData();
     }
   } catch (err) {
     console.error('Error loading data, using defaults:', err.message);
@@ -170,7 +168,7 @@ function getLocalIpAddresses() {
 }
 
 // Request Handler
-const server = http.createServer(async (req, res) => {
+const requestHandler = async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
   const method = req.method.toUpperCase();
@@ -425,7 +423,9 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found');
   }
-});
+};
+
+const server = http.createServer(requestHandler);
 
 function startServer(port = PORT) {
   server.listen(port, () => {
@@ -461,4 +461,8 @@ if (require.main === module) {
   startServer();
 }
 
-module.exports = { server, startServer, appData, saveData };
+module.exports = requestHandler;
+module.exports.server = server;
+module.exports.startServer = startServer;
+module.exports.appData = appData;
+module.exports.saveData = saveData;
