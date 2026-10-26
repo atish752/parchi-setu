@@ -57,7 +57,31 @@ let memoryClinic = {
   createdAt: new Date().toISOString()
 };
 
+const memoryClinics = {
+  [memoryClinic.id]: memoryClinic
+};
+
 let memoryQueue = [];
+
+async function parseReqBody(req) {
+  if (req.body && typeof req.body === 'object') {
+    return req.body;
+  }
+  return new Promise(resolve => {
+    let data = '';
+    req.on('data', chunk => {
+      data += chunk;
+    });
+    req.on('end', () => {
+      try {
+        resolve(data ? JSON.parse(data) : {});
+      } catch (e) {
+        resolve({});
+      }
+    });
+    req.on('error', () => resolve({}));
+  });
+}
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -80,8 +104,10 @@ module.exports = async (req, res) => {
   // /api/clinic
   if (pathname === '/api/clinic') {
     if (method === 'GET') {
+      const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
+      const targetClinic = (clinicId && memoryClinics[clinicId]) ? memoryClinics[clinicId] : memoryClinic;
       return res.status(200).json({
-        ...memoryClinic,
+        ...targetClinic,
         network: {
           port: 3000,
           localIps: [],
@@ -90,13 +116,16 @@ module.exports = async (req, res) => {
       });
     }
     if (method === 'POST') {
-      const body = req.body || {};
+      const body = await parseReqBody(req);
       memoryClinic = {
         ...memoryClinic,
         ...body,
         onboarded: true,
         updatedAt: new Date().toISOString()
       };
+      if (memoryClinic.id) {
+        memoryClinics[memoryClinic.id] = memoryClinic;
+      }
       return res.status(200).json({ success: true, clinic: memoryClinic });
     }
   }
@@ -107,8 +136,9 @@ module.exports = async (req, res) => {
       return res.status(200).json(memoryQueue);
     }
     if (method === 'PUT') {
-      if (Array.isArray(req.body)) {
-        memoryQueue = req.body;
+      const body = await parseReqBody(req);
+      if (Array.isArray(body)) {
+        memoryQueue = body;
         return res.status(200).json({ success: true, queue: memoryQueue });
       }
       return res.status(400).json({ error: 'Body must be an array of queue items' });
@@ -127,13 +157,14 @@ module.exports = async (req, res) => {
     if (!item) {
       return res.status(404).json({ error: 'Item not found' });
     }
-    Object.assign(item, req.body || {});
+    const body = await parseReqBody(req);
+    Object.assign(item, body);
     return res.status(200).json({ success: true, item });
   }
 
   // /api/bookings
   if (pathname === '/api/bookings' && method === 'POST') {
-    const body = req.body || {};
+    const body = await parseReqBody(req);
     if (!body.name || (!body.phone && body.source !== 'Walk-in')) {
       return res.status(400).json({ error: 'Name and phone are required' });
     }

@@ -413,6 +413,95 @@ async function runTests() {
     assert.ok(html.includes('passLiveStatusCard'), 'Must include passLiveStatusCard');
     assert.ok(html.includes('patientDoctorSelectSection'), 'Must include patientDoctorSelectSection');
   })();
+
+  // 21. Patient booking functions defined in client script
+  await test('HTML defines submitPatientOnlineBooking, selectPatientShift, and updatePatientTokenPassLiveStatus', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('function selectPatientShift('), 'Must define selectPatientShift');
+    assert.ok(html.includes('function submitPatientOnlineBooking(') || html.includes('async function submitPatientOnlineBooking('), 'Must define submitPatientOnlineBooking');
+    assert.ok(html.includes('function updatePatientTokenPassLiveStatus('), 'Must define updatePatientTokenPassLiveStatus');
+  })();
+
+  // 22. Firebase sync sanitization strips undefined properties
+  await test('firebase-sync.js sanitization strips undefined fields to prevent Firestore crashes', () => {
+    const fb = require('./firebase-sync');
+    assert.ok(typeof fb.sanitizeForFirestore === 'function', 'sanitizeForFirestore must be exported');
+    const dirty = { name: 'Ramesh', bp: undefined, notes: undefined, deep: { valid: 1, bad: undefined } };
+    const clean = fb.sanitizeForFirestore(dirty);
+    assert.strictEqual(clean.name, 'Ramesh');
+    assert.strictEqual(clean.bp, undefined);
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(clean, 'bp'), false);
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(clean, 'notes'), false);
+    assert.strictEqual(clean.deep.valid, 1);
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(clean.deep, 'bad'), false);
+  })();
+
+  // 23. Multi-clinic query lookup via /api/clinic?clinic=<id>
+  await test('GET /api/clinic?clinic=<id> returns specific clinic profile', async () => {
+    const customClinic = {
+      id: 'clinic_patna_central_99',
+      name: 'Patna Central Hospital Clinic',
+      doctorName: 'Dr. Alok Nath',
+      phone: '9800011122'
+    };
+    await makeRequest('POST', '/api/clinic', customClinic);
+    const res = await makeRequest('GET', '/api/clinic?clinic=clinic_patna_central_99');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.id, 'clinic_patna_central_99');
+    assert.strictEqual(res.body.name, 'Patna Central Hospital Clinic');
+  })();
+
+  // 24. Role separation UI attributes
+  await test('Role separation IDs and preview controls are present in HTML', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="roleSelectorPill"'), 'Must have roleSelectorPill');
+    assert.ok(html.includes('id="patientPreviewBanner"'), 'Must have patientPreviewBanner');
+    assert.ok(html.includes('openClinicAuthModal()'), 'Must wire discreet staff button to openClinicAuthModal');
+  })();
+
+  // Restore clean default clinic state and empty queue
+  await makeRequest('POST', '/api/queue/reset');
+  const defaultClinic = {
+    id: 'clinic_sanjeevani_01',
+    name: 'Sanjeevani Family Clinic',
+    tagline: 'General Physician & Family Healthcare',
+    category: 'General Medicine',
+    address: 'Near Main Market Chowk, Station Road',
+    city: 'Patna, Bihar',
+    phone: '9835012345',
+    whatsapp: '9835012345',
+    upiId: 'sanjeevaniclinic@upi',
+    doctorName: 'Dr. Rajesh Sharma',
+    doctorDegree: 'MBBS, MD (General Physician)',
+    doctorRegNo: 'MCI-48291',
+    experienceYears: 14,
+    doctors: [
+      {
+        id: 'doc_1',
+        name: 'Dr. Rajesh Sharma',
+        degree: 'MBBS, MD (General Physician)',
+        specialty: 'General Physician',
+        regNo: 'MCI-48291',
+        fee: 300,
+        isMain: true
+      }
+    ],
+    fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+    visitingHours: {
+      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    leaves: {},
+    onboarded: true
+  };
+  await makeRequest('POST', '/api/clinic', defaultClinic);
+
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log('====================================================\n');
 

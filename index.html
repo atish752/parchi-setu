@@ -167,7 +167,7 @@
         </button>
 
         <!-- Role Switcher Pill (Compounder Desk vs Patient QR Link) -->
-        <div class="bg-emerald-950/80 p-1 rounded-xl border border-emerald-700/60 flex items-center text-xs font-bold">
+        <div id="roleSelectorPill" class="bg-emerald-950/80 p-1 rounded-xl border border-emerald-700/60 flex items-center text-xs font-bold">
           <button 
             onclick="switchAppRole('clinic')" 
             id="roleBtnClinic"
@@ -806,7 +806,7 @@
     <div id="viewPatientBooking" class="hidden max-w-lg mx-auto">
       
       <!-- Top Helper Banner for Testing -->
-      <div class="mb-3 bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-center justify-between gap-2 text-xs text-amber-900">
+      <div id="patientPreviewBanner" class="hidden mb-3 bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-center justify-between gap-2 text-xs text-amber-900">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-mobile-screen-button text-base text-amber-600"></i>
           <span>
@@ -1144,7 +1144,7 @@
         <div class="p-3 text-center border-t border-slate-100 bg-slate-50/50">
           <button 
             type="button" 
-            onclick="switchAppRole('clinic')" 
+            onclick="openClinicAuthModal()" 
             class="text-[11px] font-semibold text-slate-500 hover:text-[#075E54] hover:underline"
           >
             🏥 Clinic Staff / Compounder Desk Login ➔
@@ -2133,7 +2133,7 @@
 
         <div class="flex gap-2">
           <button 
-            onclick="closeQRStandeeModal(); switchAppRole('patient');" 
+            onclick="closeQRStandeeModal(); switchAppRole('patient', true);" 
             class="flex-1 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3 rounded-xl text-xs shadow"
           >
             📱 Test Scan (Open Patient Page)
@@ -2329,6 +2329,18 @@
           });
         } catch (e) {
           console.warn('Queue patch sync error:', e);
+        }
+      }
+      if (window.ParchiFirebase && clinicProfile && clinicProfile.id) {
+        window.ParchiFirebase.updateBooking(clinicProfile.id, id, payload);
+        if (payload.status === 'IN_CABIN') {
+          const item = todayQueue.find(p => p.id === id);
+          window.ParchiFirebase.updateLiveStatus(clinicProfile.id, {
+            cabinToken: item ? item.token : null,
+            cabinPatient: item ? item.name : '',
+            status: 'IN_CABIN',
+            timestamp: Date.now()
+          });
         }
       }
     }
@@ -3188,7 +3200,7 @@
 
     function testOpenPatientPage() {
       closeOnboardingSuccessModal();
-      switchAppRole('patient');
+      switchAppRole('patient', true);
       showToast('📱 Switched to Patient Booking View!');
     }
 
@@ -3251,6 +3263,7 @@
         doctorDegree: 'MBBS, MD (General Physician)',
         phone: phone,
         whatsapp: phone,
+        password: pwd || '',
         city: city || 'Patna, Bihar',
         doctors: [
           {
@@ -3299,13 +3312,44 @@
       setTimeout(() => openClinicOnboardingModal(), 400);
     }
 
-    function handleClinicLogin() {
+    async function handleClinicLogin() {
       const idOrPhone = (document.getElementById('authLoginClinicId')?.value || '').trim();
       const pwd = (document.getElementById('authLoginPassword')?.value || '').trim();
 
       if (!idOrPhone) {
         showToast('⚠️ Kripya Clinic ID ya Mobile No. bharein!', 'warning');
         return;
+      }
+
+      let loadedClinic = null;
+      if (clinicProfile && (clinicProfile.id === idOrPhone || clinicProfile.phone === idOrPhone)) {
+        loadedClinic = clinicProfile;
+      } else if (window.location.protocol.startsWith('http')) {
+        try {
+          const res = await fetch(`/api/clinic?clinic=${encodeURIComponent(idOrPhone)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.name) loadedClinic = data;
+          }
+        } catch (e) {}
+      }
+
+      if (!loadedClinic && window.ParchiFirebase) {
+        try {
+          loadedClinic = await window.ParchiFirebase.getClinic(idOrPhone);
+        } catch (e) {}
+      }
+
+      if (loadedClinic) {
+        if (loadedClinic.password && pwd && loadedClinic.password !== pwd) {
+          showToast('⚠️ Galat Password! Kripya sahi password dalein.', 'warning');
+          return;
+        }
+        clinicProfile = loadedClinic;
+        saveLocalClinic();
+        if (window.ParchiFirebase) {
+          window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+        }
       }
 
       closeClinicAuthModal();
@@ -3369,20 +3413,23 @@
       );
     }
 
-    function switchAppRole(role) {
+    function switchAppRole(role, isPreview = false) {
       currentRole = role;
       const viewClinic = document.getElementById('viewClinicDesk');
       const viewPatient = document.getElementById('viewPatientBooking');
       const navTabs = document.getElementById('clinicNavTabs');
+      const roleSelector = document.getElementById('roleSelectorPill');
       const btnClinic = document.getElementById('roleBtnClinic');
       const btnPatient = document.getElementById('roleBtnPatient');
       const headerShareBtn = document.getElementById('headerShareLinkBtn');
       const headerNayaClinicBtn = document.getElementById('headerNayaClinicBtn');
+      const previewBanner = document.getElementById('patientPreviewBanner');
 
       if (role === 'clinic') {
         viewClinic.classList.remove('hidden');
         viewPatient.classList.add('hidden');
         if (navTabs) navTabs.classList.remove('hidden');
+        if (roleSelector) roleSelector.classList.remove('hidden');
         if (btnClinic) btnClinic.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-[#25D366] text-slate-950 shadow-sm';
         if (btnPatient) btnPatient.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-emerald-100 hover:text-white';
         if (headerShareBtn) headerShareBtn.classList.remove('hidden');
@@ -3393,8 +3440,14 @@
         viewClinic.classList.add('hidden');
         viewPatient.classList.remove('hidden');
         if (navTabs) navTabs.classList.add('hidden');
-        if (btnPatient) btnPatient.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-[#25D366] text-slate-950 shadow-sm';
-        if (btnClinic) btnClinic.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-emerald-100 hover:text-white';
+        if (roleSelector) roleSelector.classList.add('hidden');
+        if (previewBanner) {
+          if (isPreview) {
+            previewBanner.classList.remove('hidden');
+          } else {
+            previewBanner.classList.add('hidden');
+          }
+        }
         if (headerShareBtn) headerShareBtn.classList.add('hidden');
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.add('hidden');
         document.title = `${clinicProfile.name || 'ParchiSetu'} • Online Token & Live Queue`;
@@ -5047,6 +5100,218 @@
       }).join('');
     }
 
+    function selectPatientShift(shift) {
+      selectedPatShift = shift;
+      renderPatientBookingPage();
+    }
+
+    async function submitPatientOnlineBooking() {
+      const nameInput = document.getElementById('patBookName');
+      const ageInput = document.getElementById('patBookAge');
+      const genderSelect = document.getElementById('patBookGender');
+      const phoneInput = document.getElementById('patBookPhone');
+
+      const name = (nameInput?.value || '').trim();
+      const phone = (phoneInput?.value || '').trim();
+      const age = parseInt(ageInput?.value, 10) || 30;
+      const gender = genderSelect?.value || 'M';
+
+      if (!name) {
+        showToast('⚠️ Kripya Mareez Ka Naam (Full Name) dalein!', 'warning');
+        nameInput?.focus();
+        return;
+      }
+
+      if (!phone || phone.length < 10) {
+        showToast('⚠️ Kripya 10-Digit Mobile Number dalein!', 'warning');
+        phoneInput?.focus();
+        return;
+      }
+
+      if (!validatePatientBookingDate()) {
+        showToast('⚠️ Is din clinic band hai ya doctor leave par hain.', 'warning');
+        return;
+      }
+
+      if (!selectedPatSlot) {
+        showToast('⚠️ Kripya appointment ka samay (Time Slot) chunein!', 'warning');
+        return;
+      }
+
+      const docs = clinicProfile.doctors && clinicProfile.doctors.length > 0
+        ? clinicProfile.doctors
+        : [{ id: 'doc_1', name: clinicProfile.doctorName, fee: (clinicProfile.fees ? clinicProfile.fees.normal : 300) }];
+
+      const selectedDoc = docs.find(d => d.id === selectedPatDoctorId) || docs[0];
+      const docId = selectedDoc ? selectedDoc.id : 'doc_1';
+      const docName = selectedDoc ? selectedDoc.name : clinicProfile.doctorName;
+      const fee = selectedDoc ? (selectedDoc.fee || 300) : (clinicProfile.fees ? clinicProfile.fees.normal : 300);
+
+      const maxToken = todayQueue.reduce((max, p) => Math.max(max, p.token || 0), 0);
+      const nextToken = maxToken > 0 ? maxToken + 1 : 1;
+      const bookingId = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+      const newBooking = {
+        id: bookingId,
+        token: nextToken,
+        name: name,
+        age: age,
+        gender: gender,
+        phone: phone,
+        reason: selectedPatReason || 'General Consultation',
+        doctorId: docId,
+        doctorName: docName,
+        fee: fee,
+        payMode: 'Baaki',
+        status: 'WAITING',
+        source: 'QR Booked',
+        shift: selectedPatShift,
+        slotTime: selectedPatSlot,
+        day: selectedPatDay,
+        date: selectedPatCustomDate,
+        bp: '',
+        weight: '',
+        temp: '',
+        spo2: '',
+        hasParchiPhoto: false,
+        notes: '',
+        createdAt: new Date().toISOString()
+      };
+
+      let savedBooking = null;
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          const res = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newBooking)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            savedBooking = data.booking;
+          }
+        } catch (e) {
+          console.warn('Booking fetch warning:', e);
+        }
+      }
+
+      if (!savedBooking) {
+        savedBooking = newBooking;
+      }
+
+      // Sync to Firebase Cloud if available
+      if (window.ParchiFirebase && clinicProfile && clinicProfile.id) {
+        window.ParchiFirebase.saveBooking(clinicProfile.id, savedBooking);
+      }
+
+      // Add to todayQueue if booked for today
+      const todayStr = new Date().toISOString().split('T')[0];
+      if (savedBooking.date === todayStr || savedBooking.day.includes('Aaj')) {
+        const existingIdx = todayQueue.findIndex(p => p.id === savedBooking.id);
+        if (existingIdx >= 0) {
+          todayQueue[existingIdx] = savedBooking;
+        } else {
+          todayQueue.push(savedBooking);
+        }
+        saveLocalQueue();
+      }
+
+      if (syncChannel) {
+        syncChannel.postMessage({ type: 'NEW_BOOKING', booking: savedBooking });
+      }
+
+      lastPatientBooking = savedBooking;
+      try {
+        localStorage.setItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''), JSON.stringify(savedBooking));
+      } catch (e) {}
+
+      // Update Token Pass UI
+      const passTokenNum = document.getElementById('passTokenNumber');
+      if (passTokenNum) passTokenNum.textContent = `#${savedBooking.token}`;
+
+      const passPatName = document.getElementById('passPatientName');
+      if (passPatName) passPatName.textContent = `${savedBooking.name} (${savedBooking.age}${savedBooking.gender}) • ${savedBooking.phone}`;
+
+      const passClinicName = document.getElementById('passClinicName');
+      if (passClinicName) passClinicName.textContent = clinicProfile.name;
+
+      const passDocRow = document.getElementById('passDoctorRow');
+      const passDocName = document.getElementById('passDoctorName');
+      if (passDocRow && passDocName) {
+        passDocRow.classList.remove('hidden');
+        passDocName.textContent = savedBooking.doctorName;
+      }
+
+      const passSlot = document.getElementById('passSlotText');
+      if (passSlot) passSlot.textContent = `${savedBooking.day} • ${savedBooking.shift} (${savedBooking.slotTime})`;
+
+      const passFee = document.getElementById('passFeeAmount');
+      if (passFee) passFee.textContent = `₹${savedBooking.fee}`;
+
+      document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
+      document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
+
+      updatePatientTokenPassLiveStatus();
+      playClinicBellSound();
+      showToast(`🎉 Token #${savedBooking.token} Book Ho Gaya!`);
+    }
+
+    function updatePatientTokenPassLiveStatus() {
+      const card = document.getElementById('passLiveStatusCard');
+      if (!card) return;
+
+      if (!lastPatientBooking) {
+        try {
+          const stored = localStorage.getItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''));
+          if (stored) {
+            lastPatientBooking = JSON.parse(stored);
+          }
+        } catch (e) {}
+      }
+
+      if (!lastPatientBooking) {
+        return;
+      }
+
+      const myBooking = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
+      const inCabin = getCurrentCabinPatient();
+      const avgMins = (clinicProfile.visitingHours && clinicProfile.visitingHours.avgConsultationMins) || 10;
+
+      const cabinTokenEl = document.getElementById('passCabinTokenLive');
+      const distEl = document.getElementById('passLiveQueueDistance');
+      const waitEstEl = document.getElementById('passLiveWaitEst');
+      const inCabinNotice = document.getElementById('passInCabinNotice');
+
+      if (cabinTokenEl) {
+        cabinTokenEl.textContent = inCabin ? `Token #${inCabin.token}` : 'Doctor Ready';
+      }
+
+      if (myBooking.status === 'IN_CABIN') {
+        if (distEl) distEl.textContent = '🟢 AAP CABIN MEIN HAIN';
+        if (waitEstEl) waitEstEl.textContent = 'Doctor Sahab se consult karein';
+        if (inCabinNotice) inCabinNotice.classList.remove('hidden');
+      } else if (myBooking.status === 'DONE') {
+        if (distEl) distEl.textContent = '✅ CONSULTATION COMPLETE';
+        if (waitEstEl) waitEstEl.textContent = 'Parchi lekar counter par check karein';
+        if (inCabinNotice) inCabinNotice.classList.add('hidden');
+      } else {
+        if (inCabinNotice) inCabinNotice.classList.add('hidden');
+        const myToken = myBooking.token || 1;
+        const aheadCount = todayQueue.filter(p => p.status === 'WAITING' && (p.token || 0) < myToken).length;
+
+        if (aheadCount === 0) {
+          if (distEl) distEl.textContent = '🔔 AAP AGLE HAIN!';
+          if (waitEstEl) waitEstEl.textContent = 'Cabin ke bahar taiyar rahein';
+        } else if (aheadCount === 1) {
+          if (distEl) distEl.textContent = '1 Mareez Aage Hai';
+          if (waitEstEl) waitEstEl.textContent = `~${avgMins} Mins Baaki`;
+        } else {
+          if (distEl) distEl.textContent = `${aheadCount} Mareez Aage Hain`;
+          if (waitEstEl) waitEstEl.textContent = `~${aheadCount * avgMins} Mins Baaki`;
+        }
+      }
+    }
+
     function sharePatientTokenOnWhatsApp() {
       if (!lastPatientBooking) return;
       const b = lastPatientBooking;
@@ -5143,8 +5408,49 @@
     window.onload = async function () {
       loadLocalData();
 
-      // If connected to HTTP server, fetch authoritative data
-      if (window.location.protocol.startsWith('http')) {
+      // Check URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const roleParam = urlParams.get('role') || urlParams.get('view');
+      const clinicParam = urlParams.get('clinic');
+      const onboardParam = urlParams.get('onboard');
+
+      // Initialize Firebase Firestore sync early
+      if (window.ParchiFirebase) {
+        try {
+          window.ParchiFirebase.init();
+        } catch (e) {
+          console.warn('Firebase initialization error:', e);
+        }
+      }
+
+      // If a specific clinic ID is passed in the URL (e.g. from Google Maps or QR Code)
+      if (clinicParam) {
+        let loaded = null;
+        if (window.location.protocol.startsWith('http')) {
+          try {
+            const clinicRes = await fetch(`/api/clinic?clinic=${encodeURIComponent(clinicParam)}`);
+            if (clinicRes.ok) {
+              const remoteClinic = await clinicRes.json();
+              if (remoteClinic && remoteClinic.name) loaded = remoteClinic;
+            }
+          } catch (e) {}
+        }
+
+        if (!loaded && window.ParchiFirebase) {
+          try {
+            loaded = await window.ParchiFirebase.getClinic(clinicParam);
+          } catch (e) {}
+        }
+
+        if (loaded) {
+          clinicProfile = { ...clinicProfile, ...loaded };
+          if (clinicProfile.liveStatus) {
+            isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+            isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+          }
+          saveLocalClinic();
+        }
+      } else if (window.location.protocol.startsWith('http')) {
         try {
           const clinicRes = await fetch('/api/clinic');
           if (clinicRes.ok) {
@@ -5178,20 +5484,14 @@
         initServerEvents();
       }
 
-      // Initialize Firebase Firestore sync
-      if (window.ParchiFirebase) {
+      // Listen to current clinic in Firebase Cloud Firestore
+      if (window.ParchiFirebase && clinicProfile && clinicProfile.id) {
         try {
-          window.ParchiFirebase.init();
           window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
         } catch (e) {
-          console.warn('Firebase initialization error:', e);
+          console.warn('Firebase listener error:', e);
         }
       }
-
-      // Check URL query parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const roleParam = urlParams.get('role') || urlParams.get('view');
-      const onboardParam = urlParams.get('onboard');
 
       if (roleParam === 'patient') {
         switchAppRole('patient');

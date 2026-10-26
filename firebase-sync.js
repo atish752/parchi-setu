@@ -4,7 +4,7 @@
  * Provides instant real-time sync across Indian Clinics, Compounder Desks and Patient Mobile QR Links.
  */
 
-const FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
+const FIREBASE_CONFIG = (typeof window !== 'undefined' && window.FIREBASE_CONFIG) || {
   apiKey: "AIzaSyDuKEZoXCa0Yx1Y2OIOCvJ6BSz0rQhH31o",
   authDomain: "parchi-setu.firebaseapp.com",
   projectId: "parchi-setu",
@@ -19,6 +19,20 @@ let fbDb = null;
 let isFirebaseAvailable = false;
 let clinicUnsubscribe = null;
 let queueUnsubscribe = null;
+
+function sanitizeForFirestore(obj) {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizeForFirestore(item));
+  }
+  const clean = {};
+  for (const [key, val] of Object.entries(obj)) {
+    if (val !== undefined) {
+      clean[key] = sanitizeForFirestore(val);
+    }
+  }
+  return clean;
+}
 
 function initFirebase() {
   try {
@@ -38,6 +52,42 @@ function initFirebase() {
     console.warn('⚠️ [ParchiSetu] Firebase initialization notice (falling back to local API):', err.message);
   }
   return false;
+}
+
+/**
+ * Fetch clinic by clinic ID once from Firestore
+ */
+async function getClinicFromFirestore(clinicId) {
+  if (!isFirebaseAvailable || !fbDb || !clinicId) return null;
+  try {
+    const doc = await fbDb.collection('clinics').doc(clinicId).get();
+    if (doc.exists) {
+      return { id: doc.id, ...doc.data() };
+    }
+  } catch (err) {
+    console.warn('Firebase getClinic warning:', err.message);
+  }
+  return null;
+}
+
+/**
+ * Fetch queue bookings once from Firestore
+ */
+async function getQueueFromFirestore(clinicId) {
+  if (!isFirebaseAvailable || !fbDb || !clinicId) return [];
+  try {
+    const snapshot = await fbDb.collection('clinics').doc(clinicId).collection('bookings')
+      .orderBy('token', 'asc')
+      .get();
+    const bookings = [];
+    snapshot.forEach(doc => {
+      bookings.push({ id: doc.id, ...doc.data() });
+    });
+    return bookings;
+  } catch (err) {
+    console.warn('Firebase getQueue warning:', err.message);
+    return [];
+  }
 }
 
 /**
@@ -86,8 +136,9 @@ function listenToClinicRealtime(clinicId, onClinicChange, onQueueChange) {
 async function syncClinicToFirestore(clinic) {
   if (!isFirebaseAvailable || !fbDb || !clinic || !clinic.id) return false;
   try {
+    const cleanData = sanitizeForFirestore(clinic);
     await fbDb.collection('clinics').doc(clinic.id).set({
-      ...clinic,
+      ...cleanData,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
     return true;
@@ -104,8 +155,9 @@ async function saveBookingToFirestore(clinicId, booking) {
   if (!isFirebaseAvailable || !fbDb || !clinicId || !booking) return false;
   try {
     const docId = booking.id || ('bk_' + Date.now());
+    const cleanBooking = sanitizeForFirestore(booking);
     await fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(docId).set({
-      ...booking,
+      ...cleanBooking,
       id: docId,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
@@ -129,8 +181,9 @@ async function saveBookingToFirestore(clinicId, booking) {
 async function updateBookingInFirestore(clinicId, bookingId, updates) {
   if (!isFirebaseAvailable || !fbDb || !clinicId || !bookingId) return false;
   try {
+    const cleanUpdates = sanitizeForFirestore(updates);
     await fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(bookingId).set({
-      ...updates,
+      ...cleanUpdates,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
     return true;
@@ -146,8 +199,9 @@ async function updateBookingInFirestore(clinicId, bookingId, updates) {
 async function updateLiveStatusInFirestore(clinicId, statusData) {
   if (!isFirebaseAvailable || !fbDb || !clinicId) return false;
   try {
+    const cleanStatus = sanitizeForFirestore(statusData);
     await fbDb.collection('clinics').doc(clinicId).set({
-      liveCabinStatus: statusData,
+      liveCabinStatus: cleanStatus,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
     return true;
@@ -162,10 +216,27 @@ if (typeof window !== 'undefined') {
   window.ParchiFirebase = {
     config: FIREBASE_CONFIG,
     init: initFirebase,
+    getClinic: getClinicFromFirestore,
+    getQueue: getQueueFromFirestore,
     listen: listenToClinicRealtime,
     syncClinic: syncClinicToFirestore,
     saveBooking: saveBookingToFirestore,
     updateBooking: updateBookingInFirestore,
     updateLiveStatus: updateLiveStatusInFirestore
+  };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    FIREBASE_CONFIG,
+    initFirebase,
+    sanitizeForFirestore,
+    getClinicFromFirestore,
+    getQueueFromFirestore,
+    listenToClinicRealtime,
+    syncClinicToFirestore,
+    saveBookingToFirestore,
+    updateBookingInFirestore,
+    updateLiveStatusInFirestore
   };
 }

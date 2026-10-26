@@ -196,9 +196,11 @@ const server = http.createServer(async (req, res) => {
   // Get clinic info
   if (pathname === '/api/clinic' && method === 'GET') {
     const ips = getLocalIpAddresses();
+    const clinicId = parsedUrl.searchParams.get('id') || parsedUrl.searchParams.get('clinic');
+    const targetClinic = (clinicId && appData.clinics && appData.clinics[clinicId]) ? appData.clinics[clinicId] : appData.clinic;
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
-      ...appData.clinic,
+      ...targetClinic,
       network: {
         port: PORT,
         localIps: ips,
@@ -218,6 +220,10 @@ const server = http.createServer(async (req, res) => {
         onboarded: true,
         updatedAt: new Date().toISOString()
       };
+      appData.clinics = appData.clinics || {};
+      if (appData.clinic.id) {
+        appData.clinics[appData.clinic.id] = appData.clinic;
+      }
       saveData();
       broadcastEvent('CLINIC_UPDATED', appData.clinic);
       res.writeHead(200, { 'Content-Type': 'application/json' });

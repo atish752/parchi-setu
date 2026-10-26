@@ -1,62 +1,47 @@
 {
   "clinic": {
     "id": "clinic_sanjeevani_01",
-    "name": "Aarogya Multi-Specialty Clinic",
-    "tagline": "Complete Family Healthcare & Diabetes Care",
+    "name": "Sanjeevani Family Clinic",
+    "tagline": "General Physician & Family Healthcare",
     "category": "General Medicine",
-    "address": "Kankarbagh Main Road, Opposite Pillar 42",
+    "address": "Near Main Market Chowk, Station Road",
     "city": "Patna, Bihar",
-    "phone": "9835123456",
-    "whatsapp": "9835123456",
-    "upiId": "aarogyaclinic@upi",
-    "doctorName": "Dr. Anand Kishore",
-    "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
-    "doctorRegNo": "BRMC-52194",
-    "experienceYears": 16,
+    "phone": "9835012345",
+    "whatsapp": "9835012345",
+    "upiId": "sanjeevaniclinic@upi",
+    "doctorName": "Dr. Rajesh Sharma",
+    "doctorDegree": "MBBS, MD (General Physician)",
+    "doctorRegNo": "MCI-48291",
+    "experienceYears": 14,
     "doctors": [
       {
         "id": "doc_1",
         "name": "Dr. Rajesh Sharma",
-        "degree": "MBBS, MD",
+        "degree": "MBBS, MD (General Physician)",
         "specialty": "General Physician",
+        "regNo": "MCI-48291",
         "fee": 300,
         "isMain": true
-      },
-      {
-        "id": "doc_2",
-        "name": "Dr. Priya Kishore",
-        "degree": "MBBS, MS",
-        "specialty": "Gynecologist",
-        "fee": 450,
-        "isMain": false
-      },
-      {
-        "id": "doc_3",
-        "name": "Dr. Amit Patel",
-        "degree": "BDS, MDS",
-        "specialty": "Dental Surgeon",
-        "fee": 350,
-        "isMain": false
       }
     ],
     "fees": {
-      "normal": 400,
-      "followup": 250,
-      "emergency": 600,
+      "normal": 300,
+      "followup": 200,
+      "emergency": 500,
       "report": 0
     },
     "visitingHours": {
       "morning": {
         "enabled": true,
-        "start": "09:30 AM",
-        "end": "01:30 PM",
+        "start": "10:00 AM",
+        "end": "02:00 PM",
         "slotDurationMins": 15,
         "maxTokens": 25
       },
       "evening": {
         "enabled": true,
-        "start": "05:30 PM",
-        "end": "09:30 PM",
+        "start": "05:00 PM",
+        "end": "09:00 PM",
         "slotDurationMins": 15,
         "maxTokens": 30
       },
@@ -70,23 +55,162 @@
       ],
       "avgConsultationMins": 10
     },
-    "leaves": {
-      "2026-10-28": {
-        "fullDay": true,
-        "reason": "Doctor Conference"
-      },
-      "2026-10-29": {
-        "fullDay": false,
-        "morningOff": true,
-        "eveningOff": false,
-        "blockedSlots": [
-          "05:30 PM"
-        ]
-      }
-    },
+    "leaves": {},
     "onboarded": true,
     "createdAt": "2026-10-26T06:00:00.000Z",
-    "updatedAt": "2026-10-26T09:06:09.386Z"
+    "updatedAt": "2026-10-26T09:32:02.743Z"
   },
-  "queue": []
+  "queue": [],
+  "clinics": {
+    "clinic_sanjeevani_01": {
+      "id": "clinic_sanjeevani_01",
+      "name": "Sanjeevani Family Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Rajesh Sharma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Physician",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "isMain": true
+        }
+      ],
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-10-26T06:00:00.000Z",
+      "updatedAt": "2026-10-26T09:32:02.743Z"
+    },
+    "clinic_patna_central_99": {
+      "id": "clinic_patna_central_99",
+      "name": "Patna Central Hospital Clinic",
+      "tagline": "Complete Family Healthcare & Diabetes Care",
+      "category": "General Medicine",
+      "address": "Kankarbagh Main Road, Opposite Pillar 42",
+      "city": "Patna, Bihar",
+      "phone": "9800011122",
+      "whatsapp": "9835123456",
+      "upiId": "aarogyaclinic@upi",
+      "doctorName": "Dr. Alok Nath",
+      "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
+      "doctorRegNo": "BRMC-52194",
+      "experienceYears": 16,
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD",
+          "specialty": "General Physician",
+          "fee": 300,
+          "isMain": true
+        },
+        {
+          "id": "doc_2",
+          "name": "Dr. Priya Kishore",
+          "degree": "MBBS, MS",
+          "specialty": "Gynecologist",
+          "fee": 450,
+          "isMain": false
+        },
+        {
+          "id": "doc_3",
+          "name": "Dr. Amit Patel",
+          "degree": "BDS, MDS",
+          "specialty": "Dental Surgeon",
+          "fee": 350,
+          "isMain": false
+        }
+      ],
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "09:30 AM",
+          "end": "01:30 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:30 PM",
+          "end": "09:30 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "leaves": {
+        "2026-10-28": {
+          "fullDay": true,
+          "reason": "Doctor Conference"
+        },
+        "2026-10-29": {
+          "fullDay": false,
+          "morningOff": true,
+          "eveningOff": false,
+          "blockedSlots": [
+            "05:30 PM"
+          ]
+        }
+      },
+      "onboarded": true,
+      "createdAt": "2026-10-26T06:00:00.000Z",
+      "updatedAt": "2026-10-26T09:32:02.730Z"
+    }
+  }
 }
