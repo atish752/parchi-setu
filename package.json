@@ -1,0 +1,24 @@
+{
+  "name": "parchi-setu",
+  "version": "1.0.0",
+  "description": "Smart Indian Clinic & Live Token Management Web App with QR Booking, Multi-Doctor and Firebase Sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test_runner.js",
+    "build": "node -e \"console.log('ParchiSetu build ready for Vercel deployment')\"",
+    "vercel-build": "node -e \"console.log('ParchiSetu Vercel build ready')\""
+  },
+  "keywords": [
+    "parchi-setu",
+    "clinic-management",
+    "token-system",
+    "indian-clinics",
+    "queue-management",
+    "qr-booking",
+    "firebase"
+  ],
+  "author": "ParchiSetu",
+  "license": "MIT"
+}
