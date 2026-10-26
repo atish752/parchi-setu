@@ -51,7 +51,7 @@
 ### Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/ManashShrivastava723/parchi-setu.git
+git clone https://github.com/atish752/parchi-setu.git
 cd parchi-setu
 
 # Run with Node.js built-in HTTP server
