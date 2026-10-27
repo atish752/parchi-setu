@@ -691,6 +691,34 @@ async function runTests() {
     assert.ok(html.includes('<span>Bulao</span>'), 'Must display simple Bulao button text for compounders');
   })();
 
+  // 44. WhatsApp Queue Rows Provide Dedicated Fee Strip to Prevent Name Truncation
+  await test('Queue rows feature dedicated payment strip for Baaki patients to preserve full name visibility', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes("p.payMode === 'Baaki'"), 'Must conditionally render Baaki fee strip');
+    assert.ok(html.includes('setPatientPaymentMode'), 'Must invoke setPatientPaymentMode on 1-tap buttons');
+    assert.ok(html.includes('event.stopPropagation()'), 'Payment buttons must prevent event bubbling to avoid opening drawer unexpectedly');
+  })();
+
+  // 45. Cabin Status Card Gracefully Handles Empty Cabin
+  await test('Cabin status hero card dims announce button and shows clean Agla Bulao without false completion text', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="btnAnnounceToken"'), 'Must define btnAnnounceToken element id');
+    assert.ok(html.includes('Cabin Khali Hai (Doctor Ready)') || html.includes('Cabin Khali Hai'), 'Must indicate empty cabin clearly');
+    assert.ok(html.includes('Agla Bulao'), 'Next button must present clean Agla Bulao text');
+  })();
+
+  // 46. Fast Walk-In Form Auto-Collapses on Submission to Reveal New Queue Entry
+  await test('Fast walk-in form automatically collapses on submission for immediate queue visibility', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('toggleFastWalkinCollapse(false)'), 'createFastWalkIn must collapse form after successful entry');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

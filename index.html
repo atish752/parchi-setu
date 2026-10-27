@@ -120,28 +120,28 @@
       </div>
 
       <!-- Right Action Cluster: Onboarding / Share Link / Language / Role Toggle -->
-      <div class="flex items-center gap-2 ml-auto flex-wrap">
+      <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
         
-        <!-- Clinic Setup / Onboarding Button (Hidden in Patient View and Unauthenticated Gateway) -->
+        <!-- Clinic Setup / Onboarding Button (Hidden in Patient View and Unauthenticated Gateway, and on extra small mobile screens where Tab 2 is 1-tap away) -->
         <button 
           onclick="openClinicOnboardingModal()" 
           id="clinicOnboardHeaderBtn"
-          class="hidden btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition"
+          class="hidden sm:inline-flex btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition"
           title="Setup Clinic, Doctor & Visiting Timings"
         >
           <i class="fa-solid fa-hospital-user text-[#25D366]"></i>
-          <span class="hidden sm:inline">Clinic Setup</span>
+          <span class="hidden md:inline">Clinic Setup</span>
         </button>
 
-        <!-- Share Patient Booking Link & QR Button (Hidden in Patient View and Unauthenticated Gateway) -->
+        <!-- Share Patient Booking Link & QR Button (Hidden in Patient View and Unauthenticated Gateway, and on mobile screens where Tab 2 is 1-tap away) -->
         <button 
           onclick="openOnboardingSuccessModal()" 
           id="headerShareLinkBtn"
-          class="hidden btn-tactile bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#a7f3d0] border border-[#25D366]/50 px-2.5 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition"
+          class="hidden md:inline-flex btn-tactile bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#a7f3d0] border border-[#25D366]/50 px-2.5 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition"
           title="Get Patient Booking Link & QR Code"
         >
           <i class="fa-solid fa-qrcode text-[#25D366]"></i>
-          <span class="hidden md:inline">QR & Link</span>
+          <span>QR & Link</span>
         </button>
 
         <!-- Language Toggle: Hinglish vs English -->
@@ -235,7 +235,7 @@
           class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition"
         >
           <i class="fa-solid fa-address-book text-xs sm:text-sm"></i>
-          <span data-i18n="tabRegister" class="truncate">Patients Directory</span>
+          <span data-i18n="tabRegister" class="truncate">Patients</span>
         </button>
 
         <!-- Tab 4: Daily Checkbook -->
@@ -245,7 +245,7 @@
           class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition"
         >
           <i class="fa-solid fa-indian-rupee-sign text-xs sm:text-sm"></i>
-          <span data-i18n="tabGalla" class="truncate">Daily Checkbook</span>
+          <span data-i18n="tabGalla" class="truncate">Checkbook</span>
           <span id="navBadgeBaaki" class="hidden sm:inline-block bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full leading-tight">₹</span>
         </button>
 
@@ -505,6 +505,7 @@
               <button 
                 type="button"
                 onclick="announceCurrentToken()" 
+                id="btnAnnounceToken"
                 class="btn-tactile bg-white/15 hover:bg-white/25 active:bg-white/30 text-white border border-white/20 font-bold px-3 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap"
                 title="Rings Clinic Bell & Announces Token Number"
               >
@@ -514,7 +515,7 @@
 
               <!-- Primary Giant Button: Done & Call Next -->
               <button 
-                type="button"
+                type="button" 
                 onclick="completeCurrentAndCallNext()" 
                 id="callNextGiantBtn"
                 class="flex-1 sm:flex-initial btn-tactile bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1da850] text-slate-950 font-black px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition whitespace-nowrap"
@@ -551,7 +552,7 @@
                 id="walkinToggleBtn" 
                 class="btn-tactile bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 transition"
               >
-                <span id="walkinToggleText">+ Nayi Parchi Banayein</span>
+                <span id="walkinToggleText">+ Nayi Parchi</span>
                 <i id="walkinChevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
               </button>
             </div>
@@ -2899,10 +2900,10 @@
       hinglish: {
         roleClinic: 'Compounder Desk',
         rolePatient: 'Patient QR Link',
-        tabQueue: '1. Aaj Ki Line',
-        tabCalendar: '2. Slots & QR',
-        tabRegister: '3. Patients Directory',
-        tabGalla: '4. Daily Checkbook',
+        tabQueue: 'Aaj Ki Line',
+        tabCalendar: 'Slots & QR',
+        tabRegister: 'Patients',
+        tabGalla: 'Checkbook',
         liveInCabinBadge: 'ABHI DOCTOR KE PAAS (IN CABIN)',
         openParchiBtn: 'Parchi / Vitals Kholein',
         fastEntryTitle: '⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)',
@@ -2938,10 +2939,10 @@
       english: {
         roleClinic: 'Clinic Desk',
         rolePatient: 'Patient QR Link',
-        tabQueue: '1. Live Queue',
-        tabCalendar: '2. Slots & QR',
-        tabRegister: '3. Patients Directory',
-        tabGalla: '4. Daily Checkbook',
+        tabQueue: 'Live Queue',
+        tabCalendar: 'Slots & QR',
+        tabRegister: 'Patients',
+        tabGalla: 'Checkbook',
         liveInCabinBadge: 'CURRENTLY IN DOCTOR CABIN',
         openParchiBtn: 'Open Rx & Vitals',
         fastEntryTitle: '⚡ 3-Second Fast Walk-In Token Entry',
@@ -4909,34 +4910,58 @@
       if (inCabin) {
         document.getElementById('headerCabinTokenText').textContent = `Token #${inCabin.token} Andar`;
         document.getElementById('cabinTokenNumber').textContent = `#${inCabin.token}`;
-        document.getElementById('cabinPatientName').innerHTML = `${inCabin.name} <span class="text-emerald-200 font-semibold text-base sm:text-lg">(${inCabin.age}${inCabin.gender})</span>`;
-        document.getElementById('cabinPatientSource').textContent = inCabin.source === 'QR Booked' ? '📱 Online / QR' : '🚶 Walk-in';
+        document.getElementById('cabinPatientName').innerHTML = `${inCabin.name} <span class="text-emerald-200 font-semibold text-sm sm:text-base">(${inCabin.age}${inCabin.gender})</span>`;
+        const srcEl = document.getElementById('cabinPatientSource');
+        if (srcEl) {
+          srcEl.textContent = inCabin.source === 'QR Booked' ? '📱 Online / QR' : '🚶 Walk-in';
+          srcEl.classList.remove('hidden');
+        }
         document.getElementById('cabinPatientReason').textContent = inCabin.reason;
         document.getElementById('cabinPatientFee').textContent =
           inCabin.payMode === 'Baaki'
             ? `₹${inCabin.fee} (⏳ Fee Baaki)`
             : `₹${inCabin.fee} (${inCabin.payMode} ✓)`;
 
-        document.getElementById('ringBellBtnText').textContent =
-          currentLang === 'hinglish'
-            ? `🔔 Awaz Lagayein (#${inCabin.token})`
-            : `🔔 Announce #${inCabin.token}`;
+        const ringBtn = document.getElementById('btnAnnounceToken');
+        if (ringBtn) ringBtn.classList.remove('opacity-40', 'pointer-events-none');
+        const ringText = document.getElementById('ringBellBtnText');
+        if (ringText) {
+          ringText.textContent =
+            currentLang === 'hinglish'
+              ? `🔔 Awaz (#${inCabin.token})`
+              : `🔔 Call #${inCabin.token}`;
+        }
       } else {
         document.getElementById('headerCabinTokenText').textContent = 'Cabin Khali Hai';
         document.getElementById('cabinTokenNumber').textContent = '--';
         document.getElementById('cabinPatientName').innerHTML =
-          currentLang === 'hinglish' ? 'Koi Mareez Andar Nahi Hai' : 'No Patient Currently in Cabin';
-        document.getElementById('cabinPatientReason').textContent = 'Ready for next token';
+          currentLang === 'hinglish' ? 'Cabin Khali Hai (Doctor Ready)' : 'Cabin is Empty (Doctor Ready)';
+        const srcEl = document.getElementById('cabinPatientSource');
+        if (srcEl) srcEl.classList.add('hidden');
+        document.getElementById('cabinPatientReason').textContent =
+          currentLang === 'hinglish' ? 'Koi mareez andar nahi hai' : 'No patient in cabin';
         document.getElementById('cabinPatientFee').textContent = '';
+
+        const ringBtn = document.getElementById('btnAnnounceToken');
+        if (ringBtn) ringBtn.classList.add('opacity-40', 'pointer-events-none');
+        const ringText = document.getElementById('ringBellBtnText');
+        if (ringText) {
+          ringText.textContent = currentLang === 'hinglish' ? '🔔 Awaz' : '🔔 Call';
+        }
       }
 
       const callNextBtnText = document.getElementById('callNextBtnText');
-      if (nextWait) {
+      if (inCabin && nextWait) {
         callNextBtnText.textContent =
           currentLang === 'hinglish'
             ? `✔ Ho Gaya • Agla Bulao (#${nextWait.token}) ➔`
             : `✔ Done • Call Next (#${nextWait.token}) ➔`;
-      } else if (inCabin) {
+      } else if (!inCabin && nextWait) {
+        callNextBtnText.textContent =
+          currentLang === 'hinglish'
+            ? `Agla Bulao (#${nextWait.token}) ➔`
+            : `Call Next (#${nextWait.token}) ➔`;
+      } else if (inCabin && !nextWait) {
         callNextBtnText.textContent =
           currentLang === 'hinglish'
             ? `✔ Token #${inCabin.token} Complete Karein`
@@ -4944,7 +4969,7 @@
       } else {
         callNextBtnText.textContent =
           currentLang === 'hinglish'
-            ? '✔ Line Puri Ho Gayi (All Done)'
+            ? '✔ Line Puri Ho Gayi'
             : '✔ Queue Completed';
       }
     }
@@ -5206,6 +5231,7 @@
       phoneInput.value = '';
 
       playClinicBellSound();
+      toggleFastWalkinCollapse(false);
       refreshAllViews();
       showToast(
         currentLang === 'hinglish'
@@ -5328,11 +5354,11 @@
       };
 
       const pills = [
-        { key: 'ALL', label: currentLang === 'hinglish' ? `Sabhi (${counts.ALL})` : `All Today (${counts.ALL})` },
+        { key: 'ALL', label: currentLang === 'hinglish' ? `Sabhi (${counts.ALL})` : `All (${counts.ALL})` },
         { key: 'WAITING', label: currentLang === 'hinglish' ? `⏳ Waiting (${counts.WAITING})` : `⏳ Waiting (${counts.WAITING})` },
         { key: 'IN_CABIN', label: currentLang === 'hinglish' ? `🟢 Andar (${counts.IN_CABIN})` : `🟢 In Cabin (${counts.IN_CABIN})` },
-        { key: 'DONE', label: currentLang === 'hinglish' ? `✅ Ho Gaya (${counts.DONE})` : `✅ Completed (${counts.DONE})` },
-        { key: 'BAAKI', label: currentLang === 'hinglish' ? `⚠️ Fee Baaki (${counts.BAAKI})` : `⚠️ Unpaid (${counts.BAAKI})` }
+        { key: 'DONE', label: currentLang === 'hinglish' ? `✅ Done (${counts.DONE})` : `✅ Done (${counts.DONE})` },
+        { key: 'BAAKI', label: currentLang === 'hinglish' ? `⚠️ Baaki (${counts.BAAKI})` : `⚠️ Unpaid (${counts.BAAKI})` }
       ];
 
       document.getElementById('queueFilterPills').innerHTML = pills.map(pill => {
@@ -5429,14 +5455,14 @@
         return `
           <div class="p-3 sm:p-3.5 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-center justify-between gap-2.5 sm:gap-3 ${rowBgClass}">
             
-            <!-- WhatsApp Contact Avatar + Clean Chat Subtitle -->
+            <!-- WhatsApp Contact Avatar + Clean Chat Subtitle (Tap to open Parchi & Vitals) -->
             <div onclick="openParchiDrawer('${p.id}')" class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer select-none">
               <!-- Token Circle Avatar (WhatsApp DP Style) -->
               <div class="w-12 h-12 sm:w-13 sm:h-13 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-base sm:text-lg shadow-xs">
                 #${p.token}
               </div>
 
-              <!-- Contact Name & 1-line WhatsApp Snippet -->
+              <!-- Contact Name & WhatsApp 2-Line Preview -->
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <h4 class="font-extrabold text-sm sm:text-base text-slate-900 truncate leading-snug">${p.name}</h4>
@@ -5444,76 +5470,69 @@
                   ${statusBadge}
                 </div>
 
-                <div class="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1.5">
-                  <span class="font-medium text-slate-600">${p.reason}</span>
+                <div class="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span class="font-medium text-slate-700">${p.reason}</span>
                   <span>•</span>
                   <span>${sourceTag}</span>
                   ${bpTag}
                   ${parchiTag}
+                  ${
+                    p.payMode !== 'Baaki'
+                      ? `<span>•</span> <button type="button" onclick="event.stopPropagation(); togglePatientFeeStatus('${p.id}')" class="font-bold text-emerald-700 hover:underline" title="Tap to toggle payment mode">${feeText}</button>`
+                      : ''
+                  }
                 </div>
+
+                ${
+                  p.payMode === 'Baaki'
+                    ? `
+                      <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        <span class="text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded">₹${p.fee} Baaki:</span>
+                        <button 
+                          type="button" 
+                          onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'Cash')" 
+                          class="btn-tactile px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                          title="Cash Vasool Hua"
+                        >
+                          <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
+                          <span>Cash</span>
+                        </button>
+                        <button 
+                          type="button" 
+                          onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'UPI')" 
+                          class="btn-tactile px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                          title="UPI Online Payment Hua"
+                        >
+                          <i class="fa-solid fa-mobile-screen-button text-[10px]"></i>
+                          <span>UPI</span>
+                        </button>
+                      </div>
+                    `
+                    : ''
+                }
               </div>
             </div>
 
-            <!-- WhatsApp Actions: 1-Tap Fee & 1-Tap Bulao -->
+            <!-- WhatsApp Actions: 1-Tap Bulao or Cabin/Done Badge -->
             <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-              ${
-                p.payMode === 'Baaki'
-                  ? `
-                    <div class="flex items-center gap-1 bg-amber-50 p-0.5 sm:p-1 rounded-xl border border-amber-300">
-                      <span class="text-[10px] font-black text-amber-900 hidden xs:inline px-1">₹${p.fee}:</span>
-                      <button 
-                        type="button" 
-                        onclick="setPatientPaymentMode('${p.id}', 'Cash')" 
-                        class="btn-tactile px-2 sm:px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
-                        title="Cash Vasool Hua"
-                      >
-                        <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
-                        <span>Cash</span>
-                      </button>
-                      <button 
-                        type="button" 
-                        onclick="setPatientPaymentMode('${p.id}', 'UPI')" 
-                        class="btn-tactile px-2 sm:px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
-                        title="UPI Online Payment Hua"
-                      >
-                        <i class="fa-solid fa-mobile-screen-button text-[10px]"></i>
-                        <span>UPI</span>
-                      </button>
-                    </div>
-                  `
-                  : `
-                    <button 
-                      type="button"
-                      onclick="togglePatientFeeStatus('${p.id}')" 
-                      title="Tap to toggle Cash / UPI / Baaki"
-                      class="btn-tactile px-2.5 py-1.5 rounded-xl border font-extrabold text-xs ${feePillClass} transition"
-                    >
-                      ${feeText}
-                    </button>
-                  `
-              }
-
-              <button 
-                type="button"
-                onclick="openParchiDrawer('${p.id}')" 
-                class="btn-tactile w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition"
-                title="Parchi / Vitals"
-              >
-                <i class="fa-solid fa-camera text-xs text-[#128C7E]"></i>
-              </button>
-
               ${
                 p.status === 'WAITING'
                   ? `<button 
-                      type="button"
-                      onclick="sendPatientInsideCabin('${p.id}')" 
-                      class="btn-tactile px-3 sm:px-3.5 py-2 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center gap-1 shadow-xs transition whitespace-nowrap"
+                      type="button" 
+                      onclick="event.stopPropagation(); sendPatientInsideCabin('${p.id}')" 
+                      class="btn-tactile px-3.5 sm:px-4 py-2.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-xs transition whitespace-nowrap"
                       title="Call Patient Inside Cabin"
                     >
                       <span>Bulao</span>
                       <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>`
-                  : ''
+                  : p.status === 'IN_CABIN'
+                  ? `<span class="bg-[#25D366] text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
+                      <i class="fa-solid fa-circle text-[6px]"></i> Andar
+                    </span>`
+                  : `<span class="text-slate-400 font-bold text-xs inline-flex items-center gap-1">
+                      <i class="fa-solid fa-check-double text-[#53bdeb] text-sm"></i> Done
+                    </span>`
               }
             </div>
 
