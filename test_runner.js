@@ -663,6 +663,34 @@ async function runTests() {
     assert.ok(duration < 2000, `Lookup must resolve quickly without blocking UI, took ${duration}ms`);
   })();
 
+  // 41. WhatsApp Chat-List Queue View & Token Avatar Circles
+  await test('WhatsApp chat-list container and avatar circles are defined in queue view', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="queueListContainer" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm divide-y divide-slate-100 overflow-hidden"'), 'queueListContainer must have divide-y chat list styling');
+    assert.ok(html.includes('rounded-full ${tokenCircleClass}'), 'Token avatars must use rounded-full circular avatar styling');
+  })();
+
+  // 42. Mobile WhatsApp-Style Floating Action Button (+ Naya Mareez)
+  await test('Mobile WhatsApp-style Floating Action Button exists with click handler', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="mobileFabNewPatient"'), 'Must have mobileFabNewPatient element');
+    assert.ok(html.includes('onFabWalkinClick()'), 'Must call onFabWalkinClick on FAB press');
+    assert.ok(html.includes('function onFabWalkinClick('), 'Must define onFabWalkinClick function');
+  })();
+
+  // 43. 1-Tap Bulao (Call In) Action for Waiting Patients
+  await test('Queue list renders high-contrast 1-tap Bulao button for waiting patients', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('sendPatientInsideCabin'), 'Must invoke sendPatientInsideCabin');
+    assert.ok(html.includes('<span>Bulao</span>'), 'Must display simple Bulao button text for compounders');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

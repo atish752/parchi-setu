@@ -454,57 +454,58 @@
       <!-- ================================================================= -->
       <section id="clinicTab-queue" class="space-y-3 sm:space-y-3.5">
 
-        <!-- 1A. LIVE CABIN STATUS HERO CARD (STICKY FEEL, ZERO CONFUSION) -->
-        <div class="bg-gradient-to-r from-[#075E54] via-[#0b6b5e] to-[#128C7E] rounded-2xl p-3 sm:p-3.5 text-white shadow-lg border border-emerald-600/40 relative overflow-hidden">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 relative z-10">
+        <!-- 1A. LIVE CABIN STATUS HERO CARD (CLEAN WHATSAPP ACTIVE CARD) -->
+        <div class="bg-[#075E54] rounded-2xl p-3 sm:p-4 text-white shadow-md border border-emerald-700/60 relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
             
             <!-- Current Patient Inside Cabin Info -->
-            <div class="flex items-center gap-3">
-              <div id="cabinTokenCircle" class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0">
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold opacity-80 leading-none">TOKEN</span>
-                <span id="cabinTokenNumber" class="text-xl sm:text-2xl leading-none font-black mt-0.5">#12</span>
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div id="cabinTokenCircle" class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0">
+                <span class="text-[8px] uppercase tracking-wider font-extrabold opacity-80 leading-none">TOKEN</span>
+                <span id="cabinTokenNumber" class="text-xl leading-none font-black mt-0.5">#12</span>
               </div>
 
-              <div>
-                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  <span class="bg-[#25D366] text-slate-950 text-[10px] sm:text-xs font-black px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wide flex items-center gap-1">
-                    <i class="fa-solid fa-circle text-[6px]"></i>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
+                    <i class="fa-solid fa-circle text-[5px]"></i>
                     <span data-i18n="liveInCabinBadge">ABHI DOCTOR KE PAAS (IN CABIN)</span>
                   </span>
-                  <span id="cabinPatientSource" class="bg-white/15 text-emerald-100 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full">
+                  <span id="cabinPatientSource" class="bg-white/15 text-emerald-100 text-[10px] font-semibold px-2 py-0.5 rounded-full">
                     🚶 Walk-in
                   </span>
-                  <span id="doctorLateLiveBadge" class="hidden bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded-full">
+                  <span id="doctorLateLiveBadge" class="hidden bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                     ⏳ Doctor 30m Late
                   </span>
                 </div>
 
-                <h2 id="cabinPatientName" class="text-lg sm:text-xl font-black mt-0.5 tracking-tight">
-                  Rameshwar Prasad <span class="text-emerald-200 font-semibold text-sm sm:text-base">(54M)</span>
+                <h2 id="cabinPatientName" class="text-base sm:text-lg font-black mt-1 tracking-tight truncate leading-tight">
+                  Rameshwar Prasad <span class="text-emerald-200 font-semibold text-sm">(54M)</span>
                 </h2>
 
-                <div class="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-emerald-100">
-                  <span id="cabinPatientReason" class="bg-black/25 px-2 py-0.5 rounded-lg font-semibold">
+                <div class="flex items-center gap-2 mt-0.5 text-xs text-emerald-100 truncate">
+                  <span id="cabinPatientReason" class="font-semibold text-emerald-200 truncate max-w-[140px] sm:max-w-none">
                     🩸 BP / Sugar Check
                   </span>
                   <span>•</span>
-                  <span id="cabinPatientFee" class="font-bold text-[#a7f3d0]">
+                  <span id="cabinPatientFee" class="font-bold text-[#a7f3d0] whitespace-nowrap">
                     ₹300 (Cash Paid ✓)
                   </span>
                   <span>•</span>
-                  <button onclick="openCurrentCabinParchi()" class="underline hover:text-white font-semibold flex items-center gap-1">
-                    <i class="fa-solid fa-camera"></i> <span data-i18n="openParchiBtn">Parchi / Vitals Kholein</span>
+                  <button type="button" onclick="openCurrentCabinParchi()" class="underline hover:text-white text-emerald-200 font-semibold inline-flex items-center gap-1 whitespace-nowrap">
+                    <i class="fa-solid fa-camera text-[10px]"></i> <span data-i18n="openParchiBtn">Parchi / Vitals Kholein</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Giant 1-Tap Cabin Action Buttons -->
-            <div class="flex flex-row items-center gap-2">
+            <!-- Giant 1-Tap Cabin Action Buttons (Thumb-friendly on mobile) -->
+            <div class="flex items-center gap-2 flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-700/50">
               <!-- Secondary: Ring Bell / Voice Call -->
               <button 
+                type="button"
                 onclick="announceCurrentToken()" 
-                class="btn-tactile bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
+                class="btn-tactile bg-white/15 hover:bg-white/25 active:bg-white/30 text-white border border-white/20 font-bold px-3 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap"
                 title="Rings Clinic Bell & Announces Token Number"
               >
                 <i class="fa-solid fa-volume-high text-amber-300 text-sm"></i>
@@ -513,11 +514,12 @@
 
               <!-- Primary Giant Button: Done & Call Next -->
               <button 
+                type="button"
                 onclick="completeCurrentAndCallNext()" 
                 id="callNextGiantBtn"
-                class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm sm:text-base shadow-md flex items-center justify-center gap-2 transition"
+                class="flex-1 sm:flex-initial btn-tactile bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1da850] text-slate-950 font-black px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition whitespace-nowrap"
               >
-                <i class="fa-solid fa-circle-check text-base sm:text-lg"></i>
+                <i class="fa-solid fa-circle-check text-sm sm:text-base"></i>
                 <span id="callNextBtnText">✔ Ho Gaya • Agla Bulao (#13) ➔</span>
               </button>
             </div>
@@ -526,24 +528,24 @@
         </div>
 
         <!-- 1B. 3-SECOND "FAST WALK-IN ENTRY BAR" (COLLAPSIBLE DROPDOWN ACCORDION) -->
-        <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-600/30 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
           <!-- Accordion Clickable Header -->
           <div 
             onclick="toggleFastWalkinCollapse()" 
-            class="cursor-pointer select-none p-3 sm:p-3.5 bg-slate-50 hover:bg-emerald-50/60 flex items-center justify-between transition"
+            class="cursor-pointer select-none p-3 sm:p-3.5 bg-slate-50/70 hover:bg-emerald-50/50 flex items-center justify-between transition"
           >
-            <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-xs">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-7 h-7 rounded-full bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-xs shadow-xs flex-shrink-0">
                 <i class="fa-solid fa-bolt"></i>
               </span>
-              <h3 class="font-extrabold text-xs sm:text-sm text-slate-800" data-i18n="fastEntryTitle">
+              <h3 class="font-extrabold text-xs sm:text-sm text-slate-800 truncate" data-i18n="fastEntryTitle">
                 ⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)
               </h3>
-              <span class="text-[11px] sm:text-xs font-bold bg-emerald-100 text-[#075E54] px-2 py-0.5 rounded-full border border-emerald-300 ml-1">
+              <span class="text-[11px] sm:text-xs font-bold bg-emerald-50 text-[#075E54] px-2 py-0.5 rounded-full border border-emerald-300 ml-1 whitespace-nowrap flex-shrink-0">
                 <span data-i18n="nextTokenLabel">Agla Token:</span> <strong id="nextAvailableTokenPreview" class="text-xs sm:text-sm">#15</strong>
               </span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-shrink-0">
               <button 
                 type="button" 
                 id="walkinToggleBtn" 
@@ -556,114 +558,115 @@
           </div>
 
           <!-- Collapsible Form Body: Hidden by default -->
-          <div id="walkinFormCollapse" class="hidden p-3 sm:p-3.5 border-t border-slate-200 space-y-2">
+          <div id="walkinFormCollapse" class="hidden p-3 sm:p-4 border-t border-slate-200 space-y-3 bg-white">
 
-          <!-- Row 1: Name, Age/Gender, Mobile -->
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2">
-            <!-- Patient Name with Voice Mic Button -->
-            <div class="sm:col-span-5 relative">
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelPatientName">1. Mareez Ka Naam (Patient Name) *</label>
-              <div class="relative flex items-center">
-                <input 
-                  type="text" 
-                  id="walkinName" 
-                  placeholder="Eg. Sunita Devi / Rahul Kumar" 
-                  onkeydown="if(event.key==='Enter') createFastWalkIn()"
-                  class="w-full pl-3 pr-9 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-xs sm:text-sm"
-                />
+            <!-- Row 1: Name, Age/Gender, Mobile -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-2.5">
+              <!-- Patient Name with Voice Mic Button -->
+              <div class="sm:col-span-5 relative">
+                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelPatientName">1. Mareez Ka Naam (Patient Name) *</label>
+                <div class="relative flex items-center">
+                  <input 
+                    type="text" 
+                    id="walkinName" 
+                    placeholder="जैसे: सुनीता देवी / राहुल कुमार" 
+                    onkeydown="if(event.key==='Enter') createFastWalkIn()"
+                    class="w-full pl-3 pr-9 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
+                  />
+                  <button 
+                    type="button"
+                    onclick="simulateVoiceInput()" 
+                    class="absolute right-1.5 w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#075E54] flex items-center justify-center transition"
+                    title="Boliye (Voice Dictation)"
+                  >
+                    <i id="voiceMicIcon" class="fa-solid fa-microphone text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Age & Gender Quick Input -->
+              <div class="sm:col-span-3">
+                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelAgeGender">2. Umar / Gender</label>
+                <div class="flex gap-1">
+                  <input 
+                    type="number" 
+                    id="walkinAge" 
+                    placeholder="Umar (35)" 
+                    min="1" max="115"
+                    class="w-2/3 px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
+                  />
+                  <select 
+                    id="walkinGender" 
+                    class="w-1/3 px-1.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] text-sm"
+                  >
+                    <option value="M">M</option>
+                    <option value="F">F</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Mobile Number -->
+              <div class="sm:col-span-4">
+                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelMobile">3. Mobile No. (Optional)</label>
+                <div class="relative">
+                  <input 
+                    type="tel" 
+                    id="walkinPhone" 
+                    maxlength="10"
+                    placeholder="98XXXXXXXX (WhatsApp)" 
+                    class="w-full pl-3 pr-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: 1-Tap Takleef (Reason) Chips -->
+            <div>
+              <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelReasonChips">
+                4. Takleef Chunein (1-Tap Reason — No Typing):
+              </span>
+              <div id="walkinReasonChips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+
+            <!-- Row 3: 1-Tap Fee + Payment Mode + Giant "+ Give Token" Button -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center pt-2 border-t border-slate-100">
+              
+              <!-- 1-Tap Fee Selector Pills -->
+              <div class="lg:col-span-5">
+                <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelFeeSelect">5. Doctor Fees:</span>
+                <div id="walkinFeePills" class="grid grid-cols-4 gap-1.5">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- 1-Tap Payment Mode Pills (Cash / UPI / Baaki) -->
+              <div class="lg:col-span-4">
+                <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPaymentMode">6. Paisa Kaise Aaya:</span>
+                <div id="walkinPayModePills" class="grid grid-cols-3 gap-1.5">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- Giant Submit Token Button -->
+              <div class="lg:col-span-3 pt-1 lg:pt-3">
                 <button 
                   type="button"
-                  onclick="simulateVoiceInput()" 
-                  class="absolute right-1.5 w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#075E54] flex items-center justify-center transition"
-                  title="Boliye (Voice Dictation Simulation)"
+                  onclick="createFastWalkIn()" 
+                  class="btn-tactile w-full bg-[#128C7E] hover:bg-[#075E54] active:bg-[#05433c] text-white font-black py-3 px-3 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm sm:text-base transition"
                 >
-                  <i id="voiceMicIcon" class="fa-solid fa-microphone text-xs"></i>
+                  <i class="fa-solid fa-plus-circle text-[#25D366] text-lg"></i>
+                  <span id="giveTokenBtnText">Token Dein (#15)</span>
                 </button>
               </div>
-            </div>
 
-            <!-- Age & Gender Quick Input -->
-            <div class="sm:col-span-3">
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelAgeGender">2. Umar / Gender</label>
-              <div class="flex gap-1">
-                <input 
-                  type="number" 
-                  id="walkinAge" 
-                  placeholder="Age (35)" 
-                  min="1" max="115"
-                  class="w-2/3 px-2.5 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-xs sm:text-sm"
-                />
-                <select 
-                  id="walkinGender" 
-                  class="w-1/3 px-1.5 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] text-xs sm:text-sm"
-                >
-                  <option value="M">M</option>
-                  <option value="F">F</option>
-                </select>
-              </div>
             </div>
-
-            <!-- Mobile Number -->
-            <div class="sm:col-span-4">
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelMobile">3. Mobile No. (Optional)</label>
-              <div class="relative">
-                <input 
-                  type="tel" 
-                  id="walkinPhone" 
-                  maxlength="10"
-                  placeholder="98XXXXXXXX (WhatsApp)" 
-                  class="w-full pl-3 pr-2.5 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-xs sm:text-sm"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2: 1-Tap Takleef (Reason) Chips -->
-          <div class="mb-2">
-            <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelReasonChips">
-              4. Takleef Chunein (1-Tap Reason — No Typing):
-            </span>
-            <div id="walkinReasonChips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-              <!-- Populated dynamically by JS -->
-            </div>
-          </div>
-
-          <!-- Row 3: 1-Tap Fee + Payment Mode + Giant "+ Give Token" Button -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center pt-2 border-t border-slate-100">
-            
-            <!-- 1-Tap Fee Selector Pills -->
-            <div class="lg:col-span-5">
-              <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelFeeSelect">5. Doctor Fees:</span>
-              <div id="walkinFeePills" class="grid grid-cols-4 gap-1.5">
-                <!-- Populated by JS -->
-              </div>
-            </div>
-
-            <!-- 1-Tap Payment Mode Pills (Cash / UPI / Baaki) -->
-            <div class="lg:col-span-4">
-              <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPaymentMode">6. Paisa Kaise Aaya:</span>
-              <div id="walkinPayModePills" class="grid grid-cols-3 gap-1.5">
-                <!-- Populated by JS -->
-              </div>
-            </div>
-
-            <!-- Giant Submit Token Button -->
-            <div class="lg:col-span-3 pt-1 lg:pt-3">
-              <button 
-                onclick="createFastWalkIn()" 
-                class="btn-tactile w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-black py-2.5 px-3 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm sm:text-base transition"
-              >
-                <i class="fa-solid fa-plus-circle text-[#25D366] text-base"></i>
-                <span id="giveTokenBtnText">Token Dein (#15)</span>
-              </button>
-            </div>
-
           </div>
         </div>
-      </div>
 
         <!-- 1C. WHATSAPP-STYLE FILTER PILLS & SEARCH BAR -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
           <!-- Filter Pills -->
           <div id="queueFilterPills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
             <!-- Rendered dynamically -->
@@ -676,16 +679,27 @@
               type="text" 
               id="queueSearchInput" 
               oninput="renderQueueList()" 
-              placeholder="Search Token # or Name..." 
-              class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#128C7E] shadow-sm"
+              placeholder="Search Token # ya Naam..." 
+              class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#128C7E] shadow-xs"
             />
           </div>
         </div>
 
         <!-- 1D. WHATSAPP CHAT-LIST STYLE PATIENT QUEUE ROWS -->
-        <div id="queueListContainer" class="space-y-2.5">
+        <div id="queueListContainer" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm divide-y divide-slate-100 overflow-hidden">
           <!-- Dynamically populated by JS -->
         </div>
+
+        <!-- Mobile Floating Action Button: + Naya Mareez (WhatsApp Style) -->
+        <button 
+          type="button" 
+          onclick="onFabWalkinClick()" 
+          id="mobileFabNewPatient"
+          class="sm:hidden fixed bottom-5 right-4 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] active:scale-90 text-slate-950 font-black shadow-2xl flex items-center justify-center text-xl z-30 transition border-2 border-white cursor-pointer"
+          title="+ Naya Mareez (Walk-in)"
+        >
+          <i class="fa-solid fa-plus text-2xl"></i>
+        </button>
 
       </section>
 
@@ -4808,9 +4822,16 @@
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.remove('hidden');
         if (clinicOnboardBtn) clinicOnboardBtn.classList.remove('hidden');
         updateHeaderAuthUI(currentAuthUser);
+        const fab = document.getElementById('mobileFabNewPatient');
+        if (fab) {
+          if (currentTab === 'queue') fab.classList.remove('hidden');
+          else fab.classList.add('hidden');
+        }
         document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
         refreshAllViews();
       } else {
+        const fab = document.getElementById('mobileFabNewPatient');
+        if (fab) fab.classList.add('hidden');
         if (viewClinic) viewClinic.classList.add('hidden');
         if (viewPatient) viewPatient.classList.remove('hidden');
         if (viewGateway) viewGateway.classList.add('hidden');
@@ -4847,7 +4868,20 @@
           btn.className = 'py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition';
         }
       });
+      const fab = document.getElementById('mobileFabNewPatient');
+      if (fab) {
+        if (tabName === 'queue' && currentRole === 'clinic') fab.classList.remove('hidden');
+        else fab.classList.add('hidden');
+      }
       refreshAllViews();
+    }
+
+    function onFabWalkinClick() {
+      toggleFastWalkinCollapse(true);
+      const c = document.getElementById('walkinFormCollapse');
+      if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const n = document.getElementById('walkinName');
+      if (n) setTimeout(() => n.focus(), 250);
     }
 
     // =========================================================================
@@ -5352,105 +5386,107 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200">
-            <p class="text-sm font-bold text-slate-500">Is filter mein abhi koi mareez nahi hai.</p>
+          <div class="p-8 text-center bg-white">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 text-[#075E54] flex items-center justify-center mx-auto mb-2 text-xl">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-700">Is filter mein abhi koi mareez nahi hai.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Naya mareez jodne ke liye upar "+ Nayi Parchi" dabayein</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = filtered.map(p => {
-        let tokenCircleClass = 'bg-amber-100 text-amber-900 border-2 border-amber-400';
-        let rowBorderClass = 'border-slate-200 bg-white';
-        let statusPillHTML = `<span class="bg-amber-100 text-amber-800 text-[11px] font-extrabold px-2 py-0.5 rounded-md">⏳ Waiting • ${p.slotTime}</span>`;
+        let tokenCircleClass = 'bg-emerald-50 text-[#075E54] border-2 border-[#128C7E]';
+        let rowBgClass = 'bg-white';
+        let statusBadge = `<span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded">${p.slotTime}</span>`;
 
         if (p.status === 'IN_CABIN') {
-          tokenCircleClass = 'bg-[#25D366] text-slate-950 border-2 border-[#075E54] live-token-pulse';
-          rowBorderClass = 'border-2 border-[#25D366] bg-emerald-50/40';
-          statusPillHTML = `<span class="bg-[#25D366] text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-md">🟢 ABHI ANDAR (IN CABIN)</span>`;
+          tokenCircleClass = 'bg-[#25D366] text-slate-950 ring-4 ring-[#25D366]/30 live-token-pulse font-black';
+          rowBgClass = 'bg-emerald-50/40';
+          statusBadge = `<span class="bg-[#25D366] text-slate-950 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[5px]"></i> Andar</span>`;
         } else if (p.status === 'DONE') {
-          tokenCircleClass = 'bg-slate-200 text-slate-600 border border-slate-300';
-          rowBorderClass = 'border-slate-200 bg-white/80 opacity-85';
-          statusPillHTML = `<span class="bg-slate-200 text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded-md">✅ Ho Gaya (Completed)</span>`;
+          tokenCircleClass = 'bg-slate-100 text-slate-500 border border-slate-200';
+          rowBgClass = 'bg-white opacity-75';
+          statusBadge = `<span class="text-slate-500 text-[11px] font-semibold inline-flex items-center gap-1"><i class="fa-solid fa-check-double text-[10px] text-sky-600"></i> Done</span>`;
         }
 
-        let feePillClass = 'bg-emerald-100 text-emerald-900 border-emerald-300';
-        let feeText = `₹${p.fee} ${p.payMode} ✓`;
+        let feePillClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+        let feeText = `₹${p.fee} Cash ✓`;
         if (p.payMode === 'UPI') {
-          feePillClass = 'bg-sky-100 text-sky-900 border-sky-300';
+          feePillClass = 'bg-sky-50 text-sky-800 border-sky-200';
+          feeText = `₹${p.fee} UPI ✓`;
         } else if (p.payMode === 'Baaki') {
-          feePillClass = 'bg-amber-100 text-amber-950 border-amber-400 animate-pulse';
+          feePillClass = 'bg-amber-100 text-amber-950 border-amber-400';
           feeText = `₹${p.fee} Baaki ⚠️`;
         }
 
-        const sourceBadge = p.source === 'QR Booked'
-          ? `<span class="bg-teal-50 text-teal-800 border border-teal-200 text-[11px] font-bold px-2 py-0.5 rounded-md">📱 Online/QR</span>`
-          : `<span class="bg-slate-100 text-slate-700 text-[11px] font-semibold px-2 py-0.5 rounded-md">🚶 Walk-in</span>`;
-
-        const parchiIndicator = p.hasParchiPhoto
-          ? `<span class="bg-purple-100 text-purple-800 text-[11px] font-bold px-2 py-0.5 rounded-md"><i class="fa-solid fa-camera"></i> Parchi Saved</span>`
-          : '';
-
-        const bpIndicator = p.bp
-          ? `<span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">BP: ${p.bp}</span>`
-          : '';
+        const sourceTag = p.source === 'QR Booked' ? '📱 Online' : '🚶 Walk-in';
+        const bpTag = p.bp ? `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-semibold text-[10px]">BP: ${p.bp}</span>` : '';
+        const parchiTag = p.hasParchiPhoto ? `<span class="text-emerald-700 text-xs" title="Parchi Saved"><i class="fa-solid fa-camera"></i></span>` : '';
 
         return `
-          <div class="rounded-2xl p-3.5 sm:p-4 shadow-xs border transition hover:shadow-md ${rowBorderClass} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="p-3 sm:p-3.5 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-center justify-between gap-2.5 sm:gap-3 ${rowBgClass}">
             
-            <div onclick="openParchiDrawer('${p.id}')" class="flex items-center gap-3.5 cursor-pointer flex-1">
-              <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl ${tokenCircleClass} flex flex-col items-center justify-center font-black flex-shrink-0 px-2.5 py-2">
-                <span class="text-[9px] uppercase tracking-wider opacity-75">TOKEN</span>
-                <span class="text-lg sm:text-xl leading-none">#${p.token}</span>
+            <!-- WhatsApp Contact Avatar + Clean Chat Subtitle -->
+            <div onclick="openParchiDrawer('${p.id}')" class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer select-none">
+              <!-- Token Circle Avatar (WhatsApp DP Style) -->
+              <div class="w-12 h-12 sm:w-13 sm:h-13 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-base sm:text-lg shadow-xs">
+                #${p.token}
               </div>
 
-              <div class="space-y-1 min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <h4 class="font-extrabold text-base sm:text-lg text-slate-900 truncate">${p.name}</h4>
-                  <span class="text-xs font-bold text-slate-500">(${p.age}${p.gender})</span>
-                  ${statusPillHTML}
+              <!-- Contact Name & 1-line WhatsApp Snippet -->
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <h4 class="font-extrabold text-sm sm:text-base text-slate-900 truncate leading-snug">${p.name}</h4>
+                  <span class="text-xs font-semibold text-slate-500">(${p.age}${p.gender})</span>
+                  ${statusBadge}
                 </div>
 
-                <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                  <span class="font-bold text-[#075E54] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">${p.reason}</span>
-                  ${sourceBadge}
-                  ${bpIndicator}
-                  ${parchiIndicator}
+                <div class="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1.5">
+                  <span class="font-medium text-slate-600">${p.reason}</span>
+                  <span>•</span>
+                  <span>${sourceTag}</span>
+                  ${bpTag}
+                  ${parchiTag}
                 </div>
               </div>
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-wrap">
+            <!-- WhatsApp Actions: 1-Tap Fee & 1-Tap Bulao -->
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
               ${
                 p.payMode === 'Baaki'
                   ? `
-                    <div class="flex items-center gap-1.5 bg-amber-50 p-1 rounded-xl border border-amber-300">
-                      <span class="text-[10px] font-black text-amber-900 px-1 uppercase">Fee Baaki (₹${p.fee}):</span>
+                    <div class="flex items-center gap-1 bg-amber-50 p-0.5 sm:p-1 rounded-xl border border-amber-300">
+                      <span class="text-[10px] font-black text-amber-900 hidden xs:inline px-1">₹${p.fee}:</span>
                       <button 
                         type="button" 
                         onclick="setPatientPaymentMode('${p.id}', 'Cash')" 
-                        class="btn-tactile px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 shadow-xs transition"
-                        title="Cash payment record karein"
+                        class="btn-tactile px-2 sm:px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                        title="Cash Vasool Hua"
                       >
-                        <i class="fa-solid fa-money-bill-wave"></i>
-                        <span>💵 Cash</span>
+                        <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
+                        <span>Cash</span>
                       </button>
                       <button 
                         type="button" 
                         onclick="setPatientPaymentMode('${p.id}', 'UPI')" 
-                        class="btn-tactile px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs flex items-center gap-1 shadow-xs transition"
-                        title="UPI / Online payment record karein"
+                        class="btn-tactile px-2 sm:px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                        title="UPI Online Payment Hua"
                       >
-                        <i class="fa-solid fa-mobile-screen-button"></i>
-                        <span>📱 UPI</span>
+                        <i class="fa-solid fa-mobile-screen-button text-[10px]"></i>
+                        <span>UPI</span>
                       </button>
                     </div>
                   `
                   : `
                     <button 
+                      type="button"
                       onclick="togglePatientFeeStatus('${p.id}')" 
-                      title="Click to toggle Cash / UPI / Baaki"
-                      class="btn-tactile px-3 py-2 rounded-xl border font-extrabold text-xs ${feePillClass} transition"
+                      title="Tap to toggle Cash / UPI / Baaki"
+                      class="btn-tactile px-2.5 py-1.5 rounded-xl border font-extrabold text-xs ${feePillClass} transition"
                     >
                       ${feeText}
                     </button>
@@ -5458,21 +5494,24 @@
               }
 
               <button 
+                type="button"
                 onclick="openParchiDrawer('${p.id}')" 
-                class="btn-tactile px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 transition"
+                class="btn-tactile w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition"
+                title="Parchi / Vitals"
               >
-                <i class="fa-solid fa-camera text-[#128C7E]"></i>
-                <span>Parchi</span>
+                <i class="fa-solid fa-camera text-xs text-[#128C7E]"></i>
               </button>
 
               ${
                 p.status === 'WAITING'
                   ? `<button 
+                      type="button"
                       onclick="sendPatientInsideCabin('${p.id}')" 
-                      class="btn-tactile px-3.5 py-2 rounded-xl bg-[#128C7E] hover:bg-[#075E54] text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                      class="btn-tactile px-3 sm:px-3.5 py-2 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center gap-1 shadow-xs transition whitespace-nowrap"
+                      title="Call Patient Inside Cabin"
                     >
-                      <span>Andar Bhejein</span>
-                      <i class="fa-solid fa-arrow-right"></i>
+                      <span>Bulao</span>
+                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>`
                   : ''
               }
