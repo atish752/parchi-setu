@@ -122,22 +122,22 @@
       <!-- Right Action Cluster: Onboarding / Share Link / Language / Role Toggle -->
       <div class="flex items-center gap-2 ml-auto flex-wrap">
         
-        <!-- Clinic Setup / Onboarding Button -->
+        <!-- Clinic Setup / Onboarding Button (Hidden in Patient View and Unauthenticated Gateway) -->
         <button 
           onclick="openClinicOnboardingModal()" 
           id="clinicOnboardHeaderBtn"
-          class="btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+          class="hidden btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition"
           title="Setup Clinic, Doctor & Visiting Timings"
         >
           <i class="fa-solid fa-hospital-user text-[#25D366]"></i>
           <span class="hidden sm:inline">Clinic Setup</span>
         </button>
 
-        <!-- Share Patient Booking Link & QR Button -->
+        <!-- Share Patient Booking Link & QR Button (Hidden in Patient View and Unauthenticated Gateway) -->
         <button 
           onclick="openOnboardingSuccessModal()" 
           id="headerShareLinkBtn"
-          class="btn-tactile bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#a7f3d0] border border-[#25D366]/50 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+          class="hidden btn-tactile bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#a7f3d0] border border-[#25D366]/50 px-2.5 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition"
           title="Get Patient Booking Link & QR Code"
         >
           <i class="fa-solid fa-qrcode text-[#25D366]"></i>
@@ -158,7 +158,7 @@
         <!-- Clinic Auth / User Account Section -->
         <div id="headerAuthContainer" class="flex items-center gap-1.5">
           <button 
-            onclick="openClinicAuthModal()" 
+            onclick="handleProfileHeaderClick()" 
             id="clinicAuthHeaderBtn"
             class="btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
             title="Clinic Sign In / Naya Clinic Account"
@@ -169,10 +169,10 @@
           <button 
             onclick="handleUserSignOut()" 
             id="headerSignOutBtn"
-            class="hidden btn-tactile bg-rose-950/60 hover:bg-rose-900/80 text-rose-200 border border-rose-700/60 px-2 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition"
+            class="hidden btn-tactile bg-[#8B0000] hover:bg-[#6b0000] text-white border border-red-950 px-2.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1 transition shadow-xs"
             title="Sign Out of Clinic Account"
           >
-            <i class="fa-solid fa-right-from-bracket"></i>
+            <i class="fa-solid fa-right-from-bracket text-red-200"></i>
             <span class="hidden md:inline">Logout</span>
           </button>
         </div>
@@ -204,7 +204,7 @@
     <!-- =================================================================== -->
     <!-- COMPACT 4-TAB NAVIGATION BAR (COMPRESSED TO MAXIMIZE WORKSPACE)     -->
     <!-- =================================================================== -->
-    <nav id="clinicNavTabs" class="bg-[#075E54] border-t border-emerald-800/80 shadow-xs">
+    <nav id="clinicNavTabs" class="hidden bg-[#075E54] border-t border-emerald-800/80 shadow-xs">
       <div class="max-w-6xl mx-auto grid grid-cols-4 text-center">
         
         <!-- Tab 1: Live Queue -->
@@ -259,9 +259,195 @@
   <main class="flex-1 max-w-6xl w-full mx-auto px-2 sm:px-4 pt-1.5 sm:pt-2 pb-16">
 
     <!-- =================================================================== -->
+    <!-- VIEW 0: COMPULSORY CLINIC SIGN IN / SIGN UP GATEWAY                 -->
+    <!-- (Displayed when visiting main URL before doctor / clinic sign-in)  -->
+    <!-- =================================================================== -->
+    <div id="viewAuthGateway" class="max-w-xl mx-auto my-4 sm:my-8 px-2 sm:px-4">
+      <div class="bg-white rounded-3xl shadow-2xl border-2 border-emerald-500/40 overflow-hidden">
+        <!-- Header Hero Banner -->
+        <div class="bg-gradient-to-r from-[#075E54] via-[#0b6b5e] to-[#128C7E] text-white p-6 sm:p-8 text-center relative overflow-hidden">
+          <div class="w-16 h-16 rounded-2xl bg-white text-[#075E54] p-1.5 mx-auto mb-3 shadow-lg flex items-center justify-center">
+            <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+          </div>
+          <span class="inline-block bg-[#25D366] text-slate-950 text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-xs">
+            🏥 Doctor & Clinic Portal
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">ParchiSetu Clinic Sign In</h2>
+          <p class="text-xs sm:text-sm text-emerald-100 mt-1 max-w-md mx-auto">
+            भारत का सबसे सरल डिजिटल पर्ची, लाइव टोकन व कम्पाउंडर डेस्क सिस्टम। क्लिनिक एक्सेस करने के लिए साइन इन या साइन अप करें।
+          </p>
+
+          <!-- Tabs: Sign Up vs Login -->
+          <div class="grid grid-cols-2 gap-2 mt-5 bg-emerald-950/70 p-1 rounded-2xl max-w-xs mx-auto">
+            <button 
+              type="button" 
+              onclick="switchGatewayTab('signup')" 
+              id="gwTabSignup" 
+              class="py-2 rounded-xl text-xs font-black bg-[#25D366] text-slate-950 shadow-xs transition"
+            >
+              Naya Clinic Sign Up
+            </button>
+            <button 
+              type="button" 
+              onclick="switchGatewayTab('login')" 
+              id="gwTabLogin" 
+              class="py-2 rounded-xl text-xs font-bold text-emerald-100 hover:text-white transition"
+            >
+              Clinic Login
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-5">
+          <!-- Prominent Fast Google Sign-in -->
+          <button 
+            type="button" 
+            onclick="handleGoogleSignIn()" 
+            id="gwBtnGoogleSignIn"
+            class="btn-tactile w-full py-3.5 px-4 bg-white hover:bg-slate-50 text-slate-800 font-extrabold rounded-2xl border-2 border-slate-300 shadow-sm flex items-center justify-center gap-3 transition"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span id="gwBtnGoogleSignInText">Continue with Google (Fast Sign-In)</span>
+          </button>
+
+          <!-- Divider -->
+          <div class="flex items-center gap-3">
+            <div class="flex-1 h-px bg-slate-200"></div>
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">या Email se proceed karein</span>
+            <div class="flex-1 h-px bg-slate-200"></div>
+          </div>
+
+          <!-- Alert box -->
+          <div id="gwAlertBox" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+
+          <!-- Form 1: Sign Up -->
+          <form id="gwSignupForm" onsubmit="event.preventDefault(); handleGatewaySignup();" class="space-y-4">
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                Doctor Sahab Ka Naam (Doctor Full Name) *
+              </label>
+              <input 
+                type="text" 
+                id="gwSignupDocName" 
+                required 
+                placeholder="e.g. Dr. Rajesh Sharma" 
+                class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                Email Address *
+              </label>
+              <input 
+                type="email" 
+                id="gwSignupEmail" 
+                required 
+                placeholder="e.g. doctor@clinic.com" 
+                class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                Password (कम से कम 6 अक्षर) *
+              </label>
+              <div class="relative">
+                <input 
+                  type="password" 
+                  id="gwSignupPassword" 
+                  required 
+                  minlength="6"
+                  placeholder="Minimum 6 characters" 
+                  class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white"
+                />
+              </div>
+            </div>
+            <button 
+              type="submit" 
+              id="gwBtnSignupSubmit"
+              class="btn-tactile w-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2 transition"
+            >
+              <i class="fa-solid fa-user-plus text-base"></i>
+              <span>Naya Clinic Banayein & Setup Karein ➔</span>
+            </button>
+          </form>
+
+          <!-- Form 2: Login -->
+          <form id="gwLoginForm" onsubmit="event.preventDefault(); handleGatewayLogin();" class="hidden space-y-4">
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                Email Address / Clinic ID *
+              </label>
+              <input 
+                type="text" 
+                id="gwLoginEmail" 
+                required 
+                placeholder="e.g. doctor@clinic.com ya clinic_sanjeevani_01" 
+                class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white"
+              />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-extrabold text-slate-700 uppercase">
+                  Password *
+                </label>
+                <button 
+                  type="button" 
+                  onclick="handleForgotPassword()" 
+                  class="text-[11px] font-bold text-[#128C7E] hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+              <input 
+                type="password" 
+                id="gwLoginPassword" 
+                required 
+                placeholder="Apna password dalein" 
+                class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white"
+              />
+            </div>
+            <button 
+              type="submit" 
+              id="gwBtnLoginSubmit"
+              class="btn-tactile w-full bg-[#075E54] hover:bg-[#128C7E] text-white font-black py-3.5 px-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2 transition"
+            >
+              <i class="fa-solid fa-right-to-bracket text-base"></i>
+              <span>Clinic Desk Mein Login Karein ➔</span>
+            </button>
+          </form>
+
+          <!-- Feature Bullets for Clinic Owners -->
+          <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs text-slate-600 font-semibold">
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-check-circle text-[#25D366]"></i> Live Patient Token Ticker</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-check-circle text-[#25D366]"></i> 3-Second Walk-in Parchi</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-check-circle text-[#25D366]"></i> Printable QR Standee</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-check-circle text-[#25D366]"></i> Cash & UPI Daily Galla</div>
+          </div>
+
+          <!-- Quick Test Demo Link -->
+          <div class="text-center pt-2">
+            <button 
+              type="button" 
+              onclick="handleDemoLogin()" 
+              class="text-xs text-emerald-800 hover:text-emerald-950 font-bold underline flex items-center justify-center gap-1.5 mx-auto"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+              <span>⚡ Try Quick Demo (Without Sign-in)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
     <!-- VIEW 1: CLINIC DESK (COMPOUNDER & DOCTOR INTERFACE)                 -->
     <!-- =================================================================== -->
-    <div id="viewClinicDesk" class="space-y-3 sm:space-y-3.5">
+    <div id="viewClinicDesk" class="hidden space-y-3 sm:space-y-3.5">
 
       <!-- ================================================================= -->
       <!-- TAB 1: "AAJ KI LINE" (LIVE TOKEN QUEUE + 3-SECOND ENTRY BAR)      -->
@@ -339,9 +525,13 @@
           </div>
         </div>
 
-        <!-- 1B. 3-SECOND "FAST WALK-IN ENTRY BAR" (BEATS PEN & PAPER) -->
-        <div class="bg-white rounded-2xl p-3 sm:p-3.5 shadow-md border-2 border-emerald-600/30">
-          <div class="flex items-center justify-between mb-2">
+        <!-- 1B. 3-SECOND "FAST WALK-IN ENTRY BAR" (COLLAPSIBLE DROPDOWN ACCORDION) -->
+        <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-600/30 overflow-hidden">
+          <!-- Accordion Clickable Header -->
+          <div 
+            onclick="toggleFastWalkinCollapse()" 
+            class="cursor-pointer select-none p-3 sm:p-3.5 bg-slate-50 hover:bg-emerald-50/60 flex items-center justify-between transition"
+          >
             <div class="flex items-center gap-2">
               <span class="w-6 h-6 rounded-lg bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-xs">
                 <i class="fa-solid fa-bolt"></i>
@@ -349,11 +539,24 @@
               <h3 class="font-extrabold text-xs sm:text-sm text-slate-800" data-i18n="fastEntryTitle">
                 ⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)
               </h3>
+              <span class="text-[11px] sm:text-xs font-bold bg-emerald-100 text-[#075E54] px-2 py-0.5 rounded-full border border-emerald-300 ml-1">
+                <span data-i18n="nextTokenLabel">Agla Token:</span> <strong id="nextAvailableTokenPreview" class="text-xs sm:text-sm">#15</strong>
+              </span>
             </div>
-            <span class="text-[11px] sm:text-xs font-bold bg-emerald-50 text-[#075E54] px-2 py-0.5 rounded-full border border-emerald-200">
-              <span data-i18n="nextTokenLabel">Agla Token:</span> <strong id="nextAvailableTokenPreview" class="text-xs sm:text-sm">#15</strong>
-            </span>
+            <div class="flex items-center gap-2">
+              <button 
+                type="button" 
+                id="walkinToggleBtn" 
+                class="btn-tactile bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 transition"
+              >
+                <span id="walkinToggleText">+ Nayi Parchi Banayein</span>
+                <i id="walkinChevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+              </button>
+            </div>
           </div>
+
+          <!-- Collapsible Form Body: Hidden by default -->
+          <div id="walkinFormCollapse" class="hidden p-3 sm:p-3.5 border-t border-slate-200 space-y-2">
 
           <!-- Row 1: Name, Age/Gender, Mobile -->
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2">
@@ -457,6 +660,7 @@
 
           </div>
         </div>
+      </div>
 
         <!-- 1C. WHATSAPP-STYLE FILTER PILLS & SEARCH BAR -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
@@ -868,21 +1072,24 @@
             </div>
           </div>
 
-          <!-- LIVE RUNNING TOKEN TICKER (SO PATIENTS AT HOME KNOW WHEN TO LEAVE) -->
-          <div class="mt-4 bg-black/25 border border-emerald-500/40 rounded-2xl p-3.5 flex items-center justify-between">
+          <!-- DYNAMIC LIVE CLINIC STATUS BANNER (OPEN / CLOSED / HOLIDAY) -->
+          <div id="patientViewLiveStatusCard" class="mt-4 bg-black/25 border border-emerald-500/40 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition">
             <div class="flex items-center gap-3">
-              <span class="w-3.5 h-3.5 rounded-full bg-[#25D366] live-token-pulse"></span>
+              <span id="patientStatusLiveDot" class="w-3.5 h-3.5 rounded-full bg-[#25D366] live-token-pulse flex-shrink-0"></span>
               <div>
-                <span class="text-[11px] uppercase tracking-wider text-emerald-200 font-bold block">
+                <span id="patientStatusBadgeText" class="text-[11px] uppercase tracking-wider text-emerald-200 font-black block">
                   🟢 LIVE CLINIC STATUS (ABHI ANDAR)
                 </span>
-                <span id="patientViewLiveToken" class="text-lg font-black text-white">
+                <span id="patientViewLiveToken" class="text-base sm:text-lg font-black text-white block">
                   Token #12 chal raha hai
+                </span>
+                <span id="patientStatusSubText" class="text-[11px] text-emerald-100/90 block">
+                  Doctor Sahab cabin mein mareez dekh rahe hain.
                 </span>
               </div>
             </div>
-            <div class="text-right">
-              <span class="text-[11px] text-emerald-200 block">Waiting Line</span>
+            <div class="text-left sm:text-right flex-shrink-0 bg-black/20 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+              <span class="text-[10px] text-emerald-200 block uppercase font-bold">Waiting Line</span>
               <span id="patientViewWaitingCount" class="text-sm font-black text-[#25D366]">2 Mareez</span>
             </div>
           </div>
@@ -891,6 +1098,17 @@
           <div id="patientViewLateAlert" class="hidden mt-2.5 bg-amber-400 text-slate-950 rounded-xl px-3 py-2 text-xs font-extrabold flex items-center gap-2">
             <i class="fa-solid fa-clock"></i>
             <span>Soochna: Doctor Sahab aaj 30 minute late hain. Kripya us hisaab se aayein.</span>
+          </div>
+
+          <!-- Punchy Reassurance Note for Waiting Patients -->
+          <div class="mt-3 p-3 bg-amber-50 rounded-2xl border border-amber-300 text-amber-950 text-xs font-semibold flex items-start gap-2.5 shadow-xs">
+            <i class="fa-solid fa-lightbulb text-amber-600 text-base flex-shrink-0 mt-0.5"></i>
+            <div>
+              <strong class="font-black text-amber-950">Doctor sahab ya compounder ko baar-baar phone karne ki bilkul zaroorat nahi hai!</strong>
+              <p class="text-[11px] text-amber-900 mt-0.5 leading-snug">
+                Bas is link ko khula rakhein ya refresh karein, yahan live token status badalta rahega. Jab aapka number paas aaye tabhi aaram se clinic pahunchein.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -907,6 +1125,17 @@
 
         <!-- 3-Step Patient Self-Booking Form -->
         <div id="patientBookingFormContainer" class="p-5 space-y-4">
+          
+          <!-- Highlighted Doctor Consultation Fee Card -->
+          <div id="patientConsultationFeeCard" class="bg-emerald-50 border-2 border-emerald-500/40 rounded-2xl p-3.5 flex items-center justify-between shadow-xs">
+            <div>
+              <span class="text-xs font-black text-emerald-950 block">Doctor Consultation Fee (परामर्श शुल्क)</span>
+              <span class="text-[11px] text-emerald-800 font-medium">Online token booking free hai • Fees clinic counter par dein</span>
+            </div>
+            <div id="patientFeeHighlightBadge" class="text-xl font-black text-emerald-900 bg-white px-3.5 py-1.5 rounded-xl border-2 border-emerald-400 shadow-xs">
+              ₹300
+            </div>
+          </div>
           
           <!-- Step 0: Multi-Doctor Selection (Shown if Clinic Has Multiple Doctors) -->
           <div id="patientDoctorSelectSection" class="hidden space-y-2">
@@ -1106,6 +1335,17 @@
               </div>
             </div>
 
+            <!-- Punchy Reassurance Note on Token Pass -->
+            <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-300 text-amber-950 text-[11px] font-semibold text-left flex items-start gap-2 shadow-xs">
+              <i class="fa-solid fa-lightbulb text-amber-600 text-sm flex-shrink-0 mt-0.5"></i>
+              <div>
+                <strong class="font-bold text-amber-950">Doctor sahab ya compounder ko call karne ki zaroorat nahi hai!</strong>
+                <p class="text-[10px] text-amber-900 mt-0.5">
+                  Is page ko refresh karein ya khula rakhein — live cabin token number yahan lagatar update hota rahega.
+                </p>
+              </div>
+            </div>
+
             <p class="text-[11px] text-slate-500">
               📸 Iska screenshot le lein ya WhatsApp par save karein aur clinic counter par dikhayein.
             </p>
@@ -1139,11 +1379,12 @@
               </button>
               <button 
                 type="button" 
-                onclick="switchAppRole('clinic')" 
+                onclick="updatePatientTokenPassLiveStatus(); showToast('🔄 Live token status refresh ho gaya!');" 
                 class="btn-tactile py-2.5 px-2 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xs transition"
+                title="Live status dobara check karein"
               >
-                <i class="fa-solid fa-desktop"></i>
-                <span>Clinic Desk</span>
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <span>Refresh Live</span>
               </button>
             </div>
           </div>
@@ -1320,6 +1561,119 @@
     </div>
 
   </aside>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: CLINIC ACCOUNT, PROFILE & MEMBERSHIP PRICING                   -->
+  <!-- ===================================================================== -->
+  <div id="clinicAccountModal" class="fixed inset-0 bg-slate-950/75 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-200 my-auto">
+      
+      <!-- Modal Header -->
+      <div class="bg-[#075E54] text-white p-5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-full bg-emerald-100 text-[#075E54] flex items-center justify-center text-lg font-black">
+            <i class="fa-solid fa-circle-user text-2xl text-[#075E54]"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-base leading-tight">Clinic Profile & Pricing</h3>
+            <p class="text-xs text-emerald-200" id="accountUserEmail">doctor@clinic.com</p>
+          </div>
+        </div>
+        <button onclick="closeClinicAccountModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+        <!-- Clinic Details Card -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Active Clinic Info</span>
+            <span class="bg-[#25D366]/20 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">Logged In ✓</span>
+          </div>
+          <div class="font-black text-slate-900 text-base" id="accountClinicName">Sanjeevani Family Clinic</div>
+          <div class="text-xs font-semibold text-slate-700" id="accountDoctorName">Dr. Rajesh Sharma (MBBS, MD)</div>
+          <div class="text-xs text-slate-500 flex items-center gap-1" id="accountClinicLocation">
+            <i class="fa-solid fa-location-dot text-slate-400"></i> Near Main Market Chowk, Station Road, Patna
+          </div>
+          <div class="pt-2">
+            <button 
+              type="button" 
+              onclick="closeClinicAccountModal(); openClinicOnboardingModal(true);" 
+              class="btn-tactile w-full py-2 px-3 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-[#075E54] font-bold text-xs flex items-center justify-center gap-1.5 transition"
+            >
+              <i class="fa-solid fa-pen-to-square"></i>
+              <span>Clinic Details, Timings & Fees Badlein</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PRICING & MEMBERSHIP PLANS -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
+              <i class="fa-solid fa-tag"></i> ParchiSetu Membership Plans
+            </h4>
+            <span class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">30-Day Free Trial Active</span>
+          </div>
+
+          <!-- Plan 1: Monthly -->
+          <div class="p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-[#128C7E] transition relative cursor-pointer" onclick="selectPricingPlan('monthly')">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-black text-slate-900 block">Monthly OPD Plan</span>
+                <span class="text-[11px] text-slate-500">Chhote wa naye clinics ke liye best</span>
+              </div>
+              <div class="text-right">
+                <span class="text-lg font-black text-slate-900">₹399</span>
+                <span class="text-[10px] text-slate-500 block">/ mahina</span>
+              </div>
+            </div>
+            <ul class="mt-2 text-[11px] text-slate-600 space-y-1">
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Unlimited Digital Parchis & QR Tokens</li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Live Compounder Desk & Cabin Calling</li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Daily Galla / Cash & UPI Checkbook</li>
+            </ul>
+          </div>
+
+          <!-- Plan 2: Annual Plan (Best Value) -->
+          <div class="p-3.5 rounded-2xl border-2 border-[#25D366] bg-emerald-50/50 hover:bg-emerald-50 transition relative cursor-pointer" onclick="selectPricingPlan('annual')">
+            <span class="absolute -top-2.5 right-4 bg-[#25D366] text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow-xs">
+              ⭐ BEST VALUE (SAVE ₹788)
+            </span>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-black text-[#075E54] block">Annual Pro Plan (1 Year)</span>
+                <span class="text-[11px] text-emerald-800">Pure 1 saal ka tension-free subscription</span>
+              </div>
+              <div class="text-right">
+                <span class="text-lg font-black text-[#075E54]">₹4,000</span>
+                <span class="text-[10px] text-emerald-700 block">/ saal (~₹333/mo)</span>
+              </div>
+            </div>
+            <ul class="mt-2 text-[11px] text-slate-700 space-y-1">
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Sabhi Monthly features shamil</li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Free Laminated QR Acrylic Standee Assistance</li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Dedicated Phone & WhatsApp Priority Support</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Prominent Red/Brown Logout Button -->
+        <div class="pt-2">
+          <button 
+            type="button" 
+            onclick="handleUserSignOut()" 
+            class="btn-tactile w-full py-3 px-4 bg-[#8B0000] hover:bg-[#6b0000] text-white font-extrabold rounded-2xl shadow-md flex items-center justify-center gap-2 transition"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Log Out / Account Se Bahar Niklein</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <!-- ===================================================================== -->
   <!-- MODAL 0: CLINIC PORTAL (FIREBASE GOOGLE & EMAIL AUTHENTICATION)       -->
@@ -2291,6 +2645,11 @@
     let currentRole = 'clinic';   // 'clinic' | 'patient'
     let currentTab = 'queue';     // 'queue' | 'calendar' | 'register' | 'galla'
     let currentQueueFilter = 'ALL'; // 'ALL' | 'WAITING' | 'IN_CABIN' | 'DONE' | 'BAAKI'
+    let currentAuthUser = null;
+    try {
+      const savedAuth = localStorage.getItem('parchisetu_auth_user');
+      if (savedAuth) currentAuthUser = JSON.parse(savedAuth);
+    } catch (e) {}
 
     // Clinic Profile & Configuration
     let clinicProfile = {
@@ -2729,30 +3088,40 @@
     // 4. DYNAMIC CLINIC BRANDING BINDINGS
     // =========================================================================
     function updateClinicBranding() {
+      if (!clinicProfile) return;
       // Top Header
-      document.getElementById('headerClinicName').textContent = clinicProfile.name;
-      document.getElementById('headerDoctorName').textContent = `${clinicProfile.doctorName} (${clinicProfile.doctorDegree.split(',')[0].trim()})`;
+      const headerNameEl = document.getElementById('headerClinicName');
+      if (headerNameEl) headerNameEl.textContent = clinicProfile.name || 'ParchiSetu Clinic';
+      
+      const docDeg = (clinicProfile.doctorDegree || 'MBBS').split(',')[0].trim();
+      const headerDocEl = document.getElementById('headerDoctorName');
+      if (headerDocEl) headerDocEl.textContent = `${clinicProfile.doctorName || 'Doctor'} (${docDeg})`;
 
       // Standee
       const standeeClinic = document.getElementById('standeeClinicName');
-      if (standeeClinic) standeeClinic.textContent = clinicProfile.name;
+      if (standeeClinic) standeeClinic.textContent = clinicProfile.name || 'Apka Clinic';
       const standeeDoc = document.getElementById('standeeDoctorName');
-      if (standeeDoc) standeeDoc.textContent = `${clinicProfile.doctorName} (${clinicProfile.doctorDegree})`;
+      if (standeeDoc) standeeDoc.textContent = `${clinicProfile.doctorName || 'Doctor'} (${clinicProfile.doctorDegree || 'MBBS'})`;
 
       // Calendar Tab Banner
       const calTitle = document.getElementById('calendarClinicTitle');
-      if (calTitle) calTitle.textContent = clinicProfile.name;
+      if (calTitle) calTitle.textContent = clinicProfile.name || 'Apka Clinic';
       const calSub = document.getElementById('calendarClinicSub');
-      if (calSub) calSub.textContent = `Dr. ${clinicProfile.doctorName.replace(/^Dr\.\s*/i, '')} • ${clinicProfile.category} • Fee: ₹${clinicProfile.fees.normal}`;
+      if (calSub) {
+        const cleanDocName = (clinicProfile.doctorName || 'Doctor').replace(/^Dr\.\s*/i, '');
+        const normFee = (clinicProfile.fees && clinicProfile.fees.normal != null) ? clinicProfile.fees.normal : 300;
+        calSub.textContent = `Dr. ${cleanDocName} • ${clinicProfile.category || 'General Medicine'} • Fee: ₹${normFee}`;
+      }
 
       // Patient View
       const patClinic = document.getElementById('patientViewClinicName');
-      if (patClinic) patClinic.textContent = clinicProfile.name;
+      if (patClinic) patClinic.textContent = clinicProfile.name || 'ParchiSetu Clinic';
       const patDoc = document.getElementById('patientViewDoctorInfo');
-      if (patDoc) patDoc.textContent = `${clinicProfile.doctorName} • ${clinicProfile.doctorDegree}`;
+      if (patDoc) patDoc.textContent = `${clinicProfile.doctorName || 'Doctor'} • ${clinicProfile.doctorDegree || 'MBBS'}`;
       const patAddr = document.getElementById('patientViewClinicAddress');
       if (patAddr) {
-        patAddr.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${clinicProfile.address}, ${clinicProfile.city} • Fee: ₹${clinicProfile.fees.normal}`;
+        const feeVal = (clinicProfile.fees && clinicProfile.fees.normal != null) ? clinicProfile.fees.normal : 300;
+        patAddr.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${(clinicProfile.address || 'Clinic Address')}, ${(clinicProfile.city || '')} • Fee: ₹${feeVal}`;
       }
 
       // Patient Shift labels
@@ -3144,176 +3513,184 @@
     }
 
     async function submitClinicOnboarding() {
-      const name = (document.getElementById('onboardClinicName')?.value || '').trim();
-      const phone = (document.getElementById('onboardClinicPhone')?.value || '').trim();
-      const tagline = (document.getElementById('onboardClinicTagline')?.value || '').trim();
-      const category = document.getElementById('onboardClinicCategory')?.value || 'General Medicine';
-      const address = (document.getElementById('onboardClinicAddress')?.value || '').trim();
-      const city = (document.getElementById('onboardClinicCity')?.value || '').trim() || 'Patna, Bihar';
-      const mapEl = document.getElementById('onboardClinicMapUrl') || document.getElementById('onboardGoogleMapsLink');
-      const mapUrl = mapEl ? mapEl.value.trim() : '';
-      const upiId = (document.getElementById('onboardClinicUpi')?.value || '').trim();
-
-      const docName = (document.getElementById('onboardDoctorName')?.value || '').trim();
-      const degree = (document.getElementById('onboardDoctorDegree')?.value || '').trim() || 'MBBS';
-      const regNo = (document.getElementById('onboardDoctorRegNo')?.value || '').trim();
-      const exp = parseInt(document.getElementById('onboardDoctorExp')?.value, 10) || 10;
-      const normalFee = parseInt(document.getElementById('onboardFeeNormal')?.value, 10) || 300;
-      const followupFee = parseInt(document.getElementById('onboardFeeFollowup')?.value, 10) || 200;
-      const emergencyFee = parseInt(document.getElementById('onboardFeeEmergency')?.value, 10) || 500;
-
-      // Validation across steps
-      if (!name) {
-        switchOnboardStep(1);
-        document.getElementById('onboardClinicName')?.focus();
-        showToast('⚠️ Kripya Clinic Ka Naam bharein!', 'warning');
-        return;
-      }
-      if (!phone) {
-        switchOnboardStep(1);
-        document.getElementById('onboardClinicPhone')?.focus();
-        showToast('⚠️ Kripya Clinic Ka Mobile No. bharein!', 'warning');
-        return;
-      }
-      if (!address) {
-        switchOnboardStep(2);
-        document.getElementById('onboardClinicAddress')?.focus();
-        showToast('⚠️ Kripya Clinic Ka Pata (Address) bharein!', 'warning');
-        return;
-      }
-      if (!docName) {
-        switchOnboardStep(4);
-        document.getElementById('onboardDoctorName')?.focus();
-        showToast('⚠️ Kripya Doctor Sahab Ka Naam bharein!', 'warning');
-        return;
+      const btn = document.getElementById('onboardSubmitBtn');
+      const origBtnContent = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Setting up Clinic...';
       }
 
-      // Collect checked days
-      const days = [];
-      document.querySelectorAll('input[name="onboardDay"]:checked').forEach(cb => {
-        days.push(cb.value);
-      });
+      try {
+        const name = (document.getElementById('onboardClinicName')?.value || '').trim();
+        const phone = (document.getElementById('onboardClinicPhone')?.value || '').trim();
+        const tagline = (document.getElementById('onboardClinicTagline')?.value || '').trim();
+        const category = document.getElementById('onboardClinicCategory')?.value || 'General Medicine';
+        const address = (document.getElementById('onboardClinicAddress')?.value || '').trim();
+        const city = (document.getElementById('onboardClinicCity')?.value || '').trim() || 'Patna, Bihar';
+        const mapEl = document.getElementById('onboardClinicMapUrl') || document.getElementById('onboardGoogleMapsLink');
+        const mapUrl = mapEl ? mapEl.value.trim() : '';
+        const upiId = (document.getElementById('onboardClinicUpi')?.value || '').trim();
 
-      const mainDoc = {
-        id: 'doc_1',
-        name: docName,
-        degree: degree,
-        specialty: category,
-        regNo: regNo,
-        fee: normalFee,
-        isMain: true
-      };
+        const docName = (document.getElementById('onboardDoctorName')?.value || '').trim();
+        const degree = (document.getElementById('onboardDoctorDegree')?.value || '').trim() || 'MBBS';
+        const regNo = (document.getElementById('onboardDoctorRegNo')?.value || '').trim();
+        const exp = parseInt(document.getElementById('onboardDoctorExp')?.value, 10) || 10;
+        const normalFee = parseInt(document.getElementById('onboardFeeNormal')?.value, 10) || 300;
+        const followupFee = parseInt(document.getElementById('onboardFeeFollowup')?.value, 10) || 200;
+        const emergencyFee = parseInt(document.getElementById('onboardFeeEmergency')?.value, 10) || 500;
 
-      const validAddtl = (onboardAdditionalDoctors || []).filter(d => d.name && d.name.trim().length > 0);
-      const allDoctors = [mainDoc, ...validAddtl];
+        // Validation across steps with smart fallback defaults
+        const finalName = name || 'Sanjeevani Family Clinic';
+        const finalPhone = phone || (currentAuthUser && currentAuthUser.email) || '9835012345';
+        const finalAddress = address || 'Near Main Market Chowk, Station Road';
+        const finalDocName = docName || (currentAuthUser && currentAuthUser.displayName) || 'Dr. Rajesh Sharma';
 
-      // Current Firebase user if logged in
-      const currentUser = (window.ParchiFirebase && window.ParchiFirebase.getCurrentUser)
-        ? window.ParchiFirebase.getCurrentUser()
-        : null;
-      const ownerUid = currentUser ? currentUser.uid : (clinicProfile.ownerUid || '');
-      const ownerEmail = currentUser ? currentUser.email : (clinicProfile.ownerEmail || '');
+        // Collect checked days
+        const days = [];
+        document.querySelectorAll('input[name="onboardDay"]:checked').forEach(cb => {
+          days.push(cb.value);
+        });
 
-      clinicProfile = {
-        ...clinicProfile,
-        id: clinicProfile.id || ('clinic_' + Date.now()),
-        name,
-        tagline,
-        category,
-        address,
-        city,
-        phone,
-        whatsapp: phone,
-        upiId,
-        mapUrl,
-        ownerUid,
-        ownerEmail,
-        doctorName: docName,
-        doctorDegree: degree,
-        doctorRegNo: regNo,
-        experienceYears: exp,
-        doctors: allDoctors,
-        fees: {
-          normal: normalFee,
-          followup: followupFee,
-          emergency: emergencyFee,
-          report: 0
-        },
-        visitingHours: {
-          morning: {
-            enabled: document.getElementById('onboardMorningEnabled')?.checked ?? true,
-            start: document.getElementById('onboardMorningStart')?.value.trim() || '10:00 AM',
-            end: document.getElementById('onboardMorningEnd')?.value.trim() || '02:00 PM',
-            slotDurationMins: parseInt(document.getElementById('onboardMorningSlotMins')?.value, 10) || 15,
-            maxTokens: parseInt(document.getElementById('onboardMorningCapacity')?.value, 10) || 25
+        const mainDoc = {
+          id: 'doc_1',
+          name: finalDocName,
+          degree: degree,
+          specialty: category,
+          regNo: regNo,
+          fee: normalFee,
+          isMain: true
+        };
+
+        const validAddtl = (onboardAdditionalDoctors || []).filter(d => d.name && d.name.trim().length > 0);
+        const allDoctors = [mainDoc, ...validAddtl];
+
+        // Current Firebase user or session user
+        const currentUser = (window.ParchiFirebase && window.ParchiFirebase.getCurrentUser)
+          ? window.ParchiFirebase.getCurrentUser()
+          : currentAuthUser;
+        const ownerUid = currentUser ? (currentUser.uid || currentUser.id || '') : (clinicProfile.ownerUid || '');
+        const ownerEmail = currentUser ? (currentUser.email || '') : (clinicProfile.ownerEmail || '');
+
+        clinicProfile = {
+          ...clinicProfile,
+          id: clinicProfile.id || ('clinic_' + Date.now()),
+          name: finalName,
+          tagline,
+          category,
+          address: finalAddress,
+          city,
+          phone: finalPhone,
+          whatsapp: finalPhone,
+          upiId,
+          mapUrl,
+          ownerUid,
+          ownerEmail,
+          doctorName: finalDocName,
+          doctorDegree: degree,
+          doctorRegNo: regNo,
+          experienceYears: exp,
+          doctors: allDoctors,
+          fees: {
+            normal: normalFee,
+            followup: followupFee,
+            emergency: emergencyFee,
+            report: 0
           },
-          evening: {
-            enabled: document.getElementById('onboardEveningEnabled')?.checked ?? true,
-            start: document.getElementById('onboardEveningStart')?.value.trim() || '05:00 PM',
-            end: document.getElementById('onboardEveningEnd')?.value.trim() || '09:00 PM',
-            slotDurationMins: parseInt(document.getElementById('onboardEveningSlotMins')?.value, 10) || 15,
-            maxTokens: parseInt(document.getElementById('onboardEveningCapacity')?.value, 10) || 30
+          visitingHours: {
+            morning: {
+              enabled: document.getElementById('onboardMorningEnabled')?.checked ?? true,
+              start: document.getElementById('onboardMorningStart')?.value.trim() || '10:00 AM',
+              end: document.getElementById('onboardMorningEnd')?.value.trim() || '02:00 PM',
+              slotDurationMins: parseInt(document.getElementById('onboardMorningSlotMins')?.value, 10) || 15,
+              maxTokens: parseInt(document.getElementById('onboardMorningCapacity')?.value, 10) || 25
+            },
+            evening: {
+              enabled: document.getElementById('onboardEveningEnabled')?.checked ?? true,
+              start: document.getElementById('onboardEveningStart')?.value.trim() || '05:00 PM',
+              end: document.getElementById('onboardEveningEnd')?.value.trim() || '09:00 PM',
+              slotDurationMins: parseInt(document.getElementById('onboardEveningSlotMins')?.value, 10) || 15,
+              maxTokens: parseInt(document.getElementById('onboardEveningCapacity')?.value, 10) || 30
+            },
+            daysOpen: days.length > 0 ? days : ALL_WEEK_DAYS,
+            avgConsultationMins: parseInt(document.getElementById('onboardAvgConsultMins')?.value, 10) || 10
           },
-          daysOpen: days.length > 0 ? days : ALL_WEEK_DAYS,
-          avgConsultationMins: parseInt(document.getElementById('onboardAvgConsultMins')?.value, 10) || 10
-        },
-        leaves: clinicProfile.leaves || {},
-        onboarded: true,
-        updatedAt: new Date().toISOString()
-      };
+          leaves: clinicProfile.leaves || {},
+          onboarded: true,
+          updatedAt: new Date().toISOString()
+        };
 
-      // FRESH START: Zero dummy data for newly onboarded clinic
-      todayQueue = [];
-      patientRegister = [];
-      selectedWalkinFee = clinicProfile.fees.normal;
-      saveLocalClinic();
-      saveLocalQueue();
-
-      // Sync with server if active
-      if (window.location.protocol.startsWith('http')) {
+        // Authenticate user session
+        currentAuthUser = currentAuthUser || {
+          uid: ownerUid || 'usr_' + Date.now(),
+          email: ownerEmail || clinicProfile.phone || 'doctor@clinic.com',
+          displayName: finalDocName,
+          clinicId: clinicProfile.id
+        };
         try {
-          const res = await fetch('/api/clinic', {
+          localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+        } catch (e) {}
+
+        // FRESH START: Zero dummy data for newly onboarded clinic
+        todayQueue = [];
+        patientRegister = [];
+        selectedWalkinFee = clinicProfile.fees.normal;
+        saveLocalClinic();
+        saveLocalQueue();
+
+        // Non-blocking sync with local server
+        if (window.location.protocol.startsWith('http')) {
+          fetch('/api/clinic', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(clinicProfile)
-          });
-          if (res.ok) {
-            const data = await res.json();
+          }).then(res => {
+            if (res.ok) return res.json();
+          }).then(data => {
             if (data && data.clinic) {
               clinicProfile = data.clinic;
               saveLocalClinic();
             }
-          }
-          await fetch('/api/queue/reset', { method: 'POST' });
-        } catch (e) {
-          console.warn('Sync clinic error:', e);
+          }).catch(e => console.warn('Sync clinic error:', e));
+
+          fetch('/api/queue/reset', { method: 'POST' }).catch(e => console.warn('Reset queue error:', e));
+        }
+
+        // Background sync with Firebase Firestore (never blocks modal)
+        if (window.ParchiFirebase) {
+          Promise.resolve().then(async () => {
+            try {
+              await window.ParchiFirebase.syncClinic(clinicProfile);
+              if (ownerUid) {
+                await window.ParchiFirebase.saveUserClinicMapping(ownerUid, clinicProfile.id, ownerEmail || clinicProfile.ownerEmail || '', clinicProfile.name);
+              }
+              window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+            } catch (fbErr) {
+              console.warn('Firebase background sync notice:', fbErr);
+            }
+          });
+        }
+
+        if (syncChannel) {
+          syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
+        }
+
+        closeClinicOnboardingModal();
+        try { updateHeaderAuthUI(currentAuthUser); } catch (e) {}
+        try { updateClinicBranding(); } catch (e) {}
+        try { refreshAllViews(); } catch (e) {}
+
+        // Open Success celebration & shareable link modal immediately!
+        openOnboardingSuccessModal();
+        showToast('🎉 Doctor Clinic Onboarding Safaltapoorvak Pura Hua!');
+      } catch (err) {
+        console.error('Submit clinic onboarding error:', err);
+        showToast('⚠️ Onboarding save karne mein samasya: ' + err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origBtnContent;
         }
       }
-
-      // Sync with Firebase Firestore and record mapping
-      if (window.ParchiFirebase) {
-        try {
-          await window.ParchiFirebase.syncClinic(clinicProfile);
-          if (ownerUid) {
-            await window.ParchiFirebase.saveUserClinicMapping(ownerUid, clinicProfile.id, ownerEmail || clinicProfile.ownerEmail || '', clinicProfile.name);
-          }
-          window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
-        } catch (fbErr) {
-          console.warn('Firebase sync clinic error:', fbErr);
-        }
-      }
-
-      if (syncChannel) {
-        syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
-      }
-
-      closeClinicOnboardingModal();
-      updateClinicBranding();
-      refreshAllViews();
-
-      // Open Success celebration & shareable link modal
-      openOnboardingSuccessModal();
-      showToast('🎉 Doctor Clinic Onboarding Safaltapoorvak Pura Hua!');
     }
 
     // =========================================================================
@@ -3643,11 +4020,277 @@
         const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Doctor');
         if (label) label.textContent = displayName;
         if (signOutBtn) signOutBtn.classList.remove('hidden');
-        if (headerBtn) headerBtn.title = `Logged in as ${user.email || user.displayName}`;
+        if (headerBtn) headerBtn.title = `Logged in as ${user.email || user.displayName} (Click for Clinic Profile & Pricing)`;
       } else {
-        if (label) label.textContent = 'Sign In / Register';
+        if (currentRole === 'patient') {
+          if (label) label.textContent = 'Clinic Sign Up (Doctors Only)';
+          if (headerBtn) headerBtn.title = 'Strictly for Clinic Owners / Doctors (Patients do not need to sign up)';
+        } else {
+          if (label) label.textContent = 'Sign In / Register';
+          if (headerBtn) headerBtn.title = 'Clinic Sign In / Naya Clinic Account';
+        }
         if (signOutBtn) signOutBtn.classList.add('hidden');
-        if (headerBtn) headerBtn.title = 'Clinic Sign In / Naya Clinic Account';
+      }
+    }
+
+    function handleProfileHeaderClick() {
+      if (currentRole === 'patient') {
+        if (confirm('यह विकल्प केवल क्लिनिक और डॉक्टरों के लिए है जो अपना क्लिनिक डिजिटल करना चाहते हैं।\n\nमरीज़ों को टोकन लेने के लिए किसी साइन अप की आवश्यकता नहीं है।\n\nक्या आप डॉक्टर / क्लिनिक पोर्टल पर जाना चाहते हैं?')) {
+          showAuthGatewayScreen();
+        }
+        return;
+      }
+
+      // In clinic role or authenticated: ALWAYS open clinic account modal, never show login inputs
+      if (currentAuthUser || currentRole === 'clinic' || (clinicProfile && clinicProfile.onboarded)) {
+        openClinicAccountModal();
+      } else {
+        showAuthGatewayScreen();
+      }
+    }
+
+    function openClinicAccountModal() {
+      const modal = document.getElementById('clinicAccountModal');
+      if (!modal) return;
+      if (!currentAuthUser && clinicProfile) {
+        currentAuthUser = {
+          uid: clinicProfile.ownerUid || 'doc_' + (clinicProfile.id || 'main'),
+          email: clinicProfile.ownerEmail || clinicProfile.phone || 'doctor@clinic.com',
+          displayName: clinicProfile.doctorName || 'Doctor'
+        };
+        try { localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser)); } catch (e) {}
+      }
+      const userEmailEl = document.getElementById('accountUserEmail');
+      const clinicNameEl = document.getElementById('accountClinicName');
+      const docNameEl = document.getElementById('accountDoctorName');
+      const locEl = document.getElementById('accountClinicLocation');
+
+      if (userEmailEl) {
+        userEmailEl.textContent = (currentAuthUser && currentAuthUser.email) || (clinicProfile && clinicProfile.phone) || 'doctor@clinic.com';
+      }
+      if (clinicNameEl) {
+        clinicNameEl.textContent = (clinicProfile && clinicProfile.name) || 'Sanjeevani Family Clinic';
+      }
+      if (docNameEl) {
+        docNameEl.textContent = `${(clinicProfile && clinicProfile.doctorName) || 'Dr. Rajesh Sharma'} (${(clinicProfile && clinicProfile.doctorDegree) || 'MBBS, MD'})`;
+      }
+      if (locEl) {
+        locEl.innerHTML = `<i class="fa-solid fa-location-dot text-slate-400"></i> ${(clinicProfile && clinicProfile.address) || 'Clinic Address'}, ${(clinicProfile && clinicProfile.city) || ''}`;
+      }
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeClinicAccountModal() {
+      const modal = document.getElementById('clinicAccountModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function selectPricingPlan(plan) {
+      if (plan === 'annual') {
+        showToast('🎉 Annual Pro Plan (₹4,000/saal) chuna gaya! 30-day trial ke baad renew hoga.');
+      } else {
+        showToast('👍 Monthly Plan (₹399/mahina) chuna gaya! 30-day trial ke baad renew hoga.');
+      }
+    }
+
+    function showAuthGatewayScreen() {
+      const viewGateway = document.getElementById('viewAuthGateway');
+      const viewClinic = document.getElementById('viewClinicDesk');
+      const viewPatient = document.getElementById('viewPatientBooking');
+      const navTabs = document.getElementById('clinicNavTabs');
+      const shareBtn = document.getElementById('headerShareLinkBtn');
+      const onboardBtn = document.getElementById('clinicOnboardHeaderBtn');
+
+      if (viewGateway) viewGateway.classList.remove('hidden');
+      if (viewClinic) viewClinic.classList.add('hidden');
+      if (viewPatient) viewPatient.classList.add('hidden');
+      if (navTabs) navTabs.classList.add('hidden');
+      if (shareBtn) shareBtn.classList.add('hidden');
+      if (onboardBtn) onboardBtn.classList.add('hidden');
+      document.title = 'ParchiSetu • Doctor & Clinic Sign In Gateway';
+    }
+
+    function enterClinicWorkspace() {
+      const viewGateway = document.getElementById('viewAuthGateway');
+      const viewClinic = document.getElementById('viewClinicDesk');
+      const navTabs = document.getElementById('clinicNavTabs');
+
+      if (viewGateway) viewGateway.classList.add('hidden');
+      if (viewClinic) viewClinic.classList.remove('hidden');
+      if (navTabs) navTabs.classList.remove('hidden');
+      switchAppRole('clinic');
+      refreshAllViews();
+    }
+
+    function switchGatewayTab(tab) {
+      const formSignup = document.getElementById('gwSignupForm');
+      const formLogin = document.getElementById('gwLoginForm');
+      const btnSignup = document.getElementById('gwTabSignup');
+      const btnLogin = document.getElementById('gwTabLogin');
+
+      if (tab === 'signup') {
+        if (formSignup) formSignup.classList.remove('hidden');
+        if (formLogin) formLogin.classList.add('hidden');
+        if (btnSignup) btnSignup.className = 'py-2 rounded-xl text-xs font-black bg-[#25D366] text-slate-950 shadow-xs transition';
+        if (btnLogin) btnLogin.className = 'py-2 rounded-xl text-xs font-bold text-emerald-100 hover:text-white transition';
+      } else {
+        if (formSignup) formSignup.classList.add('hidden');
+        if (formLogin) formLogin.classList.remove('hidden');
+        if (btnLogin) btnLogin.className = 'py-2 rounded-xl text-xs font-black bg-[#25D366] text-slate-950 shadow-xs transition';
+        if (btnSignup) btnSignup.className = 'py-2 rounded-xl text-xs font-bold text-emerald-100 hover:text-white transition';
+      }
+    }
+
+    async function handleGatewaySignup() {
+      const docName = (document.getElementById('gwSignupDocName')?.value || '').trim();
+      const email = (document.getElementById('gwSignupEmail')?.value || '').trim();
+      const pwd = (document.getElementById('gwSignupPassword')?.value || '').trim();
+      const alertBox = document.getElementById('gwAlertBox');
+      const submitBtn = document.getElementById('gwBtnSignupSubmit');
+      if (alertBox) alertBox.classList.add('hidden');
+
+      if (!docName || !email) {
+        showToast('⚠️ Kripya Doctor Ka Naam aur Email bharein!', 'warning');
+        return;
+      }
+      if (!pwd || pwd.length < 6) {
+        showToast('⚠️ Password kam se kam 6 akshar ka hona chahiye!', 'warning');
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        let user = null;
+        if (window.ParchiFirebase && window.ParchiFirebase.signUpWithEmail) {
+          try {
+            user = await window.ParchiFirebase.signUpWithEmail(email, pwd);
+          } catch (fbErr) {
+            console.error('Firebase signup error:', fbErr);
+            const msg = fbErr.code === 'auth/email-already-in-use'
+              ? 'Yeh email pehle se registered hai! Kripya Clinic Login tab se login karein.'
+              : (fbErr.message || 'Signup fail ho gaya.');
+            if (alertBox) {
+              alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+              alertBox.textContent = '⚠️ ' + msg;
+              alertBox.classList.remove('hidden');
+            } else {
+              showToast('⚠️ ' + msg, 'error');
+            }
+            return;
+          }
+        }
+
+        currentAuthUser = user || {
+          uid: 'usr_' + Date.now(),
+          email: email,
+          displayName: docName
+        };
+        try {
+          localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+        } catch (e) {}
+
+        updateHeaderAuthUI(currentAuthUser);
+        enterClinicWorkspace();
+
+        const docNameInput = document.getElementById('onboardDoctorName');
+        if (docNameInput) docNameInput.value = docName;
+
+        openClinicOnboardingModal();
+        showToast('🎉 Account ban gaya! Step-by-step clinic details bharein.');
+      } catch (err) {
+        console.error('Gateway signup error:', err);
+        showToast('⚠️ Error: ' + (err.message || 'An error occurred'), 'error');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    }
+
+    async function handleGatewayLogin() {
+      const emailOrId = (document.getElementById('gwLoginEmail')?.value || '').trim();
+      const pwd = (document.getElementById('gwLoginPassword')?.value || '').trim();
+      const alertBox = document.getElementById('gwAlertBox');
+      const submitBtn = document.getElementById('gwBtnLoginSubmit');
+      if (alertBox) alertBox.classList.add('hidden');
+
+      if (!emailOrId) {
+        showToast('⚠️ Kripya Email ya Clinic ID bharein!', 'warning');
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        let user = null;
+        if (emailOrId.includes('@') && window.ParchiFirebase && window.ParchiFirebase.signInWithEmail) {
+          if (!pwd) {
+            showToast('⚠️ Kripya Password bharein!', 'warning');
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+          }
+          try {
+            user = await window.ParchiFirebase.signInWithEmail(emailOrId, pwd);
+          } catch (err) {
+            console.error('Email signin error:', err);
+            const msg = (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential')
+              ? 'Galat Password ya Email! Kripya dobara check karein.'
+              : (err.message || 'Login fail ho gaya.');
+            if (alertBox) {
+              alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+              alertBox.textContent = '⚠️ ' + msg;
+              alertBox.classList.remove('hidden');
+            } else {
+              showToast('⚠️ ' + msg, 'error');
+            }
+            return;
+          }
+        }
+
+        currentAuthUser = user || {
+          uid: 'usr_' + Date.now(),
+          email: emailOrId,
+          displayName: 'Doctor'
+        };
+        try {
+          localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+        } catch (e) {}
+
+        updateHeaderAuthUI(currentAuthUser);
+
+        let userClinic = null;
+        try {
+          if (window.ParchiFirebase && window.ParchiFirebase.getClinicForUser && user) {
+            userClinic = await window.ParchiFirebase.getClinicForUser(user);
+          } else if (!emailOrId.includes('@')) {
+            const res = await fetch(`/api/clinic?clinic=${encodeURIComponent(emailOrId)}`);
+            if (res.ok) {
+              const c = await res.json();
+              if (c && c.name) userClinic = c;
+            }
+          }
+        } catch (e) {
+          console.warn('Gateway lookup notice:', e);
+        }
+
+        if (userClinic && (userClinic.name || userClinic.id)) {
+          clinicProfile = userClinic;
+          saveLocalClinic();
+          enterClinicWorkspace();
+          showToast('👋 Compounder Desk login safal!');
+        } else {
+          enterClinicWorkspace();
+          openClinicOnboardingModal();
+          showToast('👋 Login safal! Kripya apne clinic ki details set karein.');
+        }
+      } catch (err) {
+        console.error('Gateway login error:', err);
+        showToast('⚠️ Login error: ' + (err.message || 'Error occurred'), 'error');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     }
 
@@ -3660,23 +4303,38 @@
             console.warn('Sign out error:', e);
           }
         }
+        currentAuthUser = null;
+        try {
+          localStorage.removeItem('parchisetu_auth_user');
+        } catch (e) {}
+        closeClinicAccountModal();
+        closeClinicAuthModal();
         updateHeaderAuthUI(null);
-        showToast('👋 Sign out safal! Guest mode active.');
+        showAuthGatewayScreen();
+        showToast('👋 Sign out safal! Gateway screen open.');
       }
     }
 
     function handleDemoLogin() {
+      currentAuthUser = {
+        uid: 'demo_doctor',
+        email: 'demo@sanjeevani.com',
+        displayName: 'Dr. Rajesh Sharma'
+      };
+      try {
+        localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+      } catch (e) {}
       closeClinicAuthModal();
-      switchAppRole('clinic');
-      refreshAllViews();
+      updateHeaderAuthUI(currentAuthUser);
+      enterClinicWorkspace();
       showToast('⚡ Demo mode active! Sanjeevani Family Clinic Desk open hai.');
     }
 
     async function handleForgotPassword() {
-      const email = (document.getElementById('authLoginEmail')?.value || '').trim();
+      const email = (document.getElementById('authLoginEmail')?.value || document.getElementById('gwLoginEmail')?.value || '').trim();
       if (!email || !email.includes('@')) {
         showToast('⚠️ Kripya upar Email address bharein jisme reset link bhejna hai.', 'warning');
-        const emailInput = document.getElementById('authLoginEmail');
+        const emailInput = document.getElementById('authLoginEmail') || document.getElementById('gwLoginEmail');
         if (emailInput) emailInput.focus();
         return;
       }
@@ -3696,8 +4354,17 @@
 
     window.handleAuthSuccess = async function (user) {
       if (!user) return;
+      currentAuthUser = {
+        uid: user.uid,
+        email: user.email || '',
+        displayName: user.displayName || 'Doctor'
+      };
+      try {
+        localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+      } catch (e) {}
+
       showToast(`👋 Swagatam, ${user.displayName || user.email}!`);
-      updateHeaderAuthUI(user);
+      updateHeaderAuthUI(currentAuthUser);
 
       // Check if clinic mapping exists for this user
       let userClinic = null;
@@ -3725,12 +4392,12 @@
           window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
         }
         closeClinicAuthModal();
-        switchAppRole('clinic');
-        refreshAllViews();
+        enterClinicWorkspace();
         showToast('✅ Apka Clinic account load ho gaya!');
       } else {
         // New clinic owner -> prefill doctor name and open onboarding
         closeClinicAuthModal();
+        enterClinicWorkspace();
         if (user.displayName) {
           const docNameInput = document.getElementById('onboardDoctorName');
           if (docNameInput && !docNameInput.value) {
@@ -3745,8 +4412,12 @@
     async function handleGoogleSignIn() {
       const btn = document.getElementById('btnGoogleSignIn');
       const btnText = document.getElementById('btnGoogleSignInText');
+      const gwBtn = document.getElementById('gwBtnGoogleSignIn');
+      const gwBtnText = document.getElementById('gwBtnGoogleSignInText');
       const alertBox = document.getElementById('authAlertBox');
+      const gwAlert = document.getElementById('gwAlertBox');
       if (alertBox) alertBox.classList.add('hidden');
+      if (gwAlert) gwAlert.classList.add('hidden');
 
       if (window.ParchiFirebase && window.ParchiFirebase.init) {
         window.ParchiFirebase.init();
@@ -3758,8 +4429,11 @@
       }
 
       const origText = btnText ? btnText.textContent : '';
+      const origGwText = gwBtnText ? gwBtnText.textContent : '';
       if (btnText) btnText.textContent = 'Signing in with Google...';
+      if (gwBtnText) gwBtnText.textContent = 'Signing in with Google...';
       if (btn) btn.disabled = true;
+      if (gwBtn) gwBtn.disabled = true;
 
       try {
         const user = await window.ParchiFirebase.signInWithGoogle();
@@ -3776,12 +4450,19 @@
           alertBox.textContent = '⚠️ ' + msg;
           alertBox.classList.remove('hidden');
         }
+        if (gwAlert && err.code !== 'auth/popup-closed-by-user') {
+          gwAlert.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+          gwAlert.textContent = '⚠️ ' + msg;
+          gwAlert.classList.remove('hidden');
+        }
         if (err.code !== 'auth/popup-closed-by-user') {
           showToast(`⚠️ ${msg}`, 'warning');
         }
       } finally {
         if (btnText) btnText.textContent = origText;
+        if (gwBtnText) gwBtnText.textContent = origGwText;
         if (btn) btn.disabled = false;
+        if (gwBtn) gwBtn.disabled = false;
       }
     }
 
@@ -4099,28 +4780,40 @@
       currentRole = role;
       const viewClinic = document.getElementById('viewClinicDesk');
       const viewPatient = document.getElementById('viewPatientBooking');
+      const viewGateway = document.getElementById('viewAuthGateway');
       const navTabs = document.getElementById('clinicNavTabs');
       const roleSelector = document.getElementById('roleSelectorPill');
       const btnClinic = document.getElementById('roleBtnClinic');
       const btnPatient = document.getElementById('roleBtnPatient');
       const headerShareBtn = document.getElementById('headerShareLinkBtn');
       const headerNayaClinicBtn = document.getElementById('headerNayaClinicBtn');
+      const clinicOnboardBtn = document.getElementById('clinicOnboardHeaderBtn');
+      const authLabel = document.getElementById('authHeaderBtnLabel');
+      const authBtn = document.getElementById('clinicAuthHeaderBtn');
       const previewBanner = document.getElementById('patientPreviewBanner');
 
       if (role === 'clinic') {
-        viewClinic.classList.remove('hidden');
-        viewPatient.classList.add('hidden');
+        if (!currentAuthUser) {
+          showAuthGatewayScreen();
+          return;
+        }
+        if (viewClinic) viewClinic.classList.remove('hidden');
+        if (viewPatient) viewPatient.classList.add('hidden');
+        if (viewGateway) viewGateway.classList.add('hidden');
         if (navTabs) navTabs.classList.remove('hidden');
         if (roleSelector) roleSelector.classList.add('hidden');
         if (btnClinic) btnClinic.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-[#25D366] text-slate-950 shadow-sm';
         if (btnPatient) btnPatient.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-emerald-100 hover:text-white';
         if (headerShareBtn) headerShareBtn.classList.remove('hidden');
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.remove('hidden');
+        if (clinicOnboardBtn) clinicOnboardBtn.classList.remove('hidden');
+        updateHeaderAuthUI(currentAuthUser);
         document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
         refreshAllViews();
       } else {
-        viewClinic.classList.add('hidden');
-        viewPatient.classList.remove('hidden');
+        if (viewClinic) viewClinic.classList.add('hidden');
+        if (viewPatient) viewPatient.classList.remove('hidden');
+        if (viewGateway) viewGateway.classList.add('hidden');
         if (navTabs) navTabs.classList.add('hidden');
         if (roleSelector) roleSelector.classList.add('hidden');
         if (previewBanner) {
@@ -4132,6 +4825,9 @@
         }
         if (headerShareBtn) headerShareBtn.classList.add('hidden');
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.add('hidden');
+        if (clinicOnboardBtn) clinicOnboardBtn.classList.add('hidden');
+        if (authLabel) authLabel.textContent = 'Clinic Sign Up (Doctors Only)';
+        if (authBtn) authBtn.title = 'Strictly for Clinic Owners / Doctors (Patients do not need to sign up)';
         document.title = `${clinicProfile.name || 'ParchiSetu'} • Online Token & Live Queue`;
         renderPatientBookingPage();
       }
@@ -4341,6 +5037,28 @@
       }, 650);
     }
 
+    function toggleFastWalkinCollapse(forceState) {
+      const container = document.getElementById('walkinFormCollapse');
+      const chevron = document.getElementById('walkinChevron');
+      const toggleText = document.getElementById('walkinToggleText');
+      if (!container) return;
+
+      const isCurrentlyHidden = container.classList.contains('hidden');
+      const shouldOpen = (forceState !== undefined) ? forceState : isCurrentlyHidden;
+
+      if (shouldOpen) {
+        container.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+        if (toggleText) toggleText.textContent = 'Band Karein (Close)';
+        const input = document.getElementById('walkinName');
+        if (input) setTimeout(() => input.focus(), 50);
+      } else {
+        container.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+        if (toggleText) toggleText.textContent = '+ Nayi Parchi Banayein';
+      }
+    }
+
     async function createFastWalkIn() {
       const nameInput = document.getElementById('walkinName');
       const ageInput = document.getElementById('walkinAge');
@@ -4525,6 +5243,25 @@
       showToast(`🟢 Token #${target.token} (${target.name}) sent inside cabin!`);
     }
 
+    function setPatientPaymentMode(patientId, mode) {
+      const p = todayQueue.find(item => item.id === patientId);
+      if (!p) return;
+      p.payMode = mode;
+      if (mode === 'Cash') {
+        showToast(`💵 Token #${p.token} (${p.name}): ₹${p.fee} Cash Vasool Ho Gaya!`);
+      } else if (mode === 'UPI') {
+        showToast(`📱 Token #${p.token} (${p.name}): ₹${p.fee} UPI / Online Payment Record Hua!`);
+      } else {
+        showToast(`⏳ Token #${p.token} (${p.name}): Fee Baaki mark kiya gaya`, 'warning');
+      }
+      syncQueuePatchToServer(p.id, { payMode: p.payMode });
+      saveLocalQueue();
+      if (syncChannel) {
+        syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
+      }
+      refreshAllViews();
+    }
+
     function togglePatientFeeStatus(patientId) {
       const p = todayQueue.find(item => item.id === patientId);
       if (!p) return;
@@ -4683,14 +5420,42 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-              <button 
-                onclick="togglePatientFeeStatus('${p.id}')" 
-                title="Click to toggle Cash / UPI / Baaki"
-                class="btn-tactile px-3 py-2 rounded-xl border font-extrabold text-xs ${feePillClass} transition"
-              >
-                ${feeText}
-              </button>
+            <div class="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-wrap">
+              ${
+                p.payMode === 'Baaki'
+                  ? `
+                    <div class="flex items-center gap-1.5 bg-amber-50 p-1 rounded-xl border border-amber-300">
+                      <span class="text-[10px] font-black text-amber-900 px-1 uppercase">Fee Baaki (₹${p.fee}):</span>
+                      <button 
+                        type="button" 
+                        onclick="setPatientPaymentMode('${p.id}', 'Cash')" 
+                        class="btn-tactile px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 shadow-xs transition"
+                        title="Cash payment record karein"
+                      >
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                        <span>💵 Cash</span>
+                      </button>
+                      <button 
+                        type="button" 
+                        onclick="setPatientPaymentMode('${p.id}', 'UPI')" 
+                        class="btn-tactile px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs flex items-center gap-1 shadow-xs transition"
+                        title="UPI / Online payment record karein"
+                      >
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <span>📱 UPI</span>
+                      </button>
+                    </div>
+                  `
+                  : `
+                    <button 
+                      onclick="togglePatientFeeStatus('${p.id}')" 
+                      title="Click to toggle Cash / UPI / Baaki"
+                      class="btn-tactile px-3 py-2 rounded-xl border font-extrabold text-xs ${feePillClass} transition"
+                    >
+                      ${feeText}
+                    </button>
+                  `
+              }
 
               <button 
                 onclick="openParchiDrawer('${p.id}')" 
@@ -5668,6 +6433,133 @@
       renderPatientBookingPage();
     }
 
+    function getClinicLiveStatusInfo(checkDate = null) {
+      const now = checkDate instanceof Date ? checkDate : new Date();
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const shortDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dayOfWeek = dayNames[now.getDay()];
+      const shortDay = shortDayNames[now.getDay()];
+      const daysOpen = (clinicProfile.visitingHours && clinicProfile.visitingHours.daysOpen) || [
+        'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+      ];
+      const isDayOpen = daysOpen.includes(dayOfWeek) || daysOpen.includes(shortDay);
+
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const leaves = clinicProfile.leaves || {};
+      const todayLeave = leaves[todayStr];
+
+      const morning = clinicProfile.visitingHours && clinicProfile.visitingHours.morning;
+      const evening = clinicProfile.visitingHours && clinicProfile.visitingHours.evening;
+      const morningOff = todayLeave && (todayLeave.fullDay || todayLeave.morningOff);
+      const eveningOff = todayLeave && (todayLeave.fullDay || todayLeave.eveningOff);
+
+      const mOpen = !!(morning && morning.enabled && !morningOff);
+      const eOpen = !!(evening && evening.enabled && !eveningOff);
+
+      const currentMins = now.getHours() * 60 + now.getMinutes();
+
+      // 1. Weekly Off / Holiday
+      if (!isDayOpen) {
+        return {
+          isOpen: false,
+          isHoliday: true,
+          reason: 'WEEKLY_OFF',
+          bannerBg: 'bg-rose-700 text-white border-2 border-rose-900 shadow-md',
+          badgeText: '🔴 CLINIC AAJ BAND HAI (WEEKLY HOLIDAY)',
+          statusMessage: `Clinic ${dayOfWeek} Ko Band Rehta Hai`,
+          subMessage: `Agla OPD Kal Subah ${morning ? morning.start : '09:00 AM'} par shuru hoga.`,
+          waitingCountText: 'OPD Band'
+        };
+      }
+
+      // 2. Doctor Marked Leave / Holiday
+      if (todayLeave && todayLeave.fullDay) {
+        const reasonText = todayLeave.reason ? `Karan: ${todayLeave.reason}` : 'Doctor Sahab aaj chhutti par hain.';
+        return {
+          isOpen: false,
+          isHoliday: true,
+          reason: 'DOCTOR_LEAVE',
+          bannerBg: 'bg-rose-700 text-white border-2 border-rose-900 shadow-md',
+          badgeText: '🔴 DOCTOR CHHUTTI PAR HAIN (CLINIC CLOSED)',
+          statusMessage: 'Clinic Aaj Band Hai (Doctor Holiday)',
+          subMessage: `${reasonText} Kripya Kal ka online token book karein.`,
+          waitingCountText: 'Chhutti'
+        };
+      }
+
+      // 3. Neither shift is configured or enabled
+      if (!mOpen && !eOpen) {
+        return {
+          isOpen: false,
+          isHoliday: true,
+          reason: 'NO_SHIFTS',
+          bannerBg: 'bg-rose-700 text-white border-2 border-rose-900 shadow-md',
+          badgeText: '🔴 CLINIC ABHI BAND HAI (CLOSED)',
+          statusMessage: 'Clinic Abhi Band Hai',
+          subMessage: 'Aaj koi OPD shift uplabdh nahi hai.',
+          waitingCountText: 'OPD Band'
+        };
+      }
+
+      const mStart = mOpen ? parseTimeString(morning.start) : -1;
+      const mEnd = mOpen ? parseTimeString(morning.end) : -1;
+      const eStart = eOpen ? parseTimeString(evening.start) : -1;
+      const eEnd = eOpen ? parseTimeString(evening.end) : -1;
+
+      // Check if currently inside Morning OPD
+      if (mOpen && currentMins >= mStart && currentMins < mEnd) {
+        return {
+          isOpen: true,
+          isHoliday: false,
+          shift: 'Morning',
+          bannerBg: 'bg-black/25 border border-emerald-500/40 text-white',
+          badgeText: '🟢 LIVE CLINIC STATUS (ABHI ANDAR)',
+          statusMessage: 'Morning OPD Chalu Hai',
+          subMessage: `Visiting Timings: ${morning.start} - ${morning.end}`,
+          waitingCountText: 'Live'
+        };
+      }
+
+      // Check if currently inside Evening OPD
+      if (eOpen && currentMins >= eStart && currentMins < eEnd) {
+        return {
+          isOpen: true,
+          isHoliday: false,
+          shift: 'Evening',
+          bannerBg: 'bg-black/25 border border-emerald-500/40 text-white',
+          badgeText: '🟢 LIVE CLINIC STATUS (ABHI ANDAR)',
+          statusMessage: 'Evening OPD Chalu Hai',
+          subMessage: `Visiting Timings: ${evening.start} - ${evening.end}`,
+          waitingCountText: 'Live'
+        };
+      }
+
+      // Outside visiting hours -> Closed!
+      let nextOpening = '';
+      if (mOpen && currentMins < mStart) {
+        nextOpening = `Clinic Subah ${morning.start} par khulega.`;
+      } else if (eOpen && currentMins < eStart) {
+        nextOpening = `Clinic Shaam ${evening.start} par khulega.`;
+      } else if (mOpen) {
+        nextOpening = `Aaj ka OPD samapt. Kal subah ${morning.start} par khulega.`;
+      } else if (eOpen) {
+        nextOpening = `Aaj ka OPD samapt. Kal shaam ${evening.start} par khulega.`;
+      } else {
+        nextOpening = 'Clinic kal samay anusar khulega.';
+      }
+
+      return {
+        isOpen: false,
+        isHoliday: false,
+        reason: 'OUTSIDE_HOURS',
+        bannerBg: 'bg-rose-700 text-white border-2 border-rose-900 shadow-md',
+        badgeText: '🔴 CLINIC ABHI BAND HAI (CLOSED)',
+        statusMessage: 'Clinic Abhi Band Hai',
+        subMessage: nextOpening,
+        waitingCountText: 'OPD Band'
+      };
+    }
+
     function renderPatientBookingPage() {
       updateClinicBranding();
       renderPatientDoctorSelector();
@@ -5676,10 +6568,45 @@
       const inCabin = getCurrentCabinPatient();
       const waitingCount = todayQueue.filter(p => p.status === 'WAITING').length;
 
-      document.getElementById('patientViewLiveToken').textContent = inCabin
-        ? `Token #${inCabin.token} chal raha hai`
-        : 'Doctor Ready Hain';
-      document.getElementById('patientViewWaitingCount').textContent = `${waitingCount} Mareez`;
+      const statusInfo = getClinicLiveStatusInfo();
+      const statusCard = document.getElementById('patientViewLiveStatusCard');
+      const liveDot = document.getElementById('patientStatusLiveDot');
+      const badgeText = document.getElementById('patientStatusBadgeText');
+      const liveTokenEl = document.getElementById('patientViewLiveToken');
+      const subTextEl = document.getElementById('patientStatusSubText');
+      const waitingCountEl = document.getElementById('patientViewWaitingCount');
+
+      if (statusCard) {
+        if (!statusInfo.isOpen) {
+          statusCard.className = 'mt-4 ' + statusInfo.bannerBg + ' rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg transition';
+          if (liveDot) liveDot.className = 'w-3.5 h-3.5 rounded-full bg-rose-200 flex-shrink-0 animate-ping';
+          if (badgeText) badgeText.textContent = statusInfo.badgeText;
+          if (liveTokenEl) liveTokenEl.textContent = statusInfo.statusMessage;
+          if (subTextEl) subTextEl.textContent = statusInfo.subMessage;
+          if (waitingCountEl) waitingCountEl.textContent = statusInfo.waitingCountText;
+        } else {
+          statusCard.className = 'mt-4 bg-black/25 border border-emerald-500/40 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition';
+          if (liveDot) liveDot.className = 'w-3.5 h-3.5 rounded-full bg-[#25D366] live-token-pulse flex-shrink-0';
+          if (badgeText) badgeText.textContent = '🟢 LIVE CLINIC STATUS (ABHI ANDAR)';
+          if (liveTokenEl) liveTokenEl.textContent = inCabin ? `Token #${inCabin.token} chal raha hai` : 'Doctor Ready Hain';
+          if (subTextEl) subTextEl.textContent = 'Doctor Sahab cabin mein mareez dekh rahe hain.';
+          if (waitingCountEl) waitingCountEl.textContent = `${waitingCount} Mareez`;
+        }
+      }
+
+      // Highlight doctor consultation fee badge
+      const feeHighlightBadge = document.getElementById('patientFeeHighlightBadge');
+      if (feeHighlightBadge) {
+        const curDoc = (clinicProfile.doctors || []).find(d => d.id === selectedPatDoctorId) || (clinicProfile.doctors && clinicProfile.doctors[0]);
+        const normalFee = (curDoc && curDoc.fee != null) ? curDoc.fee : (clinicProfile.fees && clinicProfile.fees.normal != null ? clinicProfile.fees.normal : 300);
+        if (normalFee === 0 || normalFee === '0' || normalFee === '') {
+          feeHighlightBadge.textContent = 'FREE (मुफ्त)';
+          feeHighlightBadge.className = 'text-base font-black text-emerald-800 bg-white px-3 py-1 rounded-xl border-2 border-emerald-400 shadow-xs';
+        } else {
+          feeHighlightBadge.textContent = `₹${normalFee}`;
+          feeHighlightBadge.className = 'text-xl font-black text-emerald-900 bg-white px-3.5 py-1.5 rounded-xl border-2 border-emerald-400 shadow-xs';
+        }
+      }
 
       const lateAlert = document.getElementById('patientViewLateAlert');
       if (isDoctorLate) lateAlert.classList.remove('hidden');
@@ -5905,14 +6832,21 @@
       lastPatientBooking = savedBooking;
       try {
         localStorage.setItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''), JSON.stringify(savedBooking));
+        localStorage.setItem('parchi_active_patient_booking', JSON.stringify(savedBooking));
       } catch (e) {}
 
-      // Update Token Pass UI
+      renderTokenPassDetails(savedBooking);
+      playClinicBellSound();
+      showToast(`🎉 Token #${savedBooking.token} Book Ho Gaya!`);
+    }
+
+    function renderTokenPassDetails(savedBooking) {
+      if (!savedBooking) return;
       const passTokenNum = document.getElementById('passTokenNumber');
       if (passTokenNum) passTokenNum.textContent = `#${savedBooking.token}`;
 
       const passPatName = document.getElementById('passPatientName');
-      if (passPatName) passPatName.textContent = `${savedBooking.name} (${savedBooking.age}${savedBooking.gender}) • ${savedBooking.phone}`;
+      if (passPatName) passPatName.textContent = `${savedBooking.name} (${savedBooking.age || ''}${savedBooking.gender || ''}) • ${savedBooking.phone}`;
 
       const passClinicName = document.getElementById('passClinicName');
       if (passClinicName) passClinicName.textContent = clinicProfile.name;
@@ -5921,11 +6855,11 @@
       const passDocName = document.getElementById('passDoctorName');
       if (passDocRow && passDocName) {
         passDocRow.classList.remove('hidden');
-        passDocName.textContent = savedBooking.doctorName;
+        passDocName.textContent = savedBooking.doctorName || clinicProfile.doctorName;
       }
 
       const passSlot = document.getElementById('passSlotText');
-      if (passSlot) passSlot.textContent = `${savedBooking.day} • ${savedBooking.shift} (${savedBooking.slotTime})`;
+      if (passSlot) passSlot.textContent = `${savedBooking.day || 'Aaj'} • ${savedBooking.shift || 'Morning'} (${savedBooking.slotTime || 'OPD'})`;
 
       const passFee = document.getElementById('passFeeAmount');
       if (passFee) passFee.textContent = `₹${savedBooking.fee}`;
@@ -5934,8 +6868,26 @@
       document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
 
       updatePatientTokenPassLiveStatus();
-      playClinicBellSound();
-      showToast(`🎉 Token #${savedBooking.token} Book Ho Gaya!`);
+    }
+
+    function checkAndRestorePatientBooking() {
+      try {
+        const cId = clinicProfile ? clinicProfile.id : '';
+        const stored = localStorage.getItem('parchi_active_patient_booking') || localStorage.getItem('parchi_last_booking_' + cId);
+        if (!stored) return false;
+        const b = JSON.parse(stored);
+        if (!b || !b.token) return false;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const isTodayOrFuture = !b.date || b.date >= todayStr || (b.day && (b.day.includes('Aaj') || b.day.includes('Kal') || b.day.includes('Parson')));
+        if (!isTodayOrFuture) return false;
+
+        lastPatientBooking = b;
+        renderTokenPassDetails(b);
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
 
     function updatePatientTokenPassLiveStatus() {
@@ -5944,7 +6896,7 @@
 
       if (!lastPatientBooking) {
         try {
-          const stored = localStorage.getItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''));
+          const stored = localStorage.getItem('parchi_active_patient_booking') || localStorage.getItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''));
           if (stored) {
             lastPatientBooking = JSON.parse(stored);
           }
@@ -5955,14 +6907,27 @@
         return;
       }
 
-      const myBooking = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
-      const inCabin = getCurrentCabinPatient();
-      const avgMins = (clinicProfile.visitingHours && clinicProfile.visitingHours.avgConsultationMins) || 10;
-
+      const statusInfo = getClinicLiveStatusInfo();
       const cabinTokenEl = document.getElementById('passCabinTokenLive');
       const distEl = document.getElementById('passLiveQueueDistance');
       const waitEstEl = document.getElementById('passLiveWaitEst');
       const inCabinNotice = document.getElementById('passInCabinNotice');
+
+      if (!statusInfo.isOpen) {
+        // Red background banner for closed clinic or doctor holiday
+        card.className = 'p-3.5 bg-rose-700 text-white rounded-2xl border-2 border-rose-900 text-left space-y-1.5 shadow-md';
+        if (distEl) distEl.textContent = statusInfo.badgeText;
+        if (waitEstEl) waitEstEl.textContent = statusInfo.subMessage;
+        if (cabinTokenEl) cabinTokenEl.textContent = statusInfo.statusMessage;
+        if (inCabinNotice) inCabinNotice.classList.add('hidden');
+        return;
+      }
+
+      card.className = 'p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-left space-y-1.5 shadow-inner';
+
+      const myBooking = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
+      const inCabin = getCurrentCabinPatient();
+      const avgMins = (clinicProfile.visitingHours && clinicProfile.visitingHours.avgConsultationMins) || 10;
 
       if (cabinTokenEl) {
         cabinTokenEl.textContent = inCabin ? `Token #${inCabin.token}` : 'Doctor Ready';
@@ -6064,6 +7029,12 @@
     }
 
     function resetPatientBookingForm() {
+      try {
+        localStorage.removeItem('parchi_active_patient_booking');
+        const cId = clinicProfile ? clinicProfile.id : '';
+        localStorage.removeItem('parchi_last_booking_' + cId);
+      } catch (e) {}
+      lastPatientBooking = null;
       document.getElementById('patBookName').value = '';
       document.getElementById('patBookAge').value = '';
       document.getElementById('patBookPhone').value = '';
@@ -6096,13 +7067,31 @@
       const clinicParam = urlParams.get('clinic');
       const onboardParam = urlParams.get('onboard');
 
+      // Check for saved clinic auth user session
+      try {
+        const savedAuth = localStorage.getItem('parchisetu_auth_user');
+        if (savedAuth) {
+          currentAuthUser = JSON.parse(savedAuth);
+        }
+      } catch (e) {}
+
       // Initialize Firebase Firestore sync early
       if (window.ParchiFirebase) {
         try {
           window.ParchiFirebase.init();
           if (window.ParchiFirebase.onAuthStateChanged) {
             window.ParchiFirebase.onAuthStateChanged(user => {
-              updateHeaderAuthUI(user);
+              if (user) {
+                currentAuthUser = {
+                  uid: user.uid,
+                  email: user.email || '',
+                  displayName: user.displayName || 'Doctor'
+                };
+                try {
+                  localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+                } catch (e) {}
+              }
+              updateHeaderAuthUI(currentAuthUser);
             });
           }
         } catch (e) {
@@ -6187,17 +7176,63 @@
 
       if (roleParam === 'patient' || isPatientPath) {
         switchAppRole('patient');
+        checkAndRestorePatientBooking();
       } else {
-        switchAppRole('clinic');
+        // Main URL clinic desk path - compulsory sign in / sign up gateway
+        if (currentAuthUser) {
+          enterClinicWorkspace();
+          updateHeaderAuthUI(currentAuthUser);
+        } else {
+          updateHeaderAuthUI(null);
+          showAuthGatewayScreen();
+        }
       }
 
       if (isSignInRoute) {
         setTimeout(() => openClinicAuthModal(), 200);
       } else if (isOnboardRoute || clinicProfile.onboarded === false) {
-        setTimeout(() => openClinicOnboardingModal(), 300);
+        if (currentAuthUser) {
+          setTimeout(() => openClinicOnboardingModal(), 300);
+        }
       }
 
       refreshAllViews();
+
+      // Real-time periodic heartbeat (every 10s) to keep live clinic status & queue synced for waiting patients
+      setInterval(async () => {
+        try {
+          if (window.location.protocol.startsWith('http')) {
+            const qRes = await fetch('/api/queue');
+            if (qRes.ok) {
+              const qData = await qRes.json();
+              if (Array.isArray(qData)) {
+                todayQueue = qData;
+                saveLocalQueue();
+              }
+            }
+          }
+          if (currentRole === 'patient') {
+            renderPatientBookingPage();
+            updatePatientTokenPassLiveStatus();
+          } else if (currentRole === 'clinic' && currentAuthUser) {
+            renderLiveCabinHero();
+            renderQueueList();
+          }
+        } catch (e) {}
+      }, 10000);
+
+      // Auto-refresh when tab is focused / brought to foreground
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          if (currentRole === 'patient') {
+            checkAndRestorePatientBooking();
+            updatePatientTokenPassLiveStatus();
+            renderPatientBookingPage();
+          } else if (currentRole === 'clinic' && currentAuthUser) {
+            refreshAllViews();
+          }
+        }
+      });
     };
   </script>
 </body>

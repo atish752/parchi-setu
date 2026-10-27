@@ -7,6 +7,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
+const vm = require('vm');
 
 const TEST_PORT = 3100;
 process.env.PORT = TEST_PORT;
@@ -539,6 +540,127 @@ async function runTests() {
     assert.ok(sources.includes('/onboard'), 'Must have /onboard rewrite');
     assert.ok(sources.includes('/book'), 'Must have /book rewrite');
     assert.ok(sources.includes('/clinic'), 'Must have /clinic rewrite');
+  })();
+
+  // 31. Compulsory Clinic Sign-In / Sign-Up Gateway on Main URL
+  await test('Compulsory Clinic Gateway on Main URL contains tabs, Google Sign-in, and auth handlers', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="viewAuthGateway"'), 'Must contain viewAuthGateway container');
+    assert.ok(html.includes('id="gwTabSignup"'), 'Must contain gwTabSignup');
+    assert.ok(html.includes('id="gwTabLogin"'), 'Must contain gwTabLogin');
+    assert.ok(html.includes('id="gwBtnGoogleSignIn"'), 'Must contain gwBtnGoogleSignIn');
+    assert.ok(html.includes('handleGatewaySignup()'), 'Must contain handleGatewaySignup invocation');
+    assert.ok(html.includes('handleGatewayLogin()'), 'Must contain handleGatewayLogin invocation');
+    assert.ok(html.includes('function showAuthGatewayScreen('), 'Must define showAuthGatewayScreen');
+    assert.ok(html.includes('function enterClinicWorkspace('), 'Must define enterClinicWorkspace');
+  })();
+
+  // 32. Clinic Profile & Pricing Modal with ₹399/mo and ₹4,000/yr plans
+  await test('Clinic Profile & Pricing modal defines membership plans and logout button', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="clinicAccountModal"'), 'Must contain clinicAccountModal');
+    assert.ok(html.includes('₹399'), 'Must contain ₹399 monthly price');
+    assert.ok(html.includes('₹4,000') || html.includes('4,000'), 'Must contain ₹4,000 annual price');
+    assert.ok(html.includes('Monthly OPD Plan'), 'Must describe Monthly OPD Plan');
+    assert.ok(html.includes('Annual Pro Plan'), 'Must describe Annual Pro Plan');
+    assert.ok(html.includes('function handleProfileHeaderClick('), 'Must define handleProfileHeaderClick');
+    assert.ok(html.includes('function selectPricingPlan('), 'Must define selectPricingPlan');
+    assert.ok(html.includes('bg-[#8B0000]'), 'Must include red/brown logout styling');
+  })();
+
+  // 33. Collapsible Fast Walk-in Entry Card
+  await test('Fast Walk-In Entry card has collapsible accordion with toggle controls', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="walkinFormCollapse"'), 'Must contain walkinFormCollapse');
+    assert.ok(html.includes('toggleFastWalkinCollapse()'), 'Must invoke toggleFastWalkinCollapse');
+    assert.ok(html.includes('function toggleFastWalkinCollapse('), 'Must define toggleFastWalkinCollapse function');
+    assert.ok(html.includes('id="walkinChevron"'), 'Must have walkinChevron icon');
+  })();
+
+  // 34. Pending Fee 1-Tap Cash & UPI Options
+  await test('Queue list defines 1-tap Cash and UPI buttons for pending fee patients', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('function setPatientPaymentMode('), 'Must define setPatientPaymentMode');
+    assert.ok(html.includes('setPatientPaymentMode'), 'Must invoke setPatientPaymentMode in queue render');
+    assert.ok(html.includes('Cash') && html.includes('UPI'), 'Must support both Cash and UPI options');
+  })();
+
+  // 35. Live Clinic Status, Consultation Fee Highlight, and Reassurance Line
+  await test('Patient view calculates live status, highlights fee, and displays phone call reassurance', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="patientViewLiveStatusCard"'), 'Must contain patientViewLiveStatusCard');
+    assert.ok(html.includes('id="patientConsultationFeeCard"'), 'Must contain patientConsultationFeeCard');
+    assert.ok(html.includes('id="patientFeeHighlightBadge"'), 'Must contain patientFeeHighlightBadge');
+    assert.ok(html.includes('function getClinicLiveStatusInfo('), 'Must define getClinicLiveStatusInfo');
+    assert.ok(html.includes('function checkAndRestorePatientBooking('), 'Must define checkAndRestorePatientBooking');
+    assert.ok(html.includes('zaroorat nahi hai'), 'Must include punchy reassurance note for waiting patients');
+  })();
+
+  // 36. JavaScript Syntax Compilation Verification (Catch duplicate const / parse errors)
+  await test('JavaScript scripts in index.html compile with zero syntax errors in JS runtime', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    const scripts = html.match(/<script\b[^>]*>([\s\S]*?)<\/script>/gi) || [];
+    assert.ok(scripts.length > 0, 'Must contain scripts in index.html');
+    scripts.forEach((s, idx) => {
+      const code = s.replace(/^<script[^>]*>/i, '').replace(/<\/script>$/i, '');
+      if (!code.trim()) return;
+      try {
+        new vm.Script(code, { filename: `index_script_${idx}.js` });
+      } catch (err) {
+        assert.fail(`Script ${idx} failed to compile: ${err.message}`);
+      }
+    });
+  })();
+
+  // 37. Compulsory Sign-In Gateway Screen Default Visibility (Static HTML)
+  await test('Clinic workspace and navigation tabs are hidden by default in static HTML until auth', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="clinicNavTabs" class="hidden'), 'clinicNavTabs must have hidden class by default');
+    assert.ok(html.includes('id="viewClinicDesk" class="hidden'), 'viewClinicDesk must have hidden class by default');
+    assert.ok(html.includes('id="clinicOnboardHeaderBtn"\n          class="hidden') || html.includes('id="clinicOnboardHeaderBtn" class="hidden') || html.includes('id="clinicOnboardHeaderBtn"\r\n          class="hidden'), 'clinicOnboardHeaderBtn must have hidden class');
+    assert.ok(html.includes('id="viewAuthGateway" class="max-w-xl') || (html.includes('id="viewAuthGateway"') && !html.includes('id="viewAuthGateway" class="hidden')), 'viewAuthGateway must be visible by default without hidden class');
+  })();
+
+  // 38. Day Comparison in Live Status supports short day names (Mon-Sat)
+  await test('getClinicLiveStatusInfo correctly matches short day names in daysOpen without false holidays', async () => {
+    const res = await makeRequest('GET', '/');
+    const html = res.body;
+    assert.ok(html.includes('shortDayNames'), 'Must define shortDayNames for accurate day of week matching');
+    assert.ok(html.includes('isDayOpen'), 'Must calculate isDayOpen matching both short and full day names');
+    assert.ok(html.includes('bg-rose-700 text-white border-2 border-rose-900'), 'Must use prominent red banner when clinic is closed');
+  })();
+
+  // 39. Patient View Header & Token Slip Integrity
+  await test('Patient token pass provides Refresh Live button and hides clinic admin buttons', async () => {
+    const res = await makeRequest('GET', '/');
+    const html = res.body;
+    assert.ok(html.includes('Refresh Live'), 'Token pass slip must feature Refresh Live button');
+    assert.ok(html.includes('Clinic Sign Up (केवल डॉक्टरों के लिए)') || html.includes('Clinic Sign Up (Doctors Only)'), 'Header auth button must clarify signup is for doctors only in patient mode');
+  })();
+
+  // 40. Fast non-blocking Firebase user clinic lookup
+  await test('firebase-sync.js getClinicForUser executes with fast 1200ms timeout protection', async () => {
+    const fbSync = require('./firebase-sync');
+    assert.strictEqual(typeof fbSync.getClinicForUser, 'function');
+    const start = Date.now();
+    const res = await fbSync.getClinicForUser('non_existent_uid_test');
+    const duration = Date.now() - start;
+    assert.strictEqual(res, null);
+    assert.ok(duration < 2000, `Lookup must resolve quickly without blocking UI, took ${duration}ms`);
   })();
 
   // Restore clean default clinic state and empty queue

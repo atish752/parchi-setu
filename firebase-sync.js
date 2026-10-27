@@ -34,6 +34,14 @@ function sanitizeForFirestore(obj) {
   return clean;
 }
 
+function withTimeout(promise, ms = 2500, fallback = null) {
+  if (!promise || typeof promise.then !== 'function') return Promise.resolve(fallback);
+  return Promise.race([
+    promise,
+    new Promise(resolve => setTimeout(() => resolve(fallback), ms))
+  ]);
+}
+
 function initFirebase() {
   try {
     if (typeof firebase !== 'undefined' && firebase.initializeApp) {
@@ -154,11 +162,15 @@ async function syncClinicToFirestore(clinic) {
   if (!isFirebaseAvailable || !fbDb || !clinic || !clinic.id) return false;
   try {
     const cleanData = sanitizeForFirestore(clinic);
-    await fbDb.collection('clinics').doc(clinic.id).set({
-      ...cleanData,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    return true;
+    const res = await withTimeout(
+      fbDb.collection('clinics').doc(clinic.id).set({
+        ...cleanData,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }),
+      2500,
+      false
+    );
+    return res !== false;
   } catch (err) {
     console.warn('Error saving clinic to Firestore:', err.message);
     return false;
@@ -173,19 +185,29 @@ async function saveBookingToFirestore(clinicId, booking) {
   try {
     const docId = booking.id || ('bk_' + Date.now());
     const cleanBooking = sanitizeForFirestore(booking);
-    await fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(docId).set({
-      ...cleanBooking,
-      id: docId,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    const res = await withTimeout(
+      fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(docId).set({
+        ...cleanBooking,
+        id: docId,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }),
+      2500,
+      false
+    );
 
-    // Also update clinic's latest live token info
-    await fbDb.collection('clinics').doc(clinicId).set({
-      lastTokenAssigned: booking.token,
-      lastBookingAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    // Also update clinic's latest live token info in background
+    if (res !== false) {
+      withTimeout(
+        fbDb.collection('clinics').doc(clinicId).set({
+          lastTokenAssigned: booking.token,
+          lastBookingAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }),
+        2000,
+        null
+      ).catch(() => {});
+    }
 
-    return true;
+    return res !== false;
   } catch (err) {
     console.warn('Error saving booking to Firestore:', err.message);
     return false;
@@ -199,11 +221,15 @@ async function updateBookingInFirestore(clinicId, bookingId, updates) {
   if (!isFirebaseAvailable || !fbDb || !clinicId || !bookingId) return false;
   try {
     const cleanUpdates = sanitizeForFirestore(updates);
-    await fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(bookingId).set({
-      ...cleanUpdates,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    return true;
+    const res = await withTimeout(
+      fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(bookingId).set({
+        ...cleanUpdates,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }),
+      2500,
+      false
+    );
+    return res !== false;
   } catch (err) {
     console.warn('Error updating booking in Firestore:', err.message);
     return false;
@@ -217,11 +243,15 @@ async function updateLiveStatusInFirestore(clinicId, statusData) {
   if (!isFirebaseAvailable || !fbDb || !clinicId) return false;
   try {
     const cleanStatus = sanitizeForFirestore(statusData);
-    await fbDb.collection('clinics').doc(clinicId).set({
-      liveCabinStatus: cleanStatus,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    return true;
+    const res = await withTimeout(
+      fbDb.collection('clinics').doc(clinicId).set({
+        liveCabinStatus: cleanStatus,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }),
+      2500,
+      false
+    );
+    return res !== false;
   } catch (err) {
     console.warn('Error updating live status in Firestore:', err.message);
     return false;
@@ -315,33 +345,45 @@ function getCurrentUser() {
 
 /**
  * Find clinic profile associated with a Firebase user (accepts user object or uid string)
+ * Fast non-blocking lookup with strict 1200ms overall timeout
  */
 async function getClinicForUser(user) {
   if (!isFirebaseAvailable || !fbDb || !user) return null;
   const uid = typeof user === 'string' ? user : (user && user.uid ? user.uid : '');
   if (!uid) return null;
-  try {
-    // 1. Check user map doc
-    const userDoc = await fbDb.collection('users').doc(uid).get();
-    if (userDoc.exists && userDoc.data().clinicId) {
-      const cDoc = await fbDb.collection('clinics').doc(userDoc.data().clinicId).get();
-      if (cDoc.exists) return { id: cDoc.id, ...cDoc.data() };
-    }
-    // 2. Query clinics collection where ownerUid == uid
-    const qSnap = await fbDb.collection('clinics').where('ownerUid', '==', uid).limit(1).get();
-    if (!qSnap.empty) {
-      const doc = qSnap.docs[0];
-      return { id: doc.id, ...doc.data() };
-    }
-    // 3. Fallback: check document by uid directly
-    const directDoc = await fbDb.collection('clinics').doc(uid).get();
-    if (directDoc.exists) {
-      return { id: directDoc.id, ...directDoc.data() };
-    }
-  } catch (err) {
-    console.warn('Firebase getClinicForUser warning:', err.message);
-  }
-  return null;
+
+  return withTimeout(
+    (async () => {
+      try {
+        // Fast parallel check: user mapping doc + direct clinic doc
+        const [userDoc, directDoc] = await Promise.all([
+          fbDb.collection('users').doc(uid).get().catch(() => null),
+          fbDb.collection('clinics').doc(uid).get().catch(() => null)
+        ]);
+
+        if (userDoc && userDoc.exists && userDoc.data().clinicId) {
+          const cDoc = await fbDb.collection('clinics').doc(userDoc.data().clinicId).get().catch(() => null);
+          if (cDoc && cDoc.exists) return { id: cDoc.id, ...cDoc.data() };
+        }
+
+        if (directDoc && directDoc.exists) {
+          return { id: directDoc.id, ...directDoc.data() };
+        }
+
+        // Secondary check: query by ownerUid
+        const qSnap = await fbDb.collection('clinics').where('ownerUid', '==', uid).limit(1).get().catch(() => null);
+        if (qSnap && !qSnap.empty) {
+          const doc = qSnap.docs[0];
+          return { id: doc.id, ...doc.data() };
+        }
+      } catch (err) {
+        console.warn('Firebase getClinicForUser warning:', err.message);
+      }
+      return null;
+    })(),
+    1200,
+    null
+  );
 }
 
 /**
@@ -356,8 +398,8 @@ async function saveUserClinicMapping(uid, clinicId, email = '', clinicName = '')
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     if (clinicName) data.clinicName = clinicName;
-    await fbDb.collection('users').doc(uid).set(data, { merge: true });
-    return true;
+    const res = await withTimeout(fbDb.collection('users').doc(uid).set(data, { merge: true }), 2500, false);
+    return res !== false;
   } catch (err) {
     console.warn('Firebase saveUserClinicMapping error:', err.message);
     return false;
