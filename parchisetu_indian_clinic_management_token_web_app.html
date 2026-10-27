@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ParchiSetu • Smart Clinic & Token App for India</title>
   <!-- Favicon: Cute Smiling Parchi with Doctor Stethoscope -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="alternate icon" href="favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.svg" />
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons -->
@@ -17,7 +17,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-  <script src="firebase-sync.js"></script>
+  <script src="/firebase-sync.js"></script>
 
   <script>
     tailwind.config = {
@@ -96,7 +96,7 @@
       <!-- Left: Clinic Brand & Live Status -->
       <div class="flex items-center gap-3">
         <div class="relative flex-shrink-0 cursor-pointer" onclick="handleLogoClick()" title="ParchiSetu Clinic">
-          <img src="logo.svg" alt="ParchiSetu Logo" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover bg-emerald-100 p-0.5 border-2 border-[#25D366] shadow-inner" onerror="this.onerror=null; this.src='favicon.svg';" />
+          <img src="/logo.svg" alt="ParchiSetu Logo" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover bg-emerald-100 p-0.5 border-2 border-[#25D366] shadow-inner" onerror="this.onerror=null; this.src='/favicon.svg';" />
           <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#25D366] border-2 border-[#075E54] rounded-full" title="Clinic Online"></span>
         </div>
         <div>
@@ -837,7 +837,7 @@
         <div class="bg-[#075E54] text-white p-5">
           <div class="flex items-start gap-3.5">
             <div class="w-14 h-14 rounded-2xl bg-white text-[#075E54] flex items-center justify-center font-black text-2xl shadow-md flex-shrink-0 overflow-hidden p-1">
-              <img src="logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='favicon.svg';" />
+              <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-1.5 flex-wrap">
@@ -1332,8 +1332,8 @@
         <button onclick="closeClinicAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition">
           ✕
         </button>
-        <div class="w-14 h-14 rounded-2xl bg-white p-1 mx-auto shadow-md mb-2 overflow-hidden">
-          <img src="logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='favicon.svg';" />
+        <div class="w-14 h-14 rounded-2xl bg-white p-1 mx-auto shadow-md mb-2 overflow-hidden flex items-center justify-center">
+          <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
         </div>
         <h3 class="text-xl font-black">ParchiSetu Clinic Portal</h3>
         <p class="text-xs text-emerald-100 mt-0.5">Google account ya Email se sign in karke apna clinic chalayein</p>
@@ -3694,14 +3694,66 @@
       }
     }
 
+    window.handleAuthSuccess = async function (user) {
+      if (!user) return;
+      showToast(`👋 Swagatam, ${user.displayName || user.email}!`);
+      updateHeaderAuthUI(user);
+
+      // Check if clinic mapping exists for this user
+      let userClinic = null;
+      try {
+        if (window.ParchiFirebase && window.ParchiFirebase.getClinicForUser) {
+          userClinic = await window.ParchiFirebase.getClinicForUser(user);
+        }
+      } catch (e) {
+        console.warn('getClinicForUser warning:', e);
+      }
+
+      if (userClinic && (userClinic.name || userClinic.id)) {
+        clinicProfile = userClinic;
+        saveLocalClinic();
+        if (window.location.protocol.startsWith('http')) {
+          try {
+            await fetch('/api/clinic', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(clinicProfile)
+            });
+          } catch (e) {}
+        }
+        if (window.ParchiFirebase && clinicProfile.id) {
+          window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
+        }
+        closeClinicAuthModal();
+        switchAppRole('clinic');
+        refreshAllViews();
+        showToast('✅ Apka Clinic account load ho gaya!');
+      } else {
+        // New clinic owner -> prefill doctor name and open onboarding
+        closeClinicAuthModal();
+        if (user.displayName) {
+          const docNameInput = document.getElementById('onboardDoctorName');
+          if (docNameInput && !docNameInput.value) {
+            docNameInput.value = user.displayName.startsWith('Dr.') ? user.displayName : `Dr. ${user.displayName}`;
+          }
+        }
+        openClinicOnboardingModal();
+        showToast('🎉 Google Sign-in Safal! Kripya apne clinic ki details set karein.');
+      }
+    };
+
     async function handleGoogleSignIn() {
       const btn = document.getElementById('btnGoogleSignIn');
       const btnText = document.getElementById('btnGoogleSignInText');
       const alertBox = document.getElementById('authAlertBox');
       if (alertBox) alertBox.classList.add('hidden');
 
+      if (window.ParchiFirebase && window.ParchiFirebase.init) {
+        window.ParchiFirebase.init();
+      }
+
       if (!window.ParchiFirebase || !window.ParchiFirebase.signInWithGoogle) {
-        showToast('⚠️ Firebase Auth initialize nahi hua hai. Demo mode use karein.', 'warning');
+        showToast('⚠️ Firebase Auth initialize ho raha hai, kripya 2 second baad punah prayas karein.', 'warning');
         return;
       }
 
@@ -3712,58 +3764,20 @@
       try {
         const user = await window.ParchiFirebase.signInWithGoogle();
         if (user) {
-          showToast(`👋 Swagatam, ${user.displayName || user.email}!`);
-          updateHeaderAuthUI(user);
-
-          // Check if clinic mapping exists for this user
-          let userClinic = null;
-          try {
-            userClinic = await window.ParchiFirebase.getClinicForUser(user);
-          } catch (e) {
-            console.warn('getClinicForUser warning:', e);
-          }
-
-          if (userClinic && (userClinic.name || userClinic.id)) {
-            clinicProfile = userClinic;
-            saveLocalClinic();
-            if (window.location.protocol.startsWith('http')) {
-              try {
-                await fetch('/api/clinic', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(clinicProfile)
-                });
-              } catch (e) {}
-            }
-            if (window.ParchiFirebase && clinicProfile.id) {
-              window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
-            }
-            closeClinicAuthModal();
-            switchAppRole('clinic');
-            refreshAllViews();
-            showToast('✅ Apka Clinic account load ho gaya!');
-          } else {
-            // New clinic owner -> prefill doctor name and open onboarding
-            closeClinicAuthModal();
-            if (user.displayName) {
-              const docNameInput = document.getElementById('onboardDoctorName');
-              if (docNameInput && !docNameInput.value) {
-                docNameInput.value = user.displayName.startsWith('Dr.') ? user.displayName : `Dr. ${user.displayName}`;
-              }
-            }
-            openClinicOnboardingModal();
-            showToast('🎉 Google Sign-in Safal! Kripya apne clinic ki details set karein.');
-          }
+          await window.handleAuthSuccess(user);
         }
       } catch (err) {
         console.error('Google Sign-in error:', err);
-        const msg = err.message || 'Google Sign-in fail ho gaya. Kripya punah prayas karein.';
-        if (alertBox) {
+        const msg = (err.code === 'auth/popup-closed-by-user')
+          ? 'Sign-in popup band kar diya gaya.'
+          : (err.message || 'Google Sign-in fail ho gaya. Kripya punah prayas karein.');
+        if (alertBox && err.code !== 'auth/popup-closed-by-user') {
           alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
           alertBox.textContent = '⚠️ ' + msg;
           alertBox.classList.remove('hidden');
-        } else {
-          showToast('⚠️ ' + msg, 'error');
+        }
+        if (err.code !== 'auth/popup-closed-by-user') {
+          showToast(`⚠️ ${msg}`, 'warning');
         }
       } finally {
         if (btnText) btnText.textContent = origText;

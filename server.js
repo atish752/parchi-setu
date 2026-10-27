@@ -389,7 +389,10 @@ const requestHandler = async (req, res) => {
   let filePath = HTML_FILE;
   if (pathname !== '/' && pathname !== '') {
     const safePath = path.normalize(path.join(__dirname, pathname)).replace(/^(\.\.[\/\\])+/, '');
-    if (fs.existsSync(safePath) && fs.statSync(safePath).isFile()) {
+    const publicPath = path.normalize(path.join(__dirname, 'public', pathname)).replace(/^(\.\.[\/\\])+/, '');
+    if (fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
+      filePath = publicPath;
+    } else if (fs.existsSync(safePath) && fs.statSync(safePath).isFile()) {
       filePath = safePath;
     }
   }

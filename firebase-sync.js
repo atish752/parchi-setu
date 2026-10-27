@@ -46,6 +46,23 @@ function initFirebase() {
       fbDb = firebase.firestore();
       isFirebaseAvailable = true;
       console.log('🔥 [ParchiSetu] Firebase connected successfully to project:', FIREBASE_CONFIG.projectId);
+
+      // Handle redirect sign-in result (essential for mobile Chrome / Safari)
+      if (fbAuth && typeof fbAuth.getRedirectResult === 'function') {
+        fbAuth.getRedirectResult().then(result => {
+          if (result && result.user) {
+            console.log('Firebase Redirect Sign-in completed:', result.user.email);
+            if (typeof window !== 'undefined' && typeof window.handleAuthSuccess === 'function') {
+              window.handleAuthSuccess(result.user);
+            }
+          }
+        }).catch(err => {
+          if (err && err.code !== 'auth/null-user') {
+            console.warn('Redirect sign-in notice:', err.message);
+          }
+        });
+      }
+
       return true;
     }
   } catch (err) {
@@ -370,6 +387,12 @@ if (typeof window !== 'undefined') {
     getClinicForUser: getClinicForUser,
     saveUserClinicMapping: saveUserClinicMapping
   };
+
+  try {
+    initFirebase();
+  } catch (e) {
+    console.warn('ParchiFirebase auto-init notice:', e);
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
