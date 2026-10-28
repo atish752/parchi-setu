@@ -1,60 +1,4 @@
-let memoryClinic = {
-  id: 'clinic_sanjeevani_01',
-  name: 'Sanjeevani Family Clinic',
-  tagline: 'General Physician & Family Healthcare',
-  category: 'General Medicine',
-  address: 'Near Main Market Chowk, Station Road',
-  city: 'Patna, Bihar',
-  phone: '9835012345',
-  whatsapp: '9835012345',
-  upiId: 'sanjeevaniclinic@upi',
-  doctorName: 'Dr. Rajesh Sharma',
-  doctorDegree: 'MBBS, MD (General Physician)',
-  doctorRegNo: 'MCI-48291',
-  experienceYears: 14,
-  doctors: [
-    {
-      id: 'doc_1',
-      name: 'Dr. Rajesh Sharma',
-      degree: 'MBBS, MD (General Physician)',
-      specialty: 'General Physician',
-      regNo: 'MCI-48291',
-      fee: 300,
-      isMain: true
-    }
-  ],
-  fees: {
-    normal: 300,
-    followup: 200,
-    emergency: 500,
-    report: 0
-  },
-  visitingHours: {
-    morning: {
-      enabled: true,
-      start: '10:00 AM',
-      end: '02:00 PM',
-      slotDurationMins: 15,
-      maxTokens: 25
-    },
-    evening: {
-      enabled: true,
-      start: '05:00 PM',
-      end: '09:00 PM',
-      slotDurationMins: 15,
-      maxTokens: 30
-    },
-    daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    avgConsultationMins: 10
-  },
-  leaves: {},
-  onboarded: true,
-  createdAt: new Date().toISOString()
-};
-
-const memoryClinics = {
-  [memoryClinic.id]: memoryClinic
-};
+const store = require('./_store');
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -83,7 +27,7 @@ module.exports = async (req, res) => {
 
   if (method === 'GET') {
     const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
-    const targetClinic = (clinicId && memoryClinics[clinicId]) ? memoryClinics[clinicId] : memoryClinic;
+    const targetClinic = store.getClinic(clinicId);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({
@@ -98,18 +42,10 @@ module.exports = async (req, res) => {
 
   if (method === 'POST') {
     const body = await parseBody(req);
-    memoryClinic = {
-      ...memoryClinic,
-      ...body,
-      onboarded: true,
-      updatedAt: new Date().toISOString()
-    };
-    if (body.id) {
-      memoryClinics[body.id] = memoryClinic;
-    }
+    const updated = store.setClinic(body);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ success: true, clinic: memoryClinic }));
+    return res.end(JSON.stringify({ success: true, clinic: updated }));
   }
 
   res.statusCode = 405;

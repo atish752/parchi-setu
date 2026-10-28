@@ -719,6 +719,162 @@ async function runTests() {
     assert.ok(html.includes('toggleFastWalkinCollapse(false)'), 'createFastWalkIn must collapse form after successful entry');
   })();
 
+  // 47. 3-Language Dropdown (English default, Hinglish, Hindi) & Comprehensive Dictionary
+  await test('3-Language selector dropdown and comprehensive I18N dictionary exist with English default', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="langSelectDropdown"'), 'Must define langSelectDropdown select element');
+    assert.ok(html.includes('value="english"'), 'Must include English option');
+    assert.ok(html.includes('value="hinglish"'), 'Must include Hinglish option');
+    assert.ok(html.includes('value="hindi"'), 'Must include Hindi option');
+    assert.ok(html.includes('changeLanguage(this.value)'), 'Dropdown must call changeLanguage on change');
+    assert.ok(html.includes('currentLang = \'english\''), 'Default language must be English');
+    assert.ok(html.includes('hindi: {'), 'I18N must define hindi dictionary');
+    assert.ok(html.includes('hinglish: {'), 'I18N must define hinglish dictionary');
+    assert.ok(html.includes('english: {'), 'I18N must define english dictionary');
+  })();
+
+  // 48. Bottom Navigation 5th Tab (Profile / Settings) & Red Sign Out Button Relocation
+  await test('5-Tab bottom navigation includes Profile tab with relocated red sign out button', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="tabBtn-profile"'), 'Must define tabBtn-profile in navigation');
+    assert.ok(html.includes('id="clinicTab-profile"'), 'Must define clinicTab-profile section');
+    assert.ok(html.includes('switchClinicTab(\'profile\')'), 'Must support switching to profile tab');
+    assert.ok(html.includes('id="profileTabSignOutBtn"'), 'Must define red sign out button inside profile tab');
+    assert.ok(html.includes('id="headerSignOutBtn" class="hidden"'), 'Header sign out button must be hidden in home top bar');
+  })();
+
+  // 49. Customizable Visiting Reasons (Kya Takleef Hai) & 5 Specialty Presets
+  await test('Doctor can customize visiting reasons and select 1-tap specialty presets', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="settingVisitingReasonsText"'), 'Must define settingVisitingReasonsText textarea');
+    assert.ok(html.includes('setReasonPreset(\'general\')'), 'Must define General preset button');
+    assert.ok(html.includes('setReasonPreset(\'derma\')'), 'Must define Derma preset button');
+    assert.ok(html.includes('setReasonPreset(\'ortho\')'), 'Must define Ortho preset button');
+    assert.ok(html.includes('setReasonPreset(\'pediatric\')'), 'Must define Pediatric preset button');
+    assert.ok(html.includes('setReasonPreset(\'dental\')'), 'Must define Dental preset button');
+
+    // Test API update of custom visiting reasons
+    const customReasons = ['🌸 Daad / Khujli', '🧴 Muhase / Acne', '🔴 Allergy / Rash', '💇 Baal Jhadna'];
+    const updateRes = await makeRequest('POST', '/api/clinic', { visitingReasons: customReasons });
+    assert.strictEqual(updateRes.status, 200);
+    assert.deepStrictEqual(updateRes.body.clinic.visitingReasons, customReasons);
+
+    const checkRes = await makeRequest('GET', '/api/clinic');
+    assert.strictEqual(checkRes.status, 200);
+    assert.deepStrictEqual(checkRes.body.visitingReasons, customReasons);
+  })();
+
+  // 50. Patient Step-by-Step Booking Modal & Visit Type (New vs Follow-up)
+  await test('Patient booking flow features step-by-step modal, visit type (New vs Follow-up), and screenshot callout', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+    assert.ok(html.includes('id="btnOpenPatientBookingModal"'), 'Must define landing CTA button to open booking modal');
+    assert.ok(html.includes('id="patientBookingModal"'), 'Must define step-by-step modal container');
+    assert.ok(html.includes('id="patBookingModalStep1"'), 'Must define Step 1 in modal');
+    assert.ok(html.includes('id="patBookingModalStep2"'), 'Must define Step 2 in modal');
+    assert.ok(html.includes('id="patVisitTypeNewBtn"'), 'Must define New Visit button');
+    assert.ok(html.includes('id="patVisitTypeFollowupBtn"'), 'Must define Follow-up Visit button');
+    assert.ok(html.includes('SCREENSHOT'), 'Must include prominent SCREENSHOT reminder on token pass');
+    assert.ok(html.includes('📸'), 'Must include camera icon in screenshot reminder');
+
+    // Test booking with visitType
+    const bookingPayload = {
+      name: 'Mohit Agrawal',
+      phone: '9876543210',
+      age: 42,
+      gender: 'M',
+      shift: 'Morning',
+      slotTime: '11:15 AM',
+      day: 'Aaj (Today)',
+      reason: 'Follow-up Check',
+      fee: 200,
+      visitType: 'followup'
+    };
+    const bRes = await makeRequest('POST', '/api/bookings', bookingPayload);
+    assert.strictEqual(bRes.status, 201);
+    assert.strictEqual(bRes.body.booking.visitType, 'followup');
+    assert.strictEqual(bRes.body.booking.fee, 200);
+  })();
+
+  // 51. Vanishing Tokens Prevention & Safe Queue Merging
+  await test('Safe queue merging prevents wiping tokens on empty server responses or cold starts', async () => {
+    const htmlRes = await makeRequest('GET', '/');
+    assert.strictEqual(htmlRes.status, 200);
+    const html = htmlRes.body;
+    assert.ok(html.includes('function mergeIncomingQueue(remoteQueue)'), 'Must define mergeIncomingQueue');
+    assert.ok(html.includes('if (remoteQueue.length === 0 && todayQueue.length > 0)'), 'Must guard against overwriting local queue with empty remote queue');
+
+    // Test mergeIncomingQueue logic in VM
+    const sandbox = {
+      todayQueue: [{ id: 'q_1', token: 1, name: 'Suresh' }],
+      saveLocalQueue: () => {},
+      refreshAllViews: () => {}
+    };
+    vm.createContext(sandbox);
+    const code = `
+      function mergeIncomingQueue(remoteQueue) {
+        if (!Array.isArray(remoteQueue)) return;
+        if (remoteQueue.length === 0 && todayQueue.length > 0) return;
+        const queueMap = new Map();
+        todayQueue.forEach(p => { if (p && p.id) queueMap.set(p.id, p); });
+        remoteQueue.forEach(p => {
+          if (p && p.id) {
+            if (queueMap.has(p.id)) {
+              queueMap.set(p.id, { ...queueMap.get(p.id), ...p });
+            } else {
+              queueMap.set(p.id, p);
+            }
+          }
+        });
+        todayQueue = Array.from(queueMap.values());
+      }
+      mergeIncomingQueue([]);
+    `;
+    vm.runInContext(code, sandbox);
+    assert.strictEqual(sandbox.todayQueue.length, 1, 'Local queue must NOT be cleared when remote returns empty array');
+    assert.strictEqual(sandbox.todayQueue[0].name, 'Suresh');
+  })();
+
+  // 52. Late / Pending Patient Tier, Non-Vanishing Behavior, and Explicit Cancellation
+  await test('Late / Pending patients are tagged without vanishing and appointments can be cancelled', async () => {
+    const htmlRes = await makeRequest('GET', '/');
+    assert.strictEqual(htmlRes.status, 200);
+    const html = htmlRes.body;
+    assert.ok(html.includes('function isPatientLate(p)'), 'Must define isPatientLate helper');
+    assert.ok(html.includes('⚠️ Late / Pending (Slot:'), 'Must tag late/pending appointments with warning and slot time');
+    assert.ok(html.includes('cancelPatientAppointment'), 'Must define cancelPatientAppointment handler');
+
+    // Create an appointment and cancel it via PATCH /api/queue/:id
+    const bRes = await makeRequest('POST', '/api/bookings', {
+      name: 'Rohan Sharma',
+      phone: '9876543211',
+      age: 29,
+      gender: 'M',
+      shift: 'Morning',
+      slotTime: '09:00 AM',
+      day: 'Aaj (Today)',
+      fee: 300
+    });
+    assert.strictEqual(bRes.status, 201);
+    const id = bRes.body.booking.id;
+
+    const patchRes = await makeRequest('PATCH', `/api/queue/${id}`, { status: 'CANCELLED' });
+    assert.strictEqual(patchRes.status, 200);
+    assert.strictEqual(patchRes.body.item.status, 'CANCELLED');
+
+    const queueRes = await makeRequest('GET', '/api/queue');
+    const cancelledItem = queueRes.body.find(p => p.id === id);
+    assert.ok(cancelledItem, 'Cancelled item must still be preserved in queue records');
+    assert.strictEqual(cancelledItem.status, 'CANCELLED');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

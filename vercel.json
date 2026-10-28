@@ -5,6 +5,7 @@
     { "source": "/clinic", "destination": "/index.html" },
     { "source": "/signin", "destination": "/index.html" },
     { "source": "/login", "destination": "/index.html" },
-    { "source": "/onboard", "destination": "/index.html" }
+    { "source": "/onboard", "destination": "/index.html" },
+    { "source": "/api/queue/:id", "destination": "/api/queue.js?id=:id" }
   ]
 }

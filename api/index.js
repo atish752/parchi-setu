@@ -3,65 +3,7 @@
  * Supports /api/health, /api/clinic, /api/queue, /api/bookings
  */
 
-let memoryClinic = {
-  id: 'clinic_sanjeevani_01',
-  name: 'Sanjeevani Family Clinic',
-  tagline: 'General Physician & Family Healthcare',
-  category: 'General Medicine',
-  address: 'Near Main Market Chowk, Station Road',
-  city: 'Patna, Bihar',
-  phone: '9835012345',
-  whatsapp: '9835012345',
-  upiId: 'sanjeevaniclinic@upi',
-  doctorName: 'Dr. Rajesh Sharma',
-  doctorDegree: 'MBBS, MD (General Physician)',
-  doctorRegNo: 'MCI-48291',
-  experienceYears: 14,
-  doctors: [
-    {
-      id: 'doc_1',
-      name: 'Dr. Rajesh Sharma',
-      degree: 'MBBS, MD (General Physician)',
-      specialty: 'General Physician',
-      regNo: 'MCI-48291',
-      fee: 300,
-      isMain: true
-    }
-  ],
-  fees: {
-    normal: 300,
-    followup: 200,
-    emergency: 500,
-    report: 0
-  },
-  visitingHours: {
-    morning: {
-      enabled: true,
-      start: '10:00 AM',
-      end: '02:00 PM',
-      slotDurationMins: 15,
-      maxTokens: 25
-    },
-    evening: {
-      enabled: true,
-      start: '05:00 PM',
-      end: '09:00 PM',
-      slotDurationMins: 15,
-      maxTokens: 30
-    },
-    daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    avgConsultationMins: 10
-  },
-  leaves: {},
-  onboarded: true,
-  createdAt: new Date().toISOString()
-};
-
-const memoryClinics = {
-  [memoryClinic.id]: memoryClinic
-};
-
-let memoryQueue = [];
+const store = require('./_store');
 
 async function parseReqBody(req) {
   if (req.body && typeof req.body === 'object') {
@@ -120,7 +62,7 @@ module.exports = async (req, res) => {
   if (pathname === '/api/clinic') {
     if (method === 'GET') {
       const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
-      const targetClinic = (clinicId && memoryClinics[clinicId]) ? memoryClinics[clinicId] : memoryClinic;
+      const targetClinic = store.getClinic(clinicId);
       return res.status(200).json({
         ...targetClinic,
         network: {
@@ -132,49 +74,40 @@ module.exports = async (req, res) => {
     }
     if (method === 'POST') {
       const body = await parseReqBody(req);
-      memoryClinic = {
-        ...memoryClinic,
-        ...body,
-        onboarded: true,
-        updatedAt: new Date().toISOString()
-      };
-      if (memoryClinic.id) {
-        memoryClinics[memoryClinic.id] = memoryClinic;
-      }
-      return res.status(200).json({ success: true, clinic: memoryClinic });
+      const updated = store.setClinic(body);
+      return res.status(200).json({ success: true, clinic: updated });
     }
   }
 
   // /api/queue
   if (pathname === '/api/queue') {
     if (method === 'GET') {
-      return res.status(200).json(memoryQueue);
+      return res.status(200).json(store.getQueue());
     }
     if (method === 'PUT') {
       const body = await parseReqBody(req);
       if (Array.isArray(body)) {
-        memoryQueue = body;
-        return res.status(200).json({ success: true, queue: memoryQueue });
+        store.setQueue(body);
+        return res.status(200).json({ success: true, queue: store.getQueue() });
       }
       return res.status(400).json({ error: 'Body must be an array of queue items' });
     }
   }
 
   if (pathname === '/api/queue/reset' && method === 'POST') {
-    memoryQueue = [];
+    store.resetQueue();
     return res.status(200).json({ success: true, queue: [] });
   }
 
   // /api/queue/:id
   if (pathname.startsWith('/api/queue/') && (method === 'PATCH' || method === 'POST')) {
-    const id = pathname.replace('/api/queue/', '');
-    const item = memoryQueue.find(p => p.id === id);
-    if (!item) {
+    const id = pathname.replace('/api/queue/', '').split('?')[0];
+    const body = await parseReqBody(req);
+    const updated = store.patchQueueItem(id, body);
+    if (!updated) {
       return res.status(404).json({ error: 'Item not found' });
     }
-    const body = await parseReqBody(req);
-    Object.assign(item, body);
-    return res.status(200).json({ success: true, item });
+    return res.status(200).json({ success: true, item: updated });
   }
 
   // /api/bookings
@@ -184,45 +117,8 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Name and phone are required' });
     }
 
-    const existingIdx = body.id ? memoryQueue.findIndex(p => p.id === body.id) : -1;
-    if (existingIdx >= 0) {
-      Object.assign(memoryQueue[existingIdx], body);
-      return res.status(200).json({ success: true, booking: memoryQueue[existingIdx] });
-    }
-
-    const maxToken = memoryQueue.reduce((max, p) => Math.max(max, p.token || 0), 0);
-    const nextToken = body.token || (maxToken > 0 ? maxToken + 1 : 1);
-    const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
-
-    const newBooking = {
-      id: bookingId,
-      token: nextToken,
-      name: body.name.trim(),
-      age: parseInt(body.age, 10) || 30,
-      gender: body.gender || 'M',
-      phone: (body.phone || '').trim(),
-      reason: body.reason || 'General Consultation',
-      doctorId: body.doctorId || 'doc_1',
-      doctorName: body.doctorName || (memoryClinic.doctorName || 'Dr. Rajesh Sharma'),
-      fee: body.fee !== undefined ? body.fee : (memoryClinic.fees ? memoryClinic.fees.normal : 300),
-      payMode: body.payMode || 'Baaki',
-      status: body.status || 'WAITING',
-      source: body.source || 'QR Booked',
-      shift: body.shift || 'Morning',
-      slotTime: body.slotTime || 'Online Booking',
-      day: body.day || 'Aaj (Today)',
-      date: body.date || new Date().toISOString().split('T')[0],
-      bp: body.bp || '',
-      weight: body.weight || '',
-      temp: body.temp || '',
-      spo2: body.spo2 || '',
-      hasParchiPhoto: !!body.hasParchiPhoto,
-      notes: body.notes || '',
-      createdAt: body.createdAt || new Date().toISOString()
-    };
-
-    memoryQueue.push(newBooking);
-    return res.status(201).json({ success: true, booking: newBooking });
+    const { isNew, booking } = store.addOrUpdateBooking(body);
+    return res.status(isNew ? 201 : 200).json({ success: true, booking });
   }
 
   return res.status(404).json({ error: 'Not Found' });

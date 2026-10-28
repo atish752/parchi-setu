@@ -36,6 +36,14 @@ const DEFAULT_CLINIC = {
     emergency: 500,
     report: 0
   },
+  visitingReasons: [
+    '🤒 Bukhar / Cold',
+    '🩸 BP / Sugar',
+    '🤢 Pet / Gas',
+    '🔄 Follow-up',
+    '📋 Report Check',
+    '🤕 Dard / Injury'
+  ],
   visitingHours: {
     morning: {
       enabled: true,
@@ -310,6 +318,7 @@ const requestHandler = async (req, res) => {
         gender: body.gender || 'M',
         phone: (body.phone || '').trim(),
         reason: body.reason || 'General Consultation',
+        visitType: body.visitType || 'new',
         doctorId: body.doctorId || 'doc_1',
         doctorName: body.doctorName || (appData.clinic.doctorName || 'Dr. Rajesh Sharma'),
         fee: body.fee !== undefined ? body.fee : (appData.clinic.fees ? appData.clinic.fees.normal : 300),
