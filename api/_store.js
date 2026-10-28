@@ -79,6 +79,14 @@ let store = {
   queue: []
 };
 
+function getISTDateString(d = new Date()) {
+  const istDate = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const y = istDate.getFullYear();
+  const m = String(istDate.getMonth() + 1).padStart(2, '0');
+  const day = String(istDate.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function loadStore() {
   try {
     if (fs.existsSync(TMP_FILE)) {
@@ -89,6 +97,20 @@ function loadStore() {
           if (parsed.clinic) store.clinic = parsed.clinic;
           if (parsed.clinics) store.clinics = parsed.clinics;
           if (Array.isArray(parsed.queue)) store.queue = parsed.queue;
+          return;
+        }
+      }
+    }
+
+    // Fallback seed from clinic_data.json if present
+    const clinicDataFile = path.join(__dirname, '..', 'clinic_data.json');
+    if (fs.existsSync(clinicDataFile)) {
+      const cDataRaw = fs.readFileSync(clinicDataFile, 'utf8');
+      if (cDataRaw) {
+        const parsed = JSON.parse(cDataRaw);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.clinic) store.clinic = parsed.clinic;
+          if (Array.isArray(parsed.queue) && parsed.queue.length > 0) store.queue = parsed.queue;
         }
       }
     }
@@ -178,7 +200,7 @@ module.exports = {
       shift: booking.shift || 'Morning',
       slotTime: booking.slotTime || 'Online Booking',
       day: booking.day || 'Aaj (Today)',
-      date: booking.date || new Date().toISOString().split('T')[0],
+      date: booking.date || getISTDateString(),
       bp: booking.bp || '',
       weight: booking.weight || '',
       temp: booking.temp || '',

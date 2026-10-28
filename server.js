@@ -310,6 +310,14 @@ const requestHandler = async (req, res) => {
       const nextToken = body.token || (maxToken > 0 ? maxToken + 1 : 1);
       const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 
+function getISTDateString(d = new Date()) {
+  const istDate = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const y = istDate.getFullYear();
+  const m = String(istDate.getMonth() + 1).padStart(2, '0');
+  const day = String(istDate.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
       const newBooking = {
         id: bookingId,
         token: nextToken,
@@ -328,7 +336,7 @@ const requestHandler = async (req, res) => {
         shift: body.shift || 'Morning',
         slotTime: body.slotTime || 'Online Booking',
         day: body.day || 'Aaj (Today)',
-        date: body.date || new Date().toISOString().split('T')[0],
+        date: body.date || getISTDateString(),
         bp: body.bp || '',
         weight: body.weight || '',
         temp: body.temp || '',

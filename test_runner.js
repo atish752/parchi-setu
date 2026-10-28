@@ -875,6 +875,82 @@ async function runTests() {
     assert.strictEqual(cancelledItem.status, 'CANCELLED');
   })();
 
+  // 53. Multilingual Speech Synthesis and Hindi UI Support
+  await test('3-Language speech synthesis and Hindi UI strings in cabin hero & filter pills', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Speech synthesis checks
+    assert.ok(html.includes("currentLang === 'hindi'"), 'Must branch for Hindi language in voice announcer');
+    assert.ok(html.includes("text = `टोकन नंबर ${tokenNum}, ${patientName}, कृपया डॉक्टर केबिन में आएं।`"), 'Must synthesize Hindi voice text');
+    assert.ok(html.includes("langCode = 'hi-IN'"), 'Must use hi-IN language code for Hindi voice');
+
+    // UI translation checks
+    assert.ok(html.includes("currentLang === 'hindi' ? 'केबिन खाली है'"), 'Must have Hindi text for empty cabin header');
+    assert.ok(html.includes("currentLang === 'hindi' ? `सभी (${counts.ALL})`"), 'Must translate filter pills into Hindi');
+    assert.ok(html.includes("currentLang === 'hindi' ? '🔔 बुलावा'"), 'Must translate ring bell button to Hindi');
+  })();
+
+  // 54. Bottom Navigation Layout Preservation (border-t-2 & flex-col)
+  await test('Bottom navigation tab switcher maintains border-t-2 and flex-col layout', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Verify switchClinicTab implementation preserves border-t-2 and flex-col
+    assert.ok(html.includes("border-t-2 border-[#25D366] text-white flex flex-col items-center justify-center gap-0.5"), 'Active tab in switchClinicTab must preserve border-t-2 and flex-col');
+    assert.ok(html.includes("border-t-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-col items-center justify-center gap-0.5"), 'Inactive tabs must preserve border-t-2 and flex-col');
+    // Ensure faulty horizontal flex-row and border-b-2 are absent from switchClinicTab
+    assert.ok(!html.includes("border-b-2 border-[#25D366] text-white flex flex-row"), 'Must not squash tabs horizontally with border-b-2');
+  })();
+
+  // 55. Patient Booking Modal Step Indicator Pills & showBookedTokenPass Alias
+  await test('Patient booking modal step pills and showBookedTokenPass alias exist with fallback IDs', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // showBookedTokenPass alias
+    assert.ok(html.includes('function showBookedTokenPass()'), 'Must define showBookedTokenPass alias');
+    assert.ok(html.includes('onclick="showBookedTokenPass()"'), 'HTML must invoke showBookedTokenPass');
+
+    // Step pill fallback lookups
+    assert.ok(html.includes("document.getElementById('patBookModalStepPill1') || document.getElementById('bookingStepPill1')"), 'Must safely lookup step pill 1 by both IDs');
+    assert.ok(html.includes("document.getElementById('patBookModalStepPill2') || document.getElementById('bookingStepPill2')"), 'Must safely lookup step pill 2 by both IDs');
+
+    // Landing hero section fallback selectors
+    assert.ok(html.includes("document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection')"), 'Must support both landing hero element IDs');
+  })();
+
+  // 56. Dynamic Consultation Fee Synchronization (New vs Follow-up)
+  await test('setPatientVisitType dynamically synchronizes fee text badges and highlights', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    assert.ok(html.includes("id=\"visitFeeNewText\""), 'HTML must define visitFeeNewText');
+    assert.ok(html.includes("id=\"visitFeeFollowupText\""), 'HTML must define visitFeeFollowupText');
+    assert.ok(html.includes("feeNewEl.textContent"), 'setPatientVisitType must update visitFeeNewText dynamically');
+    assert.ok(html.includes("feeFollowEl.textContent"), 'setPatientVisitType must update visitFeeFollowupText dynamically');
+    assert.ok(html.includes("feeHighlightBadge.textContent = `₹${curFee}`"), 'setPatientVisitType must update patientFeeHighlightBadge');
+  })();
+
+  // 57. Unconditional Live Queue Fetching on Clinic Param Launch
+  await test('Queue fetch and SSE events are initialized unconditionally on HTTP', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Verify window.onload contains unconditional queue fetch and SSE setup
+    assert.ok(html.includes('// Always fetch live queue and initialize real-time server events when hosted on HTTP'), 'Must have comment noting unconditional queue fetch');
+    const onloadPos = html.indexOf('window.onload = async function');
+    const listenPos = html.indexOf('window.ParchiFirebase.listen', onloadPos);
+    const onloadBlock = html.substring(onloadPos, listenPos > 0 ? listenPos : html.length);
+    assert.ok(onloadBlock.includes("fetch('/api/queue')"), 'Must fetch queue in window.onload');
+    assert.ok(onloadBlock.includes('initServerEvents()'), 'Must call initServerEvents in window.onload');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {
@@ -909,6 +985,14 @@ async function runTests() {
       daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       avgConsultationMins: 10
     },
+    visitingReasons: [
+      '🤒 Bukhar / Cold',
+      '🩸 BP / Sugar',
+      '🤢 Pet / Gas',
+      '🔄 Follow-up',
+      '📋 Report Check',
+      '🤕 Dard / Injury'
+    ],
     leaves: {},
     onboarded: true
   };

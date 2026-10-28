@@ -1336,7 +1336,7 @@
         </div>
 
         <!-- High-Impact Patient Booking Action Button (Centered & Powerful) -->
-        <div id="patientLandingHeroSection" class="p-5 sm:p-6 text-center bg-gradient-to-b from-white to-emerald-50/70 border-t border-slate-100 space-y-3">
+        <div id="patientBookingLandingHero" data-alias="patientLandingHeroSection" class="p-5 sm:p-6 text-center bg-gradient-to-b from-white to-emerald-50/70 border-t border-slate-100 space-y-3">
           <button 
             type="button" 
             onclick="openPatientBookingModal()" 
@@ -1364,7 +1364,7 @@
             <!-- Modal Header -->
             <div class="bg-[#075E54] text-white p-4 flex items-center justify-between flex-shrink-0">
               <div>
-                <h3 class="font-black text-base">Book Clinic Appointment</h3>
+                <h3 class="font-black text-base" data-i18n="bookModalHeader">Book Clinic Appointment</h3>
                 <p class="text-xs text-emerald-100/90" id="modalClinicDocTitle">Sanjeevani Clinic • Dr. Rajesh Sharma</p>
               </div>
               <button type="button" onclick="closePatientBookingModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-black">
@@ -1374,11 +1374,11 @@
 
             <!-- Step Indicator Pills -->
             <div class="flex items-center gap-2 p-3 bg-slate-50 border-b border-slate-200 flex-shrink-0">
-              <button type="button" onclick="setPatientBookingStep(1)" id="bookingStepPill1" class="w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs">
-                1. Visit & Slot
+              <button type="button" onclick="setPatientBookingStep(1)" id="bookingStepPill1" data-alias="patBookModalStepPill1" class="w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs">
+                <span data-i18n="step1Title">1. Visit & Slot</span>
               </button>
-              <button type="button" onclick="setPatientBookingStep(2)" id="bookingStepPill2" class="w-1/2 py-1.5 text-center font-bold text-xs rounded-xl bg-slate-100 text-slate-500">
-                2. Patient Details
+              <button type="button" onclick="setPatientBookingStep(2)" id="bookingStepPill2" data-alias="patBookModalStepPill2" class="w-1/2 py-1.5 text-center font-bold text-xs rounded-xl bg-slate-100 text-slate-500">
+                <span data-i18n="step2Title">2. Patient Details</span>
               </button>
             </div>
 
@@ -1390,7 +1390,7 @@
                 
                 <!-- Visit Type Selector: Pahli Baar (New Visit) vs Dobara (Follow-up) -->
                 <div>
-                  <label class="block text-xs font-black text-slate-700 uppercase mb-1.5">
+                  <label class="block text-xs font-black text-slate-700 uppercase mb-1.5" data-i18n="visitTypeTitle">
                     Aapka Prakar (Visit Type) *
                   </label>
                   <div class="grid grid-cols-2 gap-2.5">
@@ -1528,7 +1528,7 @@
                   onclick="setPatientBookingStep(2)" 
                   class="btn-tactile w-full bg-[#075E54] hover:bg-[#128C7E] text-white font-black py-3.5 px-4 rounded-2xl shadow-md text-sm sm:text-base flex items-center justify-center gap-2 transition"
                 >
-                  <span>Aage Badhein (Patient Info)</span>
+                  <span id="step1NextBtnText" data-i18n="btnNextStep">Aage Badhein (Patient Info)</span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>
               </div>
@@ -1538,7 +1538,7 @@
                 <div class="flex items-center justify-between">
                   <button type="button" onclick="setPatientBookingStep(1)" class="text-xs font-bold text-[#075E54] hover:underline flex items-center gap-1">
                     <i class="fa-solid fa-arrow-left"></i>
-                    <span>Wapas (Back to Slot)</span>
+                    <span id="step2BackBtnText" data-i18n="btnPrevStep">Wapas (Back to Slot)</span>
                   </button>
                   <span class="text-xs font-black text-slate-600" id="step2SlotPreview">Aaj • 11:30 AM</span>
                 </div>
@@ -1621,8 +1621,8 @@
             <div class="p-3.5 bg-amber-100 border-2 border-amber-400 rounded-2xl text-amber-950 font-black text-xs sm:text-sm flex items-center gap-2.5 shadow-sm text-left">
               <span class="text-3xl flex-shrink-0">📸</span>
               <div>
-                <div class="font-black text-amber-950 leading-tight">Apne Token Number Ka SCREENSHOT Zaroor Le Lein!</div>
-                <div class="text-[11px] font-semibold text-amber-900 mt-0.5">Taaki aap token number bhoolen nahi aur clinic counter par asaani se dikha sakein.</div>
+                <div class="font-black text-amber-950 leading-tight" data-i18n="screenshotTitle">Apne Token Number Ka SCREENSHOT Zaroor Le Lein!</div>
+                <div class="text-[11px] font-semibold text-amber-900 mt-0.5" data-i18n="screenshotSub">Taaki aap token number bhoolen nahi aur clinic counter par asaani se dikha sakein.</div>
               </div>
             </div>
 
@@ -3174,9 +3174,7 @@
           refreshAllViews();
         } else if (e.data.type === 'QUEUE_UPDATED') {
           if (Array.isArray(e.data.queue)) {
-            todayQueue = e.data.queue;
-            saveLocalQueue();
-            refreshAllViews();
+            mergeIncomingQueue(e.data.queue);
           } else if (e.data.id && e.data.updated) {
             const item = todayQueue.find(p => p.id === e.data.id);
             if (item) {
@@ -3248,9 +3246,7 @@
                 refreshAllViews();
               } else if (msg.event === 'QUEUE_UPDATED' && msg.data) {
                 if (Array.isArray(msg.data.queue)) {
-                  todayQueue = msg.data.queue;
-                  saveLocalQueue();
-                  refreshAllViews();
+                  mergeIncomingQueue(msg.data.queue);
                 } else if (msg.data.id && msg.data.updated) {
                   const item = todayQueue.find(p => p.id === msg.data.id);
                   if (item) {
@@ -3307,7 +3303,22 @@
         sendHisaabSub: 'Send a complete timestamped Cash + UPI settlement report to the Doctor in 1 tap.',
         btnSendHisaabWA: '📲 Send Daily Summary to Doctor',
         gallaLedgerHeading: 'Today\'s Token-Wise Fee Ledger (Tap Unpaid to Collect)',
-        btnConfirmToken: 'Book My Token (Free Online Booking) ➔'
+        btnConfirmToken: 'Book My Token (Free Online Booking) ➔',
+        bookAppointmentHeroBtn: 'Book Appointment / Get Token',
+        heroSubText: '⚡ Free Online Token • No Line, No Waiting • Pay at Counter',
+        bookModalHeader: 'Book Clinic Appointment',
+        visitTypeTitle: 'Select Visit Type *',
+        visitTypeNewTitle: '🌟 First-Time Visit',
+        visitTypeNewSub: 'New Patient Consultation',
+        visitTypeFollowupTitle: '🔄 Follow-up Visit',
+        visitTypeFollowupSub: 'Returning Patient Checkup',
+        step1Title: '1. Visit & Slot',
+        step2Title: '2. Patient Details',
+        btnNextStep: 'Next (Patient Info) ➔',
+        btnPrevStep: '⬅ Back (Change Slot)',
+        screenshotTitle: '📸 Please Take a SCREENSHOT of Your Token Number!',
+        screenshotSub: 'So you don\'t forget and can easily present it at the clinic counter.',
+        reassuranceNote: 'Doctor or compounder calls are not needed! Keep this link open, live status updates in real-time.'
       },
       hinglish: {
         roleClinic: 'Compounder Desk',
@@ -3348,7 +3359,22 @@
         sendHisaabSub: 'Koi register jodne ki zaroorat nahi! Pura Cash + UPI hisaab Doctor Sahab ke WhatsApp par bhejein.',
         btnSendHisaabWA: '📲 Doctor Ko WhatsApp Hisaab Bhejein',
         gallaLedgerHeading: 'Aaj Ki Parchi-Wise Fee Entry (Click "Baaki" to Mark Paid)',
-        btnConfirmToken: 'Apna Token Book Karein (Free Booking) ➔'
+        btnConfirmToken: 'Apna Token Book Karein (Free Booking) ➔',
+        bookAppointmentHeroBtn: 'पर्ची बुक करें / Book Appointment',
+        heroSubText: '⚡ Free Online Token • No Line, No Waiting • Counter Par Pay Karein',
+        bookModalHeader: 'Book Clinic Appointment',
+        visitTypeTitle: 'Aapka Prakar (Visit Type) *',
+        visitTypeNewTitle: '🌟 Pahli Baar',
+        visitTypeNewSub: 'Naya Mareez (New Visit)',
+        visitTypeFollowupTitle: '🔄 Dobara / Follow-up',
+        visitTypeFollowupSub: 'Purana Mareez (Checkup)',
+        step1Title: '1. Visit & Slot',
+        step2Title: '2. Patient Details',
+        btnNextStep: 'Aage Badhein (Mareez Info) ➔',
+        btnPrevStep: '⬅ Wapas (Slot Badlein)',
+        screenshotTitle: '📸 Apne Token Number Ka SCREENSHOT Zaroor Le Lein!',
+        screenshotSub: 'Taaki aap token number bhoolen nahi aur clinic counter par asaani se dikha sakein.',
+        reassuranceNote: 'Doctor sahab ya compounder ko baar-baar call karne ki zaroorat nahi hai! Bas is link ko khula rakhein ya refresh karein, live token badalta rahega.'
       },
       hindi: {
         roleClinic: 'कम्पाउंडर डेस्क',
@@ -3389,7 +3415,22 @@
         sendHisaabSub: 'रजिस्टर जोड़ने की आवश्यकता नहीं! पूरा नकद व यूपीआई हिसाब डॉक्टर को भेजें।',
         btnSendHisaabWA: '📲 डॉक्टर को व्हाट्सएप पर हिसाब भेजें',
         gallaLedgerHeading: 'आज की टोकन-वार फीस सूची',
-        btnConfirmToken: 'टोकन बुक करें (मुफ्त बुकिंग) ➔'
+        btnConfirmToken: 'टोकन बुक करें (मुफ्त बुकिंग) ➔',
+        bookAppointmentHeroBtn: 'पर्ची बुक करें / टोकन प्राप्त करें',
+        heroSubText: '⚡ निःशुल्क ऑनलाइन टोकन • कतार में खड़े रहने की जरूरत नहीं • काउंटर पर भुगतान करें',
+        bookModalHeader: 'क्लिनिक अपॉइंटमेंट बुक करें',
+        visitTypeTitle: 'परामर्श का प्रकार चुनें *',
+        visitTypeNewTitle: '🌟 पहली बार दिखा रहे हैं',
+        visitTypeNewSub: 'नया मरीज़ (परामर्श शुल्क)',
+        visitTypeFollowupTitle: '🔄 दोबारा / फॉलो-अप',
+        visitTypeFollowupSub: 'पुराना मरीज़ (फॉलो-अप शुल्क)',
+        step1Title: '1. प्रकार व समय',
+        step2Title: '2. मरीज़ विवरण',
+        btnNextStep: 'आगे बढ़ें (मरीज़ जानकारी) ➔',
+        btnPrevStep: '⬅ वापस (समय स्लॉट बदलें)',
+        screenshotTitle: '📸 अपने टोकन नंबर का स्क्रीनशॉट अवश्य ले लें!',
+        screenshotSub: 'ताकि आप क्लिनिक काउंटर पर टोकन नंबर आसानी से दिखा सकें और भूलें नहीं।',
+        reassuranceNote: 'डॉक्टर साहब या क्लिनिक को बार-बार फोन करने की आवश्यकता नहीं है! इस पेज को खुला रखें, यहाँ लाइव टोकन स्थिति अपने आप बदलती रहेगी।'
       }
     };
 
@@ -3434,11 +3475,17 @@
         setTimeout(() => {
           try {
             window.speechSynthesis.cancel();
-            const text = currentLang === 'hinglish'
-              ? `Token number ${tokenNum}, ${patientName}, kripya Doctor cabin mein aayein.`
-              : `Token number ${tokenNum}, ${patientName}, please proceed to the Doctor's cabin.`;
+            let text = `Token number ${tokenNum}, ${patientName}, please proceed to the Doctor's cabin.`;
+            let langCode = 'en-IN';
+            if (currentLang === 'hindi') {
+              text = `टोकन नंबर ${tokenNum}, ${patientName}, कृपया डॉक्टर केबिन में आएं।`;
+              langCode = 'hi-IN';
+            } else if (currentLang === 'hinglish') {
+              text = `Token number ${tokenNum}, ${patientName}, kripya Doctor cabin mein aayein.`;
+              langCode = 'hi-IN';
+            }
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'hi-IN';
+            utterance.lang = langCode;
             utterance.rate = 0.95;
             window.speechSynthesis.speak(utterance);
           } catch (err) {}
@@ -3509,10 +3556,17 @@
     }
 
     function getNextWaitingPatient() {
-      const waiting = todayQueue
-        .filter(p => p.status === 'WAITING')
-        .sort((a, b) => a.token - b.token);
-      return waiting.length > 0 ? waiting[0] : null;
+      // 1. Prioritize active on-time waiting patients in ascending token order
+      const activeWaiting = todayQueue
+        .filter(p => p.status === 'WAITING' && !isPatientLate(p))
+        .sort((a, b) => (a.token || 0) - (b.token || 0));
+      if (activeWaiting.length > 0) return activeWaiting[0];
+
+      // 2. Then attend late / pending waiting patients in ascending token order
+      const lateWaiting = todayQueue
+        .filter(p => p.status === 'WAITING' && isPatientLate(p))
+        .sort((a, b) => (a.token || 0) - (b.token || 0));
+      return lateWaiting.length > 0 ? lateWaiting[0] : null;
     }
 
     // =========================================================================
@@ -3571,9 +3625,35 @@
           : 'Shaam (Closed)';
       }
 
+      const normFee = (clinicProfile.fees && clinicProfile.fees.normal != null) ? clinicProfile.fees.normal : 300;
+      const followFee = (clinicProfile.fees && clinicProfile.fees.followup != null) ? clinicProfile.fees.followup : 200;
+      const feeNewEl = document.getElementById('visitFeeNewText');
+      if (feeNewEl) feeNewEl.textContent = currentLang === 'hindi' ? `शुल्क: ₹${normFee}` : `Fee: ₹${normFee}`;
+      const feeFollowEl = document.getElementById('visitFeeFollowupText');
+      if (feeFollowEl) feeFollowEl.textContent = currentLang === 'hindi' ? `शुल्क: ₹${followFee}` : `Fee: ₹${followFee}`;
+
+      const feeHighlightBadge = document.getElementById('patientFeeHighlightBadge');
+      if (feeHighlightBadge) {
+        const curFee = selectedPatVisitType === 'followup' ? followFee : normFee;
+        if (curFee === 0 || curFee === '0' || curFee === '') {
+          feeHighlightBadge.textContent = currentLang === 'hindi' ? 'निःशुल्क (मुफ्त)' : 'FREE (मुफ्त)';
+          feeHighlightBadge.className = 'text-base font-black text-emerald-800 bg-white px-3 py-1 rounded-xl border-2 border-emerald-400 shadow-xs';
+        } else {
+          feeHighlightBadge.textContent = `₹${curFee}`;
+          feeHighlightBadge.className = 'text-xl font-black text-emerald-900 bg-white px-3.5 py-1.5 rounded-xl border-2 border-emerald-400 shadow-xs';
+        }
+      }
+
       const feeNote = document.getElementById('patientBookingFeeNote');
       if (feeNote) {
-        feeNote.textContent = `💡 Doctor ki fees (₹${clinicProfile.fees.normal}) clinic counter par Cash ya UPI se dena hai.`;
+        const feeVal = selectedPatVisitType === 'followup' ? followFee : normFee;
+        if (currentLang === 'hindi') {
+          feeNote.textContent = `💡 डॉक्टर का परामर्श शुल्क (₹${feeVal}) क्लिनिक काउंटर पर नकद या यूपीआई द्वारा जमा करें।`;
+        } else if (currentLang === 'hinglish') {
+          feeNote.textContent = `💡 Doctor ki fees (₹${feeVal}) clinic counter par Cash ya UPI se dena hai.`;
+        } else {
+          feeNote.textContent = `💡 Doctor consultation fee (₹${feeVal}) to be paid at the clinic counter via Cash or UPI.`;
+        }
       }
 
       // Standee Link
@@ -5362,7 +5442,13 @@
         } catch (e) {}
       }
       if (window.ParchiFirebase && clinicProfile.id) {
-        window.ParchiFirebase.saveClinic(clinicProfile.id, clinicProfile);
+        if (typeof window.ParchiFirebase.saveClinic === 'function') {
+          window.ParchiFirebase.saveClinic(clinicProfile.id, clinicProfile);
+        } else if (typeof window.ParchiFirebase.syncClinicToFirestore === 'function') {
+          window.ParchiFirebase.syncClinicToFirestore(clinicProfile.id, clinicProfile);
+        } else if (typeof window.ParchiFirebase.syncClinic === 'function') {
+          window.ParchiFirebase.syncClinic(clinicProfile.id, clinicProfile);
+        }
       }
       renderFastWalkinControls();
       renderPatientBookingPage();
@@ -5390,7 +5476,13 @@
         } catch (e) {}
       }
       if (window.ParchiFirebase && clinicProfile.id) {
-        window.ParchiFirebase.saveClinic(clinicProfile.id, clinicProfile);
+        if (typeof window.ParchiFirebase.saveClinic === 'function') {
+          window.ParchiFirebase.saveClinic(clinicProfile.id, clinicProfile);
+        } else if (typeof window.ParchiFirebase.syncClinicToFirestore === 'function') {
+          window.ParchiFirebase.syncClinicToFirestore(clinicProfile.id, clinicProfile);
+        } else if (typeof window.ParchiFirebase.syncClinic === 'function') {
+          window.ParchiFirebase.syncClinic(clinicProfile.id, clinicProfile);
+        }
       }
       updateClinicBranding();
       renderPatientBookingPage();
@@ -5415,10 +5507,10 @@
         if (section && btn) {
           if (t === tabName) {
             section.classList.remove('hidden');
-            btn.className = 'py-1 sm:py-1.5 px-1 font-black text-[11px] sm:text-xs border-b-2 border-[#25D366] text-white flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition bg-white/10';
+            btn.className = 'py-1 sm:py-1.5 px-1 font-black text-[11px] sm:text-xs border-t-2 border-[#25D366] text-white flex flex-col items-center justify-center gap-0.5 transition bg-white/10';
           } else {
             section.classList.add('hidden');
-            btn.className = 'py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-b-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition';
+            btn.className = 'py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-t-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-col items-center justify-center gap-0.5 transition';
           }
         }
       });
@@ -5483,50 +5575,65 @@
         const ringText = document.getElementById('ringBellBtnText');
         if (ringText) {
           ringText.textContent =
-            currentLang === 'hinglish'
-              ? `🔔 Awaz (#${inCabin.token})`
-              : `🔔 Call #${inCabin.token}`;
+            currentLang === 'hindi'
+              ? `🔔 बुलावा (#${inCabin.token})`
+              : (currentLang === 'hinglish'
+                ? `🔔 Awaz (#${inCabin.token})`
+                : `🔔 Call #${inCabin.token}`);
         }
       } else {
-        document.getElementById('headerCabinTokenText').textContent = 'Cabin Khali Hai';
+        document.getElementById('headerCabinTokenText').textContent =
+          currentLang === 'hindi' ? 'केबिन खाली है' : (currentLang === 'hinglish' ? 'Cabin Khali Hai' : 'Cabin is Empty');
         document.getElementById('cabinTokenNumber').textContent = '--';
         document.getElementById('cabinPatientName').innerHTML =
-          currentLang === 'hinglish' ? 'Cabin Khali Hai (Doctor Ready)' : 'Cabin is Empty (Doctor Ready)';
+          currentLang === 'hindi'
+            ? 'केबिन खाली है (डॉक्टर तैयार हैं)'
+            : (currentLang === 'hinglish' ? 'Cabin Khali Hai (Doctor Ready)' : 'Cabin is Empty (Doctor Ready)');
         const srcEl = document.getElementById('cabinPatientSource');
         if (srcEl) srcEl.classList.add('hidden');
         document.getElementById('cabinPatientReason').textContent =
-          currentLang === 'hinglish' ? 'Koi mareez andar nahi hai' : 'No patient in cabin';
+          currentLang === 'hindi'
+            ? 'कोई मरीज़ केबिन में नहीं है'
+            : (currentLang === 'hinglish' ? 'Koi mareez andar nahi hai' : 'No patient in cabin');
         document.getElementById('cabinPatientFee').textContent = '';
 
         const ringBtn = document.getElementById('btnAnnounceToken');
         if (ringBtn) ringBtn.classList.add('opacity-40', 'pointer-events-none');
         const ringText = document.getElementById('ringBellBtnText');
         if (ringText) {
-          ringText.textContent = currentLang === 'hinglish' ? '🔔 Awaz' : '🔔 Call';
+          ringText.textContent = currentLang === 'hindi' ? '🔔 बुलावा' : (currentLang === 'hinglish' ? '🔔 Awaz' : '🔔 Call');
         }
       }
 
       const callNextBtnText = document.getElementById('callNextBtnText');
       if (inCabin && nextWait) {
         callNextBtnText.textContent =
-          currentLang === 'hinglish'
-            ? `✔ Ho Gaya • Agla Bulao (#${nextWait.token}) ➔`
-            : `✔ Done • Call Next (#${nextWait.token}) ➔`;
+          currentLang === 'hindi'
+            ? `✔ पूर्ण • अगला बुलाएं (#${nextWait.token}) ➔`
+            : (currentLang === 'hinglish'
+              ? `✔ Ho Gaya • Agla Bulao (#${nextWait.token}) ➔`
+              : `✔ Done • Call Next (#${nextWait.token}) ➔`);
       } else if (!inCabin && nextWait) {
         callNextBtnText.textContent =
-          currentLang === 'hinglish'
-            ? `Agla Bulao (#${nextWait.token}) ➔`
-            : `Call Next (#${nextWait.token}) ➔`;
+          currentLang === 'hindi'
+            ? `अगला बुलाएं (#${nextWait.token}) ➔`
+            : (currentLang === 'hinglish'
+              ? `Agla Bulao (#${nextWait.token}) ➔`
+              : `Call Next (#${nextWait.token}) ➔`);
       } else if (inCabin && !nextWait) {
         callNextBtnText.textContent =
-          currentLang === 'hinglish'
-            ? `✔ Token #${inCabin.token} Complete Karein`
-            : `✔ Complete Token #${inCabin.token}`;
+          currentLang === 'hindi'
+            ? `✔ टोकन #${inCabin.token} पूर्ण करें`
+            : (currentLang === 'hinglish'
+              ? `✔ Token #${inCabin.token} Complete Karein`
+              : `✔ Complete Token #${inCabin.token}`);
       } else {
         callNextBtnText.textContent =
-          currentLang === 'hinglish'
-            ? '✔ Line Puri Ho Gayi'
-            : '✔ Queue Completed';
+          currentLang === 'hindi'
+            ? '✔ कतार पूरी हो गई'
+            : (currentLang === 'hinglish'
+              ? '✔ Line Puri Ho Gayi'
+              : '✔ Queue Completed');
       }
     }
 
@@ -5534,7 +5641,9 @@
       const nextToken = getNextTokenNumber();
       document.getElementById('nextAvailableTokenPreview').textContent = `#${nextToken}`;
       document.getElementById('giveTokenBtnText').textContent =
-        currentLang === 'hinglish' ? `Token Dein (#${nextToken})` : `Give Token (#${nextToken})`;
+        currentLang === 'hindi'
+          ? `टोकन दें (#${nextToken})`
+          : (currentLang === 'hinglish' ? `Token Dein (#${nextToken})` : `Give Token (#${nextToken})`);
 
       // 1-Tap Reason Chips
       const reasonContainer = document.getElementById('walkinReasonChips');
@@ -5948,11 +6057,26 @@
       };
 
       const pills = [
-        { key: 'ALL', label: currentLang === 'hinglish' ? `Sabhi (${counts.ALL})` : `All (${counts.ALL})` },
-        { key: 'WAITING', label: currentLang === 'hinglish' ? `⏳ Waiting (${counts.WAITING})` : `⏳ Waiting (${counts.WAITING})` },
-        { key: 'IN_CABIN', label: currentLang === 'hinglish' ? `🟢 Andar (${counts.IN_CABIN})` : `🟢 In Cabin (${counts.IN_CABIN})` },
-        { key: 'DONE', label: currentLang === 'hinglish' ? `✅ Done (${counts.DONE})` : `✅ Done (${counts.DONE})` },
-        { key: 'BAAKI', label: currentLang === 'hinglish' ? `⚠️ Baaki (${counts.BAAKI})` : `⚠️ Unpaid (${counts.BAAKI})` }
+        {
+          key: 'ALL',
+          label: currentLang === 'hindi' ? `सभी (${counts.ALL})` : (currentLang === 'hinglish' ? `Sabhi (${counts.ALL})` : `All (${counts.ALL})`)
+        },
+        {
+          key: 'WAITING',
+          label: currentLang === 'hindi' ? `⏳ प्रतीक्षा (${counts.WAITING})` : (currentLang === 'hinglish' ? `⏳ Waiting (${counts.WAITING})` : `⏳ Waiting (${counts.WAITING})`)
+        },
+        {
+          key: 'IN_CABIN',
+          label: currentLang === 'hindi' ? `🟢 केबिन में (${counts.IN_CABIN})` : (currentLang === 'hinglish' ? `🟢 Andar (${counts.IN_CABIN})` : `🟢 In Cabin (${counts.IN_CABIN})`)
+        },
+        {
+          key: 'DONE',
+          label: currentLang === 'hindi' ? `✅ पूर्ण (${counts.DONE})` : (currentLang === 'hinglish' ? `✅ Done (${counts.DONE})` : `✅ Done (${counts.DONE})`)
+        },
+        {
+          key: 'BAAKI',
+          label: currentLang === 'hindi' ? `⚠️ बाकी शुल्क (${counts.BAAKI})` : (currentLang === 'hinglish' ? `⚠️ Baaki (${counts.BAAKI})` : `⚠️ Unpaid (${counts.BAAKI})`)
+        }
       ];
 
       document.getElementById('queueFilterPills').innerHTML = pills.map(pill => {
@@ -7272,36 +7396,67 @@
       selectedPatVisitType = type === 'followup' ? 'followup' : 'new';
       const newBtn = document.getElementById('patVisitTypeNewBtn');
       const followBtn = document.getElementById('patVisitTypeFollowupBtn');
+      const iconNew = document.getElementById('visitTypeIconNew');
+      const iconFollow = document.getElementById('visitTypeIconFollowup');
       const normalFee = clinicProfile.fees?.normal ?? 300;
       const followupFee = clinicProfile.fees?.followup ?? 200;
 
       if (selectedPatVisitType === 'new') {
         if (newBtn) {
-          newBtn.className = 'p-3 rounded-2xl border-2 border-[#128C7E] bg-emerald-50 text-left transition relative cursor-pointer shadow-xs';
+          newBtn.className = 'p-3 rounded-2xl border-2 border-[#128C7E] bg-emerald-50 text-[#075E54] font-black text-xs sm:text-sm text-left flex flex-col justify-between transition shadow-xs cursor-pointer';
         }
         if (followBtn) {
-          followBtn.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 text-left transition relative cursor-pointer';
+          followBtn.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs sm:text-sm text-left flex flex-col justify-between transition shadow-xs hover:bg-slate-50 cursor-pointer';
         }
+        if (iconNew) iconNew.className = 'fa-solid fa-circle-check text-sm text-[#128C7E]';
+        if (iconFollow) iconFollow.className = 'fa-regular fa-circle text-sm text-slate-300';
       } else {
         if (newBtn) {
-          newBtn.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 text-left transition relative cursor-pointer';
+          newBtn.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs sm:text-sm text-left flex flex-col justify-between transition shadow-xs hover:bg-slate-50 cursor-pointer';
         }
         if (followBtn) {
-          followBtn.className = 'p-3 rounded-2xl border-2 border-[#128C7E] bg-emerald-50 text-left transition relative cursor-pointer shadow-xs';
+          followBtn.className = 'p-3 rounded-2xl border-2 border-[#128C7E] bg-emerald-50 text-[#075E54] font-black text-xs sm:text-sm text-left flex flex-col justify-between transition shadow-xs cursor-pointer';
+        }
+        if (iconNew) iconNew.className = 'fa-regular fa-circle text-sm text-slate-300';
+        if (iconFollow) iconFollow.className = 'fa-solid fa-circle-check text-sm text-[#128C7E]';
+      }
+
+      const curFee = selectedPatVisitType === 'followup' ? followupFee : normalFee;
+      const feeNewEl = document.getElementById('visitFeeNewText');
+      if (feeNewEl) feeNewEl.textContent = currentLang === 'hindi' ? `शुल्क: ₹${normalFee}` : `Fee: ₹${normalFee}`;
+      const feeFollowEl = document.getElementById('visitFeeFollowupText');
+      if (feeFollowEl) feeFollowEl.textContent = currentLang === 'hindi' ? `शुल्क: ₹${followupFee}` : `Fee: ₹${followupFee}`;
+
+      const feeHighlightBadge = document.getElementById('patientFeeHighlightBadge');
+      if (feeHighlightBadge) {
+        if (curFee === 0 || curFee === '0' || curFee === '') {
+          feeHighlightBadge.textContent = currentLang === 'hindi' ? 'निःशुल्क (मुफ्त)' : 'FREE (मुफ्त)';
+          feeHighlightBadge.className = 'text-base font-black text-emerald-800 bg-white px-3 py-1 rounded-xl border-2 border-emerald-400 shadow-xs';
+        } else {
+          feeHighlightBadge.textContent = `₹${curFee}`;
+          feeHighlightBadge.className = 'text-xl font-black text-emerald-900 bg-white px-3.5 py-1.5 rounded-xl border-2 border-emerald-400 shadow-xs';
         }
       }
 
       const feeNote = document.getElementById('patientBookingFeeNote');
       if (feeNote) {
-        const feeVal = selectedPatVisitType === 'followup' ? followupFee : normalFee;
-        feeNote.textContent = `💡 Doctor ki fees (₹${feeVal}) clinic counter par Cash ya UPI se dena hai.`;
+        if (currentLang === 'hindi') {
+          feeNote.textContent = `💡 डॉक्टर का परामर्श शुल्क (₹${curFee}) क्लिनिक काउंटर पर नकद या यूपीआई द्वारा जमा करें।`;
+        } else if (currentLang === 'hinglish') {
+          feeNote.textContent = `💡 Doctor ki fees (₹${curFee}) clinic counter par Cash ya UPI se dena hai.`;
+        } else {
+          feeNote.textContent = `💡 Doctor consultation fee (₹${curFee}) to be paid at the clinic counter via Cash or UPI.`;
+        }
       }
     }
 
     function setPatientBookingStep(step) {
+      const pill1 = document.getElementById('patBookModalStepPill1') || document.getElementById('bookingStepPill1');
+      const pill2 = document.getElementById('patBookModalStepPill2') || document.getElementById('bookingStepPill2');
+
       if (step === 2) {
         if (!selectedPatSlot) {
-          showToast('⚠️ Kripya appointment ka Time Slot chunein!', 'warning');
+          showToast(currentLang === 'hindi' ? '⚠️ कृपया समय स्लॉट चुनें!' : '⚠️ Kripya appointment ka Time Slot chunein!', 'warning');
           return;
         }
         const stepPreview = document.getElementById('step2SlotPreview');
@@ -7310,10 +7465,8 @@
         }
         document.getElementById('patBookingModalStep1')?.classList.add('hidden');
         document.getElementById('patBookingModalStep2')?.classList.remove('hidden');
-        const pill1 = document.getElementById('patBookModalStepPill1');
-        const pill2 = document.getElementById('patBookModalStepPill2');
-        if (pill1) pill1.className = 'px-3 py-1 rounded-full text-xs font-bold text-slate-500 bg-slate-100';
-        if (pill2) pill2.className = 'px-3 py-1 rounded-full text-xs font-black text-white bg-[#075E54]';
+        if (pill1) pill1.className = 'w-1/2 py-1.5 text-center font-bold text-xs rounded-xl bg-slate-100 text-slate-500';
+        if (pill2) pill2.className = 'w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs';
         currentPatBookingStep = 2;
         setTimeout(() => {
           document.getElementById('patBookName')?.focus();
@@ -7321,21 +7474,23 @@
       } else {
         document.getElementById('patBookingModalStep2')?.classList.add('hidden');
         document.getElementById('patBookingModalStep1')?.classList.remove('hidden');
-        const pill1 = document.getElementById('patBookModalStepPill1');
-        const pill2 = document.getElementById('patBookModalStepPill2');
-        if (pill1) pill1.className = 'px-3 py-1 rounded-full text-xs font-black text-white bg-[#075E54]';
-        if (pill2) pill2.className = 'px-3 py-1 rounded-full text-xs font-bold text-slate-500 bg-slate-100';
+        if (pill1) pill1.className = 'w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs';
+        if (pill2) pill2.className = 'w-1/2 py-1.5 text-center font-bold text-xs rounded-xl bg-slate-100 text-slate-500';
         currentPatBookingStep = 1;
       }
     }
 
     function viewMyActivePass() {
       if (lastPatientBooking) {
-        document.getElementById('patientBookingLandingHero')?.classList.add('hidden');
+        (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
         document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
         document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
         renderTokenPassDetails(lastPatientBooking);
       }
+    }
+
+    function showBookedTokenPass() {
+      viewMyActivePass();
     }
 
     function renderPatientBookingPage() {
@@ -7391,11 +7546,13 @@
       if (feeHighlightBadge) {
         const curDoc = (clinicProfile.doctors || []).find(d => d.id === selectedPatDoctorId) || (clinicProfile.doctors && clinicProfile.doctors[0]);
         const normalFee = (curDoc && curDoc.fee != null) ? curDoc.fee : (clinicProfile.fees && clinicProfile.fees.normal != null ? clinicProfile.fees.normal : 300);
-        if (normalFee === 0 || normalFee === '0' || normalFee === '') {
-          feeHighlightBadge.textContent = 'FREE (मुफ्त)';
+        const followupFee = clinicProfile.fees?.followup ?? 200;
+        const targetFee = selectedPatVisitType === 'followup' ? followupFee : normalFee;
+        if (targetFee === 0 || targetFee === '0' || targetFee === '') {
+          feeHighlightBadge.textContent = currentLang === 'hindi' ? 'निःशुल्क (मुफ्त)' : 'FREE (मुफ्त)';
           feeHighlightBadge.className = 'text-base font-black text-emerald-800 bg-white px-3 py-1 rounded-xl border-2 border-emerald-400 shadow-xs';
         } else {
-          feeHighlightBadge.textContent = `₹${normalFee}`;
+          feeHighlightBadge.textContent = `₹${targetFee}`;
           feeHighlightBadge.className = 'text-xl font-black text-emerald-900 bg-white px-3.5 py-1.5 rounded-xl border-2 border-emerald-400 shadow-xs';
         }
       }
@@ -7405,7 +7562,7 @@
       else lateAlert.classList.add('hidden');
 
       const pausedBox = document.getElementById('patientViewPausedBox');
-      const landingHero = document.getElementById('patientBookingLandingHero');
+      const landingHero = document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection');
       if (isQRBookingPaused) {
         pausedBox?.classList.remove('hidden');
         landingHero?.classList.add('hidden');
@@ -7651,7 +7808,7 @@
       } catch (e) {}
 
       closePatientBookingModal();
-      document.getElementById('patientBookingLandingHero')?.classList.add('hidden');
+      (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
       document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
       document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
 
@@ -7684,7 +7841,7 @@
       const passFee = document.getElementById('passFeeAmount');
       if (passFee) passFee.textContent = `₹${savedBooking.fee}`;
 
-      document.getElementById('patientBookingLandingHero')?.classList.add('hidden');
+      (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
       document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
       document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
 
@@ -7860,7 +8017,7 @@
       document.getElementById('patBookAge').value = '';
       document.getElementById('patBookPhone').value = '';
       document.getElementById('patientTokenPassBox')?.classList.add('hidden');
-      document.getElementById('patientBookingLandingHero')?.classList.remove('hidden');
+      (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.remove('hidden');
       setPatientBookingStep(1);
       renderPatientBookingPage();
     }
@@ -7965,7 +8122,10 @@
         } catch (e) {
           console.warn('Failed to fetch /api/clinic:', e);
         }
+      }
 
+      // Always fetch live queue and initialize real-time server events when hosted on HTTP
+      if (window.location.protocol.startsWith('http')) {
         try {
           const queueRes = await fetch('/api/queue');
           if (queueRes.ok) {

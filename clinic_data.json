@@ -58,12 +58,14 @@
     "leaves": {},
     "onboarded": true,
     "createdAt": "2026-10-26T06:00:00.000Z",
-    "updatedAt": "2026-10-28T08:09:42.373Z",
+    "updatedAt": "2026-10-28T08:44:08.354Z",
     "visitingReasons": [
-      "🌸 Daad / Khujli",
-      "🧴 Muhase / Acne",
-      "🔴 Allergy / Rash",
-      "💇 Baal Jhadna"
+      "🤒 Bukhar / Cold",
+      "🩸 BP / Sugar",
+      "🤢 Pet / Gas",
+      "🔄 Follow-up",
+      "📋 Report Check",
+      "🤕 Dard / Injury"
     ]
   },
   "queue": [],
@@ -127,12 +129,14 @@
       "leaves": {},
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-10-28T08:09:42.373Z",
+      "updatedAt": "2026-10-28T08:44:08.354Z",
       "visitingReasons": [
-        "🌸 Daad / Khujli",
-        "🧴 Muhase / Acne",
-        "🔴 Allergy / Rash",
-        "💇 Baal Jhadna"
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
       ]
     },
     "clinic_patna_central_99": {
@@ -222,7 +226,7 @@
       },
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-10-28T08:09:42.352Z",
+      "updatedAt": "2026-10-28T08:44:08.311Z",
       "visitingReasons": [
         "🌸 Daad / Khujli",
         "🧴 Muhase / Acne",
