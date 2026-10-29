@@ -951,6 +951,213 @@ async function runTests() {
     assert.ok(onloadBlock.includes('initServerEvents()'), 'Must call initServerEvents in window.onload');
   })();
 
+  // 58. Color Contrast Fix on Red Background in passLiveStatusCard and Alerts
+  await test('High-contrast styling on passLiveStatusCard and alerts when clinic closed or on leave', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Check DOM IDs exist
+    assert.ok(html.includes('id="passLiveStatusCard"'), 'passLiveStatusCard must exist in DOM');
+    assert.ok(html.includes('id="passLiveStatusHeader"'), 'passLiveStatusHeader must exist in DOM');
+    assert.ok(html.includes('id="passLiveStatusDot"'), 'passLiveStatusDot must exist in DOM');
+    assert.ok(html.includes('id="passLiveQueueDistance"'), 'passLiveQueueDistance must exist in DOM');
+    assert.ok(html.includes('id="passLiveStatusRow"'), 'passLiveStatusRow must exist in DOM');
+    assert.ok(html.includes('id="passLiveCabinStatus"'), 'passLiveCabinStatus must exist in DOM');
+    assert.ok(html.includes('id="passLiveWaitEst"'), 'passLiveWaitEst must exist in DOM');
+
+    // Check that updatePatientTokenPassLiveStatus sets high contrast when !statusInfo.isOpen
+    assert.ok(html.includes("headerEl.className = 'text-[10px] font-black uppercase text-emerald-300 flex items-center gap-1.5'"), 'passLiveStatusHeader must use high-contrast light green on red background');
+    assert.ok(html.includes("distEl.className = 'text-xs font-black text-amber-200'"), 'distEl must use high-contrast text-amber-200 on red background');
+    assert.ok(html.includes("waitEstEl.className = 'text-[11px] text-amber-100 font-semibold'"), 'waitEstEl must use high-contrast text-amber-100 on red background');
+    assert.ok(html.includes("card.className = 'p-3.5 bg-rose-700 text-white rounded-2xl border-2 border-rose-900 text-left space-y-1.5 shadow-md'"), 'card must use bg-rose-700 and text-white when closed');
+
+    // In renderPatientBookingPage, statusCard contrast
+    assert.ok(html.includes("liveTokenEl.className = 'text-lg sm:text-xl font-black text-amber-200 mt-0.5'"), 'patientViewLiveToken must use high-contrast text-amber-200 on closed card');
+    assert.ok(html.includes("waitingCountEl.className = 'text-sm font-black text-amber-200'"), 'patientViewWaitingCount must use high-contrast text-amber-200 on closed card');
+  })();
+
+  // 59. 100% Digital Vitals Drawer, Dynamic Custom Metrics, and WhatsApp Prescription Summary
+  await test('Digital drawer defines standard vitals, dynamic custom metrics builder, and WhatsApp prescription reminder', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Standard vitals & Digital summary
+    assert.ok(html.includes('id="vitalBP"'), 'Drawer must include BP field');
+    assert.ok(html.includes('id="vitalWeight"'), 'Drawer must include Weight field');
+    assert.ok(html.includes('id="vitalTemp"'), 'Drawer must include Temp field');
+    assert.ok(html.includes('id="vitalSugar"'), 'Drawer must include Sugar field');
+    assert.ok(html.includes('id="drawerDoctorNotes"'), 'Drawer must include clinical summary notes textarea');
+
+    // Dynamic custom metrics builder
+    assert.ok(html.includes('id="customMetricsContainer"'), 'Drawer must include customMetricsContainer');
+    assert.ok(html.includes('function addCustomMetricRow'), 'Must define addCustomMetricRow');
+    assert.ok(html.includes('function removeCustomMetricRow'), 'Must define removeCustomMetricRow');
+    assert.ok(html.includes('function renderDrawerCustomMetrics'), 'Must define renderDrawerCustomMetrics');
+
+    // Follow-up selector with presets & custom input
+    assert.ok(html.includes('id="followup-btn-3"'), 'Must have 3-day follow-up preset');
+    assert.ok(html.includes('id="followup-btn-5"'), 'Must have 5-day follow-up preset');
+    assert.ok(html.includes('id="followup-btn-7"'), 'Must have 7-day follow-up preset');
+    assert.ok(html.includes('id="followup-btn-15"'), 'Must have 15-day follow-up preset');
+    assert.ok(html.includes('id="customFollowUpInput"'), 'Must have custom follow-up days input');
+    assert.ok(html.includes('function enableCustomFollowUp'), 'Must define enableCustomFollowUp');
+    assert.ok(html.includes('function onCustomFollowUpChanged'), 'Must define onCustomFollowUpChanged');
+
+    // Save & WhatsApp reminder
+    assert.ok(html.includes('function generateWhatsAppPrescriptionText'), 'Must define generateWhatsAppPrescriptionText');
+    assert.ok(html.includes('function saveParchiAndSendWhatsApp'), 'Must define saveParchiAndSendWhatsApp');
+    assert.ok(html.includes('https://wa.me/'), 'saveParchiAndSendWhatsApp must format WhatsApp link via https://wa.me/');
+
+    // Test generateWhatsAppPrescriptionText in VM context
+    const code = `
+      let clinicProfile = {
+        name: 'City Family Clinic',
+        doctorName: 'Dr. Amit Kumar',
+        doctorDegree: 'MBBS, MD',
+        address: 'MG Road',
+        city: 'Delhi',
+        phone: '9876543210'
+      };
+      function getShareablePatientLink() { return 'https://parchisetu.in/book?clinic=test'; }
+      function getLocalDateString() { return '2026-10-29'; }
+      ${html.substring(html.indexOf('function generateWhatsAppPrescriptionText'), html.indexOf('function updateFollowUpWhatsappPreview'))}
+      const testP = { token: 15, name: 'Vikram Singh', age: 42, gender: 'M', doctorId: 'doc_1' };
+      const vitals = {
+        bp: '130/85',
+        weight: '72 kg',
+        temp: '99.1 °F',
+        sugar: '140 mg/dL',
+        customMetrics: [{ name: 'SpO2', value: '98', unit: '%' }, { name: 'Pulse', value: '76', unit: 'bpm' }],
+        notes: 'Tab Paracetamol 650mg TDS x 3 days, drink warm water',
+        followUpDays: 7,
+        followUpDateFormatted: '05 Nov 2026'
+      };
+      var result = generateWhatsAppPrescriptionText(testP, vitals);
+    `;
+    const sandbox = {};
+    vm.createContext(sandbox);
+    vm.runInContext(code, sandbox);
+    const msg = sandbox.result;
+    assert.ok(msg.includes('CITY FAMILY CLINIC'), 'Prescription must include clinic header');
+    assert.ok(msg.includes('*Dr. Amit Kumar* (MBBS, MD)'), 'Prescription must include doctor name and degree');
+    assert.ok(msg.includes('TOKEN #15'), 'Prescription must include token number');
+    assert.ok(msg.includes('Vikram Singh'), 'Prescription must include patient name');
+    assert.ok(msg.includes('BP: 130/85 mmHg'), 'Prescription must include BP');
+    assert.ok(msg.includes('Sugar: 140 mg/dL'), 'Prescription must include Sugar');
+    assert.ok(msg.includes('SpO2: 98 %'), 'Prescription must include custom metric SpO2');
+    assert.ok(msg.includes('Pulse: 76 bpm'), 'Prescription must include custom metric Pulse');
+    assert.ok(msg.includes('Tab Paracetamol 650mg TDS x 3 days'), 'Prescription must include doctor clinical notes');
+    assert.ok(msg.includes('7 Din Baad (05 Nov 2026)'), 'Prescription must include follow-up reminder');
+    assert.ok(msg.includes('https://parchisetu.in/book?clinic=test'), 'Prescription must include booking link');
+
+    // Test API persistence for digital vitals & custom metrics
+    const bRes = await makeRequest('POST', '/api/bookings', {
+      name: 'Ramesh Digital',
+      phone: '9811122233',
+      bp: '120/80',
+      sugar: '105 mg/dL',
+      customMetrics: [{ name: 'HbA1c', value: '6.2', unit: '%' }],
+      notes: 'Routine checkup completed',
+      followUpDays: 15,
+      followUpDate: '13 Nov 2026'
+    });
+    assert.ok(bRes.status === 201 || bRes.status === 200, 'POST /api/bookings should return 201 or 200');
+    assert.strictEqual(bRes.body.booking.sugar, '105 mg/dL');
+    assert.deepStrictEqual(bRes.body.booking.customMetrics, [{ name: 'HbA1c', value: '6.2', unit: '%' }]);
+    assert.strictEqual(bRes.body.booking.followUpDays, 15);
+  })();
+
+  // 60. Interactive QR & Link Modal (Never directly triggers print)
+  await test('Interactive QR modal provides copy link, raw QR download, canvas standee photo card, and poster print', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Standee button routes to interactive modal
+    assert.ok(html.includes('function printClinicQRStandee() {\n      // QR button opens the interactive modal (never directly prints)\n      openInteractiveQRModal();'), 'printClinicQRStandee must open interactive modal');
+    assert.ok(html.includes('function openInteractiveQRModal()'), 'Must define openInteractiveQRModal');
+    assert.ok(html.includes('function closeInteractiveQRModal()'), 'Must define closeInteractiveQRModal');
+    assert.ok(html.includes('function copyInteractiveBookingLink()'), 'Must define copyInteractiveBookingLink');
+    assert.ok(html.includes('function downloadRawQRCodeImage()'), 'Must define downloadRawQRCodeImage');
+    assert.ok(html.includes('function downloadClinicStandeePhotoCard()'), 'Must define downloadClinicStandeePhotoCard');
+    assert.ok(html.includes('function printClinicStandeePosterFromModal()'), 'Must define printClinicStandeePosterFromModal');
+
+    // Check modal markup elements
+    assert.ok(html.includes('id="interactiveBookingLinkInput"'), 'Modal must include copyable booking link input');
+    assert.ok(html.includes('onclick="copyInteractiveBookingLink()"'), 'Modal must have copy link button');
+    assert.ok(html.includes('onclick="downloadRawQRCodeImage()"'), 'Modal must have raw QR download button');
+    assert.ok(html.includes('onclick="downloadClinicStandeePhotoCard()"'), 'Modal must have standee photo card download button');
+    assert.ok(html.includes('onclick="printClinicStandeePosterFromModal()"'), 'Modal must have print poster button');
+  })();
+
+  // 61. Doctor Expected Arrival & Dynamic Real-Time Slot Time Recalculation
+  await test('Doctor expected arrival setter persists liveStatus and dynamically recalculates slot times', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // Daily setter controls in Tab 2
+    assert.ok(html.includes('function setDoctorDelayMinutes'), 'Must define setDoctorDelayMinutes');
+    assert.ok(html.includes('function getDoctorDelayMinutes'), 'Must define getDoctorDelayMinutes');
+    assert.ok(html.includes('function getDoctorExpectedArrivalTime'), 'Must define getDoctorExpectedArrivalTime');
+    assert.ok(html.includes('function getRevisedSlotInfo'), 'Must define getRevisedSlotInfo');
+    assert.ok(html.includes('id="customDoctorDelayMinutesInput"'), 'Tab 2 must have custom delay minutes input');
+    assert.ok(html.includes('id="customDoctorArrivalTimeInput"'), 'Tab 2 must have custom expected arrival time input');
+
+    // Preset buttons
+    assert.ok(html.includes('onclick="setDoctorDelayMinutes(0)"'), 'Must have On-Time preset');
+    assert.ok(html.includes('onclick="setDoctorDelayMinutes(30)"'), 'Must have 30m late preset');
+    assert.ok(html.includes('onclick="setDoctorDelayMinutes(45)"'), 'Must have 45m late preset');
+    assert.ok(html.includes('onclick="setDoctorDelayMinutes(60)"'), 'Must have 60m late preset');
+    assert.ok(html.includes('onclick="setDoctorDelayMinutes(-30)"'), 'Must have 30m early preset');
+
+    // Test API persistence for doctorDelayMinutes in liveStatus
+    const clinicUpdateRes = await makeRequest('POST', '/api/clinic', {
+      liveStatus: {
+        isDoctorLate: true,
+        doctorDelayMinutes: 45,
+        expectedArrivalTime: '10:45 AM'
+      }
+    });
+    assert.strictEqual(clinicUpdateRes.status, 200);
+    assert.strictEqual(clinicUpdateRes.body.clinic.liveStatus.doctorDelayMinutes, 45);
+    assert.strictEqual(clinicUpdateRes.body.clinic.liveStatus.expectedArrivalTime, '10:45 AM');
+
+    // Test getRevisedSlotInfo calculation in VM context
+    const code = `
+      let clinicProfile = {
+        doctorName: 'Dr. Rajesh Sharma',
+        visitingHours: { morning: { enabled: true, start: '10:00 AM' } },
+        liveStatus: { doctorDelayMinutes: 45, expectedArrivalTime: '10:45 AM' }
+      };
+      ${html.substring(html.indexOf('function parseSlotTimeToMinutes'), html.indexOf('function isPatientLate'))}
+      ${html.substring(html.indexOf('function getDoctorDelayMinutes'), html.indexOf('function setDoctorDelayMinutes'))}
+      var onTimeSlot = getRevisedSlotInfo('11:00 AM');
+      clinicProfile.liveStatus.doctorDelayMinutes = 0;
+      var zeroDelaySlot = getRevisedSlotInfo('11:00 AM');
+      clinicProfile.liveStatus.doctorDelayMinutes = 45;
+      var delayedSlot = getRevisedSlotInfo('11:00 AM');
+      clinicProfile.liveStatus.doctorDelayMinutes = -30;
+      var earlySlot = getRevisedSlotInfo('11:00 AM');
+    `;
+    const sandbox = {};
+    vm.createContext(sandbox);
+    vm.runInContext(code, sandbox);
+
+    assert.strictEqual(sandbox.zeroDelaySlot.hasChange, false, 'Zero delay must not flag change');
+    assert.strictEqual(sandbox.zeroDelaySlot.displayText, '11:00 AM (On time)');
+    assert.strictEqual(sandbox.delayedSlot.hasChange, true, '45m delay must flag change');
+    assert.strictEqual(sandbox.delayedSlot.revised, '11:45 AM', '11:00 AM + 45m must be 11:45 AM');
+    assert.ok(sandbox.delayedSlot.displayText.includes('Revised: 11:45 AM'), 'Display text must show Revised: 11:45 AM');
+    assert.ok(sandbox.delayedSlot.displayText.includes('45m late'), 'Display text must show 45m late');
+
+    assert.strictEqual(sandbox.earlySlot.hasChange, true, 'Early delay must flag change');
+    assert.strictEqual(sandbox.earlySlot.revised, '10:30 AM', '11:00 AM - 30m must be 10:30 AM');
+    assert.ok(sandbox.earlySlot.displayText.includes('Revised: 10:30 AM'), 'Display text must show Revised: 10:30 AM');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {
@@ -994,6 +1201,11 @@ async function runTests() {
       '🤕 Dard / Injury'
     ],
     leaves: {},
+    liveStatus: {
+      isDoctorLate: false,
+      doctorDelayMinutes: 0,
+      expectedArrivalTime: '10:00 AM'
+    },
     onboarded: true
   };
   await makeRequest('POST', '/api/clinic', defaultClinic);

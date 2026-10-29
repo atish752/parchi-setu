@@ -62,6 +62,12 @@ const DEFAULT_CLINIC = {
     daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     avgConsultationMins: 10
   },
+  liveStatus: {
+    isDoctorLate: false,
+    doctorDelayMinutes: 0,
+    expectedArrivalTime: '10:00 AM',
+    isQRBookingPaused: false
+  },
   doctors: [
     {
       id: 'doc_1',
@@ -340,7 +346,11 @@ function getISTDateString(d = new Date()) {
         bp: body.bp || '',
         weight: body.weight || '',
         temp: body.temp || '',
-        spo2: body.spo2 || '',
+        sugar: body.sugar || body.spo2 || '',
+        spo2: body.spo2 || body.sugar || '',
+        customMetrics: Array.isArray(body.customMetrics) ? body.customMetrics : [],
+        followUpDays: body.followUpDays != null ? body.followUpDays : null,
+        followUpDate: body.followUpDate || '',
         hasParchiPhoto: !!body.hasParchiPhoto,
         notes: body.notes || '',
         createdAt: body.createdAt || new Date().toISOString()

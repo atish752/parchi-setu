@@ -55,6 +55,12 @@ const DEFAULT_CLINIC = {
     daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     avgConsultationMins: 10
   },
+  liveStatus: {
+    isDoctorLate: false,
+    doctorDelayMinutes: 0,
+    expectedArrivalTime: '10:00 AM',
+    isQRBookingPaused: false
+  },
   doctors: [
     {
       id: 'doc_1',
@@ -204,7 +210,11 @@ module.exports = {
       bp: booking.bp || '',
       weight: booking.weight || '',
       temp: booking.temp || '',
-      spo2: booking.spo2 || '',
+      sugar: booking.sugar || booking.spo2 || '',
+      spo2: booking.spo2 || booking.sugar || '',
+      customMetrics: Array.isArray(booking.customMetrics) ? booking.customMetrics : [],
+      followUpDays: booking.followUpDays != null ? booking.followUpDays : null,
+      followUpDate: booking.followUpDate || '',
       hasParchiPhoto: !!booking.hasParchiPhoto,
       notes: booking.notes || '',
       createdAt: booking.createdAt || new Date().toISOString()

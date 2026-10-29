@@ -493,7 +493,7 @@
                   </span>
                   <span>•</span>
                   <button type="button" onclick="openCurrentCabinParchi()" class="underline hover:text-white text-emerald-200 font-semibold inline-flex items-center gap-1 whitespace-nowrap">
-                    <i class="fa-solid fa-camera text-[10px]"></i> <span data-i18n="openParchiBtn">Parchi / Vitals Kholein</span>
+                    <i class="fa-solid fa-file-prescription text-[10px]"></i> <span data-i18n="openParchiBtn">Digital Vitals & Prescription</span>
                   </button>
                 </div>
               </div>
@@ -749,28 +749,28 @@
           </div>
         </div>
 
-        <!-- Real-World Clinic Reality Toggles (Doctor Late / Pause QR / Print QR Standee) -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Real-World Clinic Reality Toggles (Doctor Expected Arrival / Pause QR / Clinic QR Modal) -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div>
               <h2 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-[#128C7E]"></i>
                 <span data-i18n="clinicLiveControlsTitle">Clinic Live Board & Online QR Controls</span>
               </h2>
               <p class="text-xs text-slate-500 mt-0.5" data-i18n="clinicLiveControlsSub">
-                Jo button yahan dabayenge, wo Google Maps / QR booking page par turant dikhega.
+                Doctor ke aane ka samay aur live clinic status yahan se control karein — mareezon ke live pass par turant dikhega.
               </p>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2.5">
-              <!-- Toggle 1: Doctor Late by 30 Mins -->
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Legacy Toggle 1 (Preserved for compatibility) -->
               <button 
                 onclick="toggleDoctorLate()" 
                 id="btnDoctorLateToggle"
-                class="btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700"
+                class="btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700"
               >
                 <i class="fa-solid fa-clock text-amber-500"></i>
-                <span data-i18n="btnDoctorLate">⏳ Doctor 30 Min Late Hain</span>
+                <span data-i18n="btnDoctorLate">⏳ Doctor Late Toggle</span>
                 <span id="doctorLateStatusPill" class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black">OFF</span>
               </button>
 
@@ -778,22 +778,113 @@
               <button 
                 onclick="togglePauseQR()" 
                 id="btnPauseQRToggle"
-                class="btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700"
+                class="btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700"
               >
                 <i class="fa-solid fa-ban text-rose-500"></i>
                 <span data-i18n="btnPauseQR">🛑 Online QR Booking Rokein</span>
                 <span id="pauseQRStatusPill" class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black">OPEN</span>
               </button>
 
-              <!-- Button 3: Open Printable QR Standee Modal -->
+              <!-- Button 3: Open Interactive QR Modal -->
               <button 
-                onclick="openQRStandeeModal()" 
-                class="btn-tactile px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm bg-[#075E54] hover:bg-[#128C7E] text-white flex items-center gap-2 shadow-sm transition"
+                onclick="openInteractiveQRModal()" 
+                class="btn-tactile px-4 py-2 rounded-xl font-black text-xs bg-[#075E54] hover:bg-[#128C7E] text-white flex items-center gap-2 shadow-sm transition"
               >
                 <i class="fa-solid fa-qrcode text-[#25D366]"></i>
                 <span data-i18n="btnShowStandee">Clinic QR Standee Dekhein</span>
               </button>
             </div>
+          </div>
+
+          <!-- Doctor Expected Arrival Daily Setter Card -->
+          <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-clock text-sm"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-black uppercase text-slate-900 tracking-wide flex items-center gap-1.5">
+                    Doctor Expected Arrival Time (Daily Arrival & Slot Time Setter)
+                  </h3>
+                  <p class="text-[11px] text-slate-500">
+                    Doctor ke aane ka samay set karein — sabhi mareezon ke slot ka samay (Revised Slot Time) live update hoga.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Live Badge of Current Arrival Offset -->
+              <div id="doctorArrivalLiveBadge" class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-emerald-300 shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span id="doctorArrivalLiveBadgeText">🟢 Samay Par (Expected: 10:00 AM)</span>
+              </div>
+            </div>
+
+            <!-- Quick 1-Tap Delay/Early Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="setDoctorDelayMinutes(0)" id="delayPreset-0" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-black border-2 transition bg-emerald-600 text-white border-emerald-700 shadow-xs">
+                🟢 On Time (0m)
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(30)" id="delayPreset-30" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                ⏳ +30m Late
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(45)" id="delayPreset-45" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                ⏳ +45m Late
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(60)" id="delayPreset-60" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                ⏳ +1 Ghanta (+60m)
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(90)" id="delayPreset-90" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                ⏳ +1.5 Ghanta (+90m)
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(120)" id="delayPreset-120" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                ⏳ +2 Ghante (+120m)
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(180)" id="delayPreset-180" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                ⏳ +3 Ghante (+180m)
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(-30)" id="delayPreset-minus30" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-sky-50">
+                ⚡ 30m Pehle (Early)
+              </button>
+              <button type="button" onclick="setDoctorDelayMinutes(-60)" id="delayPreset-minus60" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-sky-50">
+                ⚡ 1 Ghanta Pehle (-60m)
+              </button>
+            </div>
+
+            <!-- Custom Arrival Time & Custom Delay Inputs -->
+            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/80">
+              <span class="text-[11px] font-bold text-slate-600">Ya Custom Expected Samay Chunein:</span>
+              <div class="flex items-center gap-1.5">
+                <input 
+                  type="time" 
+                  id="customDoctorArrivalTimeInput" 
+                  class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                />
+                <button 
+                  type="button" 
+                  onclick="setCustomDoctorArrivalTimeFromInput()" 
+                  class="btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white font-bold text-xs rounded-xl shadow-xs"
+                >
+                  Set Time
+                </button>
+              </div>
+              <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
+                <input 
+                  type="number" 
+                  id="customDoctorDelayMinutesInput" 
+                  placeholder="Minutes (+/-)" 
+                  class="w-24 px-2 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                />
+                <button 
+                  type="button" 
+                  onclick="setCustomDoctorDelayFromInput()" 
+                  class="btn-tactile px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl"
+                >
+                  Set Mins
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -1269,7 +1360,7 @@
               <p id="patientViewClinicAddress" class="text-[11px] text-emerald-200/90 mt-1 flex items-center gap-1">
                 <i class="fa-solid fa-location-dot"></i> <span id="patientViewAddressText">Near Main Market Chowk, Station Road</span> • Fee: <span id="patientViewFeeText">₹300</span>
               </p>
-              <div class="mt-1.5">
+              <div class="mt-2 flex flex-wrap items-center gap-2">
                 <a 
                   id="patientViewMapLink" 
                   href="https://maps.google.com" 
@@ -1280,6 +1371,15 @@
                   <span id="patientViewMapBtnText">Google Maps Par Rasta Dekhein</span>
                   <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-75"></i>
                 </a>
+                <button 
+                  type="button" 
+                  onclick="openInteractiveQRModal()" 
+                  id="patientViewQrBtn" 
+                  class="inline-flex items-center gap-1 text-[11px] bg-white/15 hover:bg-white/25 text-white font-bold px-2.5 py-1 rounded-lg transition"
+                >
+                  <i class="fa-solid fa-qrcode text-[#25D366]"></i>
+                  <span>Clinic QR & Link</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1638,14 +1738,14 @@
             <!-- REAL-TIME LIVE QUEUE TRACKER FOR BOOKED PATIENT -->
             <div id="passLiveStatusCard" class="p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-left space-y-1.5 shadow-inner">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-black uppercase text-[#075E54] flex items-center gap-1.5">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse"></span>
-                  Live Clinic Status
+                <span id="passLiveStatusHeader" class="text-[10px] font-black uppercase text-[#075E54] flex items-center gap-1.5">
+                  <span id="passLiveStatusDot" class="w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse"></span>
+                  <span id="passLiveStatusTitle">Live Clinic Status</span>
                 </span>
                 <span id="passLiveQueueDistance" class="text-xs font-black text-[#128C7E]">2 Mareez Aage Hain</span>
               </div>
-              <div class="text-xs font-bold text-slate-800 flex items-center justify-between">
-                <span>Abhi Cabin Mein: <strong id="passCabinTokenLive">Token #12</strong></span>
+              <div id="passLiveStatusRow" class="text-xs font-bold text-slate-800 flex items-center justify-between">
+                <span id="passLiveCabinStatus">Abhi Cabin Mein: <strong id="passCabinTokenLive">Token #12</strong></span>
                 <span id="passLiveWaitEst" class="text-[11px] text-slate-600 font-semibold">~20 Mins Baaki</span>
               </div>
               <!-- In cabin arrival banner -->
@@ -1680,11 +1780,21 @@
               <span>WhatsApp Par Token Parchi Bhejein</span>
             </button>
 
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-4 gap-1.5">
+              <button 
+                type="button" 
+                onclick="openInteractiveQRModal()" 
+                id="passClinicQrBtn"
+                class="btn-tactile py-2.5 px-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-[11px] text-slate-800 flex items-center justify-center gap-1 shadow-xs transition"
+                title="Clinic QR Code & Booking Link"
+              >
+                <i class="fa-solid fa-qrcode text-[#075E54]"></i>
+                <span>QR Code</span>
+              </button>
               <button 
                 type="button" 
                 onclick="printPatientTokenSlip()" 
-                class="btn-tactile py-2.5 px-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-xs text-slate-800 flex items-center justify-center gap-1 shadow-xs transition"
+                class="btn-tactile py-2.5 px-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-[11px] text-slate-800 flex items-center justify-center gap-1 shadow-xs transition"
               >
                 <i class="fa-solid fa-print text-slate-600"></i>
                 <span>Print Slip</span>
@@ -1692,14 +1802,14 @@
               <button 
                 type="button" 
                 onclick="resetPatientBookingForm()" 
-                class="btn-tactile py-2.5 px-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-xs text-slate-700 flex items-center justify-center shadow-xs transition"
+                class="btn-tactile py-2.5 px-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-[11px] text-slate-700 flex items-center justify-center shadow-xs transition"
               >
                 + Naya Token
               </button>
               <button 
                 type="button" 
                 onclick="updatePatientTokenPassLiveStatus(); showToast('🔄 Live token status refresh ho gaya!');" 
-                class="btn-tactile py-2.5 px-2 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xs transition"
+                class="btn-tactile py-2.5 px-1 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs transition"
                 title="Live status dobara check karein"
               >
                 <i class="fa-solid fa-arrows-rotate"></i>
@@ -1755,108 +1865,139 @@
     <!-- Drawer Scrollable Body -->
     <div class="flex-1 overflow-y-auto p-4 space-y-4">
 
-      <!-- Section 1: 1-Tap Vitals Strip -->
+      <!-- Section 1: Standard Digital Vitals -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-2.5">
           <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
-            <i class="fa-solid fa-heart-pulse"></i> 1. Mareez Ka BP / Vitals (Optional)
+            <i class="fa-solid fa-heart-pulse text-[#25D366]"></i> 1. Mareez Ke Digital Vitals (BP, Wt, Temp, Sugar)
           </h4>
-          <button onclick="fillNormalVitals()" class="text-[11px] font-bold text-[#128C7E] hover:underline">
+          <button type="button" onclick="fillNormalVitals()" class="text-[11px] font-bold text-[#128C7E] hover:underline">
             + Fill Normal Vitals
           </button>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div>
             <label class="text-[10px] font-bold text-slate-500 uppercase">BP (mmHg)</label>
-            <input type="text" id="vitalBP" placeholder="130/85" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900" />
+            <input type="text" id="vitalBP" oninput="updateFollowUpWhatsappPreview()" placeholder="120/80" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900 focus:bg-white focus:border-[#128C7E]" />
           </div>
           <div>
             <label class="text-[10px] font-bold text-slate-500 uppercase">Weight (kg)</label>
-            <input type="text" id="vitalWeight" placeholder="68 kg" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900" />
+            <input type="text" id="vitalWeight" oninput="updateFollowUpWhatsappPreview()" placeholder="65 kg" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900 focus:bg-white focus:border-[#128C7E]" />
           </div>
           <div>
             <label class="text-[10px] font-bold text-slate-500 uppercase">Bukhar (Temp)</label>
-            <input type="text" id="vitalTemp" placeholder="98.6 °F" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900" />
+            <input type="text" id="vitalTemp" oninput="updateFollowUpWhatsappPreview()" placeholder="98.6 °F" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900 focus:bg-white focus:border-[#128C7E]" />
           </div>
           <div>
-            <label class="text-[10px] font-bold text-slate-500 uppercase">Sugar / SpO2</label>
-            <input type="text" id="vitalSpo2" placeholder="98% / 140" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900" />
+            <label class="text-[10px] font-bold text-slate-500 uppercase">Sugar / Glucose</label>
+            <input type="text" id="vitalSugar" oninput="updateFollowUpWhatsappPreview()" placeholder="110 mg/dL" class="w-full mt-0.5 px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl font-black text-sm text-slate-900 focus:bg-white focus:border-[#128C7E]" />
+            <input type="hidden" id="vitalSpo2" />
           </div>
         </div>
       </div>
 
-      <!-- Section 2: Paper-to-Digital Handwritten Parchi Bridge -->
+      <!-- Section 2: Custom Metrics Builder (Dynamic) -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
         <div class="flex items-center justify-between">
           <div>
             <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
-              <i class="fa-solid fa-camera-retro"></i> 2. Kagaz Ki Parchi Ka Photo (Zero-Typing)
+              <i class="fa-solid fa-calculator text-[#25D366]"></i> 2. Anya Metrics & Jaanch (Custom Metrics)
             </h4>
-            <p class="text-[11px] text-slate-500">Doctor sahab kagaz par likhein, compounder bas 1 photo khinch le!</p>
+            <p class="text-[11px] text-slate-500">Doctor/Compounder apne mutabik koi bhi jaanch aur unit jod sakte hain.</p>
           </div>
-        </div>
-
-        <!-- 1-Tap Snap Photo Action -->
-        <div class="flex gap-2">
           <button 
             type="button" 
-            onclick="simulateSnapParchiPhoto()" 
-            class="btn-tactile flex-1 bg-[#128C7E] hover:bg-[#075E54] text-white font-black py-3 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm transition"
+            onclick="addCustomMetricRow()" 
+            class="text-[11px] font-black text-white bg-[#075E54] hover:bg-[#128C7E] px-2.5 py-1 rounded-lg flex items-center gap-1 transition"
           >
-            <i class="fa-solid fa-camera text-[#25D366] text-base"></i>
-            <span>📷 Kagaz Parchi Ki Photo Khinchein (1-Tap)</span>
+            <i class="fa-solid fa-plus text-[10px]"></i> Metric Jodein
           </button>
         </div>
 
-        <!-- Handwritten Prescription Card Preview -->
-        <div id="parchiPhotoPreviewContainer" class="hidden">
-          <div class="parchi-pad border-2 border-amber-300 rounded-2xl p-4 shadow-inner relative">
-            <div class="flex items-center justify-between border-b-2 border-[#075E54] pb-2 mb-2">
-              <div>
-                <div class="font-black text-xs text-[#075E54]" id="parchiPadClinicHeader">SANJEEVANI FAMILY CLINIC • DR. RAJESH SHARMA</div>
-                <div class="text-[10px] text-slate-500" id="parchiPadDoctorMeta">MBBS, MD (Reg No. 48291) • Date: 25 Oct 2026</div>
-              </div>
-              <span class="bg-emerald-100 text-[#075E54] text-[10px] font-black px-2 py-0.5 rounded">📷 Scanned Parchi</span>
-            </div>
-            <div class="text-xl font-serif font-bold text-[#075E54] mb-1">℞</div>
-            <div id="parchiHandwrittenContent" class="font-handwriting text-xl sm:text-2xl text-blue-950 space-y-1 leading-7 pl-2">
-              <!-- Populated dynamically -->
-            </div>
-          </div>
+        <!-- 1-Tap Quick Presets for Custom Metrics -->
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="addCustomMetricPreset('SpO2', '%')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + SpO2 (%)
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('Pulse', 'bpm')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + Pulse (bpm)
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('Hemoglobin', 'g/dL')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + Hemoglobin (g/dL)
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('HbA1c', '%')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + HbA1c (%)
+          </button>
         </div>
 
-        <!-- Quick Doctor Note -->
-        <div>
-          <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Ya Chhota Note Likhein (Optional):</label>
-          <input 
-            type="text" 
-            id="drawerDoctorNotes" 
-            placeholder="Eg. Tab PCM 650, Tab Pan-D, Blood Test CBC..." 
-            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold"
-          />
+        <!-- Container for dynamically added metric rows -->
+        <div id="customMetricsContainer" class="space-y-2">
+          <!-- Populated dynamically via renderDrawerCustomMetrics -->
         </div>
       </div>
 
-      <!-- Section 3: 1-Tap Follow-Up Reminder & WhatsApp Send -->
+      <!-- Section 3: Clinical Notes / Summary / Prescription (100% Digital) -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+        <div>
+          <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
+            <i class="fa-solid fa-file-waveform text-[#25D366]"></i> 3. Doctor Ki Salha / Nuskha / Summary
+          </h4>
+          <p class="text-[11px] text-slate-500">Dawaai, test, khane-peene ki parhez ya koi zaroori hidayat likhein.</p>
+        </div>
+        <textarea 
+          id="drawerDoctorNotes" 
+          rows="3" 
+          oninput="updateFollowUpWhatsappPreview()" 
+          placeholder="Dawaai, test, khane-peene ki parhez ya koi zaroori jaankari likhein... (e.g. Tab PCM 650mg TDS x 3 din, Tab Pan-D khali pet, Paani zyada piyein)" 
+          class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold focus:bg-white focus:border-[#128C7E] transition"
+        ></textarea>
+      </div>
+
+      <!-- Section 4: Follow-Up Selector (Presets + Custom Any Days) -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
-        <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
-          <i class="fa-brands fa-whatsapp text-sm text-[#25D366]"></i> 3. Dobara Kab Bulana Hai? (Follow-Up Reminder)
-        </h4>
-        <div class="grid grid-cols-4 gap-1.5" id="followUpChipsContainer">
-          <button type="button" onclick="selectFollowUpDays(3)" class="followup-chip py-2 px-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50">3 Din Baad</button>
-          <button type="button" onclick="selectFollowUpDays(5)" class="followup-chip py-2 px-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50">5 Din Baad</button>
-          <button type="button" onclick="selectFollowUpDays(7)" class="followup-chip py-2 px-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50">7 Din Baad</button>
-          <button type="button" onclick="selectFollowUpDays(15)" class="followup-chip py-2 px-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50">15 Din Baad</button>
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
+            <i class="fa-solid fa-calendar-check text-[#25D366]"></i> 4. Dobara Kab Aana Hai? (Follow-Up Reminder)
+          </h4>
+          <span id="followUpTargetDateBadge" class="bg-emerald-50 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-200">
+            Target: <span id="followUpTargetDateText">03 Nov 2026</span>
+          </span>
         </div>
 
-        <div id="followUpWhatsappPreview" class="bg-[#DCF8C6] border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 space-y-1">
-          <div class="font-bold text-[#075E54] flex items-center justify-between">
-            <span>💬 WhatsApp Message Preview:</span>
-            <span id="followUpDateBadge" class="bg-white px-2 py-0.5 rounded text-[10px]">5 Din Baad</span>
-          </div>
-          <p id="followUpWhatsappText" class="leading-relaxed">
-            Namaste Rameshwar Prasad ji, Sanjeevani Clinic mein aane ke liye dhanyawad. Aapki agli jaanch 5 din baad hai. Swasth rahein! 🙏
-          </p>
+        <div class="grid grid-cols-5 gap-1.5" id="followUpChipsContainer">
+          <button type="button" onclick="selectFollowUpDays(3)" id="followup-btn-3" class="followup-chip py-2 px-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50 text-center">3 Din</button>
+          <button type="button" onclick="selectFollowUpDays(5)" id="followup-btn-5" class="followup-chip py-2 px-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50 text-center">5 Din</button>
+          <button type="button" onclick="selectFollowUpDays(7)" id="followup-btn-7" class="followup-chip py-2 px-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50 text-center">7 Din</button>
+          <button type="button" onclick="selectFollowUpDays(15)" id="followup-btn-15" class="followup-chip py-2 px-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50 text-center">15 Din</button>
+          <button type="button" onclick="enableCustomFollowUp()" id="followup-btn-custom" class="followup-chip py-2 px-1 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-emerald-50 text-center">✏️ Custom</button>
+        </div>
+
+        <!-- Custom follow up days input row -->
+        <div id="customFollowUpRow" class="flex items-center gap-2 pt-1 border-t border-slate-100">
+          <label class="text-[11px] font-bold text-slate-600 whitespace-nowrap">Manchahe Din Likhein:</label>
+          <input 
+            type="number" 
+            id="customFollowUpInput" 
+            min="1" 
+            max="1000" 
+            placeholder="e.g. 1, 10, 30, 90, 365" 
+            oninput="onCustomFollowUpChanged(this.value)" 
+            class="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:border-[#128C7E]" 
+          />
+          <span class="text-xs font-bold text-slate-500">Din Baad</span>
+        </div>
+      </div>
+
+      <!-- Section 5: WhatsApp Real-Time Message Preview -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
+            <i class="fa-brands fa-whatsapp text-sm text-[#25D366]"></i> 5. WhatsApp Message Preview:
+          </h4>
+          <span id="followUpDateBadge" class="bg-emerald-100 text-[#075E54] px-2 py-0.5 rounded text-[10px] font-black">5 Din Baad</span>
+        </div>
+        <div id="followUpWhatsappPreview" class="bg-[#DCF8C6] border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 space-y-1 font-mono whitespace-pre-wrap select-all">
+          <p id="followUpWhatsappText" class="leading-relaxed"></p>
         </div>
       </div>
 
@@ -1865,15 +2006,18 @@
     <!-- Drawer Footer Actions -->
     <div class="p-3.5 bg-white border-t border-slate-200 flex items-center gap-2.5">
       <button 
+        type="button"
         onclick="saveParchiAndSendWhatsApp()" 
+        id="btnSaveAndWhatsapp"
         class="btn-tactile flex-1 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm"
       >
-        <i class="fa-brands fa-whatsapp text-base"></i>
+        <i class="fa-brands fa-whatsapp text-lg"></i>
         <span>Save & WhatsApp Reminder Bhejein</span>
       </button>
       <button 
+        type="button"
         onclick="saveParchiDrawerOnly()" 
-        class="btn-tactile bg-[#075E54] hover:bg-[#128C7E] text-white font-bold py-3 px-4 rounded-xl text-xs sm:text-sm"
+        class="btn-tactile bg-[#075E54] hover:bg-[#128C7E] text-white font-bold py-3 px-3.5 rounded-xl text-xs sm:text-sm whitespace-nowrap"
       >
         ✔ Save Parchi
       </button>
@@ -2901,49 +3045,135 @@
   </div>
 
   <!-- ===================================================================== -->
-  <!-- MODAL 3: PRINTABLE CLINIC QR STANDEE PREVIEW                          -->
+  <!-- MODAL 3: INTERACTIVE CLINIC QR & PATIENT BOOKING LINK MODAL            -->
   <!-- ===================================================================== -->
   <div id="qrStandeeModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-4 backdrop-blur-xs">
-    <div class="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border-4 border-[#075E54]">
-      <div class="bg-[#075E54] text-white p-4 text-center relative">
-        <button onclick="closeQRStandeeModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center">
+    <div id="interactiveQRModalCard" class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border-4 border-[#075E54] flex flex-col max-h-[92vh]">
+      <!-- Modal Header -->
+      <div class="bg-[#075E54] text-white p-4 text-center relative flex-shrink-0">
+        <button onclick="closeInteractiveQRModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center font-bold text-white transition">
           ✕
         </button>
-        <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
-          Clinic Reception Standee
+        <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+          Clinic Booking QR & Link
         </span>
         <h3 class="text-lg font-black mt-1" id="standeeClinicName">Sanjeevani Family Clinic</h3>
         <p class="text-xs text-emerald-100" id="standeeDoctorName">Dr. Rajesh Sharma (MBBS, MD)</p>
       </div>
 
-      <div class="p-6 text-center space-y-4">
-        <p class="text-xs font-extrabold text-slate-700 uppercase tracking-wide">
-          📱 Line Mein Khade Mat Rahiye! Scan Karke Token Lein
-        </p>
-
-        <!-- Dynamic High-Contrast QR Code Image / Container -->
-        <div id="standeeQrContainer" class="w-48 h-48 mx-auto p-2 bg-white border-4 border-[#25D366] rounded-2xl shadow-md flex items-center justify-center overflow-hidden">
-          <div class="text-xs font-bold text-slate-400">Loading QR Code...</div>
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 text-center space-y-4 overflow-y-auto flex-1">
+        
+        <!-- Booking Link Card with 1-Tap Copy -->
+        <div class="bg-emerald-50 border border-emerald-300 rounded-2xl p-3 text-left space-y-1.5 shadow-xs">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-black uppercase text-[#075E54] tracking-wide flex items-center gap-1.5">
+              <i class="fa-solid fa-link text-[#25D366]"></i> Mareez Ke Liye Online Booking Link:
+            </label>
+            <span class="text-[10px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-full border border-emerald-200">1-Tap Copy</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <input 
+              type="text" 
+              id="interactiveBookingLinkInput" 
+              readonly 
+              class="flex-1 px-2.5 py-2 bg-white border border-emerald-300 rounded-xl font-bold text-xs text-slate-800 select-all focus:outline-none"
+            />
+            <button 
+              type="button" 
+              onclick="copyInteractiveBookingLink()" 
+              id="interactiveCopyBtn"
+              class="btn-tactile bg-[#075E54] hover:bg-[#128C7E] text-white font-black px-3.5 py-2 rounded-xl text-xs flex items-center gap-1 transition whitespace-nowrap shadow-xs"
+            >
+              <i class="fa-solid fa-copy"></i>
+              <span id="interactiveCopyBtnText">Copy Link</span>
+            </button>
+          </div>
+          <div class="text-[10px] text-slate-500 font-semibold" id="standeeLinkTextWrapper">
+            🔗 Link: <span class="underline break-all select-all font-mono" id="standeeLinkText">parchisetu.in/book</span>
+          </div>
         </div>
 
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-xs text-[#075E54] font-bold">
-          🔗 Patient Link: <span class="underline break-all select-all" id="standeeLinkText">parchisetu.in/book</span>
+        <!-- Dynamic High-Contrast QR Code Display -->
+        <div class="bg-white p-3 border-2 border-dashed border-emerald-300 rounded-2xl inline-block shadow-xs">
+          <div id="standeeQrContainer" class="w-48 h-48 mx-auto p-2 bg-white border-4 border-[#25D366] rounded-xl flex items-center justify-center overflow-hidden">
+            <img 
+              id="interactiveQrImg" 
+              src="" 
+              alt="Clinic Token Booking QR" 
+              class="w-full h-full object-contain" 
+            />
+          </div>
+          <p class="text-[11px] font-extrabold text-slate-700 mt-2">
+            📱 Line Mein Khade Mat Rahiye! Camera Se Scan Karein
+          </p>
         </div>
 
-        <div class="flex gap-2">
+        <!-- 3 Primary Action Buttons: Raw QR, Standee Photo, Print Poster -->
+        <div class="space-y-2 pt-1 text-left">
+          <div class="text-[11px] font-black uppercase text-slate-500 tracking-wider">QR Code Options:</div>
+          
+          <!-- Option 1: Download Raw QR Code (PNG) -->
           <button 
-            onclick="closeQRStandeeModal(); switchAppRole('patient', true);" 
-            class="flex-1 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3 rounded-xl text-xs shadow"
+            type="button" 
+            onclick="downloadRawQRCodeImage()" 
+            id="btnDownloadRawQR"
+            class="btn-tactile w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs flex items-center justify-between border border-slate-300 transition"
           >
-            📱 Test Scan (Open Patient Page)
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-qrcode text-emerald-700 text-base"></i>
+              <span>1. Download Raw QR Code (Sirf QR Photo)</span>
+            </span>
+            <i class="fa-solid fa-download text-slate-500 text-xs"></i>
+          </button>
+
+          <!-- Option 2: Download Full Clinic Standee Photo (QR + Doctor Info Card) -->
+          <button 
+            type="button" 
+            onclick="downloadClinicStandeePhotoCard()" 
+            id="btnDownloadStandeePhoto"
+            class="btn-tactile w-full py-3 px-3.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs sm:text-sm flex items-center justify-between shadow-md transition"
+          >
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-image text-slate-950 text-base"></i>
+              <span>2. Download Standee Photo (QR + Doctor Jaankari)</span>
+            </span>
+            <i class="fa-solid fa-download text-slate-950 text-sm"></i>
+          </button>
+
+          <!-- Option 3: Direct Print Standee Poster -->
+          <button 
+            type="button" 
+            onclick="printClinicStandeePosterFromModal()" 
+            id="btnPrintStandeePoster"
+            class="btn-tactile w-full py-2.5 px-3 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs flex items-center justify-between shadow-sm transition"
+          >
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-print text-[#25D366] text-base"></i>
+              <span>3. Print Standee Poster (Direct Print)</span>
+            </span>
+            <i class="fa-solid fa-chevron-right text-emerald-200 text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Footer Dismiss / Preview Actions -->
+        <div class="flex gap-2 pt-2 border-t border-slate-100">
+          <button 
+            type="button"
+            onclick="closeInteractiveQRModal(); switchAppRole('patient', true);" 
+            class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold py-2.5 rounded-xl text-xs transition"
+          >
+            📱 Test Open Patient Page
           </button>
           <button 
-            onclick="closeQRStandeeModal()" 
-            class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs"
+            type="button"
+            onclick="closeInteractiveQRModal()" 
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
           >
-            Band Karein
+            Band Karein ✕
           </button>
         </div>
+
       </div>
     </div>
   </div>
@@ -3046,6 +3276,8 @@
 
     // Clinic Reality Controls
     let isDoctorLate = false;
+    let doctorDelayMinutes = 0;
+    let expectedDoctorArrivalTime = '';
     let isQRBookingPaused = false;
 
     // Fast Walk-in Selected Defaults
@@ -4328,6 +4560,282 @@
     }
 
     function printClinicQRStandee() {
+      // QR button opens the interactive modal (never directly prints)
+      openInteractiveQRModal();
+    }
+
+    function openInteractiveQRModal() {
+      updateClinicBranding();
+      const modal = document.getElementById('qrStandeeModal') || document.getElementById('interactiveQRModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const link = getShareablePatientLink(false);
+      const displayLink = getShareablePatientLink(true);
+
+      const linkInput = document.getElementById('interactiveBookingLinkInput');
+      if (linkInput) linkInput.value = link;
+
+      const standeeLink = document.getElementById('standeeLinkText');
+      if (standeeLink) standeeLink.textContent = link;
+
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
+      const qrImg = document.getElementById('interactiveQrImg');
+      if (qrImg) {
+        qrImg.src = qrUrl;
+      }
+
+      const qrContainer = document.getElementById('standeeQrContainer');
+      if (qrContainer && !qrImg) {
+        qrContainer.innerHTML = `
+          <img 
+            id="interactiveQrImg"
+            src="${qrUrl}" 
+            alt="Clinic Token Booking QR" 
+            class="w-full h-full object-contain"
+          />
+        `;
+      }
+    }
+
+    function closeInteractiveQRModal() {
+      const modal = document.getElementById('qrStandeeModal') || document.getElementById('interactiveQRModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function closeQRStandeeModal() {
+      closeInteractiveQRModal();
+    }
+
+    function openQRStandeeModal() {
+      openInteractiveQRModal();
+    }
+
+    function copyInteractiveBookingLink() {
+      const linkInput = document.getElementById('interactiveBookingLinkInput');
+      const link = (linkInput && linkInput.value) || getShareablePatientLink(false);
+      const btnText = document.getElementById('interactiveCopyBtnText');
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+          if (btnText) btnText.textContent = '✅ Copied!';
+          showToast('📋 Patient booking link copied to clipboard!');
+          setTimeout(() => { if (btnText) btnText.textContent = 'Copy Link'; }, 2000);
+        }).catch(() => {
+          fallbackCopy(link);
+          if (btnText) btnText.textContent = '✅ Copied!';
+          setTimeout(() => { if (btnText) btnText.textContent = 'Copy Link'; }, 2000);
+        });
+      } else {
+        fallbackCopy(link);
+        if (btnText) btnText.textContent = '✅ Copied!';
+        setTimeout(() => { if (btnText) btnText.textContent = 'Copy Link'; }, 2000);
+      }
+    }
+
+    async function downloadRawQRCodeImage() {
+      const link = getShareablePatientLink(false);
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}`;
+      try {
+        showToast('⏳ Downloading Raw QR Code...');
+        const response = await fetch(qrUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        const clinicSlug = (clinicProfile.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
+        a.download = `parchisetu_${clinicSlug}_raw_qr.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+        showToast('✅ Raw QR Code download ho gaya!');
+      } catch (e) {
+        window.open(qrUrl, '_blank');
+        showToast('📋 QR Code opened in new tab.');
+      }
+    }
+
+    function downloadQRCodeImage() {
+      downloadRawQRCodeImage();
+    }
+
+    async function downloadClinicStandeePhotoCard() {
+      showToast('⏳ Generating Clinic Standee Photo Card...');
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 1150;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const clinic = clinicProfile || {};
+      const doc = (clinic.doctors && clinic.doctors[0]) || {};
+      const docName = doc.name || clinic.doctorName || 'Doctor';
+      const docDegree = doc.degree || clinic.doctorDegree || '';
+      const clinicName = clinic.name || 'ParchiSetu Clinic';
+      const address = [clinic.address, clinic.city].filter(Boolean).join(', ');
+      const phone = clinic.phone || clinic.whatsapp || '';
+      const bookingLink = getShareablePatientLink(false);
+
+      // Card Background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 800, 1150);
+
+      // Outer Border
+      ctx.strokeStyle = '#075E54';
+      ctx.lineWidth = 14;
+      ctx.strokeRect(7, 7, 786, 1136);
+
+      // Top Banner
+      ctx.fillStyle = '#075E54';
+      ctx.fillRect(14, 14, 772, 220);
+
+      // Badge
+      ctx.fillStyle = '#25D366';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(250, 32, 300, 34, 17);
+      } else {
+        ctx.rect(250, 32, 300, 34);
+      }
+      ctx.fill();
+
+      ctx.fillStyle = '#022c22';
+      ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('OFFICIAL OPD TOKEN QR CODE', 400, 54);
+
+      // Clinic Name
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(clinicName, 400, 120);
+
+      // Doctor Info
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(`${docName} ${docDegree ? `(${docDegree})` : ''}`, 400, 164);
+
+      // Headline
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '900 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText('📱 Line Mein Khade Mat Rahiye!', 400, 285);
+
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText('Camera se QR Code Scan Karein aur Instant Token lein', 400, 320);
+
+      const finishDownload = () => {
+        // 3 Step Pills
+        const stepsY = 810;
+        const stepWidth = 230;
+        const stepMargin = 20;
+        const startX = (800 - (3 * stepWidth + 2 * stepMargin)) / 2;
+
+        const steps = [
+          { num: '1. Scan QR', sub: 'Phone camera se scan karein' },
+          { num: '2. Naam Bharein', sub: 'Instant token mil jayega' },
+          { num: '3. Live Dekhein', sub: 'Cabin status track karein' }
+        ];
+
+        steps.forEach((s, i) => {
+          const x = startX + i * (stepWidth + stepMargin);
+          ctx.fillStyle = '#f0fdf4';
+          ctx.strokeStyle = '#86efac';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(x, stepsY, stepWidth, 75, 12);
+          } else {
+            ctx.rect(x, stepsY, stepWidth, 75);
+          }
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#075E54';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(s.num, x + stepWidth / 2, stepsY + 30);
+
+          ctx.fillStyle = '#166534';
+          ctx.font = '12px sans-serif';
+          ctx.fillText(s.sub, x + stepWidth / 2, stepsY + 54);
+        });
+
+        // Address & Phone
+        ctx.fillStyle = '#334155';
+        ctx.font = 'bold 15px sans-serif';
+        ctx.textAlign = 'center';
+        if (address) ctx.fillText(`📍 ${address}`, 400, 925);
+        if (phone) ctx.fillText(`📞 Contact: ${phone}`, 400, 952);
+
+        // Footer Banner
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(14, 990, 772, 146);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Powered by ParchiSetu • Digital Clinic Assistant', 400, 1035);
+
+        ctx.fillStyle = '#25D366';
+        ctx.font = 'bold 16px monospace';
+        ctx.fillText(bookingLink, 400, 1075);
+
+        // Convert to blob and download
+        canvas.toBlob(blob => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          const slug = (clinic.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
+          a.download = `parchisetu_${slug}_standee.png`;
+          a.href = url;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('✅ Clinic Standee Photo download ho gaya!');
+        }, 'image/png');
+      };
+
+      // Draw QR Frame
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#25D366';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(220, 355, 360, 360, 24);
+      } else {
+        ctx.rect(220, 355, 360, 360);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      // Load QR Code into canvas
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(bookingLink)}`;
+      const qrImg = new Image();
+      qrImg.crossOrigin = 'anonymous';
+      qrImg.onload = () => {
+        try {
+          ctx.drawImage(qrImg, 240, 375, 320, 320);
+        } catch (e) {}
+        finishDownload();
+      };
+      qrImg.onerror = () => {
+        ctx.fillStyle = '#075E54';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Scan to Book:', 400, 520);
+        ctx.fillText(bookingLink, 400, 560);
+        finishDownload();
+      };
+      qrImg.src = qrUrl;
+    }
+
+    function printClinicStandeePosterFromModal() {
       const link = getShareablePatientLink(false);
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
       const morning = clinicProfile.visitingHours?.morning;
@@ -4440,30 +4948,6 @@
         </html>
       `);
       printWin.document.close();
-    }
-
-    async function downloadQRCodeImage() {
-      const link = getShareablePatientLink(false);
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}`;
-      try {
-        showToast('⏳ Downloading QR code...');
-        const response = await fetch(qrUrl);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        const clinicSlug = (clinicProfile.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
-        a.download = `parchisetu_${clinicSlug}_qr.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-        showToast('✅ Clinic QR Code download ho gaya!');
-      } catch (e) {
-        console.warn('Download QR error:', e);
-        window.open(qrUrl, '_blank');
-        showToast('📋 QR Code opened in new tab.');
-      }
     }
 
     function testOpenPatientPage() {
@@ -6031,7 +6515,9 @@
       if (slotMinutes === null) return false;
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      return currentMinutes > slotMinutes;
+      const delay = (typeof getDoctorDelayMinutes === 'function') ? getDoctorDelayMinutes() : 0;
+      const effectiveSlotMinutes = slotMinutes + delay;
+      return currentMinutes > effectiveSlotMinutes;
     }
 
     async function cancelPatientAppointment(patientId) {
@@ -6156,6 +6642,9 @@
         let rowBgClass = 'bg-white';
         let statusBadge = `<span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded">${p.slotTime}</span>`;
 
+        const revisedSlot = (typeof getRevisedSlotInfo === 'function') ? getRevisedSlotInfo(p.slotTime) : null;
+        const slotDisplay = (revisedSlot && revisedSlot.hasChange) ? revisedSlot.displayText : (p.slotTime || 'Slot');
+
         if (p.status === 'IN_CABIN') {
           tokenCircleClass = 'bg-[#25D366] text-slate-950 ring-4 ring-[#25D366]/30 live-token-pulse font-black';
           rowBgClass = 'bg-emerald-50/40';
@@ -6163,11 +6652,15 @@
         } else if (p.status === 'WAITING' && isLate) {
           tokenCircleClass = 'bg-amber-50 text-amber-950 border-2 border-amber-400 font-black';
           rowBgClass = 'bg-amber-50/30';
-          statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">⚠️ Late / Pending (Slot: ${p.slotTime})</span>`;
+          statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">⚠️ Late / Pending (Slot: ${slotDisplay})</span>`;
         } else if (p.status === 'WAITING') {
           tokenCircleClass = 'bg-emerald-50 text-[#075E54] border-2 border-[#128C7E]';
           rowBgClass = 'bg-white';
-          statusBadge = `<span class="bg-emerald-50 text-emerald-900 border border-emerald-200 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">⏰ Slot: ${p.slotTime}</span>`;
+          if (revisedSlot && revisedSlot.hasChange) {
+            statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">⏰ ${revisedSlot.displayText}</span>`;
+          } else {
+            statusBadge = `<span class="bg-emerald-50 text-emerald-900 border border-emerald-200 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">⏰ Slot: ${p.slotTime}</span>`;
+          }
         } else if (p.status === 'DONE') {
           tokenCircleClass = 'bg-slate-100 text-slate-500 border border-slate-200';
           rowBgClass = 'bg-white opacity-75';
@@ -6190,7 +6683,7 @@
 
         const sourceTag = p.source === 'QR Booked' ? '📱 Online' : '🚶 Walk-in';
         const bpTag = p.bp ? `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-semibold text-[10px]">BP: ${p.bp}</span>` : '';
-        const parchiTag = p.hasParchiPhoto ? `<span class="text-emerald-700 text-xs" title="Parchi Saved"><i class="fa-solid fa-camera"></i></span>` : '';
+        const parchiTag = (p.hasParchiPhoto || p.bp || p.sugar || p.notes || (p.customMetrics && p.customMetrics.length)) ? `<span class="text-emerald-700 text-xs" title="Digital Prescription Saved"><i class="fa-solid fa-file-prescription"></i></span>` : '';
         const visitTag = p.visitType === 'followup' ? `<span class="bg-purple-100 text-purple-800 px-1.5 py-0.2 rounded font-bold text-[10px]">Dobara</span>` : '';
 
         return `
@@ -6296,11 +6789,20 @@
     }
 
     // =========================================================================
-    // 9. PARCHI & VITALS SLIDE-OVER DRAWER
+    // 9. 100% DIGITAL VITALS & PRESCRIPTION SUMMARY (ZERO PAPER PARCHI UPLOAD)
     // =========================================================================
+    let currentDrawerCustomMetrics = [];
+    let isCustomFollowUp = false;
+
     function openCurrentCabinParchi() {
       const inCabin = getCurrentCabinPatient();
-      if (inCabin) openParchiDrawer(inCabin.id);
+      if (inCabin) {
+        openParchiDrawer(inCabin.id);
+      } else if (todayQueue.length > 0) {
+        openParchiDrawer(todayQueue[0].id);
+      } else {
+        showToast('⚠️ Abhi koi mareez cabin mein nahi hai.', 'warning');
+      }
     }
 
     function openParchiDrawer(patientId) {
@@ -6315,27 +6817,25 @@
       document.getElementById('vitalBP').value = p.bp || '';
       document.getElementById('vitalWeight').value = p.weight || '';
       document.getElementById('vitalTemp').value = p.temp || '';
-      document.getElementById('vitalSpo2').value = p.spo2 || '';
+
+      const sugarVal = p.sugar || p.spo2 || '';
+      const sugarEl = document.getElementById('vitalSugar');
+      if (sugarEl) sugarEl.value = sugarVal;
+      const spo2El = document.getElementById('vitalSpo2');
+      if (spo2El) spo2El.value = sugarVal;
+
       document.getElementById('drawerDoctorNotes').value = p.notes || '';
 
-      const photoBox = document.getElementById('parchiPhotoPreviewContainer');
-      const handwrittenContent = document.getElementById('parchiHandwrittenContent');
+      // Populate dynamic custom metrics
+      renderDrawerCustomMetrics(p.customMetrics || []);
 
-      if (p.hasParchiPhoto) {
-        photoBox.classList.remove('hidden');
-        handwrittenContent.innerHTML = `
-          <div>• ${p.notes || 'Tab Paracetamol 650mg (1-0-1) x 3 Days'}</div>
-          <div>• Tab Pantocid DSR (1-0-0) Khali Pet</div>
-          <div>• Gunguna paani piyein / Aaram karein</div>
-        `;
-      } else {
-        photoBox.classList.add('hidden');
-      }
-
-      selectFollowUpDays(5);
+      // Select follow-up days (default to 5 or stored)
+      const followDays = p.followUpDays || 5;
+      selectFollowUpDays(followDays);
 
       document.getElementById('parchiDrawerBackdrop').classList.remove('hidden');
       document.getElementById('parchiDrawer').classList.remove('translate-x-full');
+      updateFollowUpWhatsappPreview();
     }
 
     function closeParchiDrawer() {
@@ -6345,80 +6845,363 @@
     }
 
     function fillNormalVitals() {
-      document.getElementById('vitalBP').value = '122/80';
-      document.getElementById('vitalWeight').value = '65 kg';
-      document.getElementById('vitalTemp').value = '98.6 °F';
-      document.getElementById('vitalSpo2').value = '99%';
+      const bp = document.getElementById('vitalBP');
+      const weight = document.getElementById('vitalWeight');
+      const temp = document.getElementById('vitalTemp');
+      const sugar = document.getElementById('vitalSugar');
+      const spo2 = document.getElementById('vitalSpo2');
+
+      if (bp) bp.value = '120/80';
+      if (weight) weight.value = '65 kg';
+      if (temp) temp.value = '98.6 °F';
+      if (sugar) sugar.value = '100 mg/dL';
+      if (spo2) spo2.value = '99%';
+
+      updateFollowUpWhatsappPreview();
+      showToast('🩺 Normal vitals bhar diye gaye!');
     }
 
-    function simulateSnapParchiPhoto() {
-      if (!activeDrawerPatientId) return;
-      const p = todayQueue.find(item => item.id === activeDrawerPatientId);
-      if (!p) return;
+    // Dynamic Custom Metrics Builder
+    function renderDrawerCustomMetrics(metrics = []) {
+      currentDrawerCustomMetrics = Array.isArray(metrics) ? JSON.parse(JSON.stringify(metrics)) : [];
+      const container = document.getElementById('customMetricsContainer');
+      if (!container) return;
+      container.innerHTML = '';
 
-      p.hasParchiPhoto = true;
-      if (!p.notes) {
-        p.notes = 'Tab Paracetamol 650mg (1-0-1), Tab Pan-D (1-0-0), B-Complex OD x 5 Days';
-        document.getElementById('drawerDoctorNotes').value = p.notes;
+      if (currentDrawerCustomMetrics.length === 0) {
+        container.innerHTML = `
+          <div class="text-[11px] text-slate-400 italic py-1 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            Koi custom metric nahi joda gaya. Upar diye button se jodein (e.g. SpO2, Pulse, Hb).
+          </div>
+        `;
+        return;
       }
 
-      const photoBox = document.getElementById('parchiPhotoPreviewContainer');
-      const handwrittenContent = document.getElementById('parchiHandwrittenContent');
-      photoBox.classList.remove('hidden');
-      handwrittenContent.innerHTML = `
-        <div>• ${p.notes}</div>
-        <div>• BP: ${document.getElementById('vitalBP').value || '124/82'} mmHg</div>
-        <div>• 5 Din baad dobara dikhayein</div>
-      `;
+      currentDrawerCustomMetrics.forEach((m, idx) => {
+        const row = document.createElement('div');
+        row.className = 'custom-metric-row flex items-center gap-1.5';
+        row.innerHTML = `
+          <input 
+            type="text" 
+            placeholder="Metric (e.g. SpO2)" 
+            value="${escapeHtml(m.name || '')}" 
+            oninput="onCustomMetricInput(${idx}, 'name', this.value)" 
+            class="flex-1 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
+          />
+          <input 
+            type="text" 
+            placeholder="Value (e.g. 98)" 
+            value="${escapeHtml(m.value || '')}" 
+            oninput="onCustomMetricInput(${idx}, 'value', this.value)" 
+            class="w-24 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
+          />
+          <input 
+            type="text" 
+            placeholder="Unit (e.g. %)" 
+            value="${escapeHtml(m.unit || '')}" 
+            oninput="onCustomMetricInput(${idx}, 'unit', this.value)" 
+            class="w-20 px-2 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
+          />
+          <button 
+            type="button" 
+            onclick="removeCustomMetricRow(${idx})" 
+            title="Remove metric" 
+            class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center text-xs font-bold transition flex-shrink-0"
+          >
+            <i class="fa-solid fa-trash text-[11px]"></i>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
 
-      showToast('📷 Kagaz ki Parchi scan hokar mareez ke khate mein jud gayi!');
+    function addCustomMetricRow(name = '', value = '', unit = '') {
+      currentDrawerCustomMetrics.push({ name, value, unit });
+      renderDrawerCustomMetrics(currentDrawerCustomMetrics);
+      updateFollowUpWhatsappPreview();
+      const container = document.getElementById('customMetricsContainer');
+      if (container && container.lastElementChild) {
+        const firstInput = container.lastElementChild.querySelector('input');
+        if (firstInput) firstInput.focus();
+      }
+    }
+
+    function addCustomMetricPreset(name, unit) {
+      addCustomMetricRow(name, '', unit);
+    }
+
+    function onCustomMetricInput(idx, field, val) {
+      if (currentDrawerCustomMetrics[idx]) {
+        currentDrawerCustomMetrics[idx][field] = val;
+        updateFollowUpWhatsappPreview();
+      }
+    }
+
+    function removeCustomMetricRow(idx) {
+      if (idx >= 0 && idx < currentDrawerCustomMetrics.length) {
+        currentDrawerCustomMetrics.splice(idx, 1);
+        renderDrawerCustomMetrics(currentDrawerCustomMetrics);
+        updateFollowUpWhatsappPreview();
+      }
+    }
+
+    function formatFollowUpDate(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + (parseInt(days, 10) || 0));
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayStr = String(d.getDate()).padStart(2, '0');
+      const monthStr = months[d.getMonth()];
+      const yearStr = d.getFullYear();
+      return `${dayStr} ${monthStr} ${yearStr}`;
     }
 
     function selectFollowUpDays(days) {
-      selectedFollowUpDays = days;
-      const p = todayQueue.find(item => item.id === activeDrawerPatientId);
-      const patientName = p ? p.name : 'Mareez';
+      selectedFollowUpDays = parseInt(days, 10) || 5;
+      isCustomFollowUp = false;
 
-      document.getElementById('followUpDateBadge').textContent = `${days} Din Baad`;
-      document.getElementById('followUpWhatsappText').textContent =
-        `Namaste ${patientName} ji, ${clinicProfile.name} (${clinicProfile.doctorName}) mein aane ke liye dhanyawad. Agli jaanch ${days} din baad hai. Swasth rahein! 🙏`;
+      [3, 5, 7, 15].forEach(d => {
+        const btn = document.getElementById(`followup-btn-${d}`);
+        if (btn) {
+          if (d === selectedFollowUpDays) {
+            btn.className = 'followup-chip py-2 px-1 rounded-xl border-2 transition font-black text-xs bg-emerald-600 text-white border-emerald-700 shadow-xs text-center';
+          } else {
+            btn.className = 'followup-chip py-2 px-1 rounded-xl border border-slate-300 transition font-bold text-xs bg-white text-slate-700 hover:bg-emerald-50 text-center';
+          }
+        }
+      });
+
+      const customBtn = document.getElementById('followup-btn-custom');
+      if (customBtn) {
+        customBtn.className = 'followup-chip py-2 px-1 rounded-xl border border-slate-300 transition font-bold text-xs bg-white text-slate-700 hover:bg-emerald-50 text-center';
+      }
+
+      const customInput = document.getElementById('customFollowUpInput');
+      if (customInput) customInput.value = '';
+
+      updateFollowUpTargetDateBadge();
+      updateFollowUpWhatsappPreview();
+    }
+
+    function enableCustomFollowUp() {
+      isCustomFollowUp = true;
+      [3, 5, 7, 15].forEach(d => {
+        const btn = document.getElementById(`followup-btn-${d}`);
+        if (btn) {
+          btn.className = 'followup-chip py-2 px-1 rounded-xl border border-slate-300 transition font-bold text-xs bg-white text-slate-700 hover:bg-emerald-50 text-center';
+        }
+      });
+      const customBtn = document.getElementById('followup-btn-custom');
+      if (customBtn) {
+        customBtn.className = 'followup-chip py-2 px-1 rounded-xl border-2 transition font-black text-xs bg-emerald-600 text-white border-emerald-700 shadow-xs text-center';
+      }
+      const customInput = document.getElementById('customFollowUpInput');
+      if (customInput) {
+        customInput.focus();
+        if (customInput.value) {
+          selectedFollowUpDays = parseInt(customInput.value, 10) || 1;
+        }
+      }
+      updateFollowUpTargetDateBadge();
+      updateFollowUpWhatsappPreview();
+    }
+
+    function onCustomFollowUpChanged(val) {
+      isCustomFollowUp = true;
+      const num = parseInt(val, 10);
+      if (!isNaN(num) && num > 0) {
+        selectedFollowUpDays = num;
+      }
+      [3, 5, 7, 15].forEach(d => {
+        const btn = document.getElementById(`followup-btn-${d}`);
+        if (btn) {
+          btn.className = 'followup-chip py-2 px-1 rounded-xl border border-slate-300 transition font-bold text-xs bg-white text-slate-700 hover:bg-emerald-50 text-center';
+        }
+      });
+      const customBtn = document.getElementById('followup-btn-custom');
+      if (customBtn) {
+        customBtn.className = 'followup-chip py-2 px-1 rounded-xl border-2 transition font-black text-xs bg-emerald-600 text-white border-emerald-700 shadow-xs text-center';
+      }
+      updateFollowUpTargetDateBadge();
+      updateFollowUpWhatsappPreview();
+    }
+
+    function updateFollowUpTargetDateBadge() {
+      const badge = document.getElementById('followUpDateBadge');
+      const targetText = document.getElementById('followUpTargetDateText');
+      const formattedDate = formatFollowUpDate(selectedFollowUpDays);
+      if (badge) badge.textContent = `${selectedFollowUpDays} Din Baad (${formattedDate})`;
+      if (targetText) targetText.textContent = formattedDate;
+    }
+
+    function generateWhatsAppPrescriptionText(p, vitalsData) {
+      const clinic = clinicProfile || {};
+      const doc = (clinic.doctors || []).find(d => d.id === (p && p.doctorId)) || (clinic.doctors && clinic.doctors[0]) || {};
+      const docName = (p && p.doctorName) || doc.name || clinic.doctorName || 'Doctor';
+      const docDegree = doc.degree || clinic.doctorDegree || '';
+      const clinicName = clinic.name || 'Clinic';
+      const clinicAddress = [clinic.address, clinic.city].filter(Boolean).join(', ');
+      const clinicPhone = clinic.phone || clinic.whatsapp || '';
+      const bookingLink = getShareablePatientLink(false);
+
+      let msg = `🏥 *${clinicName.toUpperCase()}*\n`;
+      msg += `👨‍⚕️ *${docName}* ${docDegree ? `(${docDegree})` : ''}\n`;
+      if (clinicAddress) msg += `📍 ${clinicAddress}\n`;
+      if (clinicPhone) msg += `📞 Contact: ${clinicPhone}\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      if (p) {
+        msg += `🎫 *TOKEN #${p.token}* • *${p.name}* (${p.age}${p.gender})\n`;
+      }
+      msg += `📅 Tarikh: ${getLocalDateString()}\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+
+      // Recorded Digital Vitals & Metrics
+      const vitalsList = [];
+      if (vitalsData.bp) vitalsList.push(`• BP: ${vitalsData.bp} mmHg`);
+      if (vitalsData.weight) vitalsList.push(`• Weight: ${vitalsData.weight}`);
+      if (vitalsData.temp) vitalsList.push(`• Bukhar (Temp): ${vitalsData.temp}`);
+      if (vitalsData.sugar) vitalsList.push(`• Sugar: ${vitalsData.sugar}`);
+      if (vitalsData.customMetrics && vitalsData.customMetrics.length > 0) {
+        vitalsData.customMetrics.forEach(m => {
+          if (m.name && m.value) {
+            vitalsList.push(`• ${m.name}: ${m.value} ${m.unit || ''}`.trim());
+          }
+        });
+      }
+
+      if (vitalsList.length > 0) {
+        msg += `🩺 *DIGITAL VITALS & JAANCH:*\n${vitalsList.join('\n')}\n\n`;
+      }
+
+      if (vitalsData.notes) {
+        msg += `📝 *DOCTOR KI SALHA / SUMMARY:*\n${vitalsData.notes}\n\n`;
+      }
+
+      if (vitalsData.followUpDays) {
+        msg += `🔄 *AGLA FOLLOW-UP:*\n${vitalsData.followUpDays} Din Baad (${vitalsData.followUpDateFormatted || ''})\n\n`;
+      }
+
+      msg += `📲 *Agla Slot / Token Book Karne Ke Liye Link:*\n${bookingLink}\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `_Swasth Raheini, ParchiSetu Digital Health Assistant_ 🙏`;
+
+      return msg;
+    }
+
+    function updateFollowUpWhatsappPreview() {
+      const p = todayQueue.find(item => item.id === activeDrawerPatientId);
+      const previewEl = document.getElementById('followUpWhatsappText');
+      if (!previewEl) return;
+
+      const bp = (document.getElementById('vitalBP')?.value || '').trim();
+      const weight = (document.getElementById('vitalWeight')?.value || '').trim();
+      const temp = (document.getElementById('vitalTemp')?.value || '').trim();
+      const sugar = (document.getElementById('vitalSugar')?.value || document.getElementById('vitalSpo2')?.value || '').trim();
+      const notes = (document.getElementById('drawerDoctorNotes')?.value || '').trim();
+
+      const vitalsData = {
+        bp,
+        weight,
+        temp,
+        sugar,
+        customMetrics: (currentDrawerCustomMetrics || []).filter(m => (m.name || '').trim() && (m.value || '').trim()),
+        notes,
+        followUpDays: selectedFollowUpDays,
+        followUpDateFormatted: formatFollowUpDate(selectedFollowUpDays)
+      };
+
+      const msg = generateWhatsAppPrescriptionText(
+        p || { token: 1, name: 'Mareez', age: 35, gender: 'M', doctorName: clinicProfile.doctorName },
+        vitalsData
+      );
+      previewEl.textContent = msg;
     }
 
     function saveParchiDrawerOnly() {
       if (!activeDrawerPatientId) return;
       const p = todayQueue.find(item => item.id === activeDrawerPatientId);
       if (p) {
-        p.bp = document.getElementById('vitalBP').value.trim();
-        p.weight = document.getElementById('vitalWeight').value.trim();
-        p.temp = document.getElementById('vitalTemp').value.trim();
-        p.spo2 = document.getElementById('vitalSpo2').value.trim();
-        p.notes = document.getElementById('drawerDoctorNotes').value.trim();
+        p.bp = (document.getElementById('vitalBP')?.value || '').trim();
+        p.weight = (document.getElementById('vitalWeight')?.value || '').trim();
+        p.temp = (document.getElementById('vitalTemp')?.value || '').trim();
+        const sugar = (document.getElementById('vitalSugar')?.value || document.getElementById('vitalSpo2')?.value || '').trim();
+        p.sugar = sugar;
+        p.spo2 = sugar;
+        p.notes = (document.getElementById('drawerDoctorNotes')?.value || '').trim();
+        p.customMetrics = (currentDrawerCustomMetrics || []).filter(m => (m.name || '').trim());
+        p.followUpDays = selectedFollowUpDays;
+        p.followUpDate = formatFollowUpDate(selectedFollowUpDays);
+        p.hasParchiPhoto = !!(p.bp || p.notes || (p.customMetrics && p.customMetrics.length));
+
         saveLocalQueue();
         syncQueuePatchToServer(p.id, {
           bp: p.bp,
           weight: p.weight,
           temp: p.temp,
+          sugar: p.sugar,
           spo2: p.spo2,
           notes: p.notes,
+          customMetrics: p.customMetrics,
+          followUpDays: p.followUpDays,
+          followUpDate: p.followUpDate,
           hasParchiPhoto: p.hasParchiPhoto
         });
       }
       closeParchiDrawer();
       refreshAllViews();
-      showToast(`✅ Token #${p.token} (${p.name}) ka Vitals & Parchi save ho gaya!`);
+      showToast(`✅ Token #${p.token} (${p.name}) ka Digital Vitals & Prescription save ho gaya!`);
     }
 
     function saveParchiAndSendWhatsApp() {
       if (!activeDrawerPatientId) return;
       const p = todayQueue.find(item => item.id === activeDrawerPatientId);
-      saveParchiDrawerOnly();
-      if (p) {
-        showToast(`💬 WhatsApp Parchi & ${selectedFollowUpDays}-Din Reminder sent to ${p.name} (${p.phone})!`);
+      if (!p) return;
+
+      const bp = (document.getElementById('vitalBP')?.value || '').trim();
+      const weight = (document.getElementById('vitalWeight')?.value || '').trim();
+      const temp = (document.getElementById('vitalTemp')?.value || '').trim();
+      const sugar = (document.getElementById('vitalSugar')?.value || document.getElementById('vitalSpo2')?.value || '').trim();
+      const notes = (document.getElementById('drawerDoctorNotes')?.value || '').trim();
+
+      const vitalsData = {
+        bp,
+        weight,
+        temp,
+        sugar,
+        customMetrics: (currentDrawerCustomMetrics || []).filter(m => (m.name || '').trim()),
+        notes,
+        followUpDays: selectedFollowUpDays,
+        followUpDateFormatted: formatFollowUpDate(selectedFollowUpDays)
+      };
+
+      const fullMsg = generateWhatsAppPrescriptionText(p, vitalsData);
+
+      // Copy to clipboard
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullMsg).catch(() => {});
+      } else {
+        fallbackCopy(fullMsg);
       }
+
+      // Save locally and sync to server
+      saveParchiDrawerOnly();
+
+      // Open patient WhatsApp
+      const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+      const waNumber = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
+      const encoded = encodeURIComponent(fullMsg);
+      const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${encoded}` : `https://api.whatsapp.com/send?text=${encoded}`;
+      window.open(waUrl, '_blank');
+
+      showToast(`💬 WhatsApp Prescription & ${selectedFollowUpDays}-Din Reminder sent to ${p.name}!`);
+    }
+
+    // Retained for backward compatibility
+    function simulateSnapParchiPhoto() {
+      showToast('ℹ️ Digital Vitals mode active hai (Kagaz parchi upload hatayi gayi hai).');
     }
 
     // =========================================================================
-    // 10. TAB 2: CALENDAR, SLOTS & CLINIC CONTROLS
+    // 10. TAB 2: CALENDAR, SLOTS & DOCTOR EXPECTED ARRIVAL CONTROLS
     // =========================================================================
     let selectedCalendarDateIndex = 0;
     const CALENDAR_DATES = [
@@ -6431,12 +7214,96 @@
       { label: 'Day 7', dateStr: 'Day 7', count: 0 }
     ];
 
-    function toggleDoctorLate() {
-      isDoctorLate = !isDoctorLate;
-      clinicProfile.liveStatus = {
-        isDoctorLate,
-        isQRBookingPaused
+    function getDoctorDelayMinutes() {
+      if (clinicProfile && clinicProfile.liveStatus) {
+        if (typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number') {
+          return clinicProfile.liveStatus.doctorDelayMinutes;
+        }
+        if (clinicProfile.liveStatus.isDoctorLate) {
+          return 30;
+        }
+      }
+      return doctorDelayMinutes || 0;
+    }
+
+    function getDoctorExpectedArrivalTime() {
+      if (clinicProfile && clinicProfile.liveStatus && clinicProfile.liveStatus.expectedArrivalTime) {
+        return clinicProfile.liveStatus.expectedArrivalTime;
+      }
+      const delay = getDoctorDelayMinutes();
+      const morning = clinicProfile?.visitingHours?.morning;
+      const startStr = (morning && morning.enabled && morning.start) || '10:00 AM';
+      const startMins = parseSlotTimeToMinutes(startStr) || 600;
+      return formatMinutesToTime(startMins + delay);
+    }
+
+    function formatMinutesToTime(totalMinutes) {
+      let m = (Math.round(totalMinutes) % 1440 + 1440) % 1440;
+      let h = Math.floor(m / 60);
+      const min = m % 60;
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${h}:${String(min).padStart(2, '0')} ${ampm}`;
+    }
+
+    function getRevisedSlotInfo(slotStr) {
+      if (!slotStr || slotStr === 'Walk-in Now' || slotStr === 'Online Booking' || slotStr === 'Follow-up Walk-in') {
+        return {
+          original: slotStr,
+          revised: slotStr,
+          delayMinutes: 0,
+          hasChange: false,
+          displayText: slotStr
+        };
+      }
+      const delay = getDoctorDelayMinutes();
+      const slotMins = parseSlotTimeToMinutes(slotStr);
+      if (slotMins === null || delay === 0) {
+        return {
+          original: slotStr,
+          revised: slotStr,
+          delayMinutes: delay,
+          hasChange: false,
+          displayText: `${slotStr} (On time)`
+        };
+      }
+      const revisedMins = slotMins + delay;
+      const revisedTime = formatMinutesToTime(revisedMins);
+      const docName = clinicProfile.doctorName ? `Dr. ${clinicProfile.doctorName.replace(/^Dr\.?\s*/i, '')}` : 'Doctor';
+      const delayText = delay > 0 ? `${docName} is ${delay}m late` : `${docName} is ${Math.abs(delay)}m early`;
+      return {
+        original: slotStr,
+        revised: revisedTime,
+        delayMinutes: delay,
+        hasChange: true,
+        note: delayText,
+        displayText: `${slotStr} (Revised: ${revisedTime} • ${delayText})`
       };
+    }
+
+    function setDoctorDelayMinutes(mins, arrivalTimeStr = null) {
+      const delay = parseInt(mins, 10) || 0;
+      doctorDelayMinutes = delay;
+      isDoctorLate = delay > 0;
+
+      const morning = clinicProfile?.visitingHours?.morning;
+      const startStr = (morning && morning.enabled && morning.start) || '10:00 AM';
+      const startMins = parseSlotTimeToMinutes(startStr) || 600;
+      const computedArrival = arrivalTimeStr || formatMinutesToTime(startMins + delay);
+      expectedDoctorArrivalTime = computedArrival;
+
+      clinicProfile.liveStatus = {
+        ...(clinicProfile.liveStatus || {}),
+        isDoctorLate,
+        doctorDelayMinutes: delay,
+        expectedArrivalTime: computedArrival,
+        isQRBookingPaused,
+        updatedAt: new Date().toISOString()
+      };
+
+      saveLocalClinic();
+
       if (window.location.protocol.startsWith('http')) {
         fetch('/api/clinic', {
           method: 'POST',
@@ -6444,30 +7311,122 @@
           body: JSON.stringify({ liveStatus: clinicProfile.liveStatus })
         }).catch(() => {});
       }
+      if (window.ParchiFirebase && clinicProfile.id) {
+        window.ParchiFirebase.syncClinic(clinicProfile);
+      }
       if (syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
 
-      const btn = document.getElementById('btnDoctorLateToggle');
-      const pill = document.getElementById('doctorLateStatusPill');
-      if (isDoctorLate) {
-        btn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-amber-100 border-amber-500 text-amber-950';
-        pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-amber-500 text-slate-950 font-black';
-        pill.textContent = 'ON (+30m)';
-        showToast('⏳ Live Notice On: Doctor 30 Min Late Hain (Updated on Patient QR Link)', 'warning');
+      updateDoctorArrivalControlsUI();
+      refreshAllViews();
+
+      if (delay === 0) {
+        showToast(`🟢 Doctor On-Time set ho gaya (Expected: ${computedArrival})`);
+      } else if (delay > 0) {
+        showToast(`⏳ Doctor ${delay} Minute Late set kiya gaya (Expected: ${computedArrival})`);
       } else {
-        btn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700';
-        pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black';
-        pill.textContent = 'OFF';
-        showToast('✅ Doctor On-Time Status Restored');
+        showToast(`⚡ Doctor ${Math.abs(delay)} Minute Pehle set kiya gaya (Expected: ${computedArrival})`);
       }
-      renderLiveCabinHero();
+    }
+
+    function setCustomDoctorArrivalTimeFromInput() {
+      const input = document.getElementById('customDoctorArrivalTimeInput');
+      if (!input || !input.value) {
+        showToast('⚠️ Kripya expected arrival samay chunein.', 'warning');
+        return;
+      }
+      const [hStr, mStr] = input.value.split(':');
+      const targetMins = parseInt(hStr, 10) * 60 + parseInt(mStr, 10);
+      const morning = clinicProfile?.visitingHours?.morning;
+      const startStr = (morning && morning.enabled && morning.start) || '10:00 AM';
+      const startMins = parseSlotTimeToMinutes(startStr) || 600;
+      const offset = targetMins - startMins;
+      const formattedArrival = formatMinutesToTime(targetMins);
+      setDoctorDelayMinutes(offset, formattedArrival);
+    }
+
+    function setCustomDoctorDelayFromInput() {
+      const input = document.getElementById('customDoctorDelayMinutesInput');
+      if (!input || input.value === '') {
+        showToast('⚠️ Kripya delay ke minutes likhein (e.g. 45 ya -30)', 'warning');
+        return;
+      }
+      const mins = parseInt(input.value, 10);
+      if (isNaN(mins)) return;
+      setDoctorDelayMinutes(mins);
+    }
+
+    function updateDoctorArrivalControlsUI() {
+      const badge = document.getElementById('doctorArrivalLiveBadge');
+      const badgeText = document.getElementById('doctorArrivalLiveBadgeText');
+      const delay = getDoctorDelayMinutes();
+      const arrival = getDoctorExpectedArrivalTime();
+
+      if (badge && badgeText) {
+        if (delay === 0) {
+          badge.className = 'bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-emerald-300 shadow-xs';
+          badgeText.textContent = `🟢 Samay Par (Expected: ${arrival})`;
+        } else if (delay > 0) {
+          badge.className = 'bg-amber-100 text-amber-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-amber-400 shadow-xs';
+          badgeText.textContent = `⏳ ${delay}m Late (Expected: ${arrival})`;
+        } else {
+          badge.className = 'bg-sky-100 text-sky-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-sky-300 shadow-xs';
+          badgeText.textContent = `⚡ ${Math.abs(delay)}m Pehle (Expected: ${arrival})`;
+        }
+      }
+
+      const presetIds = [
+        { id: 'delayPreset-0', val: 0 },
+        { id: 'delayPreset-30', val: 30 },
+        { id: 'delayPreset-45', val: 45 },
+        { id: 'delayPreset-60', val: 60 },
+        { id: 'delayPreset-90', val: 90 },
+        { id: 'delayPreset-120', val: 120 },
+        { id: 'delayPreset-180', val: 180 },
+        { id: 'delayPreset-minus30', val: -30 },
+        { id: 'delayPreset-minus60', val: -60 }
+      ];
+
+      presetIds.forEach(p => {
+        const el = document.getElementById(p.id);
+        if (el) {
+          if (p.val === delay) {
+            el.className = 'delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-black border-2 transition bg-emerald-600 text-white border-emerald-700 shadow-xs';
+          } else {
+            el.className = 'delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50';
+          }
+        }
+      });
+
+      const legacyBtn = document.getElementById('btnDoctorLateToggle');
+      const legacyPill = document.getElementById('doctorLateStatusPill');
+      if (legacyBtn && legacyPill) {
+        if (delay > 0) {
+          legacyBtn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-amber-100 border-amber-500 text-amber-950';
+          legacyPill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-amber-500 text-slate-950 font-black';
+          legacyPill.textContent = `ON (+${delay}m)`;
+        } else {
+          legacyBtn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700';
+          legacyPill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black';
+          legacyPill.textContent = 'OFF';
+        }
+      }
+    }
+
+    function toggleDoctorLate() {
+      const curDelay = getDoctorDelayMinutes();
+      const newDelay = curDelay > 0 ? 0 : 30;
+      setDoctorDelayMinutes(newDelay);
     }
 
     function togglePauseQR() {
       isQRBookingPaused = !isQRBookingPaused;
       clinicProfile.liveStatus = {
+        ...(clinicProfile.liveStatus || {}),
         isDoctorLate,
+        doctorDelayMinutes: getDoctorDelayMinutes(),
+        expectedArrivalTime: getDoctorExpectedArrivalTime(),
         isQRBookingPaused
       };
       if (window.location.protocol.startsWith('http')) {
@@ -6483,46 +7442,19 @@
 
       const btn = document.getElementById('btnPauseQRToggle');
       const pill = document.getElementById('pauseQRStatusPill');
-      if (isQRBookingPaused) {
-        btn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-rose-100 border-rose-500 text-rose-950';
-        pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-rose-600 text-white font-black';
-        pill.textContent = 'PAUSED';
-        showToast('🛑 Online QR Bookings Paused (Full House Mode)', 'warning');
-      } else {
-        btn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700';
-        pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-200 text-emerald-900 font-black';
-        pill.textContent = 'OPEN';
-        showToast('🟢 Online QR Bookings Re-Opened!');
+      if (btn && pill) {
+        if (isQRBookingPaused) {
+          btn.className = 'btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-rose-100 border-rose-500 text-rose-950';
+          pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-rose-600 text-white font-black';
+          pill.textContent = 'PAUSED';
+          showToast('🛑 Online QR Bookings Paused (Full House Mode)', 'warning');
+        } else {
+          btn.className = 'btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700';
+          pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-200 text-emerald-900 font-black';
+          pill.textContent = 'OPEN';
+          showToast('🟢 Online QR Bookings Re-Opened!');
+        }
       }
-    }
-
-    function openQRStandeeModal() {
-      updateClinicBranding();
-      const modal = document.getElementById('qrStandeeModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      const link = getShareablePatientLink(true);
-      const standeeLink = document.getElementById('standeeLinkText');
-      if (standeeLink) standeeLink.textContent = link;
-
-      const qrContainer = document.getElementById('standeeQrContainer');
-      if (qrContainer) {
-        qrContainer.innerHTML = `
-          <img 
-            src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}" 
-            alt="Clinic Token Booking QR" 
-            class="w-full h-full object-contain"
-            onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'font-bold text-xs text-slate-700 p-2 text-center\\'>📱 Open booking link:<br><span class=\\'text-[#075E54] select-all break-all text-[11px]\\'>${link}</span></div>';"
-          />
-        `;
-      }
-    }
-
-    function closeQRStandeeModal() {
-      const modal = document.getElementById('qrStandeeModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
     }
 
     function onCalendarCustomDateSelected(dateVal) {
@@ -7513,17 +8445,41 @@
         if (!statusInfo.isOpen) {
           statusCard.className = 'mt-4 ' + statusInfo.bannerBg + ' rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg transition';
           if (liveDot) liveDot.className = 'w-3.5 h-3.5 rounded-full bg-rose-200 flex-shrink-0 animate-ping';
-          if (badgeText) badgeText.textContent = statusInfo.badgeText;
-          if (liveTokenEl) liveTokenEl.textContent = statusInfo.statusMessage;
-          if (subTextEl) subTextEl.textContent = statusInfo.subMessage;
-          if (waitingCountEl) waitingCountEl.textContent = statusInfo.waitingCountText;
+          if (badgeText) {
+            badgeText.textContent = statusInfo.badgeText;
+            badgeText.className = 'text-xs font-black text-white uppercase tracking-wider block';
+          }
+          if (liveTokenEl) {
+            liveTokenEl.textContent = statusInfo.statusMessage;
+            liveTokenEl.className = 'text-lg sm:text-xl font-black text-amber-200 mt-0.5';
+          }
+          if (subTextEl) {
+            subTextEl.textContent = statusInfo.subMessage;
+            subTextEl.className = 'text-xs text-white/90 font-medium mt-0.5';
+          }
+          if (waitingCountEl) {
+            waitingCountEl.textContent = statusInfo.waitingCountText;
+            waitingCountEl.className = 'text-sm font-black text-amber-200';
+          }
         } else {
           statusCard.className = 'mt-4 bg-black/25 border border-emerald-500/40 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition';
           if (liveDot) liveDot.className = 'w-3.5 h-3.5 rounded-full bg-[#25D366] live-token-pulse flex-shrink-0';
-          if (badgeText) badgeText.textContent = '🟢 LIVE CLINIC STATUS (ABHI ANDAR)';
-          if (liveTokenEl) liveTokenEl.textContent = inCabin ? `Token #${inCabin.token} chal raha hai` : 'Doctor Ready Hain';
-          if (subTextEl) subTextEl.textContent = 'Doctor Sahab cabin mein mareez dekh rahe hain.';
-          if (waitingCountEl) waitingCountEl.textContent = `${waitingCount} Mareez`;
+          if (badgeText) {
+            badgeText.textContent = '🟢 LIVE CLINIC STATUS (ABHI ANDAR)';
+            badgeText.className = 'text-[11px] font-black text-emerald-300 uppercase tracking-wider block';
+          }
+          if (liveTokenEl) {
+            liveTokenEl.textContent = inCabin ? `Token #${inCabin.token} chal raha hai` : 'Doctor Ready Hain';
+            liveTokenEl.className = 'text-lg sm:text-xl font-black text-white mt-0.5';
+          }
+          if (subTextEl) {
+            subTextEl.textContent = 'Doctor Sahab cabin mein mareez dekh rahe hain.';
+            subTextEl.className = 'text-xs text-white/80 font-medium mt-0.5';
+          }
+          if (waitingCountEl) {
+            waitingCountEl.textContent = `${waitingCount} Mareez`;
+            waitingCountEl.className = 'text-sm font-black text-[#25D366]';
+          }
         }
       }
 
@@ -7535,7 +8491,11 @@
           const numEl = document.getElementById('landingPassTokenNum');
           if (numEl) numEl.textContent = `#${lastPatientBooking.token}`;
           const slotEl = document.getElementById('landingPassSlotText');
-          if (slotEl) slotEl.textContent = `${lastPatientBooking.day || 'Aaj'} • ${lastPatientBooking.slotTime || 'Slot'}`;
+          if (slotEl) {
+            const revisedInfo = getRevisedSlotInfo(lastPatientBooking.slotTime);
+            const slotDisplay = (revisedInfo && revisedInfo.hasChange) ? revisedInfo.displayText : (lastPatientBooking.slotTime || 'Slot');
+            slotEl.textContent = `${lastPatientBooking.day || 'Aaj'} • ${slotDisplay}`;
+          }
         } else {
           landingPass.classList.add('hidden');
         }
@@ -7558,8 +8518,21 @@
       }
 
       const lateAlert = document.getElementById('patientViewLateAlert');
-      if (isDoctorLate) lateAlert.classList.remove('hidden');
-      else lateAlert.classList.add('hidden');
+      if (lateAlert) {
+        const delay = getDoctorDelayMinutes();
+        const expectedArr = getDoctorExpectedArrivalTime();
+        if (delay > 0) {
+          lateAlert.classList.remove('hidden');
+          const docName = clinicProfile.doctorName ? `Dr. ${clinicProfile.doctorName.replace(/^Dr\.?\s*/i, '')}` : 'Doctor Sahab';
+          lateAlert.innerHTML = `<i class="fa-solid fa-clock text-slate-950"></i><span>Soochna: ${docName} aaj ${delay} minute late hain (Expected: ${expectedArr}). Kripya us hisaab se clinic aayein.</span>`;
+        } else if (delay < 0) {
+          lateAlert.classList.remove('hidden');
+          const docName = clinicProfile.doctorName ? `Dr. ${clinicProfile.doctorName.replace(/^Dr\.?\s*/i, '')}` : 'Doctor Sahab';
+          lateAlert.innerHTML = `<i class="fa-solid fa-bolt text-slate-950"></i><span>Soochna: ${docName} aaj ${Math.abs(delay)} minute pehle clinic pahunch rahe hain (Expected: ${expectedArr}).</span>`;
+        } else {
+          lateAlert.classList.add('hidden');
+        }
+      }
 
       const pausedBox = document.getElementById('patientViewPausedBox');
       const landingHero = document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection');
@@ -7836,7 +8809,11 @@
       }
 
       const passSlot = document.getElementById('passSlotText');
-      if (passSlot) passSlot.textContent = `${savedBooking.day || 'Aaj'} • ${savedBooking.shift || 'Morning'} (${savedBooking.slotTime || 'OPD'})`;
+      if (passSlot) {
+        const revisedInfo = getRevisedSlotInfo(savedBooking.slotTime);
+        const slotDisplay = (revisedInfo && revisedInfo.hasChange) ? revisedInfo.displayText : (savedBooking.slotTime || 'OPD');
+        passSlot.textContent = `${savedBooking.day || 'Aaj'} • ${savedBooking.shift || 'Morning'} (${slotDisplay})`;
+      }
 
       const passFee = document.getElementById('passFeeAmount');
       if (passFee) passFee.textContent = `₹${savedBooking.fee}`;
@@ -7885,23 +8862,53 @@
         return;
       }
 
+      // Dynamically update passSlotText with revised slot info if doctor delayed
+      const passSlot = document.getElementById('passSlotText');
+      if (passSlot && lastPatientBooking.slotTime) {
+        const revisedInfo = getRevisedSlotInfo(lastPatientBooking.slotTime);
+        const slotDisplay = (revisedInfo && revisedInfo.hasChange) ? revisedInfo.displayText : (lastPatientBooking.slotTime || 'OPD');
+        passSlot.textContent = `${lastPatientBooking.day || 'Aaj'} • ${lastPatientBooking.shift || 'Morning'} (${slotDisplay})`;
+      }
+
       const statusInfo = getClinicLiveStatusInfo();
       const cabinTokenEl = document.getElementById('passCabinTokenLive');
       const distEl = document.getElementById('passLiveQueueDistance');
       const waitEstEl = document.getElementById('passLiveWaitEst');
       const inCabinNotice = document.getElementById('passInCabinNotice');
+      const headerEl = document.getElementById('passLiveStatusHeader');
+      const dotEl = document.getElementById('passLiveStatusDot');
+      const rowEl = document.getElementById('passLiveStatusRow');
+      const cabinStatusSpan = document.getElementById('passLiveCabinStatus');
 
       if (!statusInfo.isOpen) {
         // Red background banner for closed clinic or doctor holiday
+        // High contrast styling: eliminate dark green (text-[#075E54]) on red, use light green / amber / white
         card.className = 'p-3.5 bg-rose-700 text-white rounded-2xl border-2 border-rose-900 text-left space-y-1.5 shadow-md';
-        if (distEl) distEl.textContent = statusInfo.badgeText;
-        if (waitEstEl) waitEstEl.textContent = statusInfo.subMessage;
+        if (headerEl) headerEl.className = 'text-[10px] font-black uppercase text-emerald-300 flex items-center gap-1.5';
+        if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-rose-200 animate-ping';
+        if (distEl) {
+          distEl.className = 'text-xs font-black text-amber-200';
+          distEl.textContent = statusInfo.badgeText;
+        }
+        if (rowEl) rowEl.className = 'text-xs font-bold text-white flex items-center justify-between';
+        if (cabinStatusSpan) cabinStatusSpan.className = 'text-white';
         if (cabinTokenEl) cabinTokenEl.textContent = statusInfo.statusMessage;
+        if (waitEstEl) {
+          waitEstEl.className = 'text-[11px] text-amber-100 font-semibold';
+          waitEstEl.textContent = statusInfo.subMessage;
+        }
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
         return;
       }
 
+      // Normal open clinic card
       card.className = 'p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-left space-y-1.5 shadow-inner';
+      if (headerEl) headerEl.className = 'text-[10px] font-black uppercase text-[#075E54] flex items-center gap-1.5';
+      if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse';
+      if (distEl) distEl.className = 'text-xs font-black text-[#128C7E]';
+      if (rowEl) rowEl.className = 'text-xs font-bold text-slate-800 flex items-center justify-between';
+      if (cabinStatusSpan) cabinStatusSpan.className = 'text-slate-800';
+      if (waitEstEl) waitEstEl.className = 'text-[11px] text-slate-600 font-semibold';
 
       const myBooking = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
       const inCabin = getCurrentCabinPatient();
