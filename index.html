@@ -458,8 +458,8 @@
         <div class="bg-[#075E54] rounded-2xl p-3 sm:p-4 text-white shadow-md border border-emerald-700/60 relative overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
             
-            <!-- Current Patient Inside Cabin Info -->
-            <div class="flex items-center gap-3 min-w-0 flex-1">
+            <!-- Current Patient Inside Cabin Info (Click opens Digital Vitals & Prescription) -->
+            <div id="cabinActivePatientCard" onclick="openCurrentCabinParchi()" class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer select-none group" title="Click to open Digital Vitals & Prescription" role="button" tabindex="0">
               <div id="cabinTokenCircle" class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0">
                 <span class="text-[8px] uppercase tracking-wider font-extrabold opacity-80 leading-none">TOKEN</span>
                 <span id="cabinTokenNumber" class="text-xl leading-none font-black mt-0.5">#12</span>
@@ -1734,6 +1734,9 @@
               <div>⏳ <strong>Number Aane Ka Andaza:</strong> <span id="passEstTime" class="text-[#075E54] font-bold">~20 Mins</span></div>
               <div>💵 <strong>Clinic Fee:</strong> <span id="passFeeAmount">₹300</span> (Pay at Clinic Counter)</div>
             </div>
+
+            <!-- Doctor Delay/Early Alert Banner on Token Pass (High-contrast, never dark green on red) -->
+            <div id="passDoctorDelayAlert" class="hidden p-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-xs text-left"></div>
 
             <!-- REAL-TIME LIVE QUEUE TRACKER FOR BOOKED PATIENT -->
             <div id="passLiveStatusCard" class="p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-left space-y-1.5 shadow-inner">
@@ -3089,8 +3092,11 @@
               <span id="interactiveCopyBtnText">Copy Link</span>
             </button>
           </div>
-          <div class="text-[10px] text-slate-500 font-semibold" id="standeeLinkTextWrapper">
-            🔗 Link: <span class="underline break-all select-all font-mono" id="standeeLinkText">parchisetu.in/book</span>
+          <div class="text-[10px] text-slate-500 font-semibold flex items-center justify-between gap-2" id="standeeLinkTextWrapper">
+            <div>🔗 Link: <a href="#" target="_blank" class="underline break-all select-all font-mono text-[#075E54] hover:text-[#128C7E] font-bold" id="standeeLinkText">parchisetu.in/book</a></div>
+            <a href="#" id="interactiveOpenLinkBtn" target="_blank" class="text-[11px] font-black text-[#128C7E] hover:text-[#075E54] hover:underline flex items-center gap-1 whitespace-nowrap">
+              <span>Open Link</span> <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </a>
           </div>
         </div>
 
@@ -3399,10 +3405,13 @@
           clinicProfile = e.data.clinic;
           if (clinicProfile.liveStatus) {
             isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+            doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+            expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
             isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
           }
           saveLocalClinic();
           updateClinicBranding();
+          updateDoctorArrivalControlsUI();
           refreshAllViews();
         } else if (e.data.type === 'QUEUE_UPDATED') {
           if (Array.isArray(e.data.queue)) {
@@ -3471,10 +3480,13 @@
                 clinicProfile = msg.data;
                 if (clinicProfile.liveStatus) {
                   isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                  doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                  expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
                   isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
                 }
                 saveLocalClinic();
                 updateClinicBranding();
+                updateDoctorArrivalControlsUI();
                 refreshAllViews();
               } else if (msg.event === 'QUEUE_UPDATED' && msg.data) {
                 if (Array.isArray(msg.data.queue)) {
@@ -4443,7 +4455,8 @@
       if (preferLan && clinicProfile.network && clinicProfile.network.lanUrl) {
         return `${clinicProfile.network.lanUrl}/?role=patient&clinic=${clinicProfile.id}`;
       }
-      const base = window.location.origin + window.location.pathname;
+      const isHttp = typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http');
+      const base = isHttp ? (window.location.origin + window.location.pathname) : 'https://parchisetu.in/book';
       return `${base}?role=patient&clinic=${clinicProfile.id}`;
     }
 
@@ -4578,7 +4591,15 @@
       if (linkInput) linkInput.value = link;
 
       const standeeLink = document.getElementById('standeeLinkText');
-      if (standeeLink) standeeLink.textContent = link;
+      if (standeeLink) {
+        standeeLink.textContent = link;
+        standeeLink.href = link;
+      }
+
+      const openLinkBtn = document.getElementById('interactiveOpenLinkBtn');
+      if (openLinkBtn) {
+        openLinkBtn.href = link;
+      }
 
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
       const qrImg = document.getElementById('interactiveQrImg');
@@ -6516,7 +6537,8 @@
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const delay = (typeof getDoctorDelayMinutes === 'function') ? getDoctorDelayMinutes() : 0;
-      const effectiveSlotMinutes = slotMinutes + delay;
+      // If doctor is late, effective slot is delayed; if doctor is early, patients are not penalized before their booked time
+      const effectiveSlotMinutes = delay > 0 ? (slotMinutes + delay) : slotMinutes;
       return currentMinutes > effectiveSlotMinutes;
     }
 
@@ -7082,7 +7104,7 @@
 
       msg += `📲 *Agla Slot / Token Book Karne Ke Liye Link:*\n${bookingLink}\n`;
       msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-      msg += `_Swasth Raheini, ParchiSetu Digital Health Assistant_ 🙏`;
+      msg += `_Swasth Rahein, ParchiSetu Digital Health Assistant_ 🙏`;
 
       return msg;
     }
@@ -7120,6 +7142,12 @@
       if (!activeDrawerPatientId) return;
       const p = todayQueue.find(item => item.id === activeDrawerPatientId);
       if (p) {
+        if (isCustomFollowUp) {
+          const customVal = parseInt(document.getElementById('customFollowUpInput')?.value, 10);
+          if (!isNaN(customVal) && customVal > 0) {
+            selectedFollowUpDays = customVal;
+          }
+        }
         p.bp = (document.getElementById('vitalBP')?.value || '').trim();
         p.weight = (document.getElementById('vitalWeight')?.value || '').trim();
         p.temp = (document.getElementById('vitalTemp')?.value || '').trim();
@@ -7156,6 +7184,13 @@
       const p = todayQueue.find(item => item.id === activeDrawerPatientId);
       if (!p) return;
 
+      if (isCustomFollowUp) {
+        const customVal = parseInt(document.getElementById('customFollowUpInput')?.value, 10);
+        if (!isNaN(customVal) && customVal > 0) {
+          selectedFollowUpDays = customVal;
+        }
+      }
+
       const bp = (document.getElementById('vitalBP')?.value || '').trim();
       const weight = (document.getElementById('vitalWeight')?.value || '').trim();
       const temp = (document.getElementById('vitalTemp')?.value || '').trim();
@@ -7177,7 +7212,7 @@
 
       // Copy to clipboard
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(fullMsg).catch(() => {});
+        navigator.clipboard.writeText(fullMsg).catch(() => fallbackCopy(fullMsg));
       } else {
         fallbackCopy(fullMsg);
       }
@@ -7186,7 +7221,10 @@
       saveParchiDrawerOnly();
 
       // Open patient WhatsApp
-      const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+      let cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+      if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
+        cleanPhone = cleanPhone.substring(1);
+      }
       const waNumber = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
       const encoded = encodeURIComponent(fullMsg);
       const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${encoded}` : `https://api.whatsapp.com/send?text=${encoded}`;
@@ -8879,6 +8917,28 @@
       const dotEl = document.getElementById('passLiveStatusDot');
       const rowEl = document.getElementById('passLiveStatusRow');
       const cabinStatusSpan = document.getElementById('passLiveCabinStatus');
+      const passEstTimeEl = document.getElementById('passEstTime');
+      const passDelayAlert = document.getElementById('passDoctorDelayAlert');
+
+      // Doctor Expected Arrival / Delay Alert Banner on Token Pass (High-contrast, never dark green on red)
+      const delay = getDoctorDelayMinutes();
+      const expectedArr = getDoctorExpectedArrivalTime();
+      const docName = (clinicProfile && clinicProfile.doctorName) ? `Dr. ${clinicProfile.doctorName.replace(/^Dr\.?\s*/i, '')}` : 'Doctor Sahab';
+      if (passDelayAlert) {
+        if (!statusInfo.isOpen) {
+          passDelayAlert.classList.add('hidden');
+        } else if (delay > 0) {
+          passDelayAlert.classList.remove('hidden');
+          passDelayAlert.className = 'p-2.5 bg-amber-400 text-slate-950 rounded-xl text-xs font-black flex items-center gap-2 shadow-xs text-left';
+          passDelayAlert.innerHTML = `<i class="fa-solid fa-clock text-slate-950"></i><span>⏳ <strong>Soochna:</strong> ${docName} aaj ${delay} minute late hain (Expected arrival: <strong>${expectedArr}</strong>). Sabhi slot ${delay}m delay hue hain.</span>`;
+        } else if (delay < 0) {
+          passDelayAlert.classList.remove('hidden');
+          passDelayAlert.className = 'p-2.5 bg-sky-100 text-sky-950 border border-sky-300 rounded-xl text-xs font-black flex items-center gap-2 shadow-xs text-left';
+          passDelayAlert.innerHTML = `<i class="fa-solid fa-bolt text-sky-700"></i><span>⚡ <strong>Soochna:</strong> ${docName} aaj ${Math.abs(delay)} minute pehle aa rahe hain (Expected arrival: <strong>${expectedArr}</strong>).</span>`;
+        } else {
+          passDelayAlert.classList.add('hidden');
+        }
+      }
 
       if (!statusInfo.isOpen) {
         // Red background banner for closed clinic or doctor holiday
@@ -8896,6 +8956,10 @@
         if (waitEstEl) {
           waitEstEl.className = 'text-[11px] text-amber-100 font-semibold';
           waitEstEl.textContent = statusInfo.subMessage;
+        }
+        if (passEstTimeEl) {
+          passEstTimeEl.textContent = 'Clinic Band Hai';
+          passEstTimeEl.className = 'text-rose-600 font-bold';
         }
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
         return;
@@ -8921,10 +8985,18 @@
       if (myBooking.status === 'IN_CABIN') {
         if (distEl) distEl.textContent = '🟢 AAP CABIN MEIN HAIN';
         if (waitEstEl) waitEstEl.textContent = 'Doctor Sahab se consult karein';
+        if (passEstTimeEl) {
+          passEstTimeEl.textContent = 'Abhi Cabin Mein';
+          passEstTimeEl.className = 'text-emerald-700 font-bold';
+        }
         if (inCabinNotice) inCabinNotice.classList.remove('hidden');
       } else if (myBooking.status === 'DONE') {
         if (distEl) distEl.textContent = '✅ CONSULTATION COMPLETE';
         if (waitEstEl) waitEstEl.textContent = 'Parchi lekar counter par check karein';
+        if (passEstTimeEl) {
+          passEstTimeEl.textContent = 'Pura Ho Gaya (Done)';
+          passEstTimeEl.className = 'text-slate-600 font-bold';
+        }
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
       } else {
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
@@ -8934,12 +9006,24 @@
         if (aheadCount === 0) {
           if (distEl) distEl.textContent = '🔔 AAP AGLE HAIN!';
           if (waitEstEl) waitEstEl.textContent = 'Cabin ke bahar taiyar rahein';
+          if (passEstTimeEl) {
+            passEstTimeEl.textContent = '~0-5 Mins (Agla Number)';
+            passEstTimeEl.className = 'text-[#075E54] font-bold';
+          }
         } else if (aheadCount === 1) {
           if (distEl) distEl.textContent = '1 Mareez Aage Hai';
           if (waitEstEl) waitEstEl.textContent = `~${avgMins} Mins Baaki`;
+          if (passEstTimeEl) {
+            passEstTimeEl.textContent = `~${avgMins} Mins`;
+            passEstTimeEl.className = 'text-[#075E54] font-bold';
+          }
         } else {
           if (distEl) distEl.textContent = `${aheadCount} Mareez Aage Hain`;
           if (waitEstEl) waitEstEl.textContent = `~${aheadCount * avgMins} Mins Baaki`;
+          if (passEstTimeEl) {
+            passEstTimeEl.textContent = `~${aheadCount * avgMins} Mins`;
+            passEstTimeEl.className = 'text-[#075E54] font-bold';
+          }
         }
       }
     }
@@ -9108,6 +9192,8 @@
           clinicProfile = { ...clinicProfile, ...loaded };
           if (clinicProfile.liveStatus) {
             isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+            doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+            expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
             isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
           }
           saveLocalClinic();
@@ -9121,6 +9207,8 @@
               clinicProfile = remoteClinic;
               if (clinicProfile.liveStatus) {
                 isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
                 isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
               }
               saveLocalClinic();
@@ -9190,11 +9278,27 @@
       setInterval(async () => {
         try {
           if (window.location.protocol.startsWith('http')) {
-            const qRes = await fetch('/api/queue');
-            if (qRes.ok) {
+            const [qRes, cRes] = await Promise.all([
+              fetch('/api/queue').catch(() => null),
+              fetch('/api/clinic' + (clinicProfile && clinicProfile.id ? `?clinic=${encodeURIComponent(clinicProfile.id)}` : '')).catch(() => null)
+            ]);
+            if (qRes && qRes.ok) {
               const qData = await qRes.json();
               if (Array.isArray(qData)) {
                 mergeIncomingQueue(qData);
+              }
+            }
+            if (cRes && cRes.ok) {
+              const cData = await cRes.json();
+              if (cData && cData.name) {
+                clinicProfile = { ...clinicProfile, ...cData };
+                if (clinicProfile.liveStatus) {
+                  isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                  doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                  expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+                  isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+                }
+                saveLocalClinic();
               }
             }
           }
@@ -9202,6 +9306,7 @@
             renderPatientBookingPage();
             updatePatientTokenPassLiveStatus();
           } else if (currentRole === 'clinic' && currentAuthUser) {
+            updateDoctorArrivalControlsUI();
             renderLiveCabinHero();
             renderQueueList();
           }

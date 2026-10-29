@@ -1158,6 +1158,95 @@ async function runTests() {
     assert.ok(sandbox.earlySlot.displayText.includes('Revised: 10:30 AM'), 'Display text must show Revised: 10:30 AM');
   })();
 
+  // 62. Cabin Patient Clickability, Digital Prescription Polish & Interactive QR Open Link
+  await test('Cabin active patient card triggers digital vitals drawer, QR modal has direct open link, and phone numbers normalize', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Cabin active patient card must be clickable
+    assert.ok(
+      html.includes('id="cabinActivePatientCard"') && html.includes('onclick="openCurrentCabinParchi()"'),
+      'Clicking on the patient inside doctor must trigger openCurrentCabinParchi()'
+    );
+
+    // 2. Interactive QR modal must have direct open link anchor
+    assert.ok(html.includes('id="interactiveOpenLinkBtn"'), 'Interactive QR modal must define interactiveOpenLinkBtn');
+    assert.ok(html.includes('openLinkBtn.href = link'), 'openInteractiveQRModal must dynamically set openLinkBtn href');
+
+    // 3. Phone normalization logic in VM context
+    const phoneSandbox = {};
+    vm.createContext(phoneSandbox);
+    const phoneCode = `
+      function normalizeWaPhone(phone) {
+        let cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+        if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
+          cleanPhone = cleanPhone.substring(1);
+        }
+        return cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+      }
+      var res1 = normalizeWaPhone('9835012345');
+      var res2 = normalizeWaPhone('09835012345');
+      var res3 = normalizeWaPhone('+91 98350-12345');
+    `;
+    vm.runInContext(phoneCode, phoneSandbox);
+    assert.strictEqual(phoneSandbox.res1, '919835012345', '10-digit phone must prepend 91');
+    assert.strictEqual(phoneSandbox.res2, '919835012345', '11-digit phone with leading 0 must normalize to 919835012345');
+    assert.strictEqual(phoneSandbox.res3, '919835012345', 'Formatted phone must normalize to 919835012345');
+
+    // 4. Greeting typo check
+    assert.ok(html.includes('_Swasth Rahein, ParchiSetu Digital Health Assistant_'), 'Prescription must use correct Hindi spelling Swasth Rahein');
+  })();
+
+  // 63. Doctor Arrival Alert on Token Pass, Heartbeat Dual-Polling, and Early Arrival Non-Penalization
+  await test('Token pass defines passDoctorDelayAlert, heartbeat polls both queue and clinic, and early doctor arrival does not penalize patients', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Token pass doctor delay alert banner
+    assert.ok(html.includes('id="passDoctorDelayAlert"'), 'Token pass must include passDoctorDelayAlert');
+    assert.ok(html.includes("passDelayAlert.className = 'p-2.5 bg-amber-400 text-slate-950 rounded-xl text-xs font-black flex items-center gap-2 shadow-xs text-left'"), 'passDoctorDelayAlert must use high-contrast bg-amber-400 text-slate-950 on delay');
+
+    // 2. Heartbeat interval dual polling (/api/queue and /api/clinic)
+    const intervalCode = html.substring(html.indexOf('// Real-time periodic heartbeat (every 10s)'), html.indexOf('// Auto-refresh when tab is focused'));
+    assert.ok(intervalCode.includes("fetch('/api/queue')"), 'Heartbeat must poll /api/queue');
+    assert.ok(intervalCode.includes("fetch('/api/clinic'"), 'Heartbeat must poll /api/clinic for real-time doctor delay');
+
+    // 3. isPatientLate early arrival non-penalization in VM context
+    const lateSandbox = {};
+    vm.createContext(lateSandbox);
+    const lateCode = `
+      ${html.substring(html.indexOf('function parseSlotTimeToMinutes'), html.indexOf('async function cancelPatientAppointment'))}
+      function getDoctorDelayMinutes() { return -30; } // Doctor is 30m early
+      function getLocalDateString() { return '2026-10-29'; }
+      const patient = { status: 'WAITING', date: '2026-10-29', slotTime: '11:00 AM' };
+      const origDate = Date;
+      class MockDate extends origDate {
+        constructor() { super(); }
+        getHours() { return 10; }
+        getMinutes() { return 45; }
+      }
+      globalThis.Date = MockDate;
+      var lateEarlyDoc = isPatientLate(patient);
+      class MockDateLate extends origDate {
+        constructor() { super(); }
+        getHours() { return 11; }
+        getMinutes() { return 15; }
+      }
+      globalThis.Date = MockDateLate;
+      var latePastSlot = isPatientLate(patient);
+    `;
+    vm.runInContext(lateCode, lateSandbox);
+    assert.strictEqual(lateSandbox.lateEarlyDoc, false, 'Patient must not be marked late before original slot when doctor is early');
+    assert.strictEqual(lateSandbox.latePastSlot, true, 'Patient must be marked late past original slot time');
+
+    // 4. passEstTime dynamic recalculation in updatePatientTokenPassLiveStatus
+    assert.ok(html.includes("passEstTimeEl.textContent = 'Clinic Band Hai'"), 'passEstTime must show Clinic Band Hai when closed');
+    assert.ok(html.includes("passEstTimeEl.textContent = 'Abhi Cabin Mein'"), 'passEstTime must show Abhi Cabin Mein when in cabin');
+    assert.ok(html.includes("passEstTimeEl.textContent = '~0-5 Mins (Agla Number)'"), 'passEstTime must show Agla Number for next patient');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {
