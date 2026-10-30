@@ -45,9 +45,10 @@ module.exports = async (req, res) => {
   }
 
   if (method === 'GET') {
+    const phone = url.searchParams.get('phone');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify(store.getQueue()));
+    return res.end(JSON.stringify(store.getQueue(phone)));
   }
 
   if (method === 'PUT') {

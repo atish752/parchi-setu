@@ -1840,6 +1840,147 @@ async function runTests() {
     assert.ok(onloadFuncStr.indexOf("switchAppRole('patient')") < onloadFuncStr.indexOf("fetch('/api/queue')"), 'Must apply patient role immediately before waiting for network queue');
   })();
 
+  // 75. Patient Discovery API endpoint returns directory of clinics across cities & specialties
+  await test('GET /api/clinics returns directory of clinics across Indian cities and specialties with ratings and photos', async () => {
+    const res = await makeRequest('GET', '/api/clinics');
+    assert.strictEqual(res.status, 200, 'GET /api/clinics must return 200 OK');
+    assert.ok(Array.isArray(res.body), 'Response body must be an array of clinics');
+    assert.ok(res.body.length >= 9, 'Must have at least 9 seed clinics across cities');
+
+    // Verify key fields
+    const firstClinic = res.body[0];
+    assert.ok(firstClinic.id, 'Clinic must have an id');
+    assert.ok(firstClinic.name, 'Clinic must have a name');
+    assert.ok(firstClinic.city, 'Clinic must have a city');
+    assert.ok(firstClinic.doctorName, 'Clinic must have a doctorName');
+    assert.ok(firstClinic.doctorPhoto, 'Clinic must have a doctorPhoto');
+    assert.ok(typeof firstClinic.rating === 'number', 'Clinic must have numeric rating');
+    assert.ok(typeof firstClinic.reviewCount === 'number', 'Clinic must have reviewCount');
+
+    // Check city coverage
+    const cities = res.body.map(c => c.city);
+    const expectedCities = ['Patna', 'Delhi', 'Lucknow', 'Varanasi', 'Mumbai', 'Jaipur', 'Ranchi', 'Muzaffarpur'];
+    for (const city of expectedCities) {
+      assert.ok(cities.some(c => c.toLowerCase().includes(city.toLowerCase())), `Must include city: ${city}`);
+    }
+
+    // Check specialty coverage
+    const specialties = res.body.map(c => c.specialty || c.category);
+    assert.ok(specialties.some(s => s && (s.toLowerCase().includes('physician') || s.toLowerCase().includes('general'))), 'Must include General Physician');
+    assert.ok(specialties.some(s => s && (s.toLowerCase().includes('cardio') || s.toLowerCase().includes('heart'))), 'Must include Heart / Cardiology');
+    assert.ok(specialties.some(s => s && (s.toLowerCase().includes('ortho') || s.toLowerCase().includes('bone'))), 'Must include Bone / Orthopedic');
+    assert.ok(specialties.some(s => s && (s.toLowerCase().includes('derma') || s.toLowerCase().includes('skin'))), 'Must include Skin / Dermatology');
+    assert.ok(specialties.some(s => s && (s.toLowerCase().includes('pediatric') || s.toLowerCase().includes('child'))), 'Must include Child / Pediatric');
+    assert.ok(specialties.some(s => s && s.toLowerCase().includes('dental')), 'Must include Dental');
+    assert.ok(specialties.some(s => s && (s.toLowerCase().includes('gynec') || s.toLowerCase().includes('gynae'))), 'Must include Gynecologist');
+
+    // Verify /api/clinic?list=1 also returns clinic array
+    const listRes = await makeRequest('GET', '/api/clinic?list=1');
+    assert.strictEqual(listRes.status, 200, 'GET /api/clinic?list=1 must return 200');
+    assert.ok(Array.isArray(listRes.body) && listRes.body.length >= 9, 'List query must return clinics directory');
+  })();
+
+  // 76. Zero-login Phone Lookup API filters queue records
+  await test('Zero-login Phone lookup endpoint filters queue records by 10-digit phone number', async () => {
+    // Book a patient with a specific phone
+    const testPhone = '9876543210';
+    const bookRes = await makeRequest('POST', '/api/bookings', {
+      name: 'Ramesh Verma',
+      age: 45,
+      gender: 'M',
+      phone: testPhone,
+      reason: 'Chest Discomfort',
+      shift: 'Morning',
+      slotTime: '11:00 AM',
+      day: 'Aaj (Today)'
+    });
+    assert.strictEqual(bookRes.status, 201, 'Booking must succeed');
+    assert.ok(bookRes.body.booking, 'Must return created booking');
+
+    // Query /api/queue?phone=9876543210
+    const qRes = await makeRequest('GET', `/api/queue?phone=${testPhone}`);
+    assert.strictEqual(qRes.status, 200, 'Queue filter by phone must return 200');
+    assert.ok(Array.isArray(qRes.body), 'Queue result must be an array');
+    assert.ok(qRes.body.length > 0, 'Must find at least one booking for matching phone');
+    assert.strictEqual(qRes.body[0].phone, testPhone, 'Returned record phone must match queried phone');
+
+    // Query with non-existent phone
+    const nonRes = await makeRequest('GET', '/api/queue?phone=9999900000');
+    assert.strictEqual(nonRes.status, 200);
+    assert.strictEqual(nonRes.body.length, 0, 'Non-existent phone must return empty array');
+  })();
+
+  // 77. Discovery UI elements, Phone Lookup, Doctor Profile Modal, and Doctor Photo
+  await test('Patient Discovery UI elements, zero-login phone lookup, doctor profile modal, and doctor photo controls exist in HTML', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // Discovery UI structure
+    assert.ok(html.includes('id="patientDiscoverySection"'), 'Must define patientDiscoverySection');
+    assert.ok(html.includes('id="patientDirectClinicSection"'), 'Must define patientDirectClinicSection');
+    assert.ok(html.includes('id="doctorSearchInput"'), 'Must define doctorSearchInput');
+    assert.ok(html.includes('id="cityChipsContainer"'), 'Must define cityChipsContainer');
+    assert.ok(html.includes('id="specialtyChipsContainer"'), 'Must define specialtyChipsContainer');
+    assert.ok(html.includes('id="doctorCardsListContainer"'), 'Must define doctorCardsListContainer');
+    assert.ok(html.includes('id="doctorDiscoveryEmptyState"'), 'Must define doctorDiscoveryEmptyState');
+
+    // Zero-Login Phone Lookup Card
+    assert.ok(html.includes('id="phoneLookupSectionCard"'), 'Must define phoneLookupSectionCard');
+    assert.ok(html.includes('id="lookupPhoneNumberInput"'), 'Must define lookupPhoneNumberInput');
+    assert.ok(html.includes('id="btnExecutePhoneLookup"'), 'Must define btnExecutePhoneLookup');
+    assert.ok(html.includes('onclick="executePhoneTokenLookup()"'), 'Must link executePhoneTokenLookup()');
+
+    // Doctor Profile Detail Modal
+    assert.ok(html.includes('id="doctorProfileDetailModal"'), 'Must define doctorProfileDetailModal');
+    assert.ok(html.includes('id="detailDocPhoto"'), 'Must define detailDocPhoto');
+    assert.ok(html.includes('id="detailDocSpecialtyBadge"'), 'Must define detailDocSpecialtyBadge');
+    assert.ok(html.includes('id="detailDocExpBadge"'), 'Must define detailDocExpBadge');
+    assert.ok(html.includes('id="detailDocName"'), 'Must define detailDocName');
+    assert.ok(html.includes('id="detailDocRating"'), 'Must define detailDocRating');
+    assert.ok(html.includes('id="detailDocFee"'), 'Must define detailDocFee');
+    assert.ok(html.includes('id="detailMorningShift"'), 'Must define detailMorningShift');
+    assert.ok(html.includes('id="detailEveningShift"'), 'Must define detailEveningShift');
+
+    // Doctor Photo Upload / URL in Onboarding & Profile Tab
+    assert.ok(html.includes('id="onboardDoctorPhotoUrl"'), 'Must define onboardDoctorPhotoUrl in Onboarding');
+    assert.ok(html.includes('id="onboardDoctorPhotoFile"'), 'Must define onboardDoctorPhotoFile in Onboarding');
+    assert.ok(html.includes('id="onboardDoctorPhotoPreview"'), 'Must define onboardDoctorPhotoPreview in Onboarding');
+    assert.ok(html.includes('id="profileDoctorPhotoUrl"'), 'Must define profileDoctorPhotoUrl in Profile Tab');
+    assert.ok(html.includes('id="profileDoctorPhotoFile"'), 'Must define profileDoctorPhotoFile in Profile Tab');
+    assert.ok(html.includes('id="profileDoctorPhotoPreview"'), 'Must define profileDoctorPhotoPreview in Profile Tab');
+    assert.ok(html.includes('saveDoctorPhotoSetting'), 'Must define saveDoctorPhotoSetting');
+
+    // Client JS functions
+    const requiredFunctions = [
+      'loadClinicsDirectory',
+      'renderDoctorDiscoveryFeed',
+      'renderCityChips',
+      'renderSpecialtyChips',
+      'setDiscoveryCity',
+      'setDiscoverySpecialty',
+      'onDoctorSearchInput',
+      'resetDiscoveryFilters',
+      'openDoctorProfileModal',
+      'closeDoctorProfileModal',
+      'selectDoctorAndBook',
+      'showPatientDiscoverySection',
+      'showPatientClinicBookingSection',
+      'executePhoneTokenLookup',
+      'handleDoctorPhotoUpload',
+      'handleDoctorPhotoUrlChange',
+      'saveDoctorPhotoSetting'
+    ];
+    for (const fn of requiredFunctions) {
+      assert.ok(html.includes(`function ${fn}`), `Must define function ${fn}`);
+    }
+
+    // Multilingual translations across english, hinglish, and hindi
+    assert.ok(html.includes('discoveryTitle:'), 'I18N must include discoveryTitle');
+    assert.ok(html.includes('citySelectorLabel:'), 'I18N must include citySelectorLabel');
+    assert.ok(html.includes('specialtyFilterTitle:'), 'I18N must include specialtyFilterTitle');
+    assert.ok(html.includes('checkTokenCardTitle:'), 'I18N must include checkTokenCardTitle');
+    assert.ok(html.includes('noDoctorsFoundTitle:'), 'I18N must include noDoctorsFoundTitle');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

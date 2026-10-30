@@ -26,6 +26,13 @@ module.exports = async (req, res) => {
   const method = req.method.toUpperCase();
 
   if (method === 'GET') {
+    if (url.searchParams.get('list') === '1' || url.searchParams.get('action') === 'list' || url.pathname.includes('/clinics')) {
+      const clinics = store.getClinics();
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify(clinics));
+    }
+
     const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
     const targetClinic = store.getClinic(clinicId);
     res.statusCode = 200;

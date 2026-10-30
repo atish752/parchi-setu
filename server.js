@@ -30,6 +30,9 @@ const DEFAULT_CLINIC = {
   doctorDegree: 'MBBS, MD (General Physician)',
   doctorRegNo: 'MCI-48291',
   experienceYears: 14,
+  rating: 4.9,
+  reviewCount: 148,
+  doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
   fees: {
     normal: 300,
     followup: 200,
@@ -76,6 +79,7 @@ const DEFAULT_CLINIC = {
       specialty: 'General Physician',
       regNo: 'MCI-48291',
       fee: 300,
+      photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
       isMain: true
     }
   ],
@@ -84,11 +88,288 @@ const DEFAULT_CLINIC = {
   createdAt: new Date().toISOString()
 };
 
+const INITIAL_CLINICS = {
+  [DEFAULT_CLINIC.id]: { ...DEFAULT_CLINIC },
+  clinic_patna_central_99: {
+    id: 'clinic_patna_central_99',
+    name: 'Patna Central Hospital Clinic',
+    tagline: 'Complete Heart & Diabetes Care',
+    category: 'Cardiology',
+    specialty: 'Heart / Cardiology',
+    address: 'Kankarbagh Main Road, Opposite Pillar 42',
+    city: 'Patna, Bihar',
+    phone: '9800011122',
+    whatsapp: '9835123456',
+    upiId: 'aarogyaclinic@upi',
+    doctorName: 'Dr. Alok Nath',
+    doctorDegree: 'MBBS, MD (Medicine), PG Diab.',
+    doctorRegNo: 'BRMC-52194',
+    experienceYears: 16,
+    rating: 4.8,
+    reviewCount: 210,
+    doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
+    visitingReasons: ['❤️ Seene Mein Dard', '🩸 High BP / Sugar', '💨 Saans Phoolna', '🔄 Heart Checkup', '📋 ECG / Echo Check'],
+    visitingHours: {
+      morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '05:30 PM', end: '09:30 PM', slotDurationMins: 15, maxTokens: 30 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Alok Nath', degree: 'MBBS, MD (Medicine)', specialty: 'Heart / Cardiology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_delhi_bone_02: {
+    id: 'clinic_delhi_bone_02',
+    name: 'Apex Orthopedic & Joint Care',
+    tagline: 'Bone, Joint & Spine Specialist',
+    category: 'Orthopedics',
+    specialty: 'Bone / Orthopedic',
+    address: 'Ring Road, Lajpat Nagar IV',
+    city: 'Delhi',
+    phone: '9811098765',
+    whatsapp: '9811098765',
+    upiId: 'apexortho@upi',
+    doctorName: 'Dr. Arvind Kumar',
+    doctorDegree: 'MS (Ortho), DNB (Orthopedics)',
+    doctorRegNo: 'DMC-39182',
+    experienceYears: 18,
+    rating: 4.9,
+    reviewCount: 320,
+    doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 500, followup: 300, emergency: 700, report: 0 },
+    visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard / Sciatica', '🔄 X-Ray Check'],
+    visitingHours: {
+      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 12
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Arvind Kumar', degree: 'MS (Ortho)', specialty: 'Bone / Orthopedic', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_lucknow_derma_03: {
+    id: 'clinic_lucknow_derma_03',
+    name: 'Kaya Skin, Hair & Laser Clinic',
+    tagline: 'Advanced Dermatology & Cosmetic Care',
+    category: 'Dermatology',
+    specialty: 'Skin / Dermatology',
+    address: 'Hazratganj Market, Near Cathedral',
+    city: 'Lucknow',
+    phone: '9415012345',
+    whatsapp: '9415012345',
+    upiId: 'kayaskin@upi',
+    doctorName: 'Dr. Sunita Mehra',
+    doctorDegree: 'MBBS, MD (Dermatology & VD)',
+    doctorRegNo: 'UPMC-28491',
+    experienceYears: 11,
+    rating: 4.7,
+    reviewCount: 95,
+    doctorPhoto: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
+    visitingReasons: ['🌸 Daad / Khujli', '🧴 Muhase / Acne', '🔴 Allergy / Rash', '💇 Baal Jhadna'],
+    visitingHours: {
+      morning: { enabled: true, start: '10:30 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
+      evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:30 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Sunita Mehra', degree: 'MBBS, MD (Derma)', specialty: 'Skin / Dermatology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_varanasi_child_04: {
+    id: 'clinic_varanasi_child_04',
+    name: 'Shishu Bal Chikitsalaya',
+    tagline: 'Newborn, Infant & Child Specialist',
+    category: 'Pediatrics',
+    specialty: 'Child / Pediatric',
+    address: 'Godowlia Chowk, Near Dashashwamedh',
+    city: 'Varanasi',
+    phone: '9450098765',
+    whatsapp: '9450098765',
+    upiId: 'shishubal@upi',
+    doctorName: 'Dr. R. K. Mishra',
+    doctorDegree: 'MBBS, DCH, MD (Pediatrics)',
+    doctorRegNo: 'UPMC-31849',
+    experienceYears: 15,
+    rating: 4.9,
+    reviewCount: 180,
+    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
+    visitingReasons: ['👶 Bacche Ka Bukhar', '🤧 Sardi / Khansi', '🤢 Vomiting / Dast', '💉 Vaccination / Teeka'],
+    visitingHours: {
+      morning: { enabled: true, start: '09:00 AM', end: '01:00 PM', slotDurationMins: 15, maxTokens: 30 },
+      evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 30 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. R. K. Mishra', degree: 'MBBS, MD (Pediatrics)', specialty: 'Child / Pediatric', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_mumbai_gynae_05: {
+    id: 'clinic_mumbai_gynae_05',
+    name: 'Matrutva Women & Maternity Clinic',
+    tagline: 'Complete Women Health & Maternity Care',
+    category: 'Gynecology',
+    specialty: 'Gynecologist',
+    address: 'SV Road, Andheri West',
+    city: 'Mumbai',
+    phone: '9820012345',
+    whatsapp: '9820012345',
+    upiId: 'matrutvacare@upi',
+    doctorName: 'Dr. Priya Kishore',
+    doctorDegree: 'MBBS, MS, DGO (Gynecologist)',
+    doctorRegNo: 'MMC-49102',
+    experienceYears: 13,
+    rating: 4.9,
+    reviewCount: 260,
+    doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 500, followup: 300, emergency: 800, report: 0 },
+    visitingReasons: ['🌸 Mahila Swasthya Checkup', '🤰 Pregnancy / Delivery', '🔄 Ultrasound Check', '📋 Hormone / PCOD'],
+    visitingHours: {
+      morning: { enabled: true, start: '10:00 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 20 },
+      evening: { enabled: true, start: '05:30 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 12
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Priya Kishore', degree: 'MBBS, MS (Gynae)', specialty: 'Gynecologist', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_jaipur_dental_06: {
+    id: 'clinic_jaipur_dental_06',
+    name: 'Muskan Dental & Implant Center',
+    tagline: 'Painless Root Canal & Dental Implants',
+    category: 'Dental',
+    specialty: 'Dental',
+    address: 'MI Road, Near Panch Batti',
+    city: 'Jaipur',
+    phone: '9829012345',
+    whatsapp: '9829012345',
+    upiId: 'muskandental@upi',
+    doctorName: 'Dr. Amit Patel',
+    doctorDegree: 'BDS, MDS (Dental Surgeon)',
+    doctorRegNo: 'RDC-18293',
+    experienceYears: 10,
+    rating: 4.8,
+    reviewCount: 112,
+    doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+    visitingReasons: ['🦷 Daant Dard / Cavity', '✨ Daant Safai / Scaling', '🦷 RCT / Root Canal', '🔄 Braces / Alignment'],
+    visitingHours: {
+      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
+      evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 20 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 15
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Amit Patel', degree: 'BDS, MDS', specialty: 'Dental', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_ranchi_general_07: {
+    id: 'clinic_ranchi_general_07',
+    name: 'Aarogya Family Clinic',
+    tagline: 'General Medicine & Diabetes Care',
+    category: 'General Medicine',
+    specialty: 'General Physician',
+    address: 'Main Road, Near Overbridge',
+    city: 'Ranchi',
+    phone: '9431098765',
+    whatsapp: '9431098765',
+    upiId: 'aarogyaranchi@upi',
+    doctorName: 'Dr. Anand Kishore',
+    doctorDegree: 'MBBS, MD (Medicine)',
+    doctorRegNo: 'JMC-19284',
+    experienceYears: 16,
+    rating: 4.9,
+    reviewCount: 175,
+    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
+    visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up'],
+    visitingHours: {
+      morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Anand Kishore', degree: 'MBBS, MD', specialty: 'General Physician', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  },
+  clinic_muzaffarpur_bone_08: {
+    id: 'clinic_muzaffarpur_bone_08',
+    name: 'Tirhut Bone & Trauma Clinic',
+    tagline: 'Fracture, Arthritis & Trauma Care',
+    category: 'Orthopedics',
+    specialty: 'Bone / Orthopedic',
+    address: 'Juran Chhapra Road No. 2',
+    city: 'Muzaffarpur',
+    phone: '9430012345',
+    whatsapp: '9430012345',
+    upiId: 'tirhutbone@upi',
+    doctorName: 'Dr. Sanjay Gupta',
+    doctorDegree: 'MS (Orthopedics)',
+    doctorRegNo: 'BRMC-40192',
+    experienceYears: 12,
+    rating: 4.8,
+    reviewCount: 88,
+    doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
+    visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard', '🔄 Follow-up'],
+    visitingHours: {
+      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Sanjay Gupta', degree: 'MS (Ortho)', specialty: 'Bone / Orthopedic', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: new Date().toISOString()
+  }
+};
+
 // Initial Queue - Zero dummy data for fresh clinic setup
 const DEFAULT_QUEUE = [];
 
 let appData = {
   clinic: DEFAULT_CLINIC,
+  clinics: { ...INITIAL_CLINICS },
   queue: DEFAULT_QUEUE
 };
 
@@ -97,7 +378,12 @@ function loadData() {
   try {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
-      appData = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        if (parsed.clinic) appData.clinic = parsed.clinic;
+        if (parsed.clinics) appData.clinics = { ...INITIAL_CLINICS, ...parsed.clinics };
+        if (Array.isArray(parsed.queue)) appData.queue = parsed.queue;
+      }
     }
   } catch (err) {
     console.error('Error loading data, using defaults:', err.message);
@@ -205,6 +491,24 @@ const requestHandler = async (req, res) => {
     return;
   }
 
+  // Get all clinics list for Discovery
+  if ((pathname === '/api/clinics' || (pathname === '/api/clinic' && (parsedUrl.searchParams.get('list') === '1' || parsedUrl.searchParams.get('action') === 'list'))) && method === 'GET') {
+    const rawList = Object.values(appData.clinics || { [appData.clinic.id]: appData.clinic });
+    const list = rawList.map(c => {
+      const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
+      return {
+        ...init,
+        ...c,
+        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto,
+        rating: c.rating || init.rating || 4.8,
+        reviewCount: c.reviewCount || init.reviewCount || 120
+      };
+    });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(list));
+    return;
+  }
+
   // Get clinic info
   if (pathname === '/api/clinic' && method === 'GET') {
     const ips = getLocalIpAddresses();
@@ -247,8 +551,19 @@ const requestHandler = async (req, res) => {
     return;
   }
 
-  // Get current queue
+  // Get current queue (with optional phone lookup)
   if (pathname === '/api/queue' && method === 'GET') {
+    const phone = parsedUrl.searchParams.get('phone');
+    if (phone) {
+      const clean = phone.replace(/[^0-9]/g, '');
+      const list = (appData.queue || []).filter(p => {
+        const pPhone = (p.phone || '').replace(/[^0-9]/g, '');
+        return pPhone && (pPhone.endsWith(clean) || clean.endsWith(pPhone));
+      });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(list));
+      return;
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(appData.queue));
     return;
@@ -368,6 +683,24 @@ function getISTDateString(d = new Date()) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
     }
+    return;
+  }
+
+  // Get bookings (supports phone search)
+  if (pathname === '/api/bookings' && method === 'GET') {
+    const phone = parsedUrl.searchParams.get('phone');
+    if (phone) {
+      const clean = phone.replace(/[^0-9]/g, '');
+      const list = (appData.queue || []).filter(p => {
+        const pPhone = (p.phone || '').replace(/[^0-9]/g, '');
+        return pPhone && (pPhone.endsWith(clean) || clean.endsWith(pPhone));
+      });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(list));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(appData.queue));
     return;
   }
 

@@ -58,9 +58,17 @@ module.exports = async (req, res) => {
     return res.status(200).json({ status: 'healthy', uptime: process.uptime() });
   }
 
+  // /api/clinics
+  if (pathname === '/api/clinics' && method === 'GET') {
+    return res.status(200).json(store.getClinics());
+  }
+
   // /api/clinic
   if (pathname === '/api/clinic') {
     if (method === 'GET') {
+      if (url.searchParams.get('list') === '1' || url.searchParams.get('action') === 'list') {
+        return res.status(200).json(store.getClinics());
+      }
       const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
       const targetClinic = store.getClinic(clinicId);
       return res.status(200).json({
@@ -82,7 +90,8 @@ module.exports = async (req, res) => {
   // /api/queue
   if (pathname === '/api/queue') {
     if (method === 'GET') {
-      return res.status(200).json(store.getQueue());
+      const phone = url.searchParams.get('phone');
+      return res.status(200).json(store.getQueue(phone));
     }
     if (method === 'PUT') {
       const body = await parseReqBody(req);

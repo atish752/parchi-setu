@@ -1242,6 +1242,48 @@
           </div>
         </div>
 
+        <!-- Doctor Profile Photo Settings Card -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-camera text-[#128C7E]"></i>
+              <span>Doctor Profile Photo (फ़ोटो / अवतार)</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Yeh photo patient discovery card aur online token booking screen par dikhai degi.</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <div class="w-16 h-16 rounded-full border-2 border-emerald-500 overflow-hidden bg-white shadow-inner flex items-center justify-center shrink-0">
+              <img id="profileDoctorPhotoPreview" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80" alt="Doctor" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'" />
+            </div>
+            <div class="flex-1 w-full space-y-2">
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  id="profileDoctorPhotoUrl" 
+                  placeholder="Doctor Photo Image URL (https://...)" 
+                  oninput="handleDoctorPhotoUrlChange(this.value, 'profile')"
+                  class="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                />
+                <label class="btn-tactile inline-flex items-center gap-1.5 px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl cursor-pointer transition shrink-0">
+                  <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline">Upload</span>
+                  <input type="file" id="profileDoctorPhotoFile" accept="image/*" class="hidden" onchange="handleDoctorPhotoUpload(event, 'profile')" />
+                </label>
+              </div>
+              <p class="text-[11px] text-slate-500">Supports JPG, PNG, WebP or direct image link</p>
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            onclick="saveDoctorPhotoSetting()" 
+            class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
+          >
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Save Doctor Photo / फ़ोटो सुरक्षित करें</span>
+          </button>
+        </div>
+
         <!-- Consultation & Follow-Up Fees Configuration Card -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
           <div>
@@ -1432,11 +1474,240 @@
         </button>
       </div>
 
-      <!-- Patient Mobile App Card Container -->
-      <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+      <!-- SECTION 2A: ZOMATO / SWIGGY STYLE PATIENT DISCOVERY HOME SCREEN -->
+      <div id="patientDiscoverySection" class="space-y-3.5">
         
-        <!-- Clinic Verified Header -->
-        <div class="bg-[#075E54] text-white p-5">
+        <!-- Discovery Header Card -->
+        <div class="bg-gradient-to-r from-[#075E54] via-[#128C7E] to-[#075E54] rounded-3xl p-4 sm:p-5 text-white shadow-xl space-y-3 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-11 h-11 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md flex-shrink-0">
+                <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-base sm:text-lg font-black tracking-tight leading-tight">ParchiSetu</span>
+                  <span class="bg-[#25D366] text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">Live</span>
+                </div>
+                <p class="text-[10px] text-emerald-200 font-semibold" data-i18n="discoveryTagline">Online OPD & Live Token App</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-1.5">
+              <button 
+                type="button" 
+                onclick="scrollToPhoneLookup()" 
+                id="btnNavMeraToken"
+                class="btn-tactile px-2.5 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs shadow-sm flex items-center gap-1 transition"
+                title="Mera Token Status Check Karein"
+              >
+                <i class="fa-solid fa-ticket"></i>
+                <span data-i18n="navMeraToken">Mera Token</span>
+              </button>
+              <button 
+                type="button" 
+                onclick="openClinicAuthModal()" 
+                class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition flex items-center justify-center"
+                title="Clinic Staff / Doctor Login"
+              >
+                <i class="fa-solid fa-user-doctor"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Heading & Search Bar -->
+          <div class="pt-1">
+            <h2 class="text-xl sm:text-2xl font-black text-white leading-tight" data-i18n="discoveryTitle">
+              Find & Book Doctors in Your City
+            </h2>
+            <p class="text-xs text-emerald-100 font-medium mt-0.5" data-i18n="discoverySub">
+              Select city • Check live cabin token • Zero waiting
+            </p>
+
+            <!-- Search Box -->
+            <div class="relative mt-3">
+              <input 
+                type="text" 
+                id="doctorSearchInput" 
+                oninput="onDoctorSearchInput(this.value)" 
+                placeholder="Search doctor, clinic or specialty..." 
+                data-i18n-placeholder="searchDoctorPlaceholder"
+                class="w-full pl-9 pr-8 py-2.5 bg-white text-slate-900 border-2 border-emerald-400 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#25D366] shadow-sm placeholder:text-slate-400" 
+              />
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <button 
+                type="button" 
+                id="btnClearDoctorSearch" 
+                onclick="clearDoctorSearch()" 
+                class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-black"
+              >✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ZERO-LOGIN LIVE TOKEN PASS LOOKUP CARD (Accessible & Prominent) -->
+        <div id="phoneLookupSectionCard" class="bg-gradient-to-br from-amber-50 to-emerald-50/70 rounded-2xl p-3.5 border-2 border-amber-300 shadow-sm space-y-2">
+          <div class="flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 font-black flex items-center justify-center text-base shadow-xs flex-shrink-0">
+              🎫
+            </span>
+            <div class="flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-black text-amber-950" data-i18n="checkTokenCardTitle">
+                  Mera Token Status / Check Token by Phone
+                </span>
+                <span class="bg-[#075E54] text-white text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
+                  Zero Login
+                </span>
+              </div>
+              <p class="text-[11px] text-amber-900 font-medium mt-0.5 leading-snug" data-i18n="checkTokenCardSub">
+                No password or OTP needed. Just enter your 10-digit mobile number.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-0.5">
+            <div class="relative flex-1">
+              <input 
+                type="tel" 
+                id="lookupPhoneNumberInput" 
+                maxlength="10" 
+                placeholder="Enter 10-digit mobile number" 
+                data-i18n-placeholder="phoneInputPlaceholder"
+                class="w-full pl-8 pr-3 py-2.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:outline-none focus:border-[#128C7E] shadow-2xs"
+                onkeydown="if(event.key==='Enter') executePhoneTokenLookup();"
+              />
+              <i class="fa-solid fa-phone absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            </div>
+            <button 
+              type="button" 
+              onclick="executePhoneTokenLookup()" 
+              id="btnExecutePhoneLookup"
+              class="btn-tactile px-3.5 py-2.5 bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs rounded-xl shadow-xs flex items-center gap-1.5 whitespace-nowrap transition"
+            >
+              <span data-i18n="checkTokenBtn">Check Token ➔</span>
+            </button>
+          </div>
+          <div id="phoneLookupAlertBox" class="hidden p-2.5 rounded-xl text-xs font-bold text-center"></div>
+        </div>
+
+        <!-- Active Booked Token Banner if returning user has a pass today -->
+        <div id="discoveryActivePassBanner" class="hidden p-3 bg-emerald-100/90 border-2 border-[#25D366] rounded-2xl text-xs font-bold text-[#075E54] flex items-center justify-between shadow-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-[#25D366] text-slate-950 font-black flex items-center justify-center text-xs">#</span>
+            <div>
+              <span>Aapka Active Token: <strong id="discoveryActiveTokenText" class="font-black text-slate-900">#1</strong></span>
+              <span id="discoveryActiveDocText" class="text-[10px] text-emerald-800 block font-semibold">Dr. Rajesh Sharma</span>
+            </div>
+          </div>
+          <button type="button" onclick="showBookedTokenPass()" class="px-2.5 py-1 bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black rounded-xl transition shadow-2xs">
+            Pass Kholein ➔
+          </button>
+        </div>
+
+        <!-- City Selector (Horizontal Chips) -->
+        <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-black text-slate-700 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-city text-[#128C7E]"></i>
+              <span data-i18n="citySelectorLabel">Choose Your City / शहर</span>
+            </span>
+            <span id="activeCityBadge" class="text-[10px] font-extrabold text-[#075E54] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              All Cities
+            </span>
+          </div>
+          <div id="cityChipsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar pt-0.5">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Specialty Filter (1-Tap Horizontal Chips) -->
+        <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-black text-slate-700 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-stethoscope text-[#128C7E]"></i>
+              <span data-i18n="specialtyFilterTitle">Doctor Specialty / विशेषज्ञता</span>
+            </span>
+            <span id="activeSpecialtyBadge" class="text-[10px] font-bold text-slate-500">
+              All Doctors
+            </span>
+          </div>
+          <div id="specialtyChipsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Doctor Discovery Cards Feed -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center gap-1.5">
+              <h3 id="discoveryFeedTitle" class="text-sm font-black text-slate-900" data-i18n="availableDoctorsTitle">
+                Available Doctors
+              </h3>
+              <span id="discoveryDoctorCountBadge" class="text-[10px] font-extrabold text-[#075E54] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                9 Doctors
+              </span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-semibold" data-i18n="sortedByRating">
+              ⭐ Best Rated First
+            </span>
+          </div>
+
+          <!-- Doctor Cards Container -->
+          <div id="doctorCardsListContainer" class="space-y-2.5">
+            <!-- Rendered by renderDoctorDiscoveryFeed() -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="doctorDiscoveryEmptyState" class="hidden p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-2">
+            <div class="text-3xl">🔍</div>
+            <h4 class="font-black text-slate-800 text-sm" data-i18n="noDoctorsFoundTitle">Koi Doctor Nahi Mila</h4>
+            <p class="text-xs text-slate-500" data-i18n="noDoctorsFoundSub">Is city ya category mein koi doctor nahi mila. Kripya dusra shahar ya specialty chunein.</p>
+            <button type="button" onclick="resetDiscoveryFilters()" class="text-xs font-black text-[#075E54] underline mt-1" data-i18n="resetFiltersBtn">Reset All Filters (Show All Doctors)</button>
+          </div>
+        </div>
+
+        <!-- Footer Clinic Staff Discreet Link on Discovery Screen -->
+        <div class="p-3 text-center border-t border-slate-200 bg-white/50 rounded-2xl">
+          <button 
+            type="button" 
+            onclick="openClinicAuthModal()" 
+            class="text-[11px] font-semibold text-slate-500 hover:text-[#075E54] hover:underline"
+          >
+            🏥 Clinic Staff / Compounder Desk Login ➔
+          </button>
+        </div>
+
+      </div>
+
+      <!-- SECTION 2B: SPECIFIC CLINIC DIRECT BOOKING SECTION -->
+      <div id="patientDirectClinicSection" class="hidden space-y-3">
+        
+        <!-- Top Back Bar to Return to Discovery -->
+        <div class="flex items-center justify-between px-1">
+          <button 
+            type="button" 
+            onclick="showPatientDiscoverySection()" 
+            class="btn-tactile inline-flex items-center gap-1.5 text-xs font-black text-[#075E54] bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3 py-1.5 rounded-xl shadow-xs transition"
+          >
+            <i class="fa-solid fa-arrow-left"></i>
+            <span data-i18n="backToDoctors">← Browse All Doctors / शहर के अन्य डॉक्टर</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="scrollToPhoneLookup()" 
+            class="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline flex items-center gap-1"
+          >
+            <i class="fa-solid fa-ticket"></i>
+            <span data-i18n="navMeraToken">Mera Token</span>
+          </button>
+        </div>
+
+        <!-- Patient Mobile App Card Container -->
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+          
+          <!-- Clinic Verified Header -->
+          <div class="bg-[#075E54] text-white p-5">
           <div class="flex items-start gap-3.5">
             <div class="w-14 h-14 rounded-2xl bg-white text-[#075E54] flex items-center justify-center font-black text-2xl shadow-md flex-shrink-0 overflow-hidden p-1">
               <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
@@ -1928,6 +2199,142 @@
           </button>
         </div>
 
+        </div>
+      </div>
+
+      <!-- DETAILED DOCTOR PROFILE POP-UP MODAL -->
+      <div id="doctorProfileDetailModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this)closeDoctorProfileModal();">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+          
+          <!-- Modal Header with Doctor Hero -->
+          <div class="bg-gradient-to-r from-[#075E54] to-[#128C7E] text-white p-4 sm:p-5 relative flex-shrink-0">
+            <button type="button" onclick="closeDoctorProfileModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-black text-sm transition">
+              ✕
+            </button>
+            
+            <div class="flex items-start gap-3.5 pr-8">
+              <div class="relative w-16 h-16 rounded-2xl border-2 border-white/80 overflow-hidden shadow-md bg-white flex-shrink-0">
+                <img id="detailDocPhoto" src="/logo.svg" alt="Doctor" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/logo.svg';" />
+                <span class="absolute bottom-0 right-0 bg-[#25D366] text-slate-950 text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white font-black">✓</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span id="detailDocSpecialtyBadge" class="bg-white/20 text-emerald-100 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
+                    General Physician
+                  </span>
+                  <span id="detailDocExpBadge" class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">
+                    14 Yrs Exp
+                  </span>
+                </div>
+                <h3 id="detailDocName" class="text-lg font-black text-white mt-1">Dr. Rajesh Sharma</h3>
+                <p id="detailDocDegree" class="text-xs text-emerald-100 font-medium">MBBS, MD (General Physician)</p>
+                <p id="detailDocRegNo" class="text-[10px] text-emerald-200/90 font-mono mt-0.5">Reg. No: MCI-48291</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Scrollable Content -->
+          <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1 text-slate-800 text-xs">
+            
+            <!-- Rating & Experience Strip -->
+            <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+              <div>
+                <span class="text-[10px] text-slate-500 font-bold block uppercase" data-i18n="ratingLabel">Rating</span>
+                <span id="detailDocRating" class="text-sm font-black text-amber-600">⭐ 4.9 / 5.0</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-500 font-bold block uppercase" data-i18n="patientsLabel">Mareez</span>
+                <span id="detailDocPatients" class="text-sm font-black text-[#075E54]">148+ Seen</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-500 font-bold block uppercase" data-i18n="consultationFeeLabel">OPD Fee</span>
+                <span id="detailDocFee" class="text-sm font-black text-emerald-700">₹300</span>
+              </div>
+            </div>
+
+            <!-- Clinic Info & Google Maps -->
+            <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-1.5 shadow-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black text-[#075E54] uppercase flex items-center gap-1.5">
+                  <i class="fa-solid fa-hospital text-[#128C7E]"></i>
+                  <span id="detailClinicName">Sanjeevani Family Clinic</span>
+                </span>
+                <span id="detailClinicCity" class="text-[10px] font-bold text-slate-500">Patna, Bihar</span>
+              </div>
+              <p id="detailClinicAddress" class="text-xs text-slate-600 font-medium">Near Main Market Chowk, Station Road</p>
+              <div class="pt-1 flex items-center gap-2">
+                <a id="detailMapLink" href="https://maps.google.com" target="_blank" class="inline-flex items-center gap-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-2.5 py-1 rounded-xl transition">
+                  <i class="fa-solid fa-location-arrow text-[#075E54]"></i>
+                  <span data-i18n="googleMapsRasta">Google Maps Par Rasta Dekhein</span>
+                </a>
+                <a id="detailCallLink" href="tel:9835012345" class="inline-flex items-center gap-1 text-[11px] bg-emerald-50 hover:bg-emerald-100 text-[#075E54] font-bold px-2.5 py-1 rounded-xl border border-emerald-200 transition">
+                  <i class="fa-solid fa-phone"></i>
+                  <span data-i18n="callClinicBtn">Call Clinic</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Live Status Card in Modal -->
+            <div id="detailLiveStatusCard" class="p-3 rounded-2xl border text-xs font-bold space-y-1">
+              <div class="flex items-center justify-between">
+                <span id="detailLiveStatusHeader" class="text-[10px] font-black uppercase flex items-center gap-1.5">
+                  <span id="detailLiveDot" class="w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse"></span>
+                  <span id="detailLiveStatusTitle">🟢 Cabin Chalu Hai</span>
+                </span>
+                <span id="detailWaitingCount" class="text-xs font-black text-[#128C7E]">2 Mareez Line Mein</span>
+              </div>
+              <p id="detailLiveStatusSub" class="text-[11px] text-slate-600">Current Token: #12 • Doctor Sahab cabin mein hain</p>
+            </div>
+
+            <!-- Visiting Hours & Shifts -->
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
+              <span class="text-[11px] font-black text-slate-700 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-clock text-[#128C7E]"></i>
+                <span data-i18n="visitingHoursTitle">OPD Samay (Visiting Hours)</span>
+              </span>
+              <div class="grid grid-cols-2 gap-2 text-xs font-bold text-slate-700 pt-0.5">
+                <div class="p-2 bg-white rounded-xl border border-slate-200">
+                  <span class="text-[10px] text-amber-600 font-black block uppercase">☀️ Subah (Morning)</span>
+                  <span id="detailMorningShift">10:00 AM - 02:00 PM</span>
+                </div>
+                <div class="p-2 bg-white rounded-xl border border-slate-200">
+                  <span class="text-[10px] text-indigo-600 font-black block uppercase">🌙 Shaam (Evening)</span>
+                  <span id="detailEveningShift">05:00 PM - 09:00 PM</span>
+                </div>
+              </div>
+              <p id="detailOpenDays" class="text-[10px] text-slate-500 font-semibold mt-1">Open: Mon, Tue, Wed, Thu, Fri, Sat</p>
+            </div>
+
+            <!-- Common Reasons / Takleef Chips -->
+            <div class="space-y-1.5">
+              <span class="text-[11px] font-black text-slate-700 uppercase" data-i18n="servicesTreatedTitle">Services & Common Treatments:</span>
+              <div id="detailReasonsContainer" class="flex flex-wrap gap-1"></div>
+            </div>
+          </div>
+
+          <!-- Modal Fixed Action Footer -->
+          <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex items-center gap-2 flex-shrink-0">
+            <button 
+              type="button" 
+              id="btnDetailBookParchi" 
+              onclick="bookFromDoctorDetailModal()" 
+              class="btn-tactile flex-1 py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-sm shadow-md flex items-center justify-center gap-2 transition"
+            >
+              <i class="fa-solid fa-ticket text-base"></i>
+              <span data-i18n="bookParchiBtn">Book Parchi / टोकन लें ➔</span>
+            </button>
+            <button 
+              type="button" 
+              onclick="callFromDoctorDetailModal()" 
+              class="btn-tactile py-3 px-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 border-2 border-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition"
+              title="Call Doctor Clinic"
+            >
+              <i class="fa-solid fa-phone text-[#075E54]"></i>
+              <span data-i18n="callBtnText">Call</span>
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
 
@@ -2941,6 +3348,35 @@
             </div>
           </div>
 
+          <!-- Doctor Profile Photo (Upload / URL) -->
+          <div class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-3.5 space-y-2">
+            <label class="block text-xs font-extrabold text-slate-800 uppercase flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-camera text-[#128C7E]"></i> Doctor Profile Photo (डॉक्टर फ़ोटो / अवतार)</span>
+              <span class="text-[10px] text-slate-400 font-normal">Optional</span>
+            </label>
+            <div class="flex items-center gap-3">
+              <div class="w-14 h-14 rounded-full border-2 border-emerald-500 overflow-hidden bg-white flex items-center justify-center shrink-0 shadow-inner">
+                <img id="onboardDoctorPhotoPreview" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80" alt="Doctor" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'" />
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <input 
+                  type="text" 
+                  id="onboardDoctorPhotoUrl" 
+                  placeholder="Paste Photo URL (e.g. https://...)" 
+                  oninput="handleDoctorPhotoUrlChange(this.value, 'onboard')"
+                  class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                />
+                <div class="flex items-center gap-2">
+                  <label class="btn-tactile inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-lg cursor-pointer transition">
+                    <i class="fa-solid fa-upload text-xs"></i> <span>Upload Photo File</span>
+                    <input type="file" id="onboardDoctorPhotoFile" accept="image/*" class="hidden" onchange="handleDoctorPhotoUpload(event, 'onboard')" />
+                  </label>
+                  <span class="text-[10px] text-slate-400">JPG, PNG, WebP</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Fee Structure Grid -->
           <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200 space-y-3">
             <h4 class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
@@ -3619,6 +4055,9 @@
       doctorDegree: 'MBBS, MD (General Physician)',
       doctorRegNo: 'MCI-48291',
       experienceYears: 14,
+      rating: 4.9,
+      reviewCount: 148,
+      doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
       doctors: [
         {
           id: 'doc_1',
@@ -3691,6 +4130,296 @@
 
     // Calendar Tab Selected Date
     let selectedCalendarDateStr = getLocalDateString();
+
+    // Zomato/Swiggy-style Patient Discovery Directory Seed
+    const DEFAULT_CLINICS_DIRECTORY = [
+      {
+        id: 'clinic_sanjeevani_01',
+        name: 'Sanjeevani Family Clinic',
+        tagline: 'General Physician & Family Healthcare',
+        category: 'General Medicine',
+        specialty: 'General Physician',
+        address: 'Near Main Market Chowk, Station Road',
+        city: 'Patna, Bihar',
+        phone: '9835012345',
+        whatsapp: '9835012345',
+        upiId: 'sanjeevaniclinic@upi',
+        doctorName: 'Dr. Rajesh Sharma',
+        doctorDegree: 'MBBS, MD (General Physician)',
+        doctorRegNo: 'MCI-48291',
+        experienceYears: 14,
+        rating: 4.9,
+        reviewCount: 148,
+        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+        visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up', '📋 Report Check', '🤕 Dard / Injury'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+          evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Rajesh Sharma', degree: 'MBBS, MD (General Physician)', specialty: 'General Physician', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_patna_central_99',
+        name: 'Patna Central Hospital Clinic',
+        tagline: 'Complete Heart & Diabetes Care',
+        category: 'Cardiology',
+        specialty: 'Heart / Cardiology',
+        address: 'Kankarbagh Main Road, Opposite Pillar 42',
+        city: 'Patna, Bihar',
+        phone: '9800011122',
+        whatsapp: '9835123456',
+        upiId: 'aarogyaclinic@upi',
+        doctorName: 'Dr. Alok Nath',
+        doctorDegree: 'MBBS, MD (Medicine), PG Diab.',
+        doctorRegNo: 'BRMC-52194',
+        experienceYears: 16,
+        rating: 4.8,
+        reviewCount: 210,
+        doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
+        visitingReasons: ['❤️ Seene Mein Dard', '🩸 High BP / Sugar', '💨 Saans Phoolna', '🔄 Heart Checkup', '📋 ECG / Echo Check'],
+        visitingHours: {
+          morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
+          evening: { enabled: true, start: '05:30 PM', end: '09:30 PM', slotDurationMins: 15, maxTokens: 30 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Alok Nath', degree: 'MBBS, MD (Medicine)', specialty: 'Heart / Cardiology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_delhi_bone_02',
+        name: 'Apex Orthopedic & Joint Care',
+        tagline: 'Bone, Joint & Spine Specialist',
+        category: 'Orthopedics',
+        specialty: 'Bone / Orthopedic',
+        address: 'Ring Road, Lajpat Nagar IV',
+        city: 'Delhi',
+        phone: '9811098765',
+        whatsapp: '9811098765',
+        upiId: 'apexortho@upi',
+        doctorName: 'Dr. Arvind Kumar',
+        doctorDegree: 'MS (Ortho), DNB (Orthopedics)',
+        doctorRegNo: 'DMC-39182',
+        experienceYears: 18,
+        rating: 4.9,
+        reviewCount: 320,
+        doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 500, followup: 300, emergency: 700, report: 0 },
+        visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard / Sciatica', '🔄 X-Ray Check'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+          evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 12
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Arvind Kumar', degree: 'MS (Ortho)', specialty: 'Bone / Orthopedic', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_lucknow_derma_03',
+        name: 'Kaya Skin, Hair & Laser Clinic',
+        tagline: 'Advanced Dermatology & Cosmetic Care',
+        category: 'Dermatology',
+        specialty: 'Skin / Dermatology',
+        address: 'Hazratganj Market, Near Cathedral',
+        city: 'Lucknow',
+        phone: '9415012345',
+        whatsapp: '9415012345',
+        upiId: 'kayaskin@upi',
+        doctorName: 'Dr. Sunita Mehra',
+        doctorDegree: 'MBBS, MD (Dermatology & VD)',
+        doctorRegNo: 'UPMC-28491',
+        experienceYears: 11,
+        rating: 4.7,
+        reviewCount: 95,
+        doctorPhoto: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
+        visitingReasons: ['🌸 Daad / Khujli', '🧴 Muhase / Acne', '🔴 Allergy / Rash', '💇 Baal Jhadna'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:30 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
+          evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:30 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Sunita Mehra', degree: 'MBBS, MD (Derma)', specialty: 'Skin / Dermatology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_varanasi_child_04',
+        name: 'Shishu Bal Chikitsalaya',
+        tagline: 'Newborn, Infant & Child Specialist',
+        category: 'Pediatrics',
+        specialty: 'Child / Pediatric',
+        address: 'Godowlia Chowk, Near Dashashwamedh',
+        city: 'Varanasi',
+        phone: '9450098765',
+        whatsapp: '9450098765',
+        upiId: 'shishubal@upi',
+        doctorName: 'Dr. R. K. Mishra',
+        doctorDegree: 'MBBS, DCH, MD (Pediatrics)',
+        doctorRegNo: 'UPMC-31849',
+        experienceYears: 15,
+        rating: 4.9,
+        reviewCount: 180,
+        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
+        visitingReasons: ['👶 Bacche Ka Bukhar', '🤧 Sardi / Khansi', '🤢 Vomiting / Dast', '💉 Vaccination / Teeka'],
+        visitingHours: {
+          morning: { enabled: true, start: '09:00 AM', end: '01:00 PM', slotDurationMins: 15, maxTokens: 30 },
+          evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 30 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. R. K. Mishra', degree: 'MBBS, MD (Pediatrics)', specialty: 'Child / Pediatric', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_mumbai_gynae_05',
+        name: 'Matrutva Women & Maternity Clinic',
+        tagline: 'Complete Women Health & Maternity Care',
+        category: 'Gynecology',
+        specialty: 'Gynecologist',
+        address: 'SV Road, Andheri West',
+        city: 'Mumbai',
+        phone: '9820012345',
+        whatsapp: '9820012345',
+        upiId: 'matrutvacare@upi',
+        doctorName: 'Dr. Priya Kishore',
+        doctorDegree: 'MBBS, MS, DGO (Gynecologist)',
+        doctorRegNo: 'MMC-49102',
+        experienceYears: 13,
+        rating: 4.9,
+        reviewCount: 260,
+        doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 500, followup: 300, emergency: 800, report: 0 },
+        visitingReasons: ['🌸 Mahila Swasthya Checkup', '🤰 Pregnancy / Delivery', '🔄 Ultrasound Check', '📋 Hormone / PCOD'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:00 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 20 },
+          evening: { enabled: true, start: '05:30 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 25 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 12
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Priya Kishore', degree: 'MBBS, MS (Gynae)', specialty: 'Gynecologist', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_jaipur_dental_06',
+        name: 'Muskan Dental & Implant Center',
+        tagline: 'Painless Root Canal & Dental Implants',
+        category: 'Dental',
+        specialty: 'Dental',
+        address: 'MI Road, Near Panch Batti',
+        city: 'Jaipur',
+        phone: '9829012345',
+        whatsapp: '9829012345',
+        upiId: 'muskandental@upi',
+        doctorName: 'Dr. Amit Patel',
+        doctorDegree: 'BDS, MDS (Dental Surgeon)',
+        doctorRegNo: 'RDC-18293',
+        experienceYears: 10,
+        rating: 4.8,
+        reviewCount: 112,
+        doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+        visitingReasons: ['🦷 Daant Dard / Cavity', '✨ Daant Safai / Scaling', '🦷 RCT / Root Canal', '🔄 Braces / Alignment'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
+          evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 20 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 15
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Amit Patel', degree: 'BDS, MDS', specialty: 'Dental', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_ranchi_general_07',
+        name: 'Aarogya Family Clinic',
+        tagline: 'General Medicine & Diabetes Care',
+        category: 'General Medicine',
+        specialty: 'General Physician',
+        address: 'Main Road, Near Overbridge',
+        city: 'Ranchi',
+        phone: '9431098765',
+        whatsapp: '9431098765',
+        upiId: 'aarogyaranchi@upi',
+        doctorName: 'Dr. Anand Kishore',
+        doctorDegree: 'MBBS, MD (Medicine)',
+        doctorRegNo: 'JMC-19284',
+        experienceYears: 16,
+        rating: 4.9,
+        reviewCount: 175,
+        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
+        visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up'],
+        visitingHours: {
+          morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
+          evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Anand Kishore', degree: 'MBBS, MD', specialty: 'General Physician', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
+        ]
+      },
+      {
+        id: 'clinic_muzaffarpur_bone_08',
+        name: 'Tirhut Bone & Trauma Clinic',
+        tagline: 'Fracture, Arthritis & Trauma Care',
+        category: 'Orthopedics',
+        specialty: 'Bone / Orthopedic',
+        address: 'Juran Chhapra Road No. 2',
+        city: 'Muzaffarpur',
+        phone: '9430012345',
+        whatsapp: '9430012345',
+        upiId: 'tirhutbone@upi',
+        doctorName: 'Dr. Sanjay Gupta',
+        doctorDegree: 'MS (Orthopedics)',
+        doctorRegNo: 'BRMC-40192',
+        experienceYears: 12,
+        rating: 4.8,
+        reviewCount: 88,
+        doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
+        visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard', '🔄 Follow-up'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+          evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Sanjay Gupta', degree: 'MS (Orthopedics)', specialty: 'Bone / Orthopedic', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
+        ]
+      }
+    ];
+
+    let clinicsDirectory = [...DEFAULT_CLINICS_DIRECTORY];
+    let selectedDiscoveryCity = 'ALL';
+    let selectedDiscoverySpecialty = 'ALL';
+    let doctorSearchQuery = '';
+    let activeDetailDoctor = null;
+    let activeDetailClinic = null;
 
     // Currently Open Patient in Parchi Drawer
     let activeDrawerPatientId = null;
@@ -3949,7 +4678,39 @@
         btnPrevStep: '⬅ Back (Change Slot)',
         screenshotTitle: '📸 Please Take a SCREENSHOT of Your Token Number!',
         screenshotSub: 'So you don\'t forget and can easily present it at the clinic counter.',
-        reassuranceNote: 'Doctor or compounder calls are not needed! Keep this link open, live status updates in real-time.'
+        reassuranceNote: 'Doctor or compounder calls are not needed! Keep this link open, live status updates in real-time.',
+        discoveryTitle: 'Find & Book Doctors in Your City',
+        discoverySub: 'Select city • Check live cabin token • Zero waiting',
+        discoveryTagline: 'Online OPD & Live Token App',
+        navMeraToken: 'Mera Token',
+        citySelectorLabel: 'Choose Your City',
+        specialtyFilterTitle: 'Doctor Specialty',
+        availableDoctorsTitle: 'Available Doctors in',
+        checkTokenCardTitle: 'Mera Token Status / Check Token by Phone',
+        checkTokenCardSub: 'No password or OTP needed. Just enter your 10-digit mobile number.',
+        checkTokenBtn: 'Check Token ➔',
+        phoneInputPlaceholder: 'Enter 10-digit mobile number',
+        searchDoctorPlaceholder: 'Search doctor, clinic or specialty...',
+        allCities: 'All Cities',
+        allSpecialties: 'All Doctors',
+        bookParchiBtn: 'Book Parchi / Get Token ➔',
+        callClinicBtn: 'Call Clinic',
+        callBtnText: 'Call',
+        experienceSuffix: 'yrs exp',
+        patientsTreated: 'Mareez',
+        ratingLabel: 'Rating',
+        patientsLabel: 'Mareez Seen',
+        consultationFeeLabel: 'OPD Fee',
+        visitingHoursTitle: 'OPD Timings',
+        servicesTreatedTitle: 'Services & Common Treatments:',
+        googleMapsRasta: 'Google Maps Directions',
+        backToDoctors: '← Browse All Doctors',
+        sortedByRating: '⭐ Best Rated First',
+        noDoctorsFoundTitle: 'No Doctors Found',
+        noDoctorsFoundSub: 'No doctors matched your selected city or specialty. Try selecting All Cities.',
+        resetFiltersBtn: 'Reset All Filters (Show All Doctors)',
+        noTokenFoundForPhone: 'No active token found for today with this number. Please book a new token.',
+        tokenFoundSuccess: 'Active Token Found!'
       },
       hinglish: {
         roleClinic: 'Compounder Desk',
@@ -4005,7 +4766,39 @@
         btnPrevStep: '⬅ Wapas (Slot Badlein)',
         screenshotTitle: '📸 Apne Token Number Ka SCREENSHOT Zaroor Le Lein!',
         screenshotSub: 'Taaki aap token number bhoolen nahi aur clinic counter par asaani se dikha sakein.',
-        reassuranceNote: 'Doctor sahab ya compounder ko baar-baar call karne ki zaroorat nahi hai! Bas is link ko khula rakhein ya refresh karein, live token badalta rahega.'
+        reassuranceNote: 'Doctor sahab ya compounder ko baar-baar call karne ki zaroorat nahi hai! Bas is link ko khula rakhein ya refresh karein, live token badalta rahega.',
+        discoveryTitle: 'Apne Shahar Ke Best Doctor Khojein',
+        discoverySub: 'Top-rated doctor dekhein aur bina lambi line ke live token paayein',
+        discoveryTagline: 'Online OPD & Live Token App',
+        navMeraToken: 'Mera Token',
+        citySelectorLabel: 'Apna Shahar Chunein (Select City)',
+        specialtyFilterTitle: 'Doctor Specialty / Kis Bimari Ke Liye?',
+        availableDoctorsTitle: 'Available Doctors in',
+        checkTokenCardTitle: 'Mera Token Status / Phone Se Token Dekhein',
+        checkTokenCardSub: 'Koi password ya OTP ki zaroorat nahi. Bas apna 10-digit mobile number dalein.',
+        checkTokenBtn: 'Token Dekhein ➔',
+        phoneInputPlaceholder: '10-Digit Mobile Number dalein',
+        searchDoctorPlaceholder: 'Doctor, clinic ya takleef search karein...',
+        allCities: 'Sabhi Shahar',
+        allSpecialties: 'Sabhi Doctor',
+        bookParchiBtn: 'Parchi Lein / Book Token ➔',
+        callClinicBtn: 'Clinic Ko Call Karein',
+        callBtnText: 'Call',
+        experienceSuffix: 'saal ka anubhav',
+        patientsTreated: 'Mareez',
+        ratingLabel: 'Rating',
+        patientsLabel: 'Mareez Dekhe',
+        consultationFeeLabel: 'OPD Fees',
+        visitingHoursTitle: 'OPD Samay (Visiting Hours)',
+        servicesTreatedTitle: 'Bimariyan aur Services:',
+        googleMapsRasta: 'Google Maps Par Rasta Dekhein',
+        backToDoctors: '← Shahar Ke Sabhi Doctor',
+        sortedByRating: '⭐ Best Rating Wale Doctor Pehle',
+        noDoctorsFoundTitle: 'Koi Doctor Nahi Mila',
+        noDoctorsFoundSub: 'Is shahar ya specialty mein koi doctor nahi mila. Kripya dusra shahar ya Sabhi Doctor chunein.',
+        resetFiltersBtn: 'Reset Filters (Sabhi Doctor Dekhein)',
+        noTokenFoundForPhone: 'Is mobile number par aaj ka koi active token nahi mila. Kripya naya token book karein.',
+        tokenFoundSuccess: 'Aapka Active Token Mil Gaya!'
       },
       hindi: {
         roleClinic: 'कम्पाउंडर डेस्क',
@@ -4061,7 +4854,39 @@
         btnPrevStep: '⬅ वापस (समय स्लॉट बदलें)',
         screenshotTitle: '📸 अपने टोकन नंबर का स्क्रीनशॉट अवश्य ले लें!',
         screenshotSub: 'ताकि आप क्लिनिक काउंटर पर टोकन नंबर आसानी से दिखा सकें और भूलें नहीं।',
-        reassuranceNote: 'डॉक्टर साहब या क्लिनिक को बार-बार फोन करने की आवश्यकता नहीं है! इस पेज को खुला रखें, यहाँ लाइव टोकन स्थिति अपने आप बदलती रहेगी।'
+        reassuranceNote: 'डॉक्टर साहब या क्लिनिक को बार-बार फोन करने की आवश्यकता नहीं है! इस पेज को खुला रखें, यहाँ लाइव टोकन स्थिति अपने आप बदलती रहेगी।',
+        discoveryTitle: 'अपने शहर के शीर्ष डॉक्टर खोजें व टोकन लें',
+        discoverySub: 'सर्वश्रेष्ठ डॉक्टर देखें और बिना लाइन में लगे तुरंत लाइव टोकन पाएं',
+        discoveryTagline: 'ऑनलाइन ओपीडी व लाइव टोकन ऐप',
+        navMeraToken: 'मेरा टोकन',
+        citySelectorLabel: 'अपना शहर चुनें (Select City)',
+        specialtyFilterTitle: 'डॉक्टर विशेषता / किस तकलीफ़ के लिए?',
+        availableDoctorsTitle: 'उपलब्ध डॉक्टर',
+        checkTokenCardTitle: 'मेरा टोकन स्टेटस / फ़ोन नंबर से टोकन देखें',
+        checkTokenCardSub: 'किसी पासवर्ड या ओटीपी की आवश्यकता नहीं। बस 10-अंकों का मोबाइल नंबर दर्ज करें।',
+        checkTokenBtn: 'टोकन देखें ➔',
+        phoneInputPlaceholder: '10-अंकों का मोबाइल नंबर दर्ज करें',
+        searchDoctorPlaceholder: 'डॉक्टर, क्लिनिक या तकलीफ़ खोजें...',
+        allCities: 'सभी शहर',
+        allSpecialties: 'सभी डॉक्टर',
+        bookParchiBtn: 'टोकन लें / पर्ची बुक करें ➔',
+        callClinicBtn: 'क्लिनिक को कॉल करें',
+        callBtnText: 'कॉल',
+        experienceSuffix: 'वर्ष का अनुभव',
+        patientsTreated: 'मरीज़',
+        ratingLabel: 'रेटिंग',
+        patientsLabel: 'देखे गए मरीज़',
+        consultationFeeLabel: 'परामर्श शुल्क',
+        visitingHoursTitle: 'ओपीडी समय (Visiting Hours)',
+        servicesTreatedTitle: 'इलाज व सेवाएं:',
+        googleMapsRasta: 'गूगल मैप्स पर रास्ता देखें',
+        backToDoctors: '← शहर के सभी डॉक्टर',
+        sortedByRating: '⭐ श्रेष्ठ रेटिंग वाले डॉक्टर पहले',
+        noDoctorsFoundTitle: 'कोई डॉक्टर नहीं मिला',
+        noDoctorsFoundSub: 'इस शहर या श्रेणी में कोई डॉक्टर नहीं मिला। कृपया दूसरा शहर चुनें।',
+        resetFiltersBtn: 'फ़िल्टर हटाएं (सभी डॉक्टर देखें)',
+        noTokenFoundForPhone: 'इस मोबाइल नंबर पर आज का कोई सक्रिय टोकन नहीं मिला। कृपया नया टोकन बुक करें।',
+        tokenFoundSuccess: 'सक्रिय टोकन मिल गया!'
       }
     };
 
@@ -4576,6 +5401,11 @@
       document.getElementById('onboardFeeFollowup').value = clinicProfile.fees ? clinicProfile.fees.followup : 200;
       document.getElementById('onboardFeeEmergency').value = clinicProfile.fees ? clinicProfile.fees.emergency : 500;
 
+      const onboardPhotoInput = document.getElementById('onboardDoctorPhotoUrl');
+      if (onboardPhotoInput) onboardPhotoInput.value = clinicProfile.doctorPhoto || '';
+      const onboardPhotoPrev = document.getElementById('onboardDoctorPhotoPreview');
+      if (onboardPhotoPrev) onboardPhotoPrev.src = clinicProfile.doctorPhoto || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80';
+
       // Populate additional doctors
       if (clinicProfile.doctors && clinicProfile.doctors.length > 1) {
         onboardAdditionalDoctors = clinicProfile.doctors.filter(d => !d.isMain).map(d => ({ ...d }));
@@ -4713,6 +5543,8 @@
           days.push(cb.value);
         });
 
+        const photoUrl = (document.getElementById('onboardDoctorPhotoUrl')?.value || '').trim() || clinicProfile.doctorPhoto || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80';
+
         const mainDoc = {
           id: 'doc_1',
           name: finalDocName,
@@ -4720,6 +5552,7 @@
           specialty: category,
           regNo: regNo,
           fee: normalFee,
+          photo: photoUrl,
           isMain: true
         };
 
@@ -4751,6 +5584,7 @@
           doctorDegree: degree,
           doctorRegNo: regNo,
           experienceYears: exp,
+          doctorPhoto: photoUrl,
           doctors: allDoctors,
           fees: {
             normal: normalFee,
@@ -6221,6 +7055,10 @@
         const key = el.getAttribute('data-i18n');
         if (dict && dict[key]) el.textContent = dict[key];
       });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict && dict[key]) el.placeholder = dict[key];
+      });
 
       refreshAllViews();
     }
@@ -6318,6 +7156,15 @@
       if (reasonsInput) {
         const rList = getVisitingReasons();
         reasonsInput.value = rList.join(', ');
+      }
+
+      const photoPreview = document.getElementById('profileDoctorPhotoPreview');
+      if (photoPreview) {
+        photoPreview.src = clinicProfile.doctorPhoto || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80';
+      }
+      const photoUrlInput = document.getElementById('profileDoctorPhotoUrl');
+      if (photoUrlInput) {
+        photoUrlInput.value = clinicProfile.doctorPhoto || '';
       }
 
       const linkInput = document.getElementById('profilePatientLinkInput');
@@ -10080,6 +10927,693 @@
     }
 
     // =========================================================================
+    // 13B. PATIENT DISCOVERY DIRECTORY, ZERO-LOGIN PHONE LOOKUP & DOCTOR PHOTO
+    // =========================================================================
+    const DISCOVERY_CITIES = [
+      { key: 'ALL', label: 'All Cities / सभी शहर' },
+      { key: 'Patna', label: 'Patna' },
+      { key: 'Delhi', label: 'Delhi' },
+      { key: 'Lucknow', label: 'Lucknow' },
+      { key: 'Varanasi', label: 'Varanasi' },
+      { key: 'Mumbai', label: 'Mumbai' },
+      { key: 'Jaipur', label: 'Jaipur' },
+      { key: 'Ranchi', label: 'Ranchi' },
+      { key: 'Muzaffarpur', label: 'Muzaffarpur' }
+    ];
+
+    const DISCOVERY_SPECIALTIES = [
+      { key: 'ALL', label: 'All Doctors', icon: 'fa-user-doctor' },
+      { key: 'General Physician', label: 'General Physician', icon: 'fa-stethoscope' },
+      { key: 'Heart / Cardiology', label: 'Heart / Cardiology', icon: 'fa-heart-pulse' },
+      { key: 'Bone / Orthopedic', label: 'Bone / Ortho', icon: 'fa-bone' },
+      { key: 'Skin / Dermatology', label: 'Skin / Derma', icon: 'fa-spa' },
+      { key: 'Child / Pediatric', label: 'Child / Pediatric', icon: 'fa-baby' },
+      { key: 'Dental', label: 'Dental', icon: 'fa-tooth' },
+      { key: 'Gynecologist', label: 'Gynecologist', icon: 'fa-venus' }
+    ];
+
+    async function loadClinicsDirectory() {
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          const res = await fetch('/api/clinics');
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              clinicsDirectory = data;
+            }
+          }
+        } catch (e) {
+          console.warn('Clinics directory fetch error:', e);
+        }
+      }
+      if (!clinicsDirectory || clinicsDirectory.length === 0) {
+        clinicsDirectory = [...DEFAULT_CLINICS_DIRECTORY];
+      }
+      renderCityChips();
+      renderSpecialtyChips();
+      renderDoctorDiscoveryFeed();
+    }
+
+    function renderCityChips() {
+      const container = document.getElementById('cityChipsContainer');
+      const badge = document.getElementById('activeCityBadge');
+      if (badge) {
+        badge.textContent = selectedDiscoveryCity === 'ALL' 
+          ? (currentLang === 'hindi' ? 'सभी शहर' : 'All Cities') 
+          : selectedDiscoveryCity;
+      }
+      if (!container) return;
+      container.innerHTML = DISCOVERY_CITIES.map(c => {
+        const active = selectedDiscoveryCity === c.key;
+        return `
+          <button 
+            type="button" 
+            onclick="setDiscoveryCity('${c.key}')" 
+            class="px-3 py-1.5 rounded-xl font-bold text-xs whitespace-nowrap transition flex-shrink-0 ${
+              active
+                ? 'bg-[#075E54] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-[#075E54] border border-slate-200'
+            }"
+          >
+            ${c.label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function setDiscoveryCity(city) {
+      selectedDiscoveryCity = city;
+      renderCityChips();
+      renderDoctorDiscoveryFeed();
+    }
+
+    function renderSpecialtyChips() {
+      const container = document.getElementById('specialtyChipsContainer');
+      const badge = document.getElementById('activeSpecialtyBadge');
+      if (badge) {
+        const item = DISCOVERY_SPECIALTIES.find(s => s.key === selectedDiscoverySpecialty);
+        badge.textContent = item ? item.label : selectedDiscoverySpecialty;
+      }
+      if (!container) return;
+      container.innerHTML = DISCOVERY_SPECIALTIES.map(s => {
+        const active = selectedDiscoverySpecialty === s.key;
+        return `
+          <button 
+            type="button" 
+            onclick="setDiscoverySpecialty('${s.key}')" 
+            class="px-3 py-1.5 rounded-xl font-bold text-xs whitespace-nowrap transition flex items-center gap-1.5 flex-shrink-0 ${
+              active
+                ? 'bg-[#128C7E] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-[#075E54] border border-slate-200'
+            }"
+          >
+            <i class="fa-solid ${s.icon} text-[11px]"></i>
+            <span>${s.label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function setDiscoverySpecialty(spec) {
+      selectedDiscoverySpecialty = spec;
+      renderSpecialtyChips();
+      renderDoctorDiscoveryFeed();
+    }
+
+    function onDoctorSearchInput(q) {
+      doctorSearchQuery = (q || '').trim();
+      const clearBtn = document.getElementById('btnClearDoctorSearch');
+      if (clearBtn) {
+        if (doctorSearchQuery) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderDoctorDiscoveryFeed();
+    }
+
+    function clearDoctorSearch() {
+      const input = document.getElementById('doctorSearchInput');
+      if (input) input.value = '';
+      doctorSearchQuery = '';
+      const clearBtn = document.getElementById('btnClearDoctorSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderDoctorDiscoveryFeed();
+    }
+
+    function resetDiscoveryFilters() {
+      selectedDiscoveryCity = 'ALL';
+      selectedDiscoverySpecialty = 'ALL';
+      clearDoctorSearch();
+      renderCityChips();
+      renderSpecialtyChips();
+      renderDoctorDiscoveryFeed();
+    }
+
+    function getClinicDiscoveryStatus(clinic) {
+      const now = new Date();
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const curDay = days[now.getDay()];
+      const daysOpen = (clinic.visitingHours && clinic.visitingHours.daysOpen) || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      if (!daysOpen.includes(curDay)) {
+        return {
+          isOpen: false,
+          pillClass: 'bg-rose-100 text-rose-800 border-rose-300',
+          text: currentLang === 'hindi' ? '🔴 आज बंद है' : (currentLang === 'hinglish' ? '🔴 Aaj Band Hai' : '🔴 Closed Today')
+        };
+      }
+
+      const morning = clinic.visitingHours?.morning || { enabled: true, start: '10:00 AM', end: '02:00 PM' };
+      const evening = clinic.visitingHours?.evening || { enabled: true, start: '05:00 PM', end: '09:00 PM' };
+
+      const curMinutes = now.getHours() * 60 + now.getMinutes();
+
+      function parseTime(tStr) {
+        if (!tStr) return 0;
+        const [time, mod] = tStr.trim().split(/\s+/);
+        let [h, m] = (time || '0:0').split(':').map(Number);
+        if (mod && mod.toUpperCase() === 'PM' && h < 12) h += 12;
+        if (mod && mod.toUpperCase() === 'AM' && h === 12) h = 0;
+        return h * 60 + (m || 0);
+      }
+
+      const mStart = parseTime(morning.start || '10:00 AM');
+      const mEnd = parseTime(morning.end || '02:00 PM');
+      const eStart = parseTime(evening.start || '05:00 PM');
+      const eEnd = parseTime(evening.end || '09:00 PM');
+
+      const isMorningOpen = morning.enabled && curMinutes >= mStart && curMinutes < mEnd;
+      const isEveningOpen = evening.enabled && curMinutes >= eStart && curMinutes < eEnd;
+
+      if (isMorningOpen || isEveningOpen) {
+        const inCabinToken = (clinic.id === clinicProfile.id && getCurrentCabinPatient()) ? getCurrentCabinPatient().token : (clinic.liveStatus?.isDoctorLate ? 8 : 12);
+        return {
+          isOpen: true,
+          pillClass: 'bg-emerald-100 text-[#075E54] border-emerald-300',
+          text: currentLang === 'hindi'
+            ? `🟢 केबिन चालू • टोकन #${inCabinToken}`
+            : (currentLang === 'hinglish' ? `🟢 Cabin Chalu • Token #${inCabinToken}` : `🟢 In Cabin • Token #${inCabinToken}`)
+        };
+      } else {
+        const nextTime = curMinutes < mStart ? morning.start : (evening.enabled && curMinutes < eStart ? evening.start : morning.start);
+        return {
+          isOpen: false,
+          pillClass: 'bg-amber-100 text-amber-900 border-amber-300',
+          text: currentLang === 'hindi'
+            ? `🔴 अभी बंद • ${nextTime} पर खुलेगा`
+            : (currentLang === 'hinglish' ? `🔴 Band Hai • ${nextTime} Par Khulega` : `🔴 Closed • Opens at ${nextTime}`)
+        };
+      }
+    }
+
+    function renderDoctorDiscoveryFeed() {
+      const container = document.getElementById('doctorCardsListContainer');
+      const emptyState = document.getElementById('doctorDiscoveryEmptyState');
+      const countBadge = document.getElementById('discoveryDoctorCountBadge');
+      if (!container) return;
+
+      const list = clinicsDirectory || DEFAULT_CLINICS_DIRECTORY;
+      const q = (doctorSearchQuery || '').toLowerCase();
+
+      const filtered = list.filter(clinic => {
+        if (selectedDiscoveryCity !== 'ALL') {
+          const cityLower = (clinic.city || '').toLowerCase();
+          const targetLower = selectedDiscoveryCity.toLowerCase();
+          if (!cityLower.includes(targetLower)) return false;
+        }
+
+        if (selectedDiscoverySpecialty !== 'ALL') {
+          const spec = (clinic.specialty || clinic.category || '').toLowerCase();
+          const docSpec = (clinic.doctors && clinic.doctors[0] ? (clinic.doctors[0].specialty || '') : '').toLowerCase();
+          const targetSpec = selectedDiscoverySpecialty.toLowerCase();
+          const match = spec.includes(targetSpec) || docSpec.includes(targetSpec) || 
+            (selectedDiscoverySpecialty === 'General Physician' && (spec.includes('general') || spec.includes('physician'))) ||
+            (selectedDiscoverySpecialty === 'Heart / Cardiology' && (spec.includes('cardio') || spec.includes('heart'))) ||
+            (selectedDiscoverySpecialty === 'Bone / Orthopedic' && (spec.includes('ortho') || spec.includes('bone'))) ||
+            (selectedDiscoverySpecialty === 'Skin / Dermatology' && (spec.includes('derma') || spec.includes('skin'))) ||
+            (selectedDiscoverySpecialty === 'Child / Pediatric' && (spec.includes('pediatric') || spec.includes('child'))) ||
+            (selectedDiscoverySpecialty === 'Dental' && spec.includes('dental')) ||
+            (selectedDiscoverySpecialty === 'Gynecologist' && (spec.includes('gynae') || spec.includes('women')));
+          if (!match) return false;
+        }
+
+        if (q) {
+          const haystack = [
+            clinic.name,
+            clinic.doctorName,
+            clinic.doctorDegree,
+            clinic.specialty,
+            clinic.category,
+            clinic.address,
+            clinic.city,
+            ...(clinic.visitingReasons || [])
+          ].filter(Boolean).join(' ').toLowerCase();
+
+          if (!haystack.includes(q)) return false;
+        }
+
+        return true;
+      });
+
+      filtered.sort((a, b) => (b.rating || 4.8) - (a.rating || 4.8));
+
+      if (countBadge) {
+        countBadge.textContent = `${filtered.length} Doctor${filtered.length === 1 ? '' : 's'}`;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(clinic => {
+        const doc = (clinic.doctors && clinic.doctors[0]) || {
+          id: 'doc_1',
+          name: clinic.doctorName,
+          degree: clinic.doctorDegree,
+          specialty: clinic.specialty || clinic.category,
+          fee: clinic.fees?.normal || 300,
+          photo: clinic.doctorPhoto
+        };
+        const photoUrl = clinic.doctorPhoto || doc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80';
+        const rating = clinic.rating || 4.8;
+        const reviewCount = clinic.reviewCount || 120;
+        const feeVal = clinic.fees?.normal ?? doc.fee ?? 300;
+        const expYears = clinic.experienceYears || 10;
+        const status = getClinicDiscoveryStatus(clinic);
+        const specText = clinic.specialty || clinic.category || 'Specialist';
+
+        return `
+          <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition space-y-3">
+            <div class="flex items-start gap-3 cursor-pointer" onclick="openDoctorProfileModal('${clinic.id}', '${doc.id}')">
+              <div class="relative w-14 h-14 rounded-2xl overflow-hidden bg-emerald-50 border-2 border-emerald-400 flex-shrink-0 shadow-inner">
+                <img src="${photoUrl}" alt="${doc.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80';" />
+                <span class="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-[#25D366] border-2 border-white"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1 flex-wrap">
+                  <h4 class="font-black text-slate-900 text-sm truncate hover:text-[#075E54] transition">${doc.name}</h4>
+                  <span class="text-xs font-black text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 shrink-0">
+                    ⭐ ${rating}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 font-medium truncate">${doc.degree || 'MBBS'}</p>
+                <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[11px]">
+                  <span class="bg-emerald-50 text-[#075E54] font-bold px-1.5 py-0.2 rounded-md border border-emerald-200">${specText}</span>
+                  <span class="text-slate-400">•</span>
+                  <span class="text-slate-500 font-semibold">${expYears}+ Yrs Exp</span>
+                  <span class="text-slate-400">•</span>
+                  <span class="text-slate-500 font-semibold">${reviewCount}+ Mareez</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-1 flex items-center justify-between text-xs text-slate-500 border-t border-slate-100">
+              <div class="flex items-center gap-1 text-[11px] truncate text-slate-600">
+                <i class="fa-solid fa-hospital text-[#128C7E] shrink-0"></i>
+                <span class="font-bold text-slate-800">${clinic.name}</span>
+                <span class="text-slate-400">•</span>
+                <span>${clinic.city}</span>
+              </div>
+              <span class="text-xs font-black text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg shrink-0">
+                ₹${feeVal} OPD
+              </span>
+            </div>
+
+            <!-- Live Status Pill & Action Buttons -->
+            <div class="pt-0.5 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-black px-2.5 py-1 rounded-xl border flex items-center gap-1 truncate ${status.pillClass}">
+                ${status.text}
+              </span>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <a 
+                  href="tel:${clinic.phone}" 
+                  class="btn-tactile p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center border border-slate-200" 
+                  title="Call Clinic"
+                  onclick="event.stopPropagation();"
+                >
+                  <i class="fa-solid fa-phone text-[#075E54]"></i>
+                </a>
+                <button 
+                  type="button" 
+                  onclick="selectDoctorAndBook('${clinic.id}', '${doc.id}')" 
+                  class="btn-tactile px-3 py-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs rounded-xl shadow-xs flex items-center gap-1 transition"
+                >
+                  <i class="fa-solid fa-ticket text-xs"></i>
+                  <span>Book Parchi</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openDoctorProfileModal(clinicId, docId) {
+      const clinic = clinicsDirectory.find(c => c.id === clinicId) || clinicProfile;
+      if (!clinic) return;
+      const doc = (clinic.doctors && clinic.doctors.find(d => d.id === docId)) || (clinic.doctors && clinic.doctors[0]) || {
+        id: 'doc_1',
+        name: clinic.doctorName,
+        degree: clinic.doctorDegree,
+        specialty: clinic.specialty || clinic.category,
+        fee: clinic.fees?.normal || 300,
+        photo: clinic.doctorPhoto
+      };
+
+      activeDetailClinic = clinic;
+      activeDetailDoctor = doc;
+
+      const photoEl = document.getElementById('detailDocPhoto');
+      if (photoEl) photoEl.src = clinic.doctorPhoto || doc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80';
+
+      const specEl = document.getElementById('detailDocSpecialtyBadge');
+      if (specEl) specEl.textContent = clinic.specialty || clinic.category || doc.specialty || 'General Medicine';
+
+      const expEl = document.getElementById('detailDocExpBadge');
+      if (expEl) expEl.textContent = `${clinic.experienceYears || 12} Yrs Exp`;
+
+      const nameEl = document.getElementById('detailDocName');
+      if (nameEl) nameEl.textContent = doc.name;
+
+      const degEl = document.getElementById('detailDocDegree');
+      if (degEl) degEl.textContent = doc.degree || clinic.doctorDegree;
+
+      const regEl = document.getElementById('detailDocRegNo');
+      if (regEl) regEl.textContent = `Reg. No: ${clinic.doctorRegNo || 'BRMC-48291'}`;
+
+      const ratingEl = document.getElementById('detailDocRating');
+      if (ratingEl) ratingEl.textContent = `⭐ ${clinic.rating || 4.9} / 5.0`;
+
+      const patEl = document.getElementById('detailDocPatients');
+      if (patEl) patEl.textContent = `${clinic.reviewCount || 140}+ Seen`;
+
+      const feeEl = document.getElementById('detailDocFee');
+      if (feeEl) feeEl.textContent = `₹${clinic.fees?.normal ?? doc.fee ?? 300}`;
+
+      const cNameEl = document.getElementById('detailClinicName');
+      if (cNameEl) cNameEl.textContent = clinic.name;
+
+      const cCityEl = document.getElementById('detailClinicCity');
+      if (cCityEl) cCityEl.textContent = clinic.city;
+
+      const cAddrEl = document.getElementById('detailClinicAddress');
+      if (cAddrEl) cAddrEl.textContent = clinic.address;
+
+      const mapLink = document.getElementById('detailMapLink');
+      if (mapLink) {
+        mapLink.href = clinic.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinic.name + ' ' + clinic.address + ' ' + clinic.city)}`;
+      }
+
+      const callLink = document.getElementById('detailCallLink');
+      if (callLink) callLink.href = `tel:${clinic.phone}`;
+
+      const mornEl = document.getElementById('detailMorningShift');
+      if (mornEl) {
+        const m = clinic.visitingHours?.morning;
+        mornEl.textContent = (m && m.enabled) ? `${m.start} - ${m.end}` : 'Closed';
+      }
+
+      const eveEl = document.getElementById('detailEveningShift');
+      if (eveEl) {
+        const e = clinic.visitingHours?.evening;
+        eveEl.textContent = (e && e.enabled) ? `${e.start} - ${e.end}` : 'Closed';
+      }
+
+      const daysEl = document.getElementById('detailOpenDays');
+      if (daysEl) {
+        const d = clinic.visitingHours?.daysOpen || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        daysEl.textContent = `Open: ${d.join(', ')}`;
+      }
+
+      const reasonsBox = document.getElementById('detailReasonsContainer');
+      if (reasonsBox) {
+        const reasons = clinic.visitingReasons || ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up'];
+        reasonsBox.innerHTML = reasons.map(r => `
+          <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[11px] rounded-lg">
+            ${r}
+          </span>
+        `).join('');
+      }
+
+      const modal = document.getElementById('doctorProfileDetailModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeDoctorProfileModal() {
+      const modal = document.getElementById('doctorProfileDetailModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function bookFromDoctorDetailModal() {
+      closeDoctorProfileModal();
+      if (activeDetailClinic) {
+        selectDoctorAndBook(activeDetailClinic.id, activeDetailDoctor?.id);
+      }
+    }
+
+    function callFromDoctorDetailModal() {
+      if (activeDetailClinic && activeDetailClinic.phone) {
+        window.location.href = `tel:${activeDetailClinic.phone}`;
+      }
+    }
+
+    function selectDoctorAndBook(clinicId, docId) {
+      const clinic = clinicsDirectory.find(c => c.id === clinicId);
+      if (clinic) {
+        clinicProfile = { ...clinicProfile, ...clinic };
+        saveLocalClinic();
+      }
+      if (docId) {
+        selectedPatDoctorId = docId;
+      }
+      showPatientClinicBookingSection(clinicId);
+      openPatientBookingModal();
+    }
+
+    function showPatientDiscoverySection() {
+      const discovery = document.getElementById('patientDiscoverySection');
+      const direct = document.getElementById('patientDirectClinicSection');
+      const tokenPass = document.getElementById('patientTokenPassBox');
+      if (discovery) discovery.classList.remove('hidden');
+      if (direct) direct.classList.add('hidden');
+      if (tokenPass) tokenPass.classList.add('hidden');
+
+      updateDiscoveryActivePassBanner();
+      renderDoctorDiscoveryFeed();
+    }
+
+    function showPatientClinicBookingSection(clinicId) {
+      const discovery = document.getElementById('patientDiscoverySection');
+      const direct = document.getElementById('patientDirectClinicSection');
+      if (discovery) discovery.classList.add('hidden');
+      if (direct) direct.classList.remove('hidden');
+      updateClinicBranding();
+      renderPatientBookingPage();
+      updatePatientTokenPassLiveStatus();
+    }
+
+    function updateDiscoveryActivePassBanner() {
+      const banner = document.getElementById('discoveryActivePassBanner');
+      const tokenText = document.getElementById('discoveryActiveTokenText');
+      const docText = document.getElementById('discoveryActiveDocText');
+      if (!banner) return;
+
+      const stored = localStorage.getItem('parchi_active_patient_booking');
+      if (stored) {
+        try {
+          const b = JSON.parse(stored);
+          const todayStr = getLocalDateString();
+          if (b && b.token && (!b.date || b.date === todayStr || (b.day && b.day.includes('Aaj')))) {
+            banner.classList.remove('hidden');
+            if (tokenText) tokenText.textContent = `#${b.token}`;
+            if (docText) docText.textContent = `${b.doctorName || clinicProfile.doctorName} • ${b.slotTime || 'OPD'}`;
+            return;
+          }
+        } catch (e) {}
+      }
+      banner.classList.add('hidden');
+    }
+
+    function scrollToPhoneLookup() {
+      showPatientDiscoverySection();
+      const card = document.getElementById('phoneLookupSectionCard');
+      const input = document.getElementById('lookupPhoneNumberInput');
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      if (input) {
+        input.focus();
+      }
+    }
+
+    async function executePhoneTokenLookup() {
+      const input = document.getElementById('lookupPhoneNumberInput');
+      const alertBox = document.getElementById('phoneLookupAlertBox');
+      const btn = document.getElementById('btnExecutePhoneLookup');
+      const rawPhone = (input?.value || '').replace(/\D/g, '');
+
+      if (!rawPhone || rawPhone.length < 10) {
+        showToast('⚠️ Kripya 10-digit mobile number dalein!', 'warning');
+        if (alertBox) {
+          alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-rose-100 text-rose-800 border border-rose-300';
+          alertBox.textContent = '⚠️ Kripya 10-digit mobile number dalein!';
+          alertBox.classList.remove('hidden');
+        }
+        input?.focus();
+        return;
+      }
+
+      const phone = rawPhone.slice(-10);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+      }
+
+      try {
+        let found = null;
+        const todayStr = getLocalDateString();
+
+        // 1. Check local todayQueue
+        found = todayQueue.find(p => p.phone && p.phone.replace(/\D/g, '').endsWith(phone) && p.status !== 'CANCELLED');
+
+        // 2. Check local lastPatientBooking
+        if (!found && lastPatientBooking && lastPatientBooking.phone) {
+          if (lastPatientBooking.phone.replace(/\D/g, '').endsWith(phone)) {
+            found = lastPatientBooking;
+          }
+        }
+
+        // 3. Query server /api/queue?phone=...
+        if (!found && window.location.protocol.startsWith('http')) {
+          try {
+            const res = await fetch(`/api/queue?phone=${encodeURIComponent(phone)}`);
+            if (res.ok) {
+              const qList = await res.json();
+              if (Array.isArray(qList) && qList.length > 0) {
+                found = qList.find(p => p.status !== 'CANCELLED') || qList[0];
+              }
+            }
+          } catch (e) {}
+        }
+
+        if (found) {
+          lastPatientBooking = found;
+          try {
+            localStorage.setItem('parchi_active_patient_booking', JSON.stringify(found));
+          } catch (e) {}
+
+          if (alertBox) {
+            alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-emerald-100 text-emerald-900 border border-emerald-300';
+            alertBox.textContent = `🎉 Active Token #${found.token} mila! Live Pass khul raha hai...`;
+            alertBox.classList.remove('hidden');
+          }
+
+          showToast(`🎉 Active Token #${found.token} Mila!`);
+
+          setTimeout(() => {
+            showPatientClinicBookingSection(found.clinicId || clinicProfile.id);
+            renderTokenPassDetails(found);
+            if (alertBox) alertBox.classList.add('hidden');
+          }, 400);
+        } else {
+          if (alertBox) {
+            alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-amber-100 text-amber-900 border border-amber-300';
+            alertBox.innerHTML = `ℹ️ Mobile <strong>${phone}</strong> par aaj ka koi active token nahi mila. Kripya naya token book karein.`;
+            alertBox.classList.remove('hidden');
+          }
+          showToast(`ℹ️ Mobile ${phone} par aaj ka koi token nahi mila.`, 'info');
+        }
+      } catch (err) {
+        showToast('⚠️ Token search karne mein dikkat aayi.', 'warning');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Check Token ➔</span>';
+        }
+      }
+    }
+
+    function handleDoctorPhotoUpload(event, source = 'profile') {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('⚠️ Kripya valid photo image file chunein (JPG, PNG, WebP)!', 'warning');
+        return;
+      }
+
+      if (file.size > 2.5 * 1024 * 1024) {
+        showToast('⚠️ Photo file size 2.5MB se kam hona chahiye!', 'warning');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const dataUrl = e.target.result;
+        clinicProfile.doctorPhoto = dataUrl;
+
+        // Update previews
+        const prevOnboard = document.getElementById('onboardDoctorPhotoPreview');
+        if (prevOnboard) prevOnboard.src = dataUrl;
+        const urlOnboard = document.getElementById('onboardDoctorPhotoUrl');
+        if (urlOnboard) urlOnboard.value = dataUrl;
+
+        const prevProfile = document.getElementById('profileDoctorPhotoPreview');
+        if (prevProfile) prevProfile.src = dataUrl;
+        const urlProfile = document.getElementById('profileDoctorPhotoUrl');
+        if (urlProfile) urlProfile.value = dataUrl;
+
+        saveLocalClinic();
+        showToast('📸 Doctor photo uploaded successfully!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleDoctorPhotoUrlChange(url, source = 'profile') {
+      const cleanUrl = (url || '').trim();
+      clinicProfile.doctorPhoto = cleanUrl;
+
+      if (source === 'onboard') {
+        const prevOnboard = document.getElementById('onboardDoctorPhotoPreview');
+        if (prevOnboard && cleanUrl) prevOnboard.src = cleanUrl;
+      } else {
+        const prevProfile = document.getElementById('profileDoctorPhotoPreview');
+        if (prevProfile && cleanUrl) prevProfile.src = cleanUrl;
+      }
+    }
+
+    async function saveDoctorPhotoSetting() {
+      const input = document.getElementById('profileDoctorPhotoUrl');
+      const val = (input?.value || clinicProfile.doctorPhoto || '').trim();
+      clinicProfile.doctorPhoto = val;
+      if (clinicProfile.doctors && clinicProfile.doctors[0]) {
+        clinicProfile.doctors[0].photo = val;
+      }
+      saveLocalClinic();
+
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          await fetch('/api/clinic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ doctorPhoto: val })
+          });
+        } catch (e) {}
+      }
+
+      showToast('✅ Doctor photo setting surakshit ho gayi!');
+    }
+
+    // =========================================================================
     // 14. MASTER REFRESH & INITIALIZATION
     // =========================================================================
     function refreshAllViews() {
@@ -10092,10 +11626,15 @@
       renderPatientRegister();
       renderGallaTab();
       updatePatientTokenPassLiveStatus();
+      renderCityChips();
+      renderSpecialtyChips();
+      renderDoctorDiscoveryFeed();
+      updateDiscoveryActivePassBanner();
     }
 
     window.onload = async function () {
       loadLocalData();
+      loadClinicsDirectory();
 
       // Check URL query parameters
       const urlParams = new URLSearchParams(window.location.search);
@@ -10119,6 +11658,11 @@
 
       if (roleParam === 'patient' || isPatientPath) {
         switchAppRole('patient');
+        if (clinicParam) {
+          showPatientClinicBookingSection(clinicParam);
+        } else {
+          showPatientDiscoverySection();
+        }
         checkAndRestorePatientBooking();
       } else {
         // Main URL clinic desk path - compulsory sign in / sign up gateway
@@ -10348,6 +11892,11 @@
           const patientBookingModal = document.getElementById('patientBookingModal');
           if (patientBookingModal && !patientBookingModal.classList.contains('hidden')) {
             closePatientBookingModal();
+            return;
+          }
+          const docDetailModal = document.getElementById('doctorProfileDetailModal');
+          if (docDetailModal && !docDetailModal.classList.contains('hidden')) {
+            closeDoctorProfileModal();
             return;
           }
         }
