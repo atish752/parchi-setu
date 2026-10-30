@@ -58,7 +58,7 @@
     "leaves": {},
     "onboarded": true,
     "createdAt": "2026-10-26T06:00:00.000Z",
-    "updatedAt": "2026-10-29T09:53:26.289Z",
+    "updatedAt": "2026-10-30T04:17:58.327Z",
     "visitingReasons": [
       "🤒 Bukhar / Cold",
       "🩸 BP / Sugar",
@@ -75,8 +75,8 @@
       "lanUrl": "http://192.168.1.34:3000"
     },
     "mapUrl": "",
-    "ownerUid": "",
-    "ownerEmail": "",
+    "ownerUid": "q8XD9zzUddOblnXKq8qR213iEqC2",
+    "ownerEmail": "atish2k22@gmail.com",
     "liveStatus": {
       "isDoctorLate": false,
       "doctorDelayMinutes": 0,
@@ -144,7 +144,7 @@
       "leaves": {},
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-10-29T09:53:26.289Z",
+      "updatedAt": "2026-10-30T04:17:58.327Z",
       "visitingReasons": [
         "🤒 Bukhar / Cold",
         "🩸 BP / Sugar",
@@ -161,8 +161,8 @@
         "lanUrl": "http://192.168.1.34:3000"
       },
       "mapUrl": "",
-      "ownerUid": "",
-      "ownerEmail": "",
+      "ownerUid": "q8XD9zzUddOblnXKq8qR213iEqC2",
+      "ownerEmail": "atish2k22@gmail.com",
       "liveStatus": {
         "isDoctorLate": false,
         "doctorDelayMinutes": 0,
@@ -256,7 +256,7 @@
       },
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-10-29T09:53:26.273Z",
+      "updatedAt": "2026-10-30T04:17:58.232Z",
       "visitingReasons": [
         "🌸 Daad / Khujli",
         "🧴 Muhase / Acne",
@@ -271,8 +271,8 @@
         "lanUrl": "http://192.168.1.34:3000"
       },
       "mapUrl": "",
-      "ownerUid": "",
-      "ownerEmail": "",
+      "ownerUid": "q8XD9zzUddOblnXKq8qR213iEqC2",
+      "ownerEmail": "atish2k22@gmail.com",
       "liveStatus": {
         "isDoctorLate": true,
         "doctorDelayMinutes": 45,

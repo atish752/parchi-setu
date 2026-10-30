@@ -29,6 +29,7 @@ function makeRequest(method, pathname, body = null) {
         }
       },
       res => {
+        res.setEncoding('utf8');
         let raw = '';
         res.on('data', chunk => (raw += chunk));
         res.on('end', () => {
@@ -1245,6 +1246,309 @@ async function runTests() {
     assert.ok(html.includes("passEstTimeEl.textContent = 'Clinic Band Hai'"), 'passEstTime must show Clinic Band Hai when closed');
     assert.ok(html.includes("passEstTimeEl.textContent = 'Abhi Cabin Mein'"), 'passEstTime must show Abhi Cabin Mein when in cabin');
     assert.ok(html.includes("passEstTimeEl.textContent = '~0-5 Mins (Agla Number)'"), 'passEstTime must show Agla Number for next patient');
+  })();
+
+  // 64. Bottom Navigation Tabs: 5 distinct tabs ('Live', 'Slots & QR', 'Patients', 'Revenue', 'Profile') and vertical divider borders
+  await test('Bottom navigation tabs feature 5 distinct tabs (Live, Slots & QR, Patients, Revenue, Profile) and vertical divider borders', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Divider class between tabs
+    assert.ok(html.includes('divide-x divide-emerald-600/30'), 'Bottom nav container must include vertical divider lines divide-x divide-emerald-600/30');
+
+    // 2. Tab buttons HTML content
+    assert.ok(html.includes('<span data-i18n="tabQueue" class="truncate text-[10px] sm:text-xs font-bold">Live</span>'), 'Tab 1 must be named Live');
+    assert.ok(html.includes('<span data-i18n="tabCalendar" class="truncate text-[10px] sm:text-xs font-bold">Slots & QR</span>'), 'Tab 2 must be named Slots & QR');
+    assert.ok(html.includes('<span data-i18n="tabRegister" class="truncate text-[10px] sm:text-xs font-bold">Patients</span>'), 'Tab 3 must be named Patients');
+    assert.ok(html.includes('<span data-i18n="tabGalla" class="truncate text-[10px] sm:text-xs font-bold">Revenue</span>'), 'Tab 4 must be named Revenue');
+    assert.ok(html.includes('<span data-i18n="tabProfile" class="truncate text-[10px] sm:text-xs font-bold">Profile</span>'), 'Tab 5 must be named Profile');
+
+    // 3. I18N dictionary consistency across en, hinglish, and hindi
+    const i18nSandbox = {};
+    vm.createContext(i18nSandbox);
+    const i18nSlice = html.substring(html.indexOf('const I18N = {'), html.indexOf('// 2. SOUND & VOICE ANNOUNCER'));
+    const i18nCode = `
+      var I18N;
+      ${i18nSlice.replace('const I18N =', 'I18N =')}
+    `;
+    vm.runInContext(i18nCode, i18nSandbox);
+    const i18n = i18nSandbox.I18N;
+    ['english', 'hinglish', 'hindi'].forEach(lang => {
+      assert.strictEqual(i18n[lang].tabQueue, 'Live', `${lang} tabQueue must be Live`);
+      assert.strictEqual(i18n[lang].tabCalendar, 'Slots & QR', `${lang} tabCalendar must be Slots & QR`);
+      assert.strictEqual(i18n[lang].tabRegister, 'Patients', `${lang} tabRegister must be Patients`);
+      assert.strictEqual(i18n[lang].tabGalla, 'Revenue', `${lang} tabGalla must be Revenue`);
+      assert.strictEqual(i18n[lang].tabProfile, 'Profile', `${lang} tabProfile must be Profile`);
+    });
+  })();
+
+  // 65. Cabin Hero Card: Square Rounded Box, No "ABHI DOCTOR KE PAAS" Text, Age/Gender formatting, Rx button, and red cancel button
+  await test('Cabin hero card features square rounded-xl token badge, formatted age/gender, Rx button, and red cancel button', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Square rounded box around token number
+    assert.ok(html.includes('id="cabinTokenCircle" class="w-14 h-14 rounded-xl'), 'Token number container must be a square rounded-xl box');
+
+    // 2. Removal of obsolete texts and tags
+    const heroSlice = html.substring(html.indexOf('id="clinicTab-queue"'), html.indexOf('id="walkinToggleBtn"'));
+    assert.strictEqual(heroSlice.includes('ABHI DOCTOR KE PAAS (IN CABIN)'), false, 'Should not contain obsolete text ABHI DOCTOR KE PAAS (IN CABIN)');
+    assert.strictEqual(heroSlice.includes('id="cabinPatientSource"'), false, 'Should not contain obsolete cabinPatientSource tag');
+
+    // 3. Prominent Rx & Vitals button
+    assert.ok(html.includes('Rx & Vitals (पर्ची / जांच)'), 'Must include prominent Rx & Vitals action button');
+
+    // 4. In-cabin red cancel button
+    assert.ok(html.includes('id="btnCabinCancelPatient"'), 'Must include btnCabinCancelPatient in cabin card');
+    assert.ok(html.includes('bg-rose-500 hover:bg-rose-600'), 'Cancel button must be styled with bg-rose-500');
+
+    // 5. formatPatientAgeGender VM execution
+    const vmSandbox = {};
+    vm.createContext(vmSandbox);
+    const fnCode = `
+      ${html.substring(html.indexOf('function formatPatientAgeGender(age, gender)'), html.indexOf('function cancelCurrentCabinPatient()'))}
+    `;
+    vm.runInContext(fnCode, vmSandbox);
+    const f = vmSandbox.formatPatientAgeGender;
+    assert.strictEqual(f(54, 'M'), '54 yrs, M');
+    assert.strictEqual(f(22, 'Female'), '22 yrs, F');
+    assert.strictEqual(f(12, ''), '12 yrs');
+    assert.strictEqual(f('', 'Male'), 'M');
+    assert.strictEqual(f('', ''), '');
+  })();
+
+  // 66. Digital Vitals Drawer & Lab Tests Dropdown / Search and Clean WhatsApp Encoding
+  await test('Digital vitals drawer provides preset lab tests/charges dropdown, datalist autocomplete, and clean WhatsApp prescription generator', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Preset lab test select dropdown
+    assert.ok(html.includes('id="presetLabTestSelect"'), 'Must include presetLabTestSelect dropdown');
+    assert.ok(html.includes('CBC (Complete Blood Count)'), 'Must include CBC in lab tests');
+    assert.ok(html.includes('Blood Sugar Fasting'), 'Must include Blood Sugar in lab tests');
+    assert.ok(html.includes('Thyroid Profile (TSH)'), 'Must include Thyroid Profile in lab tests');
+    assert.ok(html.includes('LFT (Liver Function Test)'), 'Must include LFT in lab tests');
+    assert.ok(html.includes('KFT (Kidney Function Test)'), 'Must include KFT in lab tests');
+    assert.ok(html.includes('Lipid Profile (Cholesterol)'), 'Must include Lipid Profile in lab tests');
+    assert.ok(html.includes('X-Ray Chest PA'), 'Must include X-Ray in lab tests');
+    assert.ok(html.includes('ECG (12-Lead)'), 'Must include ECG in lab tests');
+
+    // 2. Datalist for autocomplete
+    assert.ok(html.includes('id="commonLabTestsList"'), 'Must include commonLabTestsList datalist');
+
+    // 3. WhatsApp Prescription Generator clean encoding test
+    const waSandbox = {
+      clinicProfile: {
+        name: 'City Clinic',
+        doctorName: 'Dr. Neha Verma',
+        doctorDegree: 'MBBS, DNB',
+        phone: '9876543210',
+        address: 'MG Road'
+      },
+      formatPatientAgeGender: (age, gender) => `${age} yrs, ${gender}`
+    };
+    vm.createContext(waSandbox);
+    const waCode = `
+      function getShareablePatientLink() { return 'https://parchisetu.in/book?clinic=test'; }
+      function getLocalDateString() { return '2026-10-30'; }
+      ${html.substring(html.indexOf('function generateWhatsAppPrescriptionText'), html.indexOf('function updateFollowUpWhatsappPreview'))}
+      const testP = { token: 7, name: 'Suresh Kumar', age: 48, gender: 'M' };
+      const testVitals = {
+        bp: '128/82',
+        weight: '68 kg',
+        temp: '98.6 °F',
+        sugar: '110 mg/dL',
+        customMetrics: [
+          { name: 'CBC (Complete Blood Count)', value: 'Normal', unit: 'Report' },
+          { name: 'ECG (12-Lead)', value: 'NSR', unit: 'Report' }
+        ],
+        notes: 'Follow low sodium diet and repeat BP after 10 days',
+        followUpDays: 10,
+        followUpDateFormatted: '09 Nov 2026'
+      };
+      var waMsg = generateWhatsAppPrescriptionText(testP, testVitals);
+    `;
+    vm.runInContext(waCode, waSandbox);
+    const msg = waSandbox.waMsg;
+    assert.ok(!msg.includes('👨‍⚕️'), 'WhatsApp message must avoid complex surrogate doctor emoji that turn into ? on Android');
+    assert.ok(!msg.includes('━━━━'), 'WhatsApp message must avoid box-drawing characters that turn into ?');
+    assert.ok(msg.includes('CITY CLINIC'), 'Must include clinic name');
+    assert.ok(msg.includes('TOKEN #7 • Suresh Kumar (48 yrs, M)'), 'Must include formatted patient line');
+    assert.ok(msg.includes('CBC (Complete Blood Count): Normal Report'), 'Must include preset lab test metric');
+    assert.ok(msg.includes('ECG (12-Lead): NSR Report'), 'Must include ECG metric');
+    assert.ok(msg.includes('10 Din Baad (09 Nov 2026)'), 'Must include follow-up reminder');
+  })();
+
+  // 67. Double Confirmation Modal for Appointment Cancellation and Red 'X' on Waiting & Cabin Patients
+  await test('Double-confirmation cancellation modal cancelConfirmModal and red X buttons on waiting and in-cabin queue rows', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. cancelConfirmModal HTML elements
+    assert.ok(html.includes('id="cancelConfirmModal"'), 'Must include cancelConfirmModal in HTML');
+    assert.ok(html.includes('id="cancelConfirmPatientInfo"'), 'Must include cancelConfirmPatientInfo element');
+    assert.ok(html.includes('onclick="closeCancelConfirmModal()"'), 'Must include closeCancelConfirmModal button');
+    assert.ok(html.includes('onclick="executeConfirmedCancellation()"'), 'Must include executeConfirmedCancellation button');
+
+    // 2. Red X cancel buttons in queue rendering
+    assert.ok(html.includes("promptCancelPatient('${p.id}')"), 'Waiting and cabin queue rows must call promptCancelPatient');
+
+    // 3. Double-confirmation JS logic in VM
+    const cancelSandbox = {
+      pendingCancellationPatientId: null,
+      todayQueue: [
+        { id: 'pat_1', token: 1, name: 'Aarav Gupta', age: 25, gender: 'M', status: 'WAITING' },
+        { id: 'pat_2', token: 2, name: 'Pooja Roy', age: 30, gender: 'F', status: 'IN_CABIN' }
+      ],
+      promptCalled: false,
+      formatPatientAgeGender: (a, g) => `${a} yrs, ${g}`,
+      saveLocalQueue: () => {},
+      refreshAllViews: () => {},
+      syncQueuePatchToServer: async () => {},
+      showToast: () => {}
+    };
+    vm.createContext(cancelSandbox);
+    const cancelLogicCode = `
+      (async () => {
+        ${html.substring(html.indexOf('async function cancelPatientAppointment'), html.indexOf('function renderQueueFilterPills()'))}
+        promptCancelPatient = function(id) {
+          pendingCancellationPatientId = id;
+          promptCalled = true;
+        };
+        await cancelPatientAppointment('pat_1'); // Called without confirmed=true
+        var promptedId = pendingCancellationPatientId;
+        var wasPrompted = promptCalled;
+        
+        // Now confirm cancellation
+        await cancelPatientAppointment('pat_1', true);
+        var postStatus = todayQueue.find(p => p.id === 'pat_1').status;
+        return { wasPrompted, promptedId, postStatus };
+      })();
+    `;
+    const resPromise = vm.runInContext(cancelLogicCode, cancelSandbox);
+    const resData = await resPromise;
+    assert.strictEqual(resData.wasPrompted, true, 'Unconfirmed cancellation must trigger promptCancelPatient');
+    assert.strictEqual(resData.promptedId, 'pat_1', 'Prompted patient ID must match');
+    assert.strictEqual(resData.postStatus, 'CANCELLED', 'Confirmed cancellation must update patient status to CANCELLED');
+  })();
+
+  // 68. Fast Walk-In Entry Top Bar & Dedicated Pop-up Modal
+  await test('Fast Walk-In Entry top bar and dedicated pop-up modal walkinModal', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Fast walk-in top bar elements
+    assert.ok(html.includes('id="nextAvailableTokenPreview"'), 'Must include nextAvailableTokenPreview on left of bar');
+    assert.ok(html.includes('⚡ 3-Sec Fast Walk-In Entry (Naya Mareez)'), 'Must include 3-Sec Fast Walk-In Entry text in center');
+    assert.ok(html.includes('id="walkinToggleBtn"'), 'Must include large walkinToggleBtn plus button on right');
+
+    // 2. Dedicated pop-up modal
+    assert.ok(html.includes('id="walkinModal"'), 'Must include walkinModal dedicated pop-up');
+    assert.ok(html.includes('id="modalNextTokenPreview"'), 'walkinModal must include modalNextTokenPreview');
+    assert.ok(html.includes('onclick="closeFastWalkinModal()"'), 'walkinModal must include closeFastWalkinModal buttons');
+    assert.ok(html.includes('function openFastWalkinModal()'), 'Must define openFastWalkinModal() in JS');
+    assert.ok(html.includes('function closeFastWalkinModal()'), 'Must define closeFastWalkinModal() in JS');
+    assert.ok(html.includes('function toggleFastWalkinCollapse(forceState)'), 'Must define toggleFastWalkinCollapse in JS');
+  })();
+
+  // 69. Slots & QR Tab Controls: QR Standee Placement, Online Booking Pause Toggle & Doctor Expected Arrival Dropdown
+  await test('Slots & QR tab: QR standee button placement, pause/resume online booking toggle, and doctor arrival dropdown with delays and early access', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Standee button next to Edit Timings
+    const bannerSlice = html.substring(html.indexOf('id="clinicTab-calendar"'), html.indexOf('Doctor Expected Arrival & Live Slot Controls'));
+    assert.ok(bannerSlice.includes('openClinicOnboardingModal()'), 'Banner must have Edit Timings');
+    assert.ok(bannerSlice.includes('openInteractiveQRModal()'), 'Banner must have View Clinic QR Standee button');
+    assert.ok(bannerSlice.indexOf('openClinicOnboardingModal()') < bannerSlice.indexOf('openInteractiveQRModal()'), 'View Clinic QR Standee must be placed next to Edit Timings');
+
+    // 2. Pause/Resume Online Booking Button
+    assert.ok(html.includes('id="btnPauseQRToggle"'), 'Must include btnPauseQRToggle button');
+    assert.ok(html.includes('id="pauseQRStatusPill"'), 'Must include pauseQRStatusPill indicator');
+    assert.ok(html.includes('function togglePauseQR()'), 'Must define togglePauseQR in JS');
+
+    // 3. Doctor Expected Arrival Dropdown
+    assert.ok(html.includes('id="doctorArrivalDropdown"'), 'Must include doctorArrivalDropdown');
+    assert.ok(html.includes('value="-90"'), 'Dropdown must include -90m early access');
+    assert.ok(html.includes('value="-15"'), 'Dropdown must include -15m early access');
+    assert.ok(html.includes('value="0"'), 'Dropdown must include 0m on time option');
+    assert.ok(html.includes('value="180"'), 'Dropdown must include +180m delay option');
+
+    // 4. Steppers and custom time picker
+    assert.ok(html.includes('adjustDoctorDelayMinutes(-15)'), 'Must include -15m stepper');
+    assert.ok(html.includes('adjustDoctorDelayMinutes(15)'), 'Must include +15m stepper');
+    assert.ok(html.includes('id="customDoctorArrivalTimeInput"'), 'Must include customDoctorArrivalTimeInput time picker');
+  })();
+
+  // 70. Patients Tab: Phone Search Primary, Date Filter Picker & Patient Profile Modal with Lifetime Timeline
+  await test('Patients tab: search by phone or name, date filter picker, and patient profile modal with lifetime appointment timeline', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Phone number primary search & date filter elements
+    assert.ok(html.includes('id="registerSearchInput"'), 'Must include registerSearchInput search input');
+    assert.ok(html.includes('id="registerDateFilter"'), 'Must include registerDateFilter date filter picker');
+    assert.ok(html.includes('id="btnClearDateFilter"'), 'Must include btnClearDateFilter button');
+
+    // 2. Full Patient Profile Modal
+    assert.ok(html.includes('id="patientProfileModal"'), 'Must include patientProfileModal modal');
+    assert.ok(html.includes('id="profileAppointmentsList"'), 'Must include profileAppointmentsList container');
+    assert.ok(html.includes('function openPatientProfileModal(key)'), 'Must define openPatientProfileModal in JS');
+    assert.ok(html.includes('function closePatientProfileModal()'), 'Must define closePatientProfileModal in JS');
+
+    // 3. Deduplication and timeline aggregation logic in VM
+    const patSandbox = {
+      todayQueue: [
+        { id: 'q1', token: 1, name: 'Sunil Kumar', phone: '9835011111', age: 34, gender: 'M', fee: 300, payMode: 'Cash', date: '2026-10-30', createdAt: '2026-10-30T10:00:00.000Z' }
+      ],
+      patientRegister: [
+        { id: 'r1', name: 'Sunil Kumar', phone: '9835011111', age: 34, gender: 'M', visits: 1, lastVisit: '2026-10-25', lastReason: 'Bukhar' },
+        { id: 'r2', name: 'Anita Devi', phone: '9835022222', age: 29, gender: 'F', visits: 1, lastVisit: '2026-10-25', lastReason: 'BP Check' }
+      ],
+      getLocalDateString: () => '2026-10-30'
+    };
+    vm.createContext(patSandbox);
+    const patCode = `
+      ${html.substring(html.indexOf('function getAllAppointmentsHistory()'), html.indexOf('function clearRegisterDateFilter()'))}
+      var allHistory = getAllAppointmentsHistory();
+      var uniqueList = getUniquePatientsList();
+      var sunil = uniqueList.find(p => p.phone === '9835011111');
+    `;
+    vm.runInContext(patCode, patSandbox);
+    assert.strictEqual(patSandbox.allHistory.length, 3, 'Must aggregate queue and register history');
+    assert.strictEqual(patSandbox.uniqueList.length, 2, 'Must deduplicate patients by phone number');
+    assert.ok(patSandbox.sunil, 'Sunil Kumar must exist in unique patients');
+    assert.strictEqual(patSandbox.sunil.totalVisits, 2, 'Sunil Kumar must have 2 lifetime visits');
+    assert.strictEqual(patSandbox.sunil.appointments.length, 2, 'Sunil Kumar must have 2 appointments in timeline');
+  })();
+
+  // 71. Revenue Tab: Real 7-Day Revenue Chart & Dedicated Token-Wise Fee Ledger Modal
+  await test('Revenue tab: 7-day revenue chart calculates real revenue without fake data, and token-wise fee ledger modal gallaLedgerModal exists', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Dedicated Fee Ledger Modal
+    assert.ok(html.includes('id="gallaLedgerModal"'), 'Must include gallaLedgerModal modal');
+    assert.ok(html.includes('id="gallaLedgerList"'), 'Must include gallaLedgerList container');
+    assert.ok(html.includes('onclick="openGallaLedgerModal()"'), 'Must include button calling openGallaLedgerModal()');
+    assert.ok(html.includes('function openGallaLedgerModal()'), 'Must define openGallaLedgerModal in JS');
+    assert.ok(html.includes('function closeGallaLedgerModal()'), 'Must define closeGallaLedgerModal in JS');
+
+    // 2. Real 7-day revenue chart logic verification (no fake random 4.2k, 5.1k, 3.9k)
+    const gallaCode = html.substring(html.indexOf('function renderGallaTab()'), html.indexOf('function sendDoctorHisaabWhatsApp()'));
+    assert.strictEqual(gallaCode.includes('4200'), false, '7-Day chart must NOT contain hardcoded fake data 4200');
+    assert.strictEqual(gallaCode.includes('5100'), false, '7-Day chart must NOT contain hardcoded fake data 5100');
+    assert.strictEqual(gallaCode.includes('3900'), false, '7-Day chart must NOT contain hardcoded fake data 3900');
+    assert.ok(gallaCode.includes('const allHistory = getAllAppointmentsHistory()'), '7-Day chart must calculate actual revenue using getAllAppointmentsHistory()');
+    assert.ok(gallaCode.includes("const displayAmt = d.amt > 0 ? (d.amt >= 1000 ? `₹${(d.amt / 1000).toFixed(1)}k` : `₹${d.amt}`) : '₹0'"), 'Chart bars must display real amounts or ₹0 for zero revenue days');
   })();
 
   // Restore clean default clinic state and empty queue

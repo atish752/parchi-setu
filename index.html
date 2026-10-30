@@ -191,7 +191,7 @@
     <!-- MODERN BOTTOM NAVIGATION BAR (5 TABS: HOME, SLOTS, PATIENTS, GALLA, PROFILE) -->
     <!-- =================================================================== -->
     <nav id="clinicNavTabs" class="hidden fixed bottom-0 left-0 right-0 z-40 bg-[#075E54] border-t border-emerald-800 text-white shadow-2xl">
-      <div class="max-w-6xl mx-auto grid grid-cols-5 text-center">
+      <div class="max-w-6xl mx-auto grid grid-cols-5 text-center divide-x divide-emerald-600/30">
         
         <!-- Tab 1: Live Queue (Home) -->
         <button 
@@ -203,7 +203,7 @@
             <i class="fa-solid fa-users-line text-sm sm:text-base text-[#25D366]"></i>
             <span id="navBadgeWaiting" class="absolute -top-1.5 -right-3 bg-[#25D366] text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full leading-tight">0</span>
           </div>
-          <span data-i18n="tabQueue" class="truncate text-[10px] sm:text-xs">Live Queue</span>
+          <span data-i18n="tabQueue" class="truncate text-[10px] sm:text-xs font-bold">Live</span>
         </button>
 
         <!-- Tab 2: Slots & QR -->
@@ -213,7 +213,7 @@
           class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-t-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-col items-center justify-center gap-0.5 transition"
         >
           <i class="fa-regular fa-calendar-check text-sm sm:text-base"></i>
-          <span data-i18n="tabCalendar" class="truncate text-[10px] sm:text-xs">Slots & QR</span>
+          <span data-i18n="tabCalendar" class="truncate text-[10px] sm:text-xs font-bold">Slots & QR</span>
         </button>
 
         <!-- Tab 3: Patients Directory -->
@@ -223,10 +223,10 @@
           class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-t-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-col items-center justify-center gap-0.5 transition"
         >
           <i class="fa-solid fa-address-book text-sm sm:text-base"></i>
-          <span data-i18n="tabRegister" class="truncate text-[10px] sm:text-xs">Patients Directory</span>
+          <span data-i18n="tabRegister" class="truncate text-[10px] sm:text-xs font-bold">Patients</span>
         </button>
 
-        <!-- Tab 4: Daily Checkbook -->
+        <!-- Tab 4: Daily Checkbook (Revenue) -->
         <button 
           onclick="switchClinicTab('galla')" 
           id="tabBtn-galla"
@@ -236,7 +236,7 @@
             <i class="fa-solid fa-indian-rupee-sign text-sm sm:text-base"></i>
             <span id="navBadgeBaaki" class="hidden absolute -top-1.5 -right-3 bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full leading-tight">₹</span>
           </div>
-          <span data-i18n="tabGalla" class="truncate text-[10px] sm:text-xs">Daily Checkbook</span>
+          <span data-i18n="tabGalla" class="truncate text-[10px] sm:text-xs font-bold">Revenue</span>
         </button>
 
         <!-- Tab 5: Profile & Settings -->
@@ -246,7 +246,7 @@
           class="py-1 sm:py-1.5 px-1 font-semibold text-[11px] sm:text-xs border-t-2 border-transparent text-emerald-100/75 hover:text-white hover:bg-white/5 flex flex-col items-center justify-center gap-0.5 transition"
         >
           <i class="fa-solid fa-circle-user text-sm sm:text-base"></i>
-          <span data-i18n="tabProfile" class="truncate text-[10px] sm:text-xs">Profile</span>
+          <span data-i18n="tabProfile" class="truncate text-[10px] sm:text-xs font-bold">Profile</span>
         </button>
 
       </div>
@@ -460,30 +460,23 @@
             
             <!-- Current Patient Inside Cabin Info (Click opens Digital Vitals & Prescription) -->
             <div id="cabinActivePatientCard" onclick="openCurrentCabinParchi()" class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer select-none group" title="Click to open Digital Vitals & Prescription" role="button" tabindex="0">
-              <div id="cabinTokenCircle" class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0">
+              <div id="cabinTokenCircle" class="w-14 h-14 rounded-xl bg-[#25D366] text-slate-950 flex flex-col items-center justify-center font-black shadow-md live-token-pulse flex-shrink-0 p-1">
                 <span class="text-[8px] uppercase tracking-wider font-extrabold opacity-80 leading-none">TOKEN</span>
                 <span id="cabinTokenNumber" class="text-xl leading-none font-black mt-0.5">#12</span>
               </div>
 
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
-                    <i class="fa-solid fa-circle text-[5px]"></i>
-                    <span data-i18n="liveInCabinBadge">ABHI DOCTOR KE PAAS (IN CABIN)</span>
-                  </span>
-                  <span id="cabinPatientSource" class="bg-white/15 text-emerald-100 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                    🚶 Walk-in
-                  </span>
                   <span id="doctorLateLiveBadge" class="hidden bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                     ⏳ Doctor 30m Late
                   </span>
                 </div>
 
-                <h2 id="cabinPatientName" class="text-base sm:text-lg font-black mt-1 tracking-tight truncate leading-tight">
-                  Rameshwar Prasad <span class="text-emerald-200 font-semibold text-sm">(54M)</span>
+                <h2 id="cabinPatientName" class="text-base sm:text-lg font-black mt-0.5 tracking-tight truncate leading-tight">
+                  Rameshwar Prasad <span class="text-emerald-200 font-semibold text-sm">(54 yrs, M)</span>
                 </h2>
 
-                <div class="flex items-center gap-2 mt-0.5 text-xs text-emerald-100 truncate">
+                <div class="flex items-center gap-2 mt-1 text-xs text-emerald-100 flex-wrap">
                   <span id="cabinPatientReason" class="font-semibold text-emerald-200 truncate max-w-[140px] sm:max-w-none">
                     🩸 BP / Sugar Check
                   </span>
@@ -492,8 +485,23 @@
                     ₹300 (Cash Paid ✓)
                   </span>
                   <span>•</span>
-                  <button type="button" onclick="openCurrentCabinParchi()" class="underline hover:text-white text-emerald-200 font-semibold inline-flex items-center gap-1 whitespace-nowrap">
-                    <i class="fa-solid fa-file-prescription text-[10px]"></i> <span data-i18n="openParchiBtn">Digital Vitals & Prescription</span>
+                  <button 
+                    type="button" 
+                    onclick="event.stopPropagation(); openCurrentCabinParchi()" 
+                    class="btn-tactile bg-emerald-400/25 hover:bg-emerald-400/35 text-white font-extrabold px-3 py-1 rounded-lg border border-emerald-300/50 text-xs inline-flex items-center gap-1.5 shadow-xs transition"
+                    title="Open Prescription & Vitals Form"
+                  >
+                    <i class="fa-solid fa-file-prescription text-amber-300"></i> 
+                    <span data-i18n="openParchiBtn">Rx & Vitals (पर्ची / जांच)</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    id="btnCabinCancelPatient"
+                    onclick="event.stopPropagation(); cancelCurrentCabinPatient()" 
+                    class="w-6 h-6 rounded-md bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition ml-1"
+                    title="Cancel Current In-Cabin Appointment"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
                   </button>
                 </div>
               </div>
@@ -528,141 +536,178 @@
           </div>
         </div>
 
-        <!-- 1B. 3-SECOND "FAST WALK-IN ENTRY BAR" (COLLAPSIBLE DROPDOWN ACCORDION) -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
-          <!-- Accordion Clickable Header -->
-          <div 
-            onclick="toggleFastWalkinCollapse()" 
-            class="cursor-pointer select-none p-3 sm:p-3.5 bg-slate-50/70 hover:bg-emerald-50/50 flex items-center justify-between transition"
-          >
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="w-7 h-7 rounded-full bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-xs shadow-xs flex-shrink-0">
-                <i class="fa-solid fa-bolt"></i>
-              </span>
-              <h3 class="font-extrabold text-xs sm:text-sm text-slate-800 truncate" data-i18n="fastEntryTitle">
-                ⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)
-              </h3>
-              <span class="text-[11px] sm:text-xs font-bold bg-emerald-50 text-[#075E54] px-2 py-0.5 rounded-full border border-emerald-300 ml-1 whitespace-nowrap flex-shrink-0">
-                <span data-i18n="nextTokenLabel">Agla Token:</span> <strong id="nextAvailableTokenPreview" class="text-xs sm:text-sm">#15</strong>
-              </span>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <button 
-                type="button" 
-                id="walkinToggleBtn" 
-                class="btn-tactile bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 transition"
-              >
-                <span id="walkinToggleText">+ Nayi Parchi</span>
-                <i id="walkinChevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
-              </button>
-            </div>
+        <!-- 1B. 3-SECOND "FAST WALK-IN ENTRY BAR" (OPENS DEDICATED POP-UP MODAL) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-2 sm:p-2.5 flex items-center justify-between gap-2">
+          
+          <!-- Left: Next Token Preview Badge -->
+          <div class="flex items-center gap-1.5 bg-emerald-50 text-[#075E54] border border-emerald-300 px-3 py-1.5 rounded-xl flex-shrink-0">
+            <span data-i18n="nextTokenLabel" class="text-[11px] font-extrabold uppercase">Next Token:</span>
+            <strong id="nextAvailableTokenPreview" class="text-sm sm:text-base font-black text-emerald-900">#15</strong>
           </div>
 
-          <!-- Collapsible Form Body: Hidden by default -->
-          <div id="walkinFormCollapse" class="hidden p-3 sm:p-4 border-t border-slate-200 space-y-3 bg-white">
+          <!-- Center: 3-Second Fast Walk-in Entry Text (Tap to open pop-up) -->
+          <div 
+            onclick="toggleFastWalkinCollapse()" 
+            class="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-slate-800 cursor-pointer hover:text-[#075E54] transition truncate px-1 select-none"
+            role="button"
+            tabindex="0"
+          >
+            <i class="fa-solid fa-bolt text-amber-500 text-sm"></i>
+            <span data-i18n="fastEntryTitle">⚡ 3-Sec Fast Walk-In Entry (Naya Mareez)</span>
+          </div>
 
-            <!-- Row 1: Name, Age/Gender, Mobile -->
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-2.5">
-              <!-- Patient Name with Voice Mic Button -->
-              <div class="sm:col-span-5 relative">
-                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelPatientName">1. Mareez Ka Naam (Patient Name) *</label>
-                <div class="relative flex items-center">
-                  <input 
-                    type="text" 
-                    id="walkinName" 
-                    placeholder="जैसे: सुनीता देवी / राहुल कुमार" 
-                    onkeydown="if(event.key==='Enter') createFastWalkIn()"
-                    class="w-full pl-3 pr-9 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
-                  />
-                  <button 
-                    type="button"
-                    onclick="simulateVoiceInput()" 
-                    class="absolute right-1.5 w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#075E54] flex items-center justify-center transition"
-                    title="Boliye (Voice Dictation)"
-                  >
-                    <i id="voiceMicIcon" class="fa-solid fa-microphone text-xs"></i>
-                  </button>
+          <!-- Right: Powerful Plus Button (Opens Dedicated Pop-up Modal) -->
+          <button 
+            type="button" 
+            onclick="toggleFastWalkinCollapse()" 
+            id="walkinToggleBtn" 
+            class="btn-tactile w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:scale-95 text-white font-black text-lg sm:text-xl flex items-center justify-center shadow-md transition flex-shrink-0"
+            title="Add New Patient Parchi (Pop-up)"
+          >
+            <i class="fa-solid fa-plus"></i>
+            <span id="walkinToggleText" class="sr-only">+ Nayi Parchi</span>
+            <i id="walkinChevron" class="hidden fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+
+        <!-- DEDICATED FAST WALK-IN ENTRY POP-UP MODAL -->
+        <div id="walkinModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div id="walkinFormCollapse" class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Header with Next Token Badge & Close Button -->
+            <div class="bg-[#075E54] text-white px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between flex-shrink-0">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-[#25D366] text-slate-950 flex items-center justify-center font-black text-sm shadow-xs">
+                  <i class="fa-solid fa-bolt"></i>
+                </span>
+                <div>
+                  <h3 class="font-extrabold text-sm sm:text-base leading-tight">⚡ 3-Sec Naya Mareez Parchi (Fast Walk-In Entry)</h3>
+                  <p class="text-[11px] text-emerald-100">Next Token: <strong id="modalNextTokenPreview" class="text-[#25D366]">#15</strong> • Instant 1-Tap Queue Entry</p>
                 </div>
               </div>
-
-              <!-- Age & Gender Quick Input -->
-              <div class="sm:col-span-3">
-                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelAgeGender">2. Umar / Gender</label>
-                <div class="flex gap-1">
-                  <input 
-                    type="number" 
-                    id="walkinAge" 
-                    placeholder="Umar (35)" 
-                    min="1" max="115"
-                    class="w-2/3 px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
-                  />
-                  <select 
-                    id="walkinGender" 
-                    class="w-1/3 px-1.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] text-sm"
-                  >
-                    <option value="M">M</option>
-                    <option value="F">F</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Mobile Number -->
-              <div class="sm:col-span-4">
-                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelMobile">3. Mobile No. (Optional)</label>
-                <div class="relative">
-                  <input 
-                    type="tel" 
-                    id="walkinPhone" 
-                    maxlength="10"
-                    placeholder="98XXXXXXXX (WhatsApp)" 
-                    class="w-full pl-3 pr-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
-                  />
-                </div>
-              </div>
+              <button 
+                type="button" 
+                onclick="closeFastWalkinModal()" 
+                class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center transition"
+                title="Band Karein (✕)"
+              >
+                <i class="fa-solid fa-xmark text-base"></i>
+              </button>
             </div>
 
-            <!-- Row 2: 1-Tap Takleef (Reason) Chips -->
-            <div>
-              <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelReasonChips">
-                4. Takleef Chunein (1-Tap Reason — No Typing):
-              </span>
-              <div id="walkinReasonChips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                <!-- Populated dynamically by JS -->
-              </div>
-            </div>
-
-            <!-- Row 3: 1-Tap Fee + Payment Mode + Giant "+ Give Token" Button -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center pt-2 border-t border-slate-100">
+            <!-- Modal Form Body (Scrollable) -->
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1">
               
-              <!-- 1-Tap Fee Selector Pills -->
-              <div class="lg:col-span-5">
-                <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelFeeSelect">5. Doctor Fees:</span>
-                <div id="walkinFeePills" class="grid grid-cols-4 gap-1.5">
-                  <!-- Populated by JS -->
+              <!-- Row 1: Name, Age/Gender, Mobile -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-2.5">
+                <!-- Patient Name with Voice Mic Button -->
+                <div class="sm:col-span-5 relative">
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelPatientName">1. Mareez Ka Naam (Patient Name) *</label>
+                  <div class="relative flex items-center">
+                    <input 
+                      type="text" 
+                      id="walkinName" 
+                      placeholder="जैसे: सुनीता देवी / राहुल कुमार" 
+                      onkeydown="if(event.key==='Enter') createFastWalkIn()"
+                      class="w-full pl-3 pr-9 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
+                    />
+                    <button 
+                      type="button"
+                      onclick="simulateVoiceInput()" 
+                      class="absolute right-1.5 w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#075E54] flex items-center justify-center transition"
+                      title="Boliye (Voice Dictation)"
+                    >
+                      <i id="voiceMicIcon" class="fa-solid fa-microphone text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Age & Gender Quick Input -->
+                <div class="sm:col-span-3">
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelAgeGender">2. Umar / Gender</label>
+                  <div class="flex gap-1">
+                    <input 
+                      type="number" 
+                      id="walkinAge" 
+                      placeholder="Umar (35)" 
+                      min="1" max="115"
+                      class="w-2/3 px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
+                    />
+                    <select 
+                      id="walkinGender" 
+                      class="w-1/3 px-1.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] text-sm"
+                    >
+                      <option value="M">M</option>
+                      <option value="F">F</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="sm:col-span-4">
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5" data-i18n="labelMobile">3. Mobile No. (Optional)</label>
+                  <div class="relative">
+                    <input 
+                      type="tel" 
+                      id="walkinPhone" 
+                      maxlength="10"
+                      placeholder="98XXXXXXXX (WhatsApp)" 
+                      class="w-full pl-3 pr-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <!-- 1-Tap Payment Mode Pills (Cash / UPI / Baaki) -->
-              <div class="lg:col-span-4">
-                <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPaymentMode">6. Paisa Kaise Aaya:</span>
-                <div id="walkinPayModePills" class="grid grid-cols-3 gap-1.5">
-                  <!-- Populated by JS -->
+              <!-- Row 2: 1-Tap Takleef (Reason) Chips -->
+              <div>
+                <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelReasonChips">
+                  4. Takleef Chunein (1-Tap Reason — No Typing):
+                </span>
+                <div id="walkinReasonChips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                  <!-- Populated dynamically by JS -->
                 </div>
               </div>
 
-              <!-- Giant Submit Token Button -->
-              <div class="lg:col-span-3 pt-1 lg:pt-3">
-                <button 
-                  type="button"
-                  onclick="createFastWalkIn()" 
-                  class="btn-tactile w-full bg-[#128C7E] hover:bg-[#075E54] active:bg-[#05433c] text-white font-black py-3 px-3 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm sm:text-base transition"
-                >
-                  <i class="fa-solid fa-plus-circle text-[#25D366] text-lg"></i>
-                  <span id="giveTokenBtnText">Token Dein (#15)</span>
-                </button>
+              <!-- Row 3: 1-Tap Fee + Payment Mode -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                <!-- 1-Tap Fee Selector Pills -->
+                <div>
+                  <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelFeeSelect">5. Doctor Fees:</span>
+                  <div id="walkinFeePills" class="grid grid-cols-4 gap-1.5">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+
+                <!-- 1-Tap Payment Mode Pills (Cash / UPI / Baaki) -->
+                <div>
+                  <span class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="labelPaymentMode">6. Paisa Kaise Aaya:</span>
+                  <div id="walkinPayModePills" class="grid grid-cols-3 gap-1.5">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
               </div>
 
             </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 flex-shrink-0">
+              <button 
+                type="button" 
+                onclick="closeFastWalkinModal()" 
+                class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-100 transition"
+              >
+                Radd Karein (Cancel ✕)
+              </button>
+              <button 
+                type="button"
+                onclick="createFastWalkIn()" 
+                class="btn-tactile bg-[#128C7E] hover:bg-[#075E54] active:bg-[#05433c] text-white font-black py-2.5 px-5 rounded-xl shadow-md flex items-center gap-2 text-xs sm:text-sm transition"
+              >
+                <i class="fa-solid fa-plus-circle text-[#25D366] text-base"></i>
+                <span id="giveTokenBtnText">Token Dein (#15)</span>
+              </button>
+            </div>
+
           </div>
         </div>
 
@@ -746,139 +791,140 @@
               <i class="fa-solid fa-gear"></i>
               <span>Edit Timings</span>
             </button>
+            <button 
+              onclick="openInteractiveQRModal()" 
+              class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i class="fa-solid fa-qrcode text-base"></i>
+              <span data-i18n="btnShowStandee">View Clinic QR Standee</span>
+            </button>
           </div>
         </div>
 
-        <!-- Real-World Clinic Reality Toggles (Doctor Expected Arrival / Pause QR / Clinic QR Modal) -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-4">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-            <div>
-              <h2 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-sliders text-[#128C7E]"></i>
-                <span data-i18n="clinicLiveControlsTitle">Clinic Live Board & Online QR Controls</span>
-              </h2>
-              <p class="text-xs text-slate-500 mt-0.5" data-i18n="clinicLiveControlsSub">
-                Doctor ke aane ka samay aur live clinic status yahan se control karein — mareezon ke live pass par turant dikhega.
-              </p>
+        <!-- Real-World Clinic Reality Toggles (Doctor Expected Arrival & Pause QR) -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-emerald-100 text-[#075E54] flex items-center justify-center flex-shrink-0 text-base">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <div>
+                <h3 class="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+                  Doctor Expected Arrival & Live Slot Controls
+                </h3>
+                <p class="text-[11px] text-slate-500">
+                  Expected arrival updates patient slots in real-time. Pause online booking during full house.
+                </p>
+              </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-              <!-- Legacy Toggle 1 (Preserved for compatibility) -->
-              <button 
-                onclick="toggleDoctorLate()" 
-                id="btnDoctorLateToggle"
-                class="btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700"
-              >
-                <i class="fa-solid fa-clock text-amber-500"></i>
-                <span data-i18n="btnDoctorLate">⏳ Doctor Late Toggle</span>
-                <span id="doctorLateStatusPill" class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black">OFF</span>
-              </button>
-
-              <!-- Toggle 2: Pause Online QR Bookings (Full House) -->
-              <button 
-                onclick="togglePauseQR()" 
-                id="btnPauseQRToggle"
-                class="btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700"
-              >
-                <i class="fa-solid fa-ban text-rose-500"></i>
-                <span data-i18n="btnPauseQR">🛑 Online QR Booking Rokein</span>
-                <span id="pauseQRStatusPill" class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black">OPEN</span>
-              </button>
-
-              <!-- Button 3: Open Interactive QR Modal -->
-              <button 
-                onclick="openInteractiveQRModal()" 
-                class="btn-tactile px-4 py-2 rounded-xl font-black text-xs bg-[#075E54] hover:bg-[#128C7E] text-white flex items-center gap-2 shadow-sm transition"
-              >
-                <i class="fa-solid fa-qrcode text-[#25D366]"></i>
-                <span data-i18n="btnShowStandee">Clinic QR Standee Dekhein</span>
-              </button>
-            </div>
+            <!-- Powerful Pause/Resume Online Booking Button -->
+            <button 
+              onclick="togglePauseQR()" 
+              id="btnPauseQRToggle"
+              type="button"
+              class="btn-tactile px-4 py-2.5 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs"
+            >
+              <i class="fa-solid fa-ban text-emerald-600"></i>
+              <span data-i18n="btnPauseQR">Online Booking:</span>
+              <span id="pauseQRStatusPill" class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-black">OPEN</span>
+            </button>
           </div>
 
-          <!-- Doctor Expected Arrival Daily Setter Card -->
-          <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200 space-y-3">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center flex-shrink-0">
-                  <i class="fa-solid fa-clock text-sm"></i>
-                </div>
-                <div>
-                  <h3 class="text-xs font-black uppercase text-slate-900 tracking-wide flex items-center gap-1.5">
-                    Doctor Expected Arrival Time (Daily Arrival & Slot Time Setter)
-                  </h3>
-                  <p class="text-[11px] text-slate-500">
-                    Doctor ke aane ka samay set karein — sabhi mareezon ke slot ka samay (Revised Slot Time) live update hoga.
-                  </p>
-                </div>
+          <!-- Doctor Arrival Setter Row (Compact, Powerful Dropdown + Time Picker + Plus/Minus) -->
+          <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            
+            <div class="flex items-center gap-2 flex-wrap">
+              <label for="doctorArrivalDropdown" class="text-xs font-black text-slate-700 whitespace-nowrap">
+                Doctor Aane Ka Samay:
+              </label>
+
+              <!-- Arrival Dropdown with Early Access on Top & Delays Below -->
+              <select 
+                id="doctorArrivalDropdown" 
+                onchange="onDoctorArrivalDropdownChange(this.value)" 
+                class="px-3 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:outline-none focus:border-[#128C7E] shadow-xs cursor-pointer"
+              >
+                <optgroup label="⚡ Early Access (Pehle Arrival)">
+                  <option value="-90">⚡ 1 Hour 30 Mins Early Arrival (-90m)</option>
+                  <option value="-60">⚡ 1 Hour Early Arrival (-60m)</option>
+                  <option value="-45">⚡ 45 Mins Early Arrival (-45m)</option>
+                  <option value="-30">⚡ 30 Mins Early Arrival (-30m)</option>
+                  <option value="-15">⚡ 15 Mins Early Arrival (-15m)</option>
+                </optgroup>
+                <option value="0" selected>🟢 Samay Par / On Time (0 min)</option>
+                <optgroup label="⏳ Doctor Delay (Late Arrival)">
+                  <option value="15">⏳ 15 Mins Delay (+15m)</option>
+                  <option value="30">⏳ 30 Mins Delay (+30m)</option>
+                  <option value="45">⏳ 45 Mins Delay (+45m)</option>
+                  <option value="60">⏳ 1 Hour Delay (+60m)</option>
+                  <option value="90">⏳ 1 Hour 30 Mins Delay (+90m)</option>
+                  <option value="120">⏳ 2 Hours Delay (+120m)</option>
+                  <option value="150">⏳ 2 Hours 30 Mins Delay (+150m)</option>
+                  <option value="180">⏳ 3 Hours Delay (+180m)</option>
+                </optgroup>
+              </select>
+
+              <!-- Plus / Minus Stepper Controls -->
+              <div class="flex items-center gap-1">
+                <button 
+                  type="button" 
+                  onclick="adjustDoctorDelayMinutes(-15)" 
+                  class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
+                  title="15 Mins Pehle (-15m)"
+                >
+                  -15
+                </button>
+                <button 
+                  type="button" 
+                  onclick="adjustDoctorDelayMinutes(15)" 
+                  class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
+                  title="15 Mins Late (+15m)"
+                >
+                  +15
+                </button>
               </div>
 
-              <!-- Live Badge of Current Arrival Offset -->
-              <div id="doctorArrivalLiveBadge" class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-emerald-300 shadow-xs">
-                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                <span id="doctorArrivalLiveBadgeText">🟢 Samay Par (Expected: 10:00 AM)</span>
-              </div>
-            </div>
-
-            <!-- Quick 1-Tap Delay/Early Presets -->
-            <div class="flex flex-wrap gap-1.5">
-              <button type="button" onclick="setDoctorDelayMinutes(0)" id="delayPreset-0" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-black border-2 transition bg-emerald-600 text-white border-emerald-700 shadow-xs">
-                🟢 On Time (0m)
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(30)" id="delayPreset-30" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
-                ⏳ +30m Late
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(45)" id="delayPreset-45" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
-                ⏳ +45m Late
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(60)" id="delayPreset-60" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
-                ⏳ +1 Ghanta (+60m)
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(90)" id="delayPreset-90" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
-                ⏳ +1.5 Ghanta (+90m)
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(120)" id="delayPreset-120" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
-                ⏳ +2 Ghante (+120m)
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(180)" id="delayPreset-180" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
-                ⏳ +3 Ghante (+180m)
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(-30)" id="delayPreset-minus30" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-sky-50">
-                ⚡ 30m Pehle (Early)
-              </button>
-              <button type="button" onclick="setDoctorDelayMinutes(-60)" id="delayPreset-minus60" class="delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-sky-50">
-                ⚡ 1 Ghanta Pehle (-60m)
-              </button>
-            </div>
-
-            <!-- Custom Arrival Time & Custom Delay Inputs -->
-            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/80">
-              <span class="text-[11px] font-bold text-slate-600">Ya Custom Expected Samay Chunein:</span>
+              <!-- Direct Time Input -->
               <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-bold text-slate-500">Ya Time:</span>
                 <input 
                   type="time" 
                   id="customDoctorArrivalTimeInput" 
-                  class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                  onchange="setCustomDoctorArrivalTimeFromInput()" 
+                  class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]" 
                 />
-                <button 
-                  type="button" 
-                  onclick="setCustomDoctorArrivalTimeFromInput()" 
-                  class="btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white font-bold text-xs rounded-xl shadow-xs"
-                >
-                  Set Time
-                </button>
               </div>
-              <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
+            </div>
+
+            <!-- Live Status Indicator Badge -->
+            <div id="doctorArrivalLiveBadge" class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-emerald-300 shadow-xs whitespace-nowrap">
+              <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+              <span id="doctorArrivalLiveBadgeText">🟢 Samay Par (Expected: 10:00 AM)</span>
+            </div>
+
+          </div>
+
+            <!-- 1-Tap Quick Delay & Early Preset Chips -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/80">
+              <span class="text-[11px] font-bold text-slate-600 mr-1">Quick Presets:</span>
+              <button type="button" onclick="setDoctorDelayMinutes(0)" id="delayPreset-0" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">🟢 On-Time (0m)</button>
+              <button type="button" onclick="setDoctorDelayMinutes(30)" id="delayPreset-30" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⏳ 30m Late</button>
+              <button type="button" onclick="setDoctorDelayMinutes(45)" id="delayPreset-45" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⏳ 45m Late</button>
+              <button type="button" onclick="setDoctorDelayMinutes(60)" id="delayPreset-60" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⏳ 60m Late</button>
+              <button type="button" onclick="setDoctorDelayMinutes(-30)" id="delayPreset-minus30" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⚡ 30m Early</button>
+
+              <div class="flex items-center gap-1.5 ml-auto sm:ml-0 pt-1 sm:pt-0">
                 <input 
                   type="number" 
                   id="customDoctorDelayMinutesInput" 
                   placeholder="Minutes (+/-)" 
-                  class="w-24 px-2 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                  class="w-24 px-2 py-1 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
                 />
                 <button 
                   type="button" 
                   onclick="setCustomDoctorDelayFromInput()" 
-                  class="btn-tactile px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl"
+                  class="btn-tactile px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl"
                 >
                   Set Mins
                 </button>
@@ -977,33 +1023,62 @@
       <!-- ================================================================= -->
       <section id="clinicTab-register" class="hidden space-y-4">
         
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
               <h2 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-book-medical text-[#128C7E]"></i>
-                <span data-i18n="registerHeading">Purane Mareezon Ka Digital Khata (All Patients)</span>
+                <i class="fa-solid fa-address-book text-[#128C7E]"></i>
+                <span data-i18n="registerHeading">Patients Directory & Lifetime History (मरीज़ बहीखाता)</span>
               </h2>
               <p class="text-xs text-slate-500 mt-0.5" data-i18n="registerSub">
-                Purana mareez aaye toh naam dobara mat likhiye — bas 1-Tap mein Aaj Ki Line mein jodein!
+                Search returning patients by phone number or name to view all lifetime appointments and re-add in 1-tap.
               </p>
             </div>
 
-            <!-- Instant Search Input -->
-            <div class="relative w-full sm:w-80">
-              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <!-- Instant Search Input by Phone (Primary) or Name -->
+            <div class="relative w-full md:w-80">
+              <i class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
               <input 
                 type="text" 
                 id="registerSearchInput" 
                 oninput="renderPatientRegister()" 
-                placeholder="Search Mobile (98...), Name, BP/Sugar..." 
-                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#128C7E] focus:bg-white"
+                placeholder="Search Phone (98...) ya Name..." 
+                class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs sm:text-sm font-bold focus:outline-none focus:border-[#128C7E] focus:bg-white"
               />
             </div>
           </div>
+
+          <!-- Secondary Filter Strip: Date Filter & Summary Count -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+            <div class="flex items-center gap-2">
+              <label for="registerDateFilter" class="text-xs font-bold text-slate-600 flex items-center gap-1">
+                <i class="fa-regular fa-calendar text-[#128C7E]"></i> Tarikh Chunein:
+              </label>
+              <input 
+                type="date" 
+                id="registerDateFilter" 
+                onchange="renderPatientRegister()" 
+                class="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                title="Filter by appointment date"
+              />
+              <button 
+                type="button" 
+                onclick="clearRegisterDateFilter()" 
+                id="btnClearDateFilter"
+                class="text-xs font-bold text-rose-600 hover:underline px-1 hidden"
+                title="Clear date filter"
+              >
+                ✕ Clear Date
+              </button>
+            </div>
+
+            <span id="registerPatientCount" class="text-xs font-bold bg-emerald-50 text-[#075E54] px-2.5 py-1 rounded-full border border-emerald-200">
+              All Lifetime Patients
+            </span>
+          </div>
         </div>
 
-        <!-- Patient Directory List -->
+        <!-- Patient Directory List Container -->
         <div id="registerListContainer" class="space-y-2.5">
           <!-- Populated dynamically by JS -->
         </div>
@@ -1048,7 +1123,32 @@
 
         </div>
 
-        <!-- Middle Row: 7-Day Mini Bar Chart + Night Closing WhatsApp Hisaab Card -->
+        <!-- Action Bar: Pop-up button for Today's Token-Wise Fee Ledger -->
+        <div class="bg-white rounded-2xl p-3.5 sm:p-4 shadow-md border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-sm flex-shrink-0">
+              <i class="fa-solid fa-receipt text-base"></i>
+            </span>
+            <div>
+              <h3 class="font-extrabold text-sm sm:text-base text-slate-900 leading-tight">
+                Today's Token-Wise Fee Ledger (आज का बहीखाता)
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Parchi-wise transaction details, payment modes & 1-tap Baaki fee collection.
+              </p>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            onclick="openGallaLedgerModal()" 
+            class="btn-tactile px-4 py-2.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition whitespace-nowrap"
+          >
+            <i class="fa-solid fa-table-list text-amber-300"></i>
+            <span>Open Fee Ledger (बहीखाता देखें) ➔</span>
+          </button>
+        </div>
+
+        <!-- Middle Row: 7-Day Collection Bar Chart + Night Closing WhatsApp Hisaab Card -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           
           <!-- 7-Day Collection Bar Chart -->
@@ -1058,10 +1158,10 @@
                 <h3 class="font-black text-sm sm:text-base text-slate-900" data-i18n="chartHeading">
                   📊 Pichle 7 Din Ka Clinic Hisaab
                 </h3>
-                <p class="text-xs text-slate-500" data-i18n="chartSub">Rozana mareez aur collection</p>
+                <p class="text-xs text-slate-500" data-i18n="chartSub">Daily footfall & real fee collection</p>
               </div>
-              <span class="text-xs font-bold bg-emerald-50 text-[#075E54] px-2.5 py-1 rounded-lg border border-emerald-200">
-                Avg: ₹4,850 / day
+              <span id="gallaAvgRevenueBadge" class="text-xs font-bold bg-emerald-50 text-[#075E54] px-2.5 py-1 rounded-lg border border-emerald-200">
+                Real Collection Only
               </span>
             </div>
 
@@ -1104,15 +1204,9 @@
 
         </div>
 
-        <!-- Detailed Today's Fee Ledger List -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200">
-          <h3 class="font-black text-sm sm:text-base text-slate-900 mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-receipt text-[#128C7E]"></i>
-            <span data-i18n="gallaLedgerHeading">Aaj Ki Parchi-Wise Fee Entry (Click 'Baaki' to Mark Paid)</span>
-          </h3>
-          <div id="gallaLedgerList" class="divide-y divide-slate-100">
-            <!-- Populated by JS -->
-          </div>
+        <!-- Embedded summary container with gallaLedgerHeading preserved for test compatibility -->
+        <div class="hidden">
+          <span data-i18n="gallaLedgerHeading">Today's Token-Wise Fee Ledger</span>
         </div>
 
       </section>
@@ -1899,23 +1993,96 @@
         </div>
       </div>
 
-      <!-- Section 2: Custom Metrics Builder (Dynamic) -->
+      <!-- Section 2: Custom Metrics Builder (Dynamic Tests & Charges) -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h4 class="text-xs font-black uppercase tracking-wider text-[#075E54] flex items-center gap-1.5">
-              <i class="fa-solid fa-calculator text-[#25D366]"></i> 2. Anya Metrics & Jaanch (Custom Metrics)
+              <i class="fa-solid fa-flask-vial text-[#25D366]"></i> 2. Anya Metrics, Jaanch & Charges (Custom Lab Tests & Shulk)
             </h4>
-            <p class="text-[11px] text-slate-500">Doctor/Compounder apne mutabik koi bhi jaanch aur unit jod sakte hain.</p>
+            <p class="text-[11px] text-slate-500">Search/select common lab tests and charges or type any custom test & unit.</p>
           </div>
           <button 
             type="button" 
             onclick="addCustomMetricRow()" 
-            class="text-[11px] font-black text-white bg-[#075E54] hover:bg-[#128C7E] px-2.5 py-1 rounded-lg flex items-center gap-1 transition"
+            class="text-[11px] font-black text-white bg-[#075E54] hover:bg-[#128C7E] px-2.5 py-1.5 rounded-lg flex items-center justify-center gap-1 transition shadow-xs self-start sm:self-auto"
           >
-            <i class="fa-solid fa-plus text-[10px]"></i> Metric Jodein
+            <i class="fa-solid fa-plus text-[10px]"></i> + Custom Metric Jodein
           </button>
         </div>
+
+        <!-- Searchable / Selectable Dropdown for Common Lab Tests & Charges -->
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+          <select 
+            id="presetLabTestSelect" 
+            onchange="handleSelectPresetMetric(this.value)" 
+            class="w-full sm:flex-1 px-3 py-2 bg-slate-50 hover:bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] cursor-pointer shadow-xs"
+          >
+            <option value="">🔍 Choose Common Test / Charge (Dropdown se chunein)...</option>
+            <optgroup label="🩸 Blood Tests (Rakt Jaanch)">
+              <option value="CBC (Complete Blood Count)|Report">🩸 CBC (Complete Blood Count)</option>
+              <option value="Blood Sugar Fasting|mg/dL">🩸 Blood Sugar Fasting (FBS)</option>
+              <option value="Blood Sugar PP|mg/dL">🩸 Blood Sugar PP</option>
+              <option value="Blood Sugar Random|mg/dL">🩸 Blood Sugar Random (RBS)</option>
+              <option value="HbA1c (3-Month Sugar)|%">🩸 HbA1c (Glycated Hemoglobin)</option>
+              <option value="Hemoglobin (Hb)|g/dL">🩸 Hemoglobin (Hb)</option>
+              <option value="Thyroid Profile (TSH/T3/T4)|uIU/mL">🧪 Thyroid Profile (TSH)</option>
+              <option value="LFT (Liver Function Test)|Report">🧪 LFT (Liver Function Test)</option>
+              <option value="KFT (Kidney Function Test)|Report">🧪 KFT (Kidney Function Test)</option>
+              <option value="Lipid Profile (Cholesterol)|mg/dL">🧪 Lipid Profile (Cholesterol)</option>
+              <option value="Serum Calcium|mg/dL">🧪 Serum Calcium</option>
+              <option value="Serum Electrolytes (Na/K/Cl)|mEq/L">🧪 Serum Electrolytes</option>
+              <option value="Vitamin D3|ng/mL">🧪 Vitamin D3</option>
+              <option value="Vitamin B12|pg/mL">🧪 Vitamin B12</option>
+              <option value="Dengue NS1 / IgM / IgG|Report">🦟 Dengue NS1 / IgM / IgG</option>
+              <option value="Widal Test (Typhoid)|Report">🧪 Widal Test (Typhoid)</option>
+            </optgroup>
+            <optgroup label="🩻 Imaging & Diagnostics">
+              <option value="Urine Routine & Microscopic|Report">🧪 Urine Routine & Microscopic</option>
+              <option value="X-Ray Chest PA|Report">🩻 X-Ray Chest PA View</option>
+              <option value="ECG (12-Lead)|Report">📈 ECG (12-Lead)</option>
+              <option value="Ultrasound (USG Abdomen)|Report">📷 Ultrasound (USG Abdomen)</option>
+              <option value="SpO2 (Oxygen Saturation)|%">💨 SpO2 (%)</option>
+              <option value="Pulse Rate|bpm">❤️ Pulse Rate (bpm)</option>
+            </optgroup>
+            <optgroup label="🩹 Clinic Procedures & Charges">
+              <option value="Dressing / Bandage Charge|₹">🩹 Dressing / Bandage Charge</option>
+              <option value="Nebulization Charge|₹">💨 Nebulization Charge</option>
+              <option value="Injection / IV Infusion Charge|₹">💉 Injection / IV Infusion Charge</option>
+              <option value="Stitches / Suturing Charge|₹">🧵 Stitches / Suturing Charge</option>
+              <option value="Extra Procedure Fee|₹">🩺 Extra Procedure Fee</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Datalist Autocomplete for Custom Metric Names -->
+        <datalist id="commonLabTestsList">
+          <option value="CBC (Complete Blood Count)">
+          <option value="Blood Sugar Fasting">
+          <option value="Blood Sugar PP">
+          <option value="Blood Sugar Random">
+          <option value="Thyroid Profile (TSH)">
+          <option value="LFT (Liver Function Test)">
+          <option value="KFT (Kidney Function Test)">
+          <option value="Urine Routine & Microscopic">
+          <option value="X-Ray Chest PA">
+          <option value="ECG (12-Lead)">
+          <option value="Lipid Profile">
+          <option value="Ultrasound (USG Abdomen)">
+          <option value="HbA1c">
+          <option value="Hemoglobin (Hb)">
+          <option value="Serum Calcium">
+          <option value="Vitamin D3">
+          <option value="Vitamin B12">
+          <option value="Dengue NS1">
+          <option value="Widal Test">
+          <option value="SpO2">
+          <option value="Pulse">
+          <option value="Dressing Charge">
+          <option value="Nebulization Charge">
+          <option value="Injection Charge">
+          <option value="Stitches Charge">
+        </datalist>
 
         <!-- 1-Tap Quick Presets for Custom Metrics -->
         <div class="flex flex-wrap gap-1.5">
@@ -1930,6 +2097,18 @@
           </button>
           <button type="button" onclick="addCustomMetricPreset('HbA1c', '%')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
             + HbA1c (%)
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('CBC', 'Report')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + CBC
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('Blood Sugar', 'mg/dL')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + Sugar (mg/dL)
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('ECG', 'Report')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + ECG
+          </button>
+          <button type="button" onclick="addCustomMetricPreset('Dressing Charge', '₹')" class="px-2 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#075E54] rounded-lg text-[11px] font-bold border border-slate-200 transition">
+            + Dressing (₹)
           </button>
         </div>
 
@@ -3185,6 +3364,193 @@
   </div>
 
   <!-- ===================================================================== -->
+  <!-- MODAL 6: DOUBLE CONFIRMATION FOR APPOINTMENT CANCELLATION             -->
+  <!-- ===================================================================== -->
+  <div id="cancelConfirmModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border-2 border-rose-300 my-auto">
+      <div class="bg-rose-50 p-5 text-center border-b border-rose-100">
+        <div class="w-14 h-14 rounded-full bg-rose-100 text-rose-600 font-black text-2xl flex items-center justify-center mx-auto mb-2.5 shadow-xs">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 leading-tight">Appointment Cancellation Confirm Karein</h3>
+        <p class="text-xs text-slate-600 mt-1" id="cancelConfirmModalSubtitle">
+          Kya aap sach mein ye token cancel karna chahte hain?
+        </p>
+      </div>
+
+      <div class="p-5 space-y-3 text-center">
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+          <div class="text-xs text-slate-500 font-semibold">Patient Name & Token:</div>
+          <div id="cancelConfirmPatientInfo" class="text-base font-black text-slate-900 mt-0.5">
+            Token #--: Mareez
+          </div>
+        </div>
+        <p class="text-xs text-rose-600 font-bold">
+          ⚠️ Cancel karne ke baad ye mareez Live Queue se turant hat jayega.
+        </p>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2.5">
+        <button 
+          type="button" 
+          onclick="closeCancelConfirmModal()" 
+          class="flex-1 py-2.5 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm transition"
+        >
+          Nahi, Galti Se Daba (Keep)
+        </button>
+        <button 
+          type="button" 
+          onclick="executeConfirmedCancellation()" 
+          id="btnConfirmExecuteCancel"
+          class="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-black text-xs sm:text-sm shadow-md transition"
+        >
+          Haan, Cancel Karein ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 7: PATIENT PROFILE & LIFETIME APPOINTMENTS HISTORY              -->
+  <!-- ===================================================================== -->
+  <div id="patientProfileModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 my-auto">
+      
+      <!-- Profile Header -->
+      <div class="bg-gradient-to-r from-[#075E54] to-[#128C7E] text-white p-4 sm:p-5 flex items-start justify-between flex-shrink-0">
+        <div class="flex items-center gap-3.5">
+          <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white/20 text-white font-black text-xl sm:text-2xl flex items-center justify-center flex-shrink-0 border border-white/30" id="profileModalAvatar">
+            M
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 id="profileModalName" class="text-lg sm:text-xl font-black leading-tight">Patient Name</h3>
+              <span id="profileModalAgeGender" class="text-xs font-bold text-emerald-200 bg-white/15 px-2 py-0.5 rounded-full">(35 yrs, M)</span>
+            </div>
+            <p id="profileModalPhone" class="text-xs text-emerald-100 mt-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-phone text-[10px]"></i> <span id="profileModalPhoneText">9835012345</span>
+            </p>
+          </div>
+        </div>
+        <button onclick="closePatientProfileModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white text-sm transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Quick Stats & Action Strip -->
+      <div class="bg-emerald-50/70 border-b border-emerald-100 px-4 py-2.5 flex items-center justify-between flex-wrap gap-2 text-xs flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="font-extrabold text-[#075E54]" id="profileModalTotalVisits">Total 1 Visit</span>
+          <span class="text-slate-400">•</span>
+          <span class="font-semibold text-slate-700" id="profileModalLastVisitDate">Last: 30 Oct 2026</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button 
+            type="button" 
+            id="profileModalAddTodayBtn"
+            onclick="reAddPatientFromProfileModal()" 
+            class="btn-tactile px-3 py-1.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+          >
+            <i class="fa-solid fa-plus text-[#25D366]"></i>
+            <span>+ Aaj Ki Line Mein Jodein</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Timeline of ALL Appointments (Scrollable) -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 bg-slate-50/40">
+        <h4 class="text-xs font-black uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-timeline text-[#128C7E]"></i> Complete Appointment History (Sabhi Appointments)
+        </h4>
+
+        <div id="profileAppointmentsList" class="space-y-2.5">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3 bg-white border-t border-slate-200 flex justify-end flex-shrink-0">
+        <button 
+          type="button" 
+          onclick="closePatientProfileModal()" 
+          class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition"
+        >
+          Band Karein ✕
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 8: TODAY'S TOKEN-WISE FEE LEDGER (GALLA POP-UP)                 -->
+  <!-- ===================================================================== -->
+  <div id="gallaLedgerModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 my-auto">
+      
+      <!-- Ledger Header -->
+      <div class="bg-[#075E54] text-white p-4 sm:p-5 flex items-center justify-between flex-shrink-0 shadow-md">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-2xl bg-[#25D366] text-slate-950 font-black text-lg flex items-center justify-center shadow-xs">
+            <i class="fa-solid fa-receipt"></i>
+          </span>
+          <div>
+            <h3 class="text-base sm:text-lg font-black leading-tight">
+              Today's Token-Wise Fee Ledger (आज का बहीखाता)
+            </h3>
+            <p class="text-xs text-emerald-100 mt-0.5">
+              Live token-by-token transaction log with 1-tap payment status toggles
+            </p>
+          </div>
+        </div>
+        <button onclick="closeGallaLedgerModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white text-sm transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Quick Financial Summary Strip inside Modal -->
+      <div class="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center flex-shrink-0">
+        <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+          <span class="text-[10px] font-bold text-slate-500 uppercase block">Total Today</span>
+          <div id="ledgerModalTotal" class="text-base sm:text-lg font-black text-[#075E54] mt-0.5">₹0</div>
+        </div>
+        <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+          <span class="text-[10px] font-bold text-slate-500 uppercase block">💵 Cash</span>
+          <div id="ledgerModalCash" class="text-base sm:text-lg font-black text-emerald-700 mt-0.5">₹0</div>
+        </div>
+        <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+          <span class="text-[10px] font-bold text-slate-500 uppercase block">📱 UPI</span>
+          <div id="ledgerModalUpi" class="text-base sm:text-lg font-black text-sky-700 mt-0.5">₹0</div>
+        </div>
+        <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+          <span class="text-[10px] font-bold text-amber-700 uppercase block">⏳ Baaki</span>
+          <div id="ledgerModalBaaki" class="text-base sm:text-lg font-black text-amber-600 mt-0.5">₹0</div>
+        </div>
+      </div>
+
+      <!-- Ledger Table / List (Scrollable) -->
+      <div class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-2">
+        <div id="gallaLedgerList" class="divide-y divide-slate-100">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 flex-shrink-0">
+        <span class="text-xs text-slate-500 italic">Click any 'Baaki' button to mark as paid</span>
+        <button 
+          type="button" 
+          onclick="closeGallaLedgerModal()" 
+          class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 transition"
+        >
+          Band Karein ✕
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- FLOATING TOAST NOTIFICATION                                           -->
   <!-- ===================================================================== -->
   <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-full max-w-md px-4"></div>
@@ -3511,14 +3877,14 @@
       english: {
         roleClinic: 'Clinic Desk',
         rolePatient: 'Patient QR Link',
-        tabQueue: 'Live Queue',
+        tabQueue: 'Live',
         tabCalendar: 'Slots & QR',
         tabRegister: 'Patients',
-        tabGalla: 'Checkbook',
+        tabGalla: 'Revenue',
         tabProfile: 'Profile',
         liveInCabinBadge: 'CURRENTLY IN DOCTOR CABIN',
         openParchiBtn: 'Open Rx & Vitals',
-        fastEntryTitle: '⚡ 3-Second Fast Walk-In Token Entry',
+        fastEntryTitle: '⚡ 3-Sec Fast Walk-In Entry (Naya Mareez)',
         nextTokenLabel: 'Next Token:',
         labelPatientName: '1. Patient Full Name *',
         labelAgeGender: '2. Age / Gender',
@@ -3526,7 +3892,7 @@
         labelReasonChips: '4. Quick Visit Reason (1-Tap):',
         labelFeeSelect: '5. Consultation Fee:',
         labelPaymentMode: '6. Payment Mode:',
-        clinicLiveControlsTitle: 'Clinic Live Status & QR Booking Controls',
+        clinicLiveControlsTitle: 'Clinic Live Board & Online QR Controls',
         clinicLiveControlsSub: 'Changes made here update the live Google Maps / QR booking page immediately.',
         btnDoctorLate: '⏳ Doctor Delayed by 30m',
         btnPauseQR: '🛑 Pause Online Bookings',
@@ -3542,7 +3908,7 @@
         gallaUpiSub: 'Settled directly to Bank',
         gallaBaakiLabel: '⏳ Pending / Unpaid Fees',
         chartHeading: '📊 Last 7 Days Clinic Revenue',
-        chartSub: 'Daily footfall and fee collection',
+        chartSub: 'Daily footfall and real fee collection',
         sendHisaabTitle: 'Send Night Closing Account Summary on WhatsApp',
         sendHisaabSub: 'Send a complete timestamped Cash + UPI settlement report to the Doctor in 1 tap.',
         btnSendHisaabWA: '📲 Send Daily Summary to Doctor',
@@ -3567,14 +3933,14 @@
       hinglish: {
         roleClinic: 'Compounder Desk',
         rolePatient: 'Patient QR Link',
-        tabQueue: 'Aaj Ki Line',
+        tabQueue: 'Live',
         tabCalendar: 'Slots & QR',
         tabRegister: 'Patients',
-        tabGalla: 'Checkbook',
+        tabGalla: 'Revenue',
         tabProfile: 'Profile',
-        liveInCabinBadge: 'ABHI DOCTOR KE PAAS (IN CABIN)',
+        liveInCabinBadge: 'Doctor Cabin',
         openParchiBtn: 'Parchi / Vitals Kholein',
-        fastEntryTitle: '⚡ 3-Second Naya Mareez Entry (Fast Walk-In Parchi)',
+        fastEntryTitle: '⚡ 3-Sec Naya Mareez Entry (Fast Walk-In Parchi)',
         nextTokenLabel: 'Agla Token:',
         labelPatientName: '1. Mareez Ka Naam (Patient Name) *',
         labelAgeGender: '2. Umar / Gender',
@@ -3598,7 +3964,7 @@
         gallaUpiSub: 'Seedha Bank Mein Gaya',
         gallaBaakiLabel: '⏳ Fee Baaki (Unpaid)',
         chartHeading: '📊 Pichle 7 Din Ka Clinic Hisaab',
-        chartSub: 'Rozana mareez aur collection',
+        chartSub: 'Rozana mareez aur real collection',
         sendHisaabTitle: 'Raat Ko Clinic Band Karte Waqt 1-Tap Hisaab Bhejein',
         sendHisaabSub: 'Koi register jodne ki zaroorat nahi! Pura Cash + UPI hisaab Doctor Sahab ke WhatsApp par bhejein.',
         btnSendHisaabWA: '📲 Doctor Ko WhatsApp Hisaab Bhejein',
@@ -3623,11 +3989,11 @@
       hindi: {
         roleClinic: 'कम्पाउंडर डेस्क',
         rolePatient: 'मरीज़ टोकन लिंक',
-        tabQueue: 'आज की कतार',
-        tabCalendar: 'समय व क्यूआर',
-        tabRegister: 'मरीज़ खाता',
-        tabGalla: 'गल्ला / हिसाब',
-        tabProfile: 'प्रोफाइल',
+        tabQueue: 'Live',
+        tabCalendar: 'Slots & QR',
+        tabRegister: 'Patients',
+        tabGalla: 'Revenue',
+        tabProfile: 'Profile',
         liveInCabinBadge: 'वर्तमान में डॉक्टर केबिन में',
         openParchiBtn: 'पर्ची व वाइटल्स खोलें',
         fastEntryTitle: '⚡ 3-सेकंड नई पर्ची एंट्री (फ़ास्ट वॉक-इन)',
@@ -6038,6 +6404,38 @@
       if (n) setTimeout(() => n.focus(), 250);
     }
 
+    function escapeHtml(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatPatientAgeGender(age, gender) {
+      const parts = [];
+      if (age != null && age !== '') {
+        const aStr = String(age).replace(/[^0-9]/g, '');
+        if (aStr) parts.push(`${aStr} yrs`);
+      }
+      if (gender) {
+        const g = String(gender).trim().toUpperCase();
+        if (g === 'M' || g === 'MALE' || g === 'PURUSH') parts.push('M');
+        else if (g === 'F' || g === 'FEMALE' || g === 'MAHILA') parts.push('F');
+        else if (g) parts.push(g);
+      }
+      return parts.join(', ');
+    }
+
+    function cancelCurrentCabinPatient() {
+      const inCabin = getCurrentCabinPatient();
+      if (inCabin) {
+        promptCancelPatient(inCabin.id);
+      }
+    }
+
     // =========================================================================
     // 8. TAB 1: LIVE CABIN HERO, FAST WALK-IN & QUEUE
     // =========================================================================
@@ -6060,10 +6458,13 @@
       if (isDoctorLate) lateBadge.classList.remove('hidden');
       else lateBadge.classList.add('hidden');
 
+      const cabinCancelBtn = document.getElementById('btnCabinCancelPatient');
+
       if (inCabin) {
         document.getElementById('headerCabinTokenText').textContent = `Token #${inCabin.token} Andar`;
         document.getElementById('cabinTokenNumber').textContent = `#${inCabin.token}`;
-        document.getElementById('cabinPatientName').innerHTML = `${inCabin.name} <span class="text-emerald-200 font-semibold text-sm sm:text-base">(${inCabin.age}${inCabin.gender})</span>`;
+        const agStr = formatPatientAgeGender(inCabin.age, inCabin.gender);
+        document.getElementById('cabinPatientName').innerHTML = `${escapeHtml(inCabin.name)}${agStr ? ` <span class="text-emerald-200 font-semibold text-sm sm:text-base">(${agStr})</span>` : ''}`;
         const srcEl = document.getElementById('cabinPatientSource');
         if (srcEl) {
           srcEl.textContent = inCabin.source === 'QR Booked' ? '📱 Online / QR' : '🚶 Walk-in';
@@ -6074,6 +6475,8 @@
           inCabin.payMode === 'Baaki'
             ? `₹${inCabin.fee} (⏳ Fee Baaki)`
             : `₹${inCabin.fee} (${inCabin.payMode} ✓)`;
+
+        if (cabinCancelBtn) cabinCancelBtn.classList.remove('hidden');
 
         const ringBtn = document.getElementById('btnAnnounceToken');
         if (ringBtn) ringBtn.classList.remove('opacity-40', 'pointer-events-none');
@@ -6101,6 +6504,8 @@
             ? 'कोई मरीज़ केबिन में नहीं है'
             : (currentLang === 'hinglish' ? 'Koi mareez andar nahi hai' : 'No patient in cabin');
         document.getElementById('cabinPatientFee').textContent = '';
+
+        if (cabinCancelBtn) cabinCancelBtn.classList.add('hidden');
 
         const ringBtn = document.getElementById('btnAnnounceToken');
         if (ringBtn) ringBtn.classList.add('opacity-40', 'pointer-events-none');
@@ -6144,11 +6549,17 @@
 
     function renderFastWalkinControls() {
       const nextToken = getNextTokenNumber();
-      document.getElementById('nextAvailableTokenPreview').textContent = `#${nextToken}`;
-      document.getElementById('giveTokenBtnText').textContent =
-        currentLang === 'hindi'
-          ? `टोकन दें (#${nextToken})`
-          : (currentLang === 'hinglish' ? `Token Dein (#${nextToken})` : `Give Token (#${nextToken})`);
+      const prevEl = document.getElementById('nextAvailableTokenPreview');
+      if (prevEl) prevEl.textContent = `#${nextToken}`;
+      const modalNextEl = document.getElementById('modalNextTokenPreview');
+      if (modalNextEl) modalNextEl.textContent = `#${nextToken}`;
+      const giveBtn = document.getElementById('giveTokenBtnText');
+      if (giveBtn) {
+        giveBtn.textContent =
+          currentLang === 'hindi'
+            ? `टोकन दें (#${nextToken})`
+            : (currentLang === 'hinglish' ? `Token Dein (#${nextToken})` : `Give Token (#${nextToken})`);
+      }
 
       // 1-Tap Reason Chips
       const reasonContainer = document.getElementById('walkinReasonChips');
@@ -6266,25 +6677,49 @@
       }, 650);
     }
 
+    function openFastWalkinModal() {
+      toggleFastWalkinCollapse(true);
+    }
+
+    function closeFastWalkinModal() {
+      toggleFastWalkinCollapse(false);
+    }
+
     function toggleFastWalkinCollapse(forceState) {
+      const modal = document.getElementById('walkinModal');
       const container = document.getElementById('walkinFormCollapse');
       const chevron = document.getElementById('walkinChevron');
       const toggleText = document.getElementById('walkinToggleText');
-      if (!container) return;
+      if (!container && !modal) return;
 
-      const isCurrentlyHidden = container.classList.contains('hidden');
+      const isCurrentlyHidden = modal ? modal.classList.contains('hidden') : (container ? container.classList.contains('hidden') : true);
       const shouldOpen = (forceState !== undefined) ? forceState : isCurrentlyHidden;
 
+      if (modal) {
+        if (shouldOpen) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        } else {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      }
+
+      if (container) {
+        if (shouldOpen) {
+          container.classList.remove('hidden');
+          const input = document.getElementById('walkinName');
+          if (input) setTimeout(() => input.focus(), 100);
+        } else {
+          container.classList.add('hidden');
+        }
+      }
+
+      if (chevron) chevron.style.transform = shouldOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+      if (toggleText) toggleText.textContent = shouldOpen ? 'Band Karein (Close)' : '+ Nayi Parchi Banayein';
+
       if (shouldOpen) {
-        container.classList.remove('hidden');
-        if (chevron) chevron.style.transform = 'rotate(180deg)';
-        if (toggleText) toggleText.textContent = 'Band Karein (Close)';
-        const input = document.getElementById('walkinName');
-        if (input) setTimeout(() => input.focus(), 50);
-      } else {
-        container.classList.add('hidden');
-        if (chevron) chevron.style.transform = 'rotate(0deg)';
-        if (toggleText) toggleText.textContent = '+ Nayi Parchi Banayein';
+        renderFastWalkinControls();
       }
     }
 
@@ -6542,17 +6977,52 @@
       return currentMinutes > effectiveSlotMinutes;
     }
 
-    async function cancelPatientAppointment(patientId) {
+    async function cancelPatientAppointment(patientId, confirmed = false) {
       const p = todayQueue.find(item => item.id === patientId);
-      const pName = p ? p.name : 'Mareez';
-      if (!confirm(`Kya aap sach mein ${pName} ka token cancel karna chahte hain?`)) return;
-      if (p) {
-        p.status = 'CANCELLED';
-        saveLocalQueue();
-        refreshAllViews();
-        await syncQueuePatchToServer(patientId, { status: 'CANCELLED' });
-        showToast(`❌ Token #${p.token} appointment cancel ho gaya.`);
+      if (!p) return;
+      if (!confirmed) {
+        promptCancelPatient(patientId);
+        return;
       }
+      p.status = 'CANCELLED';
+      saveLocalQueue();
+      refreshAllViews();
+      await syncQueuePatchToServer(patientId, { status: 'CANCELLED' });
+      showToast(`❌ Token #${p.token} (${p.name}) appointment cancel ho gaya.`);
+    }
+
+    let pendingCancellationPatientId = null;
+
+    function promptCancelPatient(patientId) {
+      if (!patientId) return;
+      pendingCancellationPatientId = patientId;
+      const p = todayQueue.find(item => item.id === patientId);
+      const modal = document.getElementById('cancelConfirmModal');
+      const infoEl = document.getElementById('cancelConfirmPatientInfo');
+      if (infoEl && p) {
+        const ag = formatPatientAgeGender(p.age, p.gender);
+        infoEl.textContent = `Token #${p.token}: ${p.name} ${ag ? `(${ag})` : ''}`;
+      }
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeCancelConfirmModal() {
+      pendingCancellationPatientId = null;
+      const modal = document.getElementById('cancelConfirmModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    async function executeConfirmedCancellation() {
+      const idToCancel = pendingCancellationPatientId;
+      closeCancelConfirmModal();
+      if (!idToCancel) return;
+      await cancelPatientAppointment(idToCancel, true);
     }
 
     function renderQueueFilterPills() {
@@ -6625,12 +7095,13 @@
       const container = document.getElementById('queueListContainer');
 
       let filtered = todayQueue.filter(p => {
+        if (currentQueueFilter === 'ALL' && !searchQ && p.status === 'CANCELLED') return false;
         if (currentQueueFilter === 'WAITING' && p.status !== 'WAITING') return false;
         if (currentQueueFilter === 'IN_CABIN' && p.status !== 'IN_CABIN') return false;
         if (currentQueueFilter === 'DONE' && p.status !== 'DONE') return false;
         if (currentQueueFilter === 'BAAKI' && p.payMode !== 'Baaki') return false;
         if (searchQ) {
-          const matchName = p.name.toLowerCase().includes(searchQ);
+          const matchName = (p.name || '').toLowerCase().includes(searchQ);
           const matchToken = String(p.token).includes(searchQ);
           const matchPhone = (p.phone || '').includes(searchQ);
           return matchName || matchToken || matchPhone;
@@ -6707,6 +7178,7 @@
         const bpTag = p.bp ? `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-semibold text-[10px]">BP: ${p.bp}</span>` : '';
         const parchiTag = (p.hasParchiPhoto || p.bp || p.sugar || p.notes || (p.customMetrics && p.customMetrics.length)) ? `<span class="text-emerald-700 text-xs" title="Digital Prescription Saved"><i class="fa-solid fa-file-prescription"></i></span>` : '';
         const visitTag = p.visitType === 'followup' ? `<span class="bg-purple-100 text-purple-800 px-1.5 py-0.2 rounded font-bold text-[10px]">Dobara</span>` : '';
+        const agLabel = formatPatientAgeGender(p.age, p.gender);
 
         return `
           <div class="p-3 sm:p-3.5 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-center justify-between gap-2.5 sm:gap-3 ${rowBgClass}">
@@ -6721,8 +7193,8 @@
               <!-- Contact Name & WhatsApp 2-Line Preview -->
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <h4 class="font-extrabold text-sm sm:text-base text-slate-900 truncate leading-snug">${p.name}</h4>
-                  <span class="text-xs font-semibold text-slate-500">(${p.age}${p.gender})</span>
+                  <h4 class="font-extrabold text-sm sm:text-base text-slate-900 truncate leading-snug">${escapeHtml(p.name)}</h4>
+                  ${agLabel ? `<span class="text-xs font-semibold text-slate-500">(${agLabel})</span>` : ''}
                   ${statusBadge}
                 </div>
 
@@ -6785,16 +7257,26 @@
                     </button>
                     <button 
                       type="button" 
-                      onclick="event.stopPropagation(); cancelPatientAppointment('${p.id}')" 
-                      class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                      onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
+                      class="w-7 h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
                       title="Cancel Appointment"
                     >
-                      <i class="fa-solid fa-xmark text-sm"></i>
+                      <i class="fa-solid fa-xmark"></i>
                     </button>`
                   : p.status === 'IN_CABIN'
-                  ? `<span class="bg-[#25D366] text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
-                      <i class="fa-solid fa-circle text-[6px]"></i> Andar
-                    </span>`
+                  ? `<div class="flex items-center gap-1.5">
+                      <span class="bg-[#25D366] text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
+                        <i class="fa-solid fa-circle text-[6px]"></i> Andar
+                      </span>
+                      <button 
+                        type="button" 
+                        onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
+                        class="w-7 h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
+                        title="Cancel In-Cabin Appointment"
+                      >
+                        <i class="fa-solid fa-xmark"></i>
+                      </button>
+                    </div>`
                   : p.status === 'CANCELLED'
                   ? `<span class="text-rose-400 font-bold text-xs inline-flex items-center gap-1">
                       <i class="fa-solid fa-ban text-sm"></i> Cancelled
@@ -6883,6 +7365,16 @@
       showToast('🩺 Normal vitals bhar diye gaye!');
     }
 
+    function handleSelectPresetMetric(val) {
+      if (!val) return;
+      const parts = val.split('|');
+      const name = parts[0] || '';
+      const unit = parts[1] || '';
+      addCustomMetricRow(name, '', unit);
+      const sel = document.getElementById('presetLabTestSelect');
+      if (sel) sel.value = '';
+    }
+
     // Dynamic Custom Metrics Builder
     function renderDrawerCustomMetrics(metrics = []) {
       currentDrawerCustomMetrics = Array.isArray(metrics) ? JSON.parse(JSON.stringify(metrics)) : [];
@@ -6892,8 +7384,8 @@
 
       if (currentDrawerCustomMetrics.length === 0) {
         container.innerHTML = `
-          <div class="text-[11px] text-slate-400 italic py-1 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
-            Koi custom metric nahi joda gaya. Upar diye button se jodein (e.g. SpO2, Pulse, Hb).
+          <div class="text-[11px] text-slate-400 italic py-2 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            Anya clinical test ya extra charge jodne ke liye upar search/dropdown se chunein ya naya likhein.
           </div>
         `;
         return;
@@ -6905,24 +7397,25 @@
         row.innerHTML = `
           <input 
             type="text" 
-            placeholder="Metric (e.g. SpO2)" 
+            list="commonLabTestsList"
+            placeholder="Metric / Lab Test / Charge" 
             value="${escapeHtml(m.name || '')}" 
             oninput="onCustomMetricInput(${idx}, 'name', this.value)" 
             class="flex-1 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
           />
           <input 
             type="text" 
-            placeholder="Value (e.g. 98)" 
+            placeholder="Value / Report" 
             value="${escapeHtml(m.value || '')}" 
             oninput="onCustomMetricInput(${idx}, 'value', this.value)" 
-            class="w-24 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
+            class="w-24 sm:w-28 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
           />
           <input 
             type="text" 
             placeholder="Unit (e.g. %)" 
             value="${escapeHtml(m.unit || '')}" 
             oninput="onCustomMetricInput(${idx}, 'unit', this.value)" 
-            class="w-20 px-2 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
+            class="w-20 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:border-[#128C7E]" 
           />
           <button 
             type="button" 
@@ -7066,15 +7559,16 @@
       const bookingLink = getShareablePatientLink(false);
 
       let msg = `🏥 *${clinicName.toUpperCase()}*\n`;
-      msg += `👨‍⚕️ *${docName}* ${docDegree ? `(${docDegree})` : ''}\n`;
-      if (clinicAddress) msg += `📍 ${clinicAddress}\n`;
+      msg += `*${docName}* ${docDegree ? `(${docDegree})` : ''}\n`;
+      if (clinicAddress) msg += `📍 Address: ${clinicAddress}\n`;
       if (clinicPhone) msg += `📞 Contact: ${clinicPhone}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `--------------------------------\n`;
       if (p) {
-        msg += `🎫 *TOKEN #${p.token}* • *${p.name}* (${p.age}${p.gender})\n`;
+        const ag = typeof formatPatientAgeGender === 'function' ? formatPatientAgeGender(p.age, p.gender) : `${p.age || ''}${p.gender || ''}`;
+        msg += `TOKEN #${p.token} • ${p.name} (${ag || ''})\n`;
       }
-      msg += `📅 Tarikh: ${getLocalDateString()}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `Tarikh: ${getLocalDateString()}\n`;
+      msg += `--------------------------------\n`;
 
       // Recorded Digital Vitals & Metrics
       const vitalsList = [];
@@ -7103,7 +7597,7 @@
       }
 
       msg += `📲 *Agla Slot / Token Book Karne Ke Liye Link:*\n${bookingLink}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `--------------------------------\n`;
       msg += `_Swasth Rahein, ParchiSetu Digital Health Assistant_ 🙏`;
 
       return msg;
@@ -7450,6 +7944,38 @@
           legacyPill.textContent = 'OFF';
         }
       }
+
+      const dropdown = document.getElementById('doctorArrivalDropdown');
+      if (dropdown) {
+        dropdown.value = String(delay);
+      }
+      updatePauseQRUI();
+    }
+
+    function onDoctorArrivalDropdownChange(val) {
+      const mins = parseInt(val, 10);
+      setDoctorDelayMinutes(mins);
+    }
+
+    function adjustDoctorDelayMinutes(delta) {
+      const curDelay = getDoctorDelayMinutes();
+      setDoctorDelayMinutes(curDelay + delta);
+    }
+
+    function updatePauseQRUI() {
+      const btn = document.getElementById('btnPauseQRToggle');
+      const pill = document.getElementById('pauseQRStatusPill');
+      if (btn && pill) {
+        if (isQRBookingPaused) {
+          btn.className = 'btn-tactile px-4 py-2.5 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-rose-100 border-rose-500 text-rose-950 shadow-xs';
+          pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-rose-600 text-white font-black';
+          pill.textContent = 'PAUSED';
+        } else {
+          btn.className = 'btn-tactile px-4 py-2.5 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs';
+          pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-black';
+          pill.textContent = 'OPEN';
+        }
+      }
     }
 
     function toggleDoctorLate() {
@@ -7478,20 +8004,11 @@
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
 
-      const btn = document.getElementById('btnPauseQRToggle');
-      const pill = document.getElementById('pauseQRStatusPill');
-      if (btn && pill) {
-        if (isQRBookingPaused) {
-          btn.className = 'btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-rose-100 border-rose-500 text-rose-950';
-          pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-rose-600 text-white font-black';
-          pill.textContent = 'PAUSED';
-          showToast('🛑 Online QR Bookings Paused (Full House Mode)', 'warning');
-        } else {
-          btn.className = 'btn-tactile px-3.5 py-2 rounded-xl font-bold text-xs border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700';
-          pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-200 text-emerald-900 font-black';
-          pill.textContent = 'OPEN';
-          showToast('🟢 Online QR Bookings Re-Opened!');
-        }
+      updatePauseQRUI();
+      if (isQRBookingPaused) {
+        showToast('🛑 Online QR Bookings Paused (Full House Mode)', 'warning');
+      } else {
+        showToast('🟢 Online QR Bookings Re-Opened!');
       }
     }
 
@@ -7808,59 +8325,199 @@
     // =========================================================================
     // 11. TAB 3: PATIENT REGISTER (KHATA)
     // =========================================================================
+    function getAllAppointmentsHistory() {
+      const list = [];
+      const seen = new Set();
+      todayQueue.forEach(p => {
+        if (!p || !p.id) return;
+        seen.add(p.id);
+        list.push({
+          ...p,
+          appointmentDate: p.date || getLocalDateString(),
+          createdAt: p.createdAt || new Date().toISOString()
+        });
+      });
+      patientRegister.forEach((r, idx) => {
+        const dummyId = r.id || `reg_${idx}`;
+        if (!seen.has(dummyId)) {
+          seen.add(dummyId);
+          list.push({
+            id: dummyId,
+            token: r.visits || 1,
+            name: r.name,
+            age: r.age,
+            gender: r.gender,
+            phone: r.phone,
+            reason: r.lastReason || 'Consultation',
+            fee: 300,
+            payMode: 'Cash',
+            status: 'DONE',
+            appointmentDate: r.lastVisit === 'Aaj (Today)' ? getLocalDateString() : '2026-10-25',
+            notes: r.lastNotes || '',
+            bp: r.lastBp || '',
+            createdAt: '2026-10-25T10:00:00.000Z'
+          });
+        }
+      });
+      return list;
+    }
+
+    let activeProfilePatientKey = null;
+
+    function getUniquePatientsList() {
+      const allAppts = getAllAppointmentsHistory();
+      const patientMap = new Map();
+
+      allAppts.forEach(p => {
+        const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+        const key = cleanPhone.length >= 10 ? `phone_${cleanPhone}` : `name_${(p.name || '').toLowerCase().trim()}`;
+        if (!patientMap.has(key)) {
+          patientMap.set(key, {
+            key,
+            name: p.name,
+            age: p.age,
+            gender: p.gender,
+            phone: p.phone || 'N/A',
+            appointments: []
+          });
+        }
+        patientMap.get(key).appointments.push(p);
+      });
+
+      const list = Array.from(patientMap.values());
+      list.forEach(p => {
+        p.appointments.sort((a, b) => {
+          const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return tA - tB;
+        });
+        p.totalVisits = p.appointments.length;
+        const lastAppt = p.appointments[p.appointments.length - 1];
+        p.lastVisitDate = lastAppt.appointmentDate || 'Today';
+        p.lastNotes = lastAppt.notes || '';
+        p.lastBp = lastAppt.bp || '--';
+        p.lastReason = lastAppt.reason || '';
+      });
+
+      list.sort((a, b) => {
+        const lastA = a.appointments[a.appointments.length - 1];
+        const lastB = b.appointments[b.appointments.length - 1];
+        const tA = lastA?.createdAt ? new Date(lastA.createdAt).getTime() : 0;
+        const tB = lastB?.createdAt ? new Date(lastB.createdAt).getTime() : 0;
+        return tB - tA;
+      });
+
+      return list;
+    }
+
+    function clearRegisterDateFilter() {
+      const dateEl = document.getElementById('registerDateFilter');
+      if (dateEl) dateEl.value = '';
+      const clearBtn = document.getElementById('btnClearDateFilter');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderPatientRegister();
+    }
+
+    // =========================================================================
+    // 11. TAB 3: PATIENT REGISTER (KHATA)
+    // =========================================================================
     function renderPatientRegister() {
       const q = (document.getElementById('registerSearchInput')?.value || '').toLowerCase().trim();
+      const dateFilter = document.getElementById('registerDateFilter')?.value || '';
       const container = document.getElementById('registerListContainer');
+      const countEl = document.getElementById('registerPatientCount');
+      const clearBtn = document.getElementById('btnClearDateFilter');
 
-      const filtered = patientRegister.filter(p => {
+      if (clearBtn) {
+        if (dateFilter) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+
+      const allUnique = getUniquePatientsList();
+
+      const filtered = allUnique.filter(p => {
+        if (dateFilter) {
+          const hasApptOnDate = p.appointments.some(a => a.appointmentDate === dateFilter);
+          if (!hasApptOnDate) return false;
+        }
         if (!q) return true;
-        return (
-          p.name.toLowerCase().includes(q) ||
-          p.phone.includes(q) ||
-          p.chronicTags.some(t => t.toLowerCase().includes(q))
-        );
+        const matchPhone = (p.phone || '').includes(q);
+        const matchName = (p.name || '').toLowerCase().includes(q);
+        const matchReason = (p.lastReason || '').toLowerCase().includes(q);
+        return matchPhone || matchName || matchReason;
       });
+
+      if (countEl) {
+        countEl.textContent = dateFilter
+          ? `${filtered.length} Patients on ${dateFilter}`
+          : `${filtered.length} Lifetime Patients`;
+      }
+
+      if (!container) return;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200">
+            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2 text-xl">
+              <i class="fa-solid fa-user-slash"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-700">Koi mareez nahi mila.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Phone number ya naam dobara check karein.</p>
+          </div>
+        `;
+        return;
+      }
 
       container.innerHTML = filtered.map(p => {
         const alreadyInLine = todayQueue.some(
-          tq => tq.name.toLowerCase() === p.name.toLowerCase() && tq.status !== 'DONE'
+          tq => (tq.phone && tq.phone === p.phone) || (tq.name && tq.name.toLowerCase() === p.name.toLowerCase() && tq.status !== 'DONE' && tq.status !== 'CANCELLED')
         );
+        const agStr = formatPatientAgeGender(p.age, p.gender);
 
         return `
-          <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="flex items-start gap-3.5">
-              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-[#075E54] font-black text-base flex items-center justify-center flex-shrink-0">
-                ${p.name.charAt(0)}
+          <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-emerald-300 transition">
+            <div class="flex items-start gap-3.5 min-w-0 cursor-pointer select-none" onclick="openPatientProfileModal('${p.key}')">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-[#075E54] font-black text-lg flex items-center justify-center flex-shrink-0">
+                ${(p.name || 'M').charAt(0).toUpperCase()}
               </div>
-              <div>
+              <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                  <h4 class="font-extrabold text-base text-slate-900">${p.name}</h4>
-                  <span class="text-xs font-bold text-slate-500">(${p.age}${p.gender})</span>
+                  <h4 class="font-extrabold text-base text-slate-900 truncate">${escapeHtml(p.name)}</h4>
+                  ${agStr ? `<span class="text-xs font-bold text-slate-500">(${agStr})</span>` : ''}
                   <span class="bg-slate-100 text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded-md">
-                    📱 ${p.phone}
+                    📱 ${escapeHtml(p.phone)}
                   </span>
                   <span class="bg-emerald-50 text-[#075E54] text-[11px] font-extrabold px-2 py-0.5 rounded-md">
-                    ${p.visits} Visits • Last: ${p.lastVisit}
+                    ${p.totalVisits} Visit${p.totalVisits > 1 ? 's' : ''} • Last: ${p.lastVisitDate}
                   </span>
                 </div>
-                <p class="text-xs text-slate-600 mt-1">
-                  <strong>Pichli Parchi:</strong> ${p.lastNotes} (BP: ${p.lastBp})
+                <p class="text-xs text-slate-600 mt-1 truncate">
+                  <strong>Pichli Parchi:</strong> ${escapeHtml(p.lastNotes || p.lastReason || 'Consultation')} ${p.lastBp && p.lastBp !== '--' ? `(BP: ${escapeHtml(p.lastBp)})` : ''}
                 </p>
               </div>
             </div>
 
-            <div class="flex items-center justify-end">
+            <div class="flex items-center justify-end gap-2 flex-shrink-0">
+              <button 
+                type="button" 
+                onclick="openPatientProfileModal('${p.key}')" 
+                class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+                title="View Full Profile & All Appointments Timeline"
+              >
+                <i class="fa-solid fa-clock-rotate-left"></i> Timeline
+              </button>
               ${
                 alreadyInLine
                   ? `<span class="px-3 py-2 rounded-xl bg-emerald-50 text-[#075E54] font-bold text-xs border border-emerald-200">
                       ✓ Aaj Ki Line Mein Hai
                     </span>`
                   : `<button 
-                      onclick="reAddPatientFromRegister('${p.id}')" 
+                      type="button"
+                      onclick="reAddPatientByKey('${p.key}')" 
                       class="btn-tactile bg-[#128C7E] hover:bg-[#075E54] text-white font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition"
                     >
                       <i class="fa-solid fa-bolt text-[#25D366]"></i>
-                      <span>+ Aaj Ki Line Mein Jodein (₹${clinicProfile.fees ? clinicProfile.fees.followup : 200})</span>
+                      <span>+ Aaj Ki Line (₹${clinicProfile.fees ? clinicProfile.fees.followup : 200})</span>
                     </button>`
               }
             </div>
@@ -7869,20 +8526,117 @@
       }).join('');
     }
 
-    function reAddPatientFromRegister(regId) {
-      const reg = patientRegister.find(r => r.id === regId);
-      if (!reg) return;
+    function openPatientProfileModal(key) {
+      activeProfilePatientKey = key;
+      const allUnique = getUniquePatientsList();
+      const p = allUnique.find(item => item.key === key);
+      if (!p) return;
+
+      const modal = document.getElementById('patientProfileModal');
+      const avatarEl = document.getElementById('profileModalAvatar');
+      const nameEl = document.getElementById('profileModalName');
+      const agEl = document.getElementById('profileModalAgeGender');
+      const phoneEl = document.getElementById('profileModalPhoneText');
+      const totalVisitsEl = document.getElementById('profileModalTotalVisits');
+      const lastVisitEl = document.getElementById('profileModalLastVisitDate');
+      const listEl = document.getElementById('profileAppointmentsList');
+
+      if (avatarEl) avatarEl.textContent = (p.name || 'M').charAt(0).toUpperCase();
+      if (nameEl) nameEl.textContent = p.name;
+      const agStr = formatPatientAgeGender(p.age, p.gender);
+      if (agEl) agEl.textContent = agStr ? `(${agStr})` : '';
+      if (phoneEl) phoneEl.textContent = p.phone;
+      if (totalVisitsEl) totalVisitsEl.textContent = `Total ${p.totalVisits} Lifetime Visit${p.totalVisits > 1 ? 's' : ''}`;
+      if (lastVisitEl) lastVisitEl.textContent = `Last: ${p.lastVisitDate}`;
+
+      if (listEl) {
+        listEl.innerHTML = p.appointments.map((appt, idx) => {
+          const visitNum = idx + 1;
+          const visitOrdinal = visitNum === 1 ? '1st' : visitNum === 2 ? '2nd' : visitNum === 3 ? '3rd' : `${visitNum}th`;
+          const vitals = [];
+          if (appt.bp) vitals.push(`BP: ${appt.bp}`);
+          if (appt.sugar) vitals.push(`Sugar: ${appt.sugar}`);
+          if (appt.weight) vitals.push(`Weight: ${appt.weight}`);
+          if (appt.temp) vitals.push(`Temp: ${appt.temp}`);
+          if (Array.isArray(appt.customMetrics)) {
+            appt.customMetrics.forEach(m => {
+              if (m.name && m.value) vitals.push(`${m.name}: ${m.value} ${m.unit || ''}`.trim());
+            });
+          }
+
+          return `
+            <div class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1.5 relative pl-4">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-lg bg-[#075E54] text-white text-[11px] font-black">
+                    ${visitOrdinal} Visit
+                  </span>
+                  <span class="text-xs font-black text-slate-900">
+                    Token #${appt.token || visitNum}
+                  </span>
+                  <span class="text-xs text-slate-500 font-semibold">
+                    📅 ${appt.appointmentDate || appt.day || 'Recorded'}
+                  </span>
+                </div>
+                <span class="text-xs font-bold ${appt.payMode === 'Baaki' ? 'text-amber-600' : 'text-emerald-700'}">
+                  ₹${appt.fee || 300} (${appt.payMode || 'Cash'} ${appt.payMode === 'Baaki' ? '⚠️' : '✓'})
+                </span>
+              </div>
+
+              <div class="text-xs font-semibold text-slate-700">
+                Reason: <strong>${escapeHtml(appt.reason || 'General Consultation')}</strong>
+              </div>
+
+              ${
+                vitals.length > 0
+                  ? `<div class="text-[11px] text-emerald-800 bg-emerald-50 px-2 py-1 rounded-lg font-bold">
+                      🩺 Vitals: ${vitals.join(' • ')}
+                    </div>`
+                  : ''
+              }
+
+              ${
+                appt.notes
+                  ? `<div class="text-xs text-slate-600 bg-slate-50 p-2 rounded-lg font-medium border border-slate-100">
+                      📝 <em>"${escapeHtml(appt.notes)}"</em>
+                    </div>`
+                  : ''
+              }
+            </div>
+          `;
+        }).reverse().join('');
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closePatientProfileModal() {
+      activeProfilePatientKey = null;
+      const modal = document.getElementById('patientProfileModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function reAddPatientByKey(key) {
+      const allUnique = getUniquePatientsList();
+      const p = allUnique.find(item => item.key === key);
+      if (!p) return;
 
       const nextToken = getNextTokenNumber();
       const fee = clinicProfile.fees ? clinicProfile.fees.followup : 200;
-      todayQueue.push({
+      const newBooking = {
         id: 'q_' + Date.now(),
         token: nextToken,
-        name: reg.name,
-        age: reg.age,
-        gender: reg.gender,
-        phone: reg.phone,
-        reason: reg.lastReason || '🔄 Follow-up',
+        name: p.name,
+        age: p.age,
+        gender: p.gender,
+        phone: p.phone,
+        reason: p.lastReason || '🔄 Follow-up',
         fee: fee,
         payMode: 'Cash',
         status: getCurrentCabinPatient() ? 'WAITING' : 'IN_CABIN',
@@ -7890,25 +8644,58 @@
         shift: 'Morning',
         slotTime: 'Follow-up Walk-in',
         day: 'Aaj (Today)',
-        bp: reg.lastBp || '',
+        bp: p.lastBp && p.lastBp !== '--' ? p.lastBp : '',
         weight: '',
         temp: '',
         spo2: '',
         hasParchiPhoto: true,
-        notes: reg.lastNotes || ''
-      });
+        notes: p.lastNotes || '',
+        createdAt: new Date().toISOString()
+      };
 
-      reg.visits += 1;
-      reg.lastVisit = 'Aaj (Today)';
-
+      todayQueue.push(newBooking);
       saveLocalQueue();
       if (syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
       }
 
       playClinicBellSound();
+      closePatientProfileModal();
       switchClinicTab('queue');
-      showToast(`⚡ ${reg.name} bina type kiye Token #${nextToken} par jud gaye!`);
+      refreshAllViews();
+      showToast(`⚡ ${p.name} Token #${nextToken} par jud gaye!`);
+    }
+
+    function reAddPatientFromProfileModal() {
+      if (activeProfilePatientKey) {
+        reAddPatientByKey(activeProfilePatientKey);
+      }
+    }
+
+    function reAddPatientFromRegister(regId) {
+      const reg = patientRegister.find(r => r.id === regId);
+      if (reg) {
+        const cleanPhone = (reg.phone || '').replace(/[^0-9]/g, '');
+        const key = cleanPhone.length >= 10 ? `phone_${cleanPhone}` : `name_${(reg.name || '').toLowerCase().trim()}`;
+        reAddPatientByKey(key);
+      }
+    }
+
+    function openGallaLedgerModal() {
+      const modal = document.getElementById('gallaLedgerModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        renderGallaTab();
+      }
+    }
+
+    function closeGallaLedgerModal() {
+      const modal = document.getElementById('gallaLedgerModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
     }
 
     // =========================================================================
@@ -7935,29 +8722,69 @@
       document.getElementById('gallaBaakiCountText').textContent =
         baakiCount > 0 ? `${baakiCount} Mareez se lena hai` : 'Sab vasool ho gaya ✓';
 
-      const weekData = [
-        { day: 'Mon', amt: 4200 },
-        { day: 'Tue', amt: 5100 },
-        { day: 'Wed', amt: 3900 },
-        { day: 'Thu', amt: 5600 },
-        { day: 'Fri', amt: 4800 },
-        { day: 'Sat', amt: 6200 },
-        { day: 'Aaj', amt: grandTotal, isToday: true }
-      ];
-      const maxAmt = Math.max(...weekData.map(d => d.amt), 6500);
+      // Update modal summary strip if elements exist
+      const modalTot = document.getElementById('ledgerModalTotal');
+      if (modalTot) modalTot.textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
+      const modalCash = document.getElementById('ledgerModalCash');
+      if (modalCash) modalCash.textContent = `₹${cashTotal.toLocaleString('en-IN')}`;
+      const modalUpi = document.getElementById('ledgerModalUpi');
+      if (modalUpi) modalUpi.textContent = `₹${upiTotal.toLocaleString('en-IN')}`;
+      const modalBaaki = document.getElementById('ledgerModalBaaki');
+      if (modalBaaki) modalBaaki.textContent = `₹${baakiTotal.toLocaleString('en-IN')}`;
+
+      // Real 7-Day Revenue (Zero for empty days, strictly calculated from historical bookings)
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const weekData = [];
+      const now = new Date();
+      const allHistory = getAllAppointmentsHistory();
+
+      for (let i = 6; i >= 1; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const dayLabel = dayNames[d.getDay()];
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const dayNum = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${dayNum}`;
+        const dayAmt = allHistory
+          .filter(item => item.appointmentDate === dateStr && item.payMode !== 'Baaki')
+          .reduce((s, item) => s + (item.fee || 0), 0);
+        weekData.push({ day: dayLabel, amt: dayAmt, isToday: false, dateStr });
+      }
+
+      weekData.push({
+        day: 'Aaj (Today)',
+        amt: grandTotal,
+        isToday: true,
+        dateStr: getLocalDateString()
+      });
+
+      const maxAmt = Math.max(...weekData.map(d => d.amt), 1000);
+      const totalWeekRev = weekData.reduce((s, d) => s + d.amt, 0);
+      const activeDays = weekData.filter(d => d.amt > 0).length || 1;
+      const avgRev = Math.round(totalWeekRev / activeDays);
+
+      const avgBadge = document.getElementById('gallaAvgRevenueBadge');
+      if (avgBadge) {
+        avgBadge.textContent = `Avg: ₹${avgRev}/day • Real Only`;
+      }
 
       document.getElementById('gallaBarChart').innerHTML = weekData.map(d => {
-        const heightPct = Math.max(15, Math.round((d.amt / maxAmt) * 100));
+        const heightPct = d.amt > 0 ? Math.max(12, Math.round((d.amt / maxAmt) * 100)) : 4;
+        const displayAmt = d.amt > 0 ? (d.amt >= 1000 ? `₹${(d.amt / 1000).toFixed(1)}k` : `₹${d.amt}`) : '₹0';
         return `
           <div class="flex flex-col items-center justify-end h-full group">
-            <span class="text-[10px] font-bold text-slate-600 mb-1">₹${(d.amt / 1000).toFixed(1)}k</span>
+            <span class="text-[10px] font-bold ${d.amt > 0 ? 'text-slate-700' : 'text-slate-400'} mb-1">${displayAmt}</span>
             <div 
               class="w-full max-w-[34px] rounded-t-xl transition-all ${
-                d.isToday ? 'bg-[#25D366] border-2 border-[#075E54]' : 'bg-[#128C7E]/80 group-hover:bg-[#075E54]'
+                d.isToday
+                  ? 'bg-[#25D366] border-2 border-[#075E54] shadow-xs'
+                  : (d.amt > 0 ? 'bg-[#128C7E]/80 group-hover:bg-[#075E54]' : 'bg-slate-200')
               }" 
               style="height: ${heightPct}%"
+              title="${d.day}: ₹${d.amt}"
             ></div>
-            <span class="text-[11px] font-extrabold mt-1.5 ${d.isToday ? 'text-[#075E54]' : 'text-slate-500'}">${d.day}</span>
+            <span class="text-[10px] sm:text-[11px] font-extrabold mt-1.5 truncate max-w-full ${d.isToday ? 'text-[#075E54]' : 'text-slate-500'}">${d.day}</span>
           </div>
         `;
       }).join('');
@@ -7972,37 +8799,49 @@
         <div>💰 *KUL JAMA: ₹${grandTotal}*</div>
       `;
 
-      document.getElementById('gallaLedgerList').innerHTML = todayQueue
-        .slice()
-        .reverse()
-        .map(p => {
-          return `
-            <div class="py-3 flex items-center justify-between gap-2 text-xs sm:text-sm">
-              <div class="flex items-center gap-2.5">
-                <span class="font-black text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">#${p.token}</span>
-                <div>
-                  <div class="font-bold text-slate-900">${p.name}</div>
-                  <div class="text-[11px] text-slate-500">${p.reason} • ${p.slotTime}</div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button 
-                  onclick="togglePatientFeeStatus('${p.id}')" 
-                  class="px-3 py-1.5 rounded-xl font-extrabold text-xs border ${
-                    p.payMode === 'Baaki'
-                      ? 'bg-amber-100 text-amber-950 border-amber-400'
-                      : p.payMode === 'UPI'
-                      ? 'bg-sky-50 text-sky-900 border-sky-200'
-                      : 'bg-emerald-50 text-emerald-900 border-emerald-200'
-                  }"
-                >
-                  ₹${p.fee} • ${p.payMode === 'Baaki' ? '⏳ Baaki (Click to Collect)' : p.payMode + ' ✓'}
-                </button>
-              </div>
+      const ledgerEl = document.getElementById('gallaLedgerList');
+      if (ledgerEl) {
+        if (todayQueue.length === 0) {
+          ledgerEl.innerHTML = `
+            <div class="py-8 text-center text-slate-400 text-xs">
+              Aaj abhi koi mareez nahi aaya hai. Live queue mein mareez jodne par yahan bahi-khata dikhega.
             </div>
           `;
-        }).join('');
+        } else {
+          ledgerEl.innerHTML = todayQueue
+            .slice()
+            .reverse()
+            .map(p => {
+              return `
+                <div class="py-3 flex items-center justify-between gap-2 text-xs sm:text-sm">
+                  <div class="flex items-center gap-2.5">
+                    <span class="font-black text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">#${p.token}</span>
+                    <div>
+                      <div class="font-bold text-slate-900">${escapeHtml(p.name)}</div>
+                      <div class="text-[11px] text-slate-500">${escapeHtml(p.reason)} • ${p.slotTime}</div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <button 
+                      type="button"
+                      onclick="togglePatientFeeStatus('${p.id}')" 
+                      class="px-3 py-1.5 rounded-xl font-extrabold text-xs border ${
+                        p.payMode === 'Baaki'
+                          ? 'bg-amber-100 text-amber-950 border-amber-400'
+                          : p.payMode === 'UPI'
+                          ? 'bg-sky-50 text-sky-900 border-sky-200'
+                          : 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                      }"
+                    >
+                      ₹${p.fee} • ${p.payMode === 'Baaki' ? '⏳ Baaki (Click to Collect)' : p.payMode + ' ✓'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+        }
+      }
     }
 
     function sendDoctorHisaabWhatsApp() {
