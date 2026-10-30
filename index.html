@@ -4254,17 +4254,17 @@
       }
 
       // Patient Shift labels
-      const morningHours = clinicProfile.visitingHours.morning;
-      const eveningHours = clinicProfile.visitingHours.evening;
+      const morningHours = clinicProfile.visitingHours?.morning || { enabled: true, start: '10:00 AM', end: '02:00 PM' };
+      const eveningHours = clinicProfile.visitingHours?.evening || { enabled: true, start: '05:00 PM', end: '09:00 PM' };
       const lblM = document.getElementById('patShiftLabelMorning');
       if (lblM) {
-        lblM.textContent = morningHours.enabled 
+        lblM.textContent = (morningHours && morningHours.enabled) 
           ? `Subah (${morningHours.start} - ${morningHours.end})` 
           : 'Subah (Closed)';
       }
       const lblE = document.getElementById('patShiftLabelEvening');
       if (lblE) {
-        lblE.textContent = eveningHours.enabled 
+        lblE.textContent = (eveningHours && eveningHours.enabled) 
           ? `Shaam (${eveningHours.start} - ${eveningHours.end})` 
           : 'Shaam (Closed)';
       }
@@ -4584,18 +4584,25 @@
       }
       renderOnboardAdditionalDoctors();
 
-      const vh = clinicProfile.visitingHours;
-      document.getElementById('onboardMorningEnabled').checked = vh.morning.enabled;
-      document.getElementById('onboardMorningStart').value = vh.morning.start || '10:00 AM';
-      document.getElementById('onboardMorningEnd').value = vh.morning.end || '02:00 PM';
-      document.getElementById('onboardMorningSlotMins').value = vh.morning.slotDurationMins || 15;
-      document.getElementById('onboardMorningCapacity').value = vh.morning.maxTokens || 25;
+      const vh = clinicProfile.visitingHours || {
+        morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+        evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+        daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        avgConsultationMins: 10
+      };
+      const vhMorning = vh.morning || { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 };
+      const vhEvening = vh.evening || { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 };
+      document.getElementById('onboardMorningEnabled').checked = !!vhMorning.enabled;
+      document.getElementById('onboardMorningStart').value = vhMorning.start || '10:00 AM';
+      document.getElementById('onboardMorningEnd').value = vhMorning.end || '02:00 PM';
+      document.getElementById('onboardMorningSlotMins').value = vhMorning.slotDurationMins || 15;
+      document.getElementById('onboardMorningCapacity').value = vhMorning.maxTokens || 25;
 
-      document.getElementById('onboardEveningEnabled').checked = vh.evening.enabled;
-      document.getElementById('onboardEveningStart').value = vh.evening.start || '05:00 PM';
-      document.getElementById('onboardEveningEnd').value = vh.evening.end || '09:00 PM';
-      document.getElementById('onboardEveningSlotMins').value = vh.evening.slotDurationMins || 15;
-      document.getElementById('onboardEveningCapacity').value = vh.evening.maxTokens || 30;
+      document.getElementById('onboardEveningEnabled').checked = !!vhEvening.enabled;
+      document.getElementById('onboardEveningStart').value = vhEvening.start || '05:00 PM';
+      document.getElementById('onboardEveningEnd').value = vhEvening.end || '09:00 PM';
+      document.getElementById('onboardEveningSlotMins').value = vhEvening.slotDurationMins || 15;
+      document.getElementById('onboardEveningCapacity').value = vhEvening.maxTokens || 30;
 
       document.getElementById('onboardAvgConsultMins').value = vh.avgConsultationMins || 10;
 
@@ -6404,13 +6411,14 @@
     }
 
     function switchClinicTab(tabName) {
-      currentTab = tabName;
       const tabs = ['queue', 'calendar', 'register', 'galla', 'profile'];
+      const targetTab = tabs.includes(tabName) ? tabName : 'queue';
+      currentTab = targetTab;
       tabs.forEach(t => {
         const section = document.getElementById(`clinicTab-${t}`);
         const btn = document.getElementById(`tabBtn-${t}`);
         if (section && btn) {
-          if (t === tabName) {
+          if (t === targetTab) {
             section.classList.remove('hidden');
             btn.className = 'py-1 sm:py-1.5 px-1 font-black text-[11px] sm:text-xs border-t-2 border-[#25D366] text-white flex flex-col items-center justify-center gap-0.5 transition bg-white/10';
           } else {
@@ -6419,12 +6427,12 @@
           }
         }
       });
-      if (tabName === 'profile') {
+      if (targetTab === 'profile') {
         renderProfileTab();
       }
       const fab = document.getElementById('mobileFabNewPatient');
       if (fab) {
-        if (tabName === 'queue' && currentRole === 'clinic') fab.classList.remove('hidden');
+        if (targetTab === 'queue' && currentRole === 'clinic') fab.classList.remove('hidden');
         else fab.classList.add('hidden');
       }
       refreshAllViews();
@@ -8273,8 +8281,8 @@
       }
 
       // Render shifts with individual slot chips
-      const mCfg = clinicProfile.visitingHours.morning;
-      const eCfg = clinicProfile.visitingHours.evening;
+      const mCfg = clinicProfile.visitingHours?.morning;
+      const eCfg = clinicProfile.visitingHours?.evening;
       const mList = todayQueue.filter(p => p.shift === 'Morning' && (p.date === selectedCalendarDateStr || (selectedCalendarDateStr === todayStr && p.day === 'Aaj (Today)')));
       const eList = todayQueue.filter(p => p.shift === 'Evening' && (p.date === selectedCalendarDateStr || (selectedCalendarDateStr === todayStr && p.day === 'Aaj (Today)')));
 
@@ -8301,19 +8309,19 @@
         {
           title: '☀️ Subah OP (Morning Shift)',
           shiftKey: 'Morning',
-          time: isDoctorLate ? `${mCfg.start} - ${mCfg.end} (Delayed 30m)` : `${mCfg.start} - ${mCfg.end}`,
-          capacity: mCfg.maxTokens || 25,
+          time: (mCfg && mCfg.start && mCfg.end) ? (isDoctorLate ? `${mCfg.start} - ${mCfg.end} (Delayed 30m)` : `${mCfg.start} - ${mCfg.end}`) : '10:00 AM - 02:00 PM',
+          capacity: (mCfg && mCfg.maxTokens) || 25,
           list: mList,
-          enabled: mCfg.enabled && !mOff && !isFullDayLeave,
+          enabled: mCfg ? (mCfg.enabled && !mOff && !isFullDayLeave) : false,
           slots: allMorningSlots
         },
         {
           title: '🌙 Shaam OP (Evening Shift)',
           shiftKey: 'Evening',
-          time: `${eCfg.start} - ${eCfg.end}`,
-          capacity: eCfg.maxTokens || 30,
+          time: (eCfg && eCfg.start && eCfg.end) ? `${eCfg.start} - ${eCfg.end}` : '05:00 PM - 09:00 PM',
+          capacity: (eCfg && eCfg.maxTokens) || 30,
           list: eList,
-          enabled: eCfg.enabled && !eOff && !isFullDayLeave,
+          enabled: eCfg ? (eCfg.enabled && !eOff && !isFullDayLeave) : false,
           slots: allEveningSlots
         }
       ].map(s => {
@@ -8988,8 +8996,8 @@
 
     function generateDynamicSlots(shift, forDate = selectedPatCustomDate) {
       const shiftCfg = shift === 'Morning' 
-        ? clinicProfile.visitingHours.morning 
-        : clinicProfile.visitingHours.evening;
+        ? clinicProfile.visitingHours?.morning 
+        : clinicProfile.visitingHours?.evening;
 
       if (!shiftCfg || !shiftCfg.enabled) {
         return [];
@@ -9542,8 +9550,8 @@
       const morningOff = dayLeave && (dayLeave.fullDay || dayLeave.morningOff);
       const eveningOff = dayLeave && (dayLeave.fullDay || dayLeave.eveningOff);
 
-      const morningCfg = clinicProfile.visitingHours.morning;
-      const eveningCfg = clinicProfile.visitingHours.evening;
+      const morningCfg = clinicProfile.visitingHours?.morning;
+      const eveningCfg = clinicProfile.visitingHours?.evening;
 
       if (selectedPatShift === 'Morning' && (morningOff || !morningCfg || !morningCfg.enabled) && (eveningCfg && eveningCfg.enabled && !eveningOff)) {
         selectedPatShift = 'Evening';
@@ -10103,6 +10111,26 @@
         }
       } catch (e) {}
 
+      // Resolve and apply role immediately for instant UI feedback (zero network delay)
+      const currentPath = (window.location.pathname || '').toLowerCase();
+      const isPatientPath = currentPath.startsWith('/book');
+      const isSignInRoute = currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1';
+      const isOnboardRoute = currentPath.includes('/onboard') || onboardParam === '1';
+
+      if (roleParam === 'patient' || isPatientPath) {
+        switchAppRole('patient');
+        checkAndRestorePatientBooking();
+      } else {
+        // Main URL clinic desk path - compulsory sign in / sign up gateway
+        if (currentAuthUser) {
+          enterClinicWorkspace();
+          updateHeaderAuthUI(currentAuthUser);
+        } else {
+          updateHeaderAuthUI(null);
+          showAuthGatewayScreen();
+        }
+      }
+
       // Initialize Firebase Firestore sync early
       if (window.ParchiFirebase) {
         try {
@@ -10147,7 +10175,14 @@
         }
 
         if (loaded) {
-          clinicProfile = { ...clinicProfile, ...loaded };
+          clinicProfile = {
+            ...clinicProfile,
+            ...loaded,
+            visitingHours: {
+              ...(clinicProfile.visitingHours || {}),
+              ...(loaded.visitingHours || {})
+            }
+          };
           if (clinicProfile.liveStatus) {
             isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
             doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
@@ -10162,7 +10197,14 @@
           if (clinicRes.ok) {
             const remoteClinic = await clinicRes.json();
             if (remoteClinic && remoteClinic.name) {
-              clinicProfile = remoteClinic;
+              clinicProfile = {
+                ...clinicProfile,
+                ...remoteClinic,
+                visitingHours: {
+                  ...(clinicProfile.visitingHours || {}),
+                  ...(remoteClinic.visitingHours || {})
+                }
+              };
               if (clinicProfile.liveStatus) {
                 isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
                 doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
@@ -10200,25 +10242,6 @@
           window.ParchiFirebase.listen(clinicProfile.id, handleRemoteClinicChange, handleRemoteQueueChange);
         } catch (e) {
           console.warn('Firebase listener error:', e);
-        }
-      }
-
-      const currentPath = (window.location.pathname || '').toLowerCase();
-      const isPatientPath = currentPath.startsWith('/book');
-      const isSignInRoute = currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1';
-      const isOnboardRoute = currentPath.includes('/onboard') || onboardParam === '1';
-
-      if (roleParam === 'patient' || isPatientPath) {
-        switchAppRole('patient');
-        checkAndRestorePatientBooking();
-      } else {
-        // Main URL clinic desk path - compulsory sign in / sign up gateway
-        if (currentAuthUser) {
-          enterClinicWorkspace();
-          updateHeaderAuthUI(currentAuthUser);
-        } else {
-          updateHeaderAuthUI(null);
-          showAuthGatewayScreen();
         }
       }
 

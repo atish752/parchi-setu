@@ -1823,6 +1823,21 @@ async function runTests() {
         }
       }
     }
+
+    // Invalid tab fallback protection
+    vmSandbox.switchClinicTab('invalid_tab_name');
+    assert.strictEqual(vmSandbox.currentTab, 'queue', 'Invalid tab switch must safely fallback to queue');
+    assert.ok(!getMockEl('clinicTab-queue').classList.contains('hidden'), 'Queue section must be visible when tab fallback triggers');
+
+    // Safe visitingHours checks: functions must not crash when visitingHours is undefined/partial
+    assert.ok(html.includes('clinicProfile.visitingHours?.morning'), 'Must use safe optional chaining for visitingHours.morning');
+    assert.ok(html.includes('clinicProfile.visitingHours?.evening'), 'Must use safe optional chaining for visitingHours.evening');
+
+    // Immediate role resolution on window.onload
+    const onloadPos = html.indexOf('window.onload = async function');
+    const listenPos = html.indexOf('window.ParchiFirebase.listen', onloadPos);
+    const onloadFuncStr = html.substring(onloadPos, listenPos > 0 ? listenPos : html.length);
+    assert.ok(onloadFuncStr.indexOf("switchAppRole('patient')") < onloadFuncStr.indexOf("fetch('/api/queue')"), 'Must apply patient role immediately before waiting for network queue');
   })();
 
   // Restore clean default clinic state and empty queue
