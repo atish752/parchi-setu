@@ -488,17 +488,17 @@
                   <button 
                     type="button" 
                     onclick="event.stopPropagation(); openCurrentCabinParchi()" 
-                    class="btn-tactile bg-emerald-400/25 hover:bg-emerald-400/35 text-white font-extrabold px-3 py-1 rounded-lg border border-emerald-300/50 text-xs inline-flex items-center gap-1.5 shadow-xs transition"
+                    class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-3.5 py-1.5 rounded-xl border border-emerald-300 shadow-md text-xs inline-flex items-center gap-1.5 transition active:scale-95"
                     title="Open Prescription & Vitals Form"
                   >
-                    <i class="fa-solid fa-file-prescription text-amber-300"></i> 
+                    <i class="fa-solid fa-file-prescription text-slate-950"></i> 
                     <span data-i18n="openParchiBtn">Rx & Vitals (पर्ची / जांच)</span>
                   </button>
                   <button 
                     type="button" 
                     id="btnCabinCancelPatient"
                     onclick="event.stopPropagation(); cancelCurrentCabinPatient()" 
-                    class="w-6 h-6 rounded-md bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition ml-1"
+                    class="w-7 h-7 rounded-xl bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-sm transition ml-1"
                     title="Cancel Current In-Cabin Appointment"
                   >
                     <i class="fa-solid fa-xmark"></i>
@@ -571,7 +571,7 @@
         </div>
 
         <!-- DEDICATED FAST WALK-IN ENTRY POP-UP MODAL -->
-        <div id="walkinModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div id="walkinModal" onclick="if(event.target===this)closeFastWalkinModal()" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div id="walkinFormCollapse" class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
             
             <!-- Modal Header with Next Token Badge & Close Button -->
@@ -631,6 +631,7 @@
                       id="walkinAge" 
                       placeholder="Umar (35)" 
                       min="1" max="115"
+                      onkeydown="if(event.key==='Enter') createFastWalkIn()"
                       class="w-2/3 px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
                     />
                     <select 
@@ -652,6 +653,7 @@
                       id="walkinPhone" 
                       maxlength="10"
                       placeholder="98XXXXXXXX (WhatsApp)" 
+                      onkeydown="if(event.key==='Enter') createFastWalkIn()"
                       class="w-full pl-3 pr-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:border-[#128C7E] focus:bg-white text-sm"
                     />
                   </div>
@@ -2011,12 +2013,33 @@
           </button>
         </div>
 
-        <!-- Searchable / Selectable Dropdown for Common Lab Tests & Charges -->
+        <!-- Searchable Input & Dropdown for Common Lab Tests & Charges -->
         <div class="flex flex-col sm:flex-row items-center gap-2">
+          <div class="relative w-full sm:flex-1">
+            <input 
+              type="text" 
+              id="customMetricSearchInput" 
+              list="commonLabTestsList" 
+              placeholder="🔍 Search or type test / charge (CBC, X-Ray, Sugar, Dressing)..." 
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomMetricFromSearch();}"
+              class="w-full px-3 py-2 bg-slate-50 hover:bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] shadow-xs"
+            />
+          </div>
+          <button 
+            type="button" 
+            onclick="addCustomMetricFromSearch()" 
+            class="btn-tactile w-full sm:w-auto px-4 py-2 bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 whitespace-nowrap"
+          >
+            <i class="fa-solid fa-plus text-[11px]"></i>
+            <span>+ Add Test / Charge</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
           <select 
             id="presetLabTestSelect" 
             onchange="handleSelectPresetMetric(this.value)" 
-            class="w-full sm:flex-1 px-3 py-2 bg-slate-50 hover:bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] cursor-pointer shadow-xs"
+            class="w-full px-3 py-2 bg-slate-50 hover:bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E] cursor-pointer shadow-xs"
           >
             <option value="">🔍 Choose Common Test / Charge (Dropdown se chunein)...</option>
             <optgroup label="🩸 Blood Tests (Rakt Jaanch)">
@@ -3366,7 +3389,7 @@
   <!-- ===================================================================== -->
   <!-- MODAL 6: DOUBLE CONFIRMATION FOR APPOINTMENT CANCELLATION             -->
   <!-- ===================================================================== -->
-  <div id="cancelConfirmModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+  <div id="cancelConfirmModal" onclick="if(event.target===this)closeCancelConfirmModal()" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border-2 border-rose-300 my-auto">
       <div class="bg-rose-50 p-5 text-center border-b border-rose-100">
         <div class="w-14 h-14 rounded-full bg-rose-100 text-rose-600 font-black text-2xl flex items-center justify-center mx-auto mb-2.5 shadow-xs">
@@ -3413,7 +3436,7 @@
   <!-- ===================================================================== -->
   <!-- MODAL 7: PATIENT PROFILE & LIFETIME APPOINTMENTS HISTORY              -->
   <!-- ===================================================================== -->
-  <div id="patientProfileModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+  <div id="patientProfileModal" onclick="if(event.target===this)closePatientProfileModal()" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 my-auto">
       
       <!-- Profile Header -->
@@ -3485,7 +3508,7 @@
   <!-- ===================================================================== -->
   <!-- MODAL 8: TODAY'S TOKEN-WISE FEE LEDGER (GALLA POP-UP)                 -->
   <!-- ===================================================================== -->
-  <div id="gallaLedgerModal" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+  <div id="gallaLedgerModal" onclick="if(event.target===this)closeGallaLedgerModal()" class="fixed inset-0 bg-slate-950/70 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 my-auto">
       
       <!-- Ledger Header -->
@@ -4140,6 +4163,13 @@
             todayQueue = parsed;
           }
         }
+        const savedReg = localStorage.getItem('parchisetu_register');
+        if (savedReg) {
+          const parsedReg = JSON.parse(savedReg);
+          if (Array.isArray(parsedReg) && parsedReg.length > 0) {
+            patientRegister = parsedReg;
+          }
+        }
       } catch (err) {}
     }
 
@@ -4152,6 +4182,12 @@
     function saveLocalQueue() {
       try {
         localStorage.setItem('parchisetu_queue', JSON.stringify(todayQueue));
+      } catch (err) {}
+    }
+
+    function saveLocalRegister() {
+      try {
+        localStorage.setItem('parchisetu_register', JSON.stringify(patientRegister));
       } catch (err) {}
     }
 
@@ -6429,6 +6465,13 @@
       return parts.join(', ');
     }
 
+    function normalizePhoneNumber(raw) {
+      let digits = String(raw || '').replace(/[^0-9]/g, '');
+      if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+      if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+      return digits;
+    }
+
     function cancelCurrentCabinPatient() {
       const inCabin = getCurrentCabinPatient();
       if (inCabin) {
@@ -6809,12 +6852,19 @@
       }
 
       // Upsert into register
-      const existingReg = patientRegister.find(
-        p => p.name.toLowerCase() === name.toLowerCase()
-      );
+      const normPhone = normalizePhoneNumber(phone);
+      const existingReg = patientRegister.find(p => {
+        const pNorm = normalizePhoneNumber(p.phone);
+        if (normPhone && pNorm && normPhone.length >= 10 && pNorm.length >= 10) {
+          return normPhone === pNorm;
+        }
+        return p.name.toLowerCase() === name.toLowerCase();
+      });
       if (existingReg) {
-        existingReg.visits += 1;
+        existingReg.visits = (existingReg.visits || 1) + 1;
         existingReg.lastVisit = 'Aaj (Today)';
+        if (phone && (!existingReg.phone || existingReg.phone === 'N/A')) existingReg.phone = phone;
+        existingReg.lastReason = selectedWalkinReason;
       } else {
         patientRegister.unshift({
           id: 'p_' + Date.now(),
@@ -6830,6 +6880,7 @@
           lastNotes: 'New Walk-in Visit'
         });
       }
+      saveLocalRegister();
 
       nameInput.value = '';
       ageInput.value = '';
@@ -7026,12 +7077,13 @@
     }
 
     function renderQueueFilterPills() {
+      const activeQueue = todayQueue.filter(p => p.status !== 'CANCELLED');
       const counts = {
-        ALL: todayQueue.length,
+        ALL: activeQueue.length,
         WAITING: todayQueue.filter(p => p.status === 'WAITING').length,
         IN_CABIN: todayQueue.filter(p => p.status === 'IN_CABIN').length,
         DONE: todayQueue.filter(p => p.status === 'DONE').length,
-        BAAKI: todayQueue.filter(p => p.payMode === 'Baaki').length
+        BAAKI: activeQueue.filter(p => p.payMode === 'Baaki').length
       };
 
       const pills = [
@@ -7315,7 +7367,8 @@
       activeDrawerPatientId = patientId;
 
       document.getElementById('drawerTokenBadge').textContent = `#${p.token}`;
-      document.getElementById('drawerPatientName').textContent = `${p.name} (${p.age}${p.gender})`;
+      const agStr = formatPatientAgeGender(p.age, p.gender);
+      document.getElementById('drawerPatientName').textContent = `${p.name}${agStr ? ` (${agStr})` : ''}`;
       document.getElementById('drawerPatientMeta').textContent = `📱 ${p.phone} • ${p.reason}`;
 
       document.getElementById('vitalBP').value = p.bp || '';
@@ -7373,6 +7426,26 @@
       addCustomMetricRow(name, '', unit);
       const sel = document.getElementById('presetLabTestSelect');
       if (sel) sel.value = '';
+    }
+
+    function addCustomMetricFromSearch() {
+      const input = document.getElementById('customMetricSearchInput');
+      if (!input) return;
+      const query = input.value.trim();
+      if (!query) {
+        addCustomMetricRow('', '', '');
+        return;
+      }
+      let defaultUnit = '';
+      if (/sugar|blood\s*sugar|glucose|cholesterol|calcium|lipid/i.test(query)) defaultUnit = 'mg/dL';
+      else if (/cbc|widal|dengue|urine|lft|kft|ecg|x-?ray|ultrasound/i.test(query)) defaultUnit = 'Report';
+      else if (/charge|fee|dressing|injection|stitches|nebuliz/i.test(query)) defaultUnit = '₹';
+      else if (/spo2|oxygen|hba1c/i.test(query)) defaultUnit = '%';
+      else if (/pulse|heart/i.test(query)) defaultUnit = 'bpm';
+      else if (/hb|hemoglobin/i.test(query)) defaultUnit = 'g/dL';
+
+      addCustomMetricRow(query, '', defaultUnit);
+      input.value = '';
     }
 
     // Dynamic Custom Metrics Builder
@@ -7578,8 +7651,9 @@
       if (vitalsData.sugar) vitalsList.push(`• Sugar: ${vitalsData.sugar}`);
       if (vitalsData.customMetrics && vitalsData.customMetrics.length > 0) {
         vitalsData.customMetrics.forEach(m => {
-          if (m.name && m.value) {
-            vitalsList.push(`• ${m.name}: ${m.value} ${m.unit || ''}`.trim());
+          if (m && m.name && m.name.trim()) {
+            const valStr = m.value ? `: ${m.value} ${m.unit || ''}`.trim() : (m.unit ? ` (${m.unit})` : '');
+            vitalsList.push(`• ${m.name.trim()}${valStr}`);
           }
         });
       }
@@ -7619,7 +7693,7 @@
         weight,
         temp,
         sugar,
-        customMetrics: (currentDrawerCustomMetrics || []).filter(m => (m.name || '').trim() && (m.value || '').trim()),
+        customMetrics: (currentDrawerCustomMetrics || []).filter(m => (m.name || '').trim()),
         notes,
         followUpDays: selectedFollowUpDays,
         followUpDateFormatted: formatFollowUpDate(selectedFollowUpDays)
@@ -7715,13 +7789,10 @@
       saveParchiDrawerOnly();
 
       // Open patient WhatsApp
-      let cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
-      if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
-        cleanPhone = cleanPhone.substring(1);
-      }
-      const waNumber = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
+      let cleanPhone = normalizePhoneNumber(p.phone);
+      const waNumber = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.length > 10 ? cleanPhone : '');
       const encoded = encodeURIComponent(fullMsg);
-      const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${encoded}` : `https://api.whatsapp.com/send?text=${encoded}`;
+      const waUrl = waNumber ? `https://api.whatsapp.com/send/?phone=${waNumber}&text=${encoded}` : `https://api.whatsapp.com/send/?text=${encoded}`;
       window.open(waUrl, '_blank');
 
       showToast(`💬 WhatsApp Prescription & ${selectedFollowUpDays}-Din Reminder sent to ${p.name}!`);
@@ -8299,11 +8370,13 @@
               ${
                 s.list.length === 0
                   ? `<div class="py-3 text-center text-xs text-slate-400">Is shift mein abhi koi booking nahi hai.</div>`
-                  : s.list.map(p => `
+                  : s.list.map(p => {
+                      const ag = formatPatientAgeGender(p.age, p.gender);
+                      return `
                       <div class="py-2 flex items-center justify-between text-xs">
                         <div class="flex items-center gap-2">
                           <span class="font-black text-[#075E54] bg-emerald-50 px-2 py-0.5 rounded">#${p.token}</span>
-                          <span class="font-bold text-slate-800">${p.name} (${p.age}${p.gender})</span>
+                          <span class="font-bold text-slate-800">${escapeHtml(p.name)}${ag ? ` (${ag})` : ''}</span>
                           <span class="text-slate-400">• ${p.slotTime}</span>
                           ${p.doctorName ? `<span class="text-[10px] text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold">${p.doctorName}</span>` : ''}
                         </div>
@@ -8311,7 +8384,8 @@
                           ${p.source === 'QR Booked' ? '📱 Online' : '🚶 Walk-in'}
                         </span>
                       </div>
-                    `).join('')
+                    `;
+                    }).join('')
               }
             </div>
           </div>
@@ -8369,7 +8443,9 @@
       const patientMap = new Map();
 
       allAppts.forEach(p => {
-        const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+        const cleanPhone = (typeof normalizePhoneNumber === 'function')
+          ? normalizePhoneNumber(p.phone)
+          : (p.phone || '').replace(/[^0-9]/g, '');
         const key = cleanPhone.length >= 10 ? `phone_${cleanPhone}` : `name_${(p.name || '').toLowerCase().trim()}`;
         if (!patientMap.has(key)) {
           patientMap.set(key, {
@@ -8441,7 +8517,9 @@
           if (!hasApptOnDate) return false;
         }
         if (!q) return true;
-        const matchPhone = (p.phone || '').includes(q);
+        const normQ = (typeof normalizePhoneNumber === 'function') ? normalizePhoneNumber(q) : q.replace(/[^0-9]/g, '');
+        const normPhone = (typeof normalizePhoneNumber === 'function') ? normalizePhoneNumber(p.phone) : (p.phone || '').replace(/[^0-9]/g, '');
+        const matchPhone = (p.phone || '').toLowerCase().includes(q) || (normQ && normPhone.includes(normQ));
         const matchName = (p.name || '').toLowerCase().includes(q);
         const matchReason = (p.lastReason || '').toLowerCase().includes(q);
         return matchPhone || matchName || matchReason;
@@ -8702,20 +8780,21 @@
     // 12. TAB 4: AAJ KA GALLA (FINANCIAL CASHBOOK)
     // =========================================================================
     function renderGallaTab() {
-      const cashTotal = todayQueue
+      const activeQueue = todayQueue.filter(p => p.status !== 'CANCELLED');
+      const cashTotal = activeQueue
         .filter(p => p.payMode === 'Cash')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
-      const upiTotal = todayQueue
+      const upiTotal = activeQueue
         .filter(p => p.payMode === 'UPI')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
-      const baakiTotal = todayQueue
+      const baakiTotal = activeQueue
         .filter(p => p.payMode === 'Baaki')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
-      const baakiCount = todayQueue.filter(p => p.payMode === 'Baaki').length;
+      const baakiCount = activeQueue.filter(p => p.payMode === 'Baaki').length;
       const grandTotal = cashTotal + upiTotal;
 
       document.getElementById('gallaTotalAmount').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
-      document.getElementById('gallaTotalPatientsText').textContent = `${todayQueue.length} Mareez Aaj`;
+      document.getElementById('gallaTotalPatientsText').textContent = `${activeQueue.length} Mareez Aaj`;
       document.getElementById('gallaCashAmount').textContent = `₹${cashTotal.toLocaleString('en-IN')}`;
       document.getElementById('gallaUpiAmount').textContent = `₹${upiTotal.toLocaleString('en-IN')}`;
       document.getElementById('gallaBaakiAmount').textContent = `₹${baakiTotal.toLocaleString('en-IN')}`;
@@ -8747,7 +8826,7 @@
         const dayNum = String(d.getDate()).padStart(2, '0');
         const dateStr = `${y}-${m}-${dayNum}`;
         const dayAmt = allHistory
-          .filter(item => item.appointmentDate === dateStr && item.payMode !== 'Baaki')
+          .filter(item => item.appointmentDate === dateStr && item.status !== 'CANCELLED' && item.payMode !== 'Baaki')
           .reduce((s, item) => s + (item.fee || 0), 0);
         weekData.push({ day: dayLabel, amt: dayAmt, isToday: false, dateStr });
       }
@@ -8792,7 +8871,7 @@
       document.getElementById('whatsappHisaabPreviewBox').innerHTML = `
         <div>🏥 *${clinicProfile.name.toUpperCase()} - AAJ KA HISAAB*</div>
         <div>👨‍⚕️ ${clinicProfile.doctorName}</div>
-        <div>👥 Kul Mareez: *${todayQueue.length}*</div>
+        <div>👥 Kul Mareez: *${activeQueue.length}*</div>
         <div>💵 Cash Galla: *₹${cashTotal}*</div>
         <div>📱 UPI / Online: *₹${upiTotal}*</div>
         <div>⏳ Baaki (Unpaid): *₹${baakiTotal}*</div>
@@ -8812,30 +8891,35 @@
             .slice()
             .reverse()
             .map(p => {
+              const isCancelled = p.status === 'CANCELLED';
               return `
-                <div class="py-3 flex items-center justify-between gap-2 text-xs sm:text-sm">
+                <div class="py-3 flex items-center justify-between gap-2 text-xs sm:text-sm ${isCancelled ? 'opacity-50 line-through bg-slate-50 rounded-xl px-2' : ''}">
                   <div class="flex items-center gap-2.5">
                     <span class="font-black text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">#${p.token}</span>
                     <div>
-                      <div class="font-bold text-slate-900">${escapeHtml(p.name)}</div>
+                      <div class="font-bold text-slate-900">${escapeHtml(p.name)} ${isCancelled ? '<span class="text-rose-600 font-extrabold text-[10px] uppercase no-underline">[Cancelled]</span>' : ''}</div>
                       <div class="text-[11px] text-slate-500">${escapeHtml(p.reason)} • ${p.slotTime}</div>
                     </div>
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <button 
-                      type="button"
-                      onclick="togglePatientFeeStatus('${p.id}')" 
-                      class="px-3 py-1.5 rounded-xl font-extrabold text-xs border ${
-                        p.payMode === 'Baaki'
-                          ? 'bg-amber-100 text-amber-950 border-amber-400'
-                          : p.payMode === 'UPI'
-                          ? 'bg-sky-50 text-sky-900 border-sky-200'
-                          : 'bg-emerald-50 text-emerald-900 border-emerald-200'
-                      }"
-                    >
-                      ₹${p.fee} • ${p.payMode === 'Baaki' ? '⏳ Baaki (Click to Collect)' : p.payMode + ' ✓'}
-                    </button>
+                    ${
+                      isCancelled
+                        ? `<span class="px-3 py-1.5 rounded-xl font-bold text-xs bg-rose-50 text-rose-600 border border-rose-200">Cancelled</span>`
+                        : `<button 
+                            type="button"
+                            onclick="togglePatientFeeStatus('${p.id}')" 
+                            class="px-3 py-1.5 rounded-xl font-extrabold text-xs border ${
+                              p.payMode === 'Baaki'
+                                ? 'bg-amber-100 text-amber-950 border-amber-400'
+                                : p.payMode === 'UPI'
+                                ? 'bg-sky-50 text-sky-900 border-sky-200'
+                                : 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                            }"
+                          >
+                            ₹${p.fee} • ${p.payMode === 'Baaki' ? '⏳ Baaki (Click to Collect)' : p.payMode + ' ✓'}
+                          </button>`
+                    }
                   </div>
                 </div>
               `;
@@ -8845,6 +8929,38 @@
     }
 
     function sendDoctorHisaabWhatsApp() {
+      const activeQueue = todayQueue.filter(p => p.status !== 'CANCELLED');
+      const cashTotal = activeQueue
+        .filter(p => p.payMode === 'Cash')
+        .reduce((sum, p) => sum + (p.fee || 0), 0);
+      const upiTotal = activeQueue
+        .filter(p => p.payMode === 'UPI')
+        .reduce((sum, p) => sum + (p.fee || 0), 0);
+      const baakiTotal = activeQueue
+        .filter(p => p.payMode === 'Baaki')
+        .reduce((sum, p) => sum + (p.fee || 0), 0);
+      const grandTotal = cashTotal + upiTotal;
+
+      let msg = `🏥 *${(clinicProfile.name || 'CLINIC').toUpperCase()} - AAJ KA HISAAB*\n`;
+      msg += `👨‍⚕️ *${clinicProfile.doctorName || 'Doctor'}*\n`;
+      msg += `📅 Tarikh: ${getLocalDateString()}\n`;
+      msg += `--------------------------------\n`;
+      msg += `👥 Kul Mareez: *${activeQueue.length}*\n`;
+      msg += `💵 Cash Galla (Drawer): *₹${cashTotal}*\n`;
+      msg += `📱 UPI / QR Direct: *₹${upiTotal}*\n`;
+      msg += `⏳ Baaki (Unpaid): *₹${baakiTotal}*\n`;
+      msg += `--------------------------------\n`;
+      msg += `💰 *KUL JAMA (Cash + UPI): ₹${grandTotal}*\n`;
+      msg += `--------------------------------\n`;
+      msg += `_ParchiSetu Daily Clinic Closing Hisaab_ 🙏`;
+
+      const docPhone = (typeof normalizePhoneNumber === 'function')
+        ? normalizePhoneNumber(clinicProfile.whatsapp || clinicProfile.phone)
+        : (clinicProfile.whatsapp || clinicProfile.phone || '').replace(/[^0-9]/g, '');
+      const encoded = encodeURIComponent(msg);
+      const waNumber = docPhone.length === 10 ? `91${docPhone}` : (docPhone.length > 10 ? docPhone : '');
+      const waUrl = waNumber ? `https://api.whatsapp.com/send/?phone=${waNumber}&text=${encoded}` : `https://api.whatsapp.com/send/?text=${encoded}`;
+      window.open(waUrl, '_blank');
       showToast('📲 Aaj ka pura Cash + UPI Hisaab Doctor Sahab ke WhatsApp par bhej diya gaya!');
     }
 
@@ -9673,7 +9789,10 @@
       if (passTokenNum) passTokenNum.textContent = `#${savedBooking.token}`;
 
       const passPatName = document.getElementById('passPatientName');
-      if (passPatName) passPatName.textContent = `${savedBooking.name} (${savedBooking.age || ''}${savedBooking.gender || ''}) • ${savedBooking.phone}`;
+      if (passPatName) {
+        const ag = formatPatientAgeGender(savedBooking.age, savedBooking.gender);
+        passPatName.textContent = `${savedBooking.name}${ag ? ` (${ag})` : ''} • ${savedBooking.phone}`;
+      }
 
       const passClinicName = document.getElementById('passClinicName');
       if (passClinicName) passClinicName.textContent = clinicProfile.name;
@@ -9871,24 +9990,26 @@
       if (!lastPatientBooking) return;
       const b = lastPatientBooking;
       const clinic = clinicProfile;
+      const ag = formatPatientAgeGender(b.age, b.gender);
       const text = `🎟️ *ParchiSetu Token Confirmation*\n\n` +
         `🏥 *${clinic.name}*\n` +
         `👨‍⚕️ ${clinic.doctorName} (${clinic.doctorDegree})\n` +
         `📍 ${clinic.address}, ${clinic.city}\n\n` +
         `🎫 *Token Number: #${b.token}*\n` +
-        `👤 Patient: ${b.name} (${b.age}${b.gender})\n` +
+        `👤 Patient: ${b.name}${ag ? ` (${ag})` : ''}\n` +
         `📅 Visiting: ${b.day} • ${b.shift} (${b.slotTime})\n` +
         `💵 Consultation Fee: ₹${b.fee} (Pay at clinic counter)\n` +
         `⏳ Status: WAITING\n\n` +
         `Clinic aane par reception counter par Token #${b.token} batayein! 🙏`;
 
       const encoded = encodeURIComponent(text);
-      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+      window.open(`https://api.whatsapp.com/send/?text=${encoded}`, '_blank');
     }
 
     function printPatientTokenSlip() {
       if (!lastPatientBooking) return;
       const b = lastPatientBooking;
+      const ag = formatPatientAgeGender(b.age, b.gender);
       const printWindow = window.open('', '_blank', 'width=420,height=600');
       if (!printWindow) {
         showToast('⚠️ Pop-up blocked! Please allow pop-ups to print slip.', 'warning');
@@ -9919,7 +10040,7 @@
           <div class="sub">PATIENT TOKEN SLIP</div>
           <div class="token">#${b.token}</div>
           <div class="dashed"></div>
-          <div class="row"><span>Patient:</span><strong>${b.name} (${b.age}${b.gender})</strong></div>
+          <div class="row"><span>Patient:</span><strong>${b.name}${ag ? ` (${ag})` : ''}</strong></div>
           <div class="row"><span>Mobile:</span><span>${b.phone}</span></div>
           <div class="row"><span>Visiting:</span><strong>${b.slotTime} (${b.day})</strong></div>
           <div class="row"><span>Reason:</span><span>${b.reason}</span></div>
@@ -10161,6 +10282,52 @@
             renderPatientBookingPage();
           } else if (currentRole === 'clinic' && currentAuthUser) {
             refreshAllViews();
+          }
+        }
+      });
+
+      // Keyboard shortcut: Escape key closes topmost open modal or drawer
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+          const cancelModal = document.getElementById('cancelConfirmModal');
+          if (cancelModal && !cancelModal.classList.contains('hidden')) {
+            closeCancelConfirmModal();
+            return;
+          }
+          const profileModal = document.getElementById('patientProfileModal');
+          if (profileModal && !profileModal.classList.contains('hidden')) {
+            closePatientProfileModal();
+            return;
+          }
+          const gallaModal = document.getElementById('gallaLedgerModal');
+          if (gallaModal && !gallaModal.classList.contains('hidden')) {
+            closeGallaLedgerModal();
+            return;
+          }
+          const walkinModal = document.getElementById('walkinModal');
+          if (walkinModal && !walkinModal.classList.contains('hidden')) {
+            closeFastWalkinModal();
+            return;
+          }
+          const drawer = document.getElementById('parchiDrawer');
+          if (drawer && !drawer.classList.contains('translate-x-full')) {
+            closeParchiDrawer();
+            return;
+          }
+          const qrModal = document.getElementById('qrStandeeModal');
+          if (qrModal && !qrModal.classList.contains('hidden')) {
+            closeQRStandeeModal();
+            return;
+          }
+          const interactiveQR = document.getElementById('interactiveQRModal');
+          if (interactiveQR && !interactiveQR.classList.contains('hidden')) {
+            closeInteractiveQRModal();
+            return;
+          }
+          const patientBookingModal = document.getElementById('patientBookingModal');
+          if (patientBookingModal && !patientBookingModal.classList.contains('hidden')) {
+            closePatientBookingModal();
+            return;
           }
         }
       });

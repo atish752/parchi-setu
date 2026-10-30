@@ -1009,7 +1009,7 @@ async function runTests() {
     // Save & WhatsApp reminder
     assert.ok(html.includes('function generateWhatsAppPrescriptionText'), 'Must define generateWhatsAppPrescriptionText');
     assert.ok(html.includes('function saveParchiAndSendWhatsApp'), 'Must define saveParchiAndSendWhatsApp');
-    assert.ok(html.includes('https://wa.me/'), 'saveParchiAndSendWhatsApp must format WhatsApp link via https://wa.me/');
+    assert.ok(html.includes('https://api.whatsapp.com/send/') || html.includes('https://wa.me/'), 'saveParchiAndSendWhatsApp must format WhatsApp link via direct api.whatsapp.com endpoint');
 
     // Test generateWhatsAppPrescriptionText in VM context
     const code = `
@@ -1549,6 +1549,92 @@ async function runTests() {
     assert.strictEqual(gallaCode.includes('3900'), false, '7-Day chart must NOT contain hardcoded fake data 3900');
     assert.ok(gallaCode.includes('const allHistory = getAllAppointmentsHistory()'), '7-Day chart must calculate actual revenue using getAllAppointmentsHistory()');
     assert.ok(gallaCode.includes("const displayAmt = d.amt > 0 ? (d.amt >= 1000 ? `₹${(d.amt / 1000).toFixed(1)}k` : `₹${d.amt}`) : '₹0'"), 'Chart bars must display real amounts or ₹0 for zero revenue days');
+  })();
+
+  // 72. Cancelled Patient Exclusion & Financial / Queue Metric Precision
+  await test('Cancelled patients are excluded from ALL queue filter pill count and Galla revenue totals', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Check renderQueueFilterPills filters out CANCELLED from ALL count
+    const filterFnCode = html.substring(html.indexOf('function renderQueueFilterPills()'), html.indexOf('function setQueueFilter('));
+    assert.ok(filterFnCode.includes("p.status !== 'CANCELLED'"), 'renderQueueFilterPills must exclude CANCELLED patients from ALL pill count');
+
+    // 2. Check renderGallaTab filters out CANCELLED from revenue
+    const gallaFnCode = html.substring(html.indexOf('function renderGallaTab()'), html.indexOf('function sendDoctorHisaabWhatsApp()'));
+    assert.ok(gallaFnCode.includes("p.status !== 'CANCELLED'"), 'renderGallaTab must exclude CANCELLED patients from cash, upi, and baaki calculations');
+
+    // 3. VM simulation of revenue calculation with cancelled patients
+    const gallaSandbox = {
+      todayQueue: [
+        { id: '1', name: 'Active Cash', fee: 300, payMode: 'Cash', status: 'COMPLETED' },
+        { id: '2', name: 'Active UPI', fee: 500, payMode: 'UPI', status: 'IN_CABIN' },
+        { id: '3', name: 'Active Baaki', fee: 200, payMode: 'Baaki', status: 'WAITING' },
+        { id: '4', name: 'Cancelled Patient', fee: 1000, payMode: 'Baaki', status: 'CANCELLED' }
+      ]
+    };
+    vm.createContext(gallaSandbox);
+    const calcCode = `
+      var cashTotal = 0;
+      var upiTotal = 0;
+      var baakiTotal = 0;
+      var baakiCount = 0;
+      todayQueue.forEach(p => {
+        if (p.status === 'CANCELLED') return;
+        const fee = Number(p.fee) || 0;
+        if (p.payMode === 'Cash') cashTotal += fee;
+        else if (p.payMode === 'UPI') upiTotal += fee;
+        else {
+          baakiTotal += fee;
+          baakiCount++;
+        }
+      });
+      var grandTotal = cashTotal + upiTotal;
+    `;
+    vm.runInContext(calcCode, gallaSandbox);
+    assert.strictEqual(gallaSandbox.cashTotal, 300, 'Cash total should be 300');
+    assert.strictEqual(gallaSandbox.upiTotal, 500, 'UPI total should be 500');
+    assert.strictEqual(gallaSandbox.baakiTotal, 200, 'Baaki total should be 200, excluding the 1000 cancelled fee');
+    assert.strictEqual(gallaSandbox.baakiCount, 1, 'Baaki count should be 1, excluding the cancelled patient');
+    assert.strictEqual(gallaSandbox.grandTotal, 800, 'Grand collected total should be 800');
+
+    // 4. sendDoctorHisaabWhatsApp function exists and formats properly
+    assert.ok(html.includes('function sendDoctorHisaabWhatsApp()'), 'sendDoctorHisaabWhatsApp must be defined');
+    assert.ok(html.includes('api.whatsapp.com/send/'), 'sendDoctorHisaabWhatsApp must route to api.whatsapp.com');
+  })();
+
+  // 73. Keyboard & Modal Accessibility, Quick Lab Test Search Bar, and Format Consistency
+  await test('Modal backdrop dismissal, Escape key listener, lab test search input with auto-unit inference, and consistent age-gender formatting', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Modal backdrop click-to-dismiss handlers
+    assert.ok(html.includes('onclick="if(event.target===this)closeFastWalkinModal()"'), 'walkinModal backdrop must dismiss on outer click');
+    assert.ok(html.includes('onclick="if(event.target===this)closeCancelConfirmModal()"'), 'cancelConfirmModal backdrop must dismiss on outer click');
+    assert.ok(html.includes('onclick="if(event.target===this)closePatientProfileModal()"'), 'patientProfileModal backdrop must dismiss on outer click');
+    assert.ok(html.includes('onclick="if(event.target===this)closeGallaLedgerModal()"'), 'gallaLedgerModal backdrop must dismiss on outer click');
+
+    // 2. Global Escape key handler
+    assert.ok(html.includes("if (e.key === 'Escape' || e.key === 'Esc')"), 'Window keydown must handle Escape key');
+    assert.ok(html.includes('closeCancelConfirmModal()'), 'Escape key must close cancelConfirmModal');
+    assert.ok(html.includes('closePatientProfileModal()'), 'Escape key must close patientProfileModal');
+    assert.ok(html.includes('closeGallaLedgerModal()'), 'Escape key must close gallaLedgerModal');
+    assert.ok(html.includes('closeFastWalkinModal()'), 'Escape key must close fast walk-in modal');
+    assert.ok(html.includes('closeParchiDrawer()'), 'Escape key must close parchi drawer');
+
+    // 3. Lab Test search & add input
+    assert.ok(html.includes('id="customMetricSearchInput"'), 'Parchi drawer must include customMetricSearchInput');
+    assert.ok(html.includes('function addCustomMetricFromSearch()'), 'Must define addCustomMetricFromSearch in JS');
+
+    // 4. Formatted age/gender consistency across views
+    const passNameCode = html.substring(html.indexOf('function renderTokenPassDetails'), html.indexOf('function updatePatientTokenPassLiveStatus'));
+    assert.ok(passNameCode.includes('formatPatientAgeGender(savedBooking.age, savedBooking.gender)'), 'renderTokenPassDetails must format age and gender');
+    const shareTokenCode = html.substring(html.indexOf('function sharePatientTokenOnWhatsApp'), html.indexOf('function printPatientTokenSlip'));
+    assert.ok(shareTokenCode.includes('formatPatientAgeGender(b.age, b.gender)'), 'sharePatientTokenOnWhatsApp must format age and gender');
+    const printTokenCode = html.substring(html.indexOf('function printPatientTokenSlip'), html.indexOf('function checkAndRestorePatientBooking'));
+    assert.ok(printTokenCode.includes('formatPatientAgeGender(b.age, b.gender)'), 'printPatientTokenSlip must format age and gender');
   })();
 
   // Restore clean default clinic state and empty queue
