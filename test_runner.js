@@ -1637,6 +1637,194 @@ async function runTests() {
     assert.ok(printTokenCode.includes('formatPatientAgeGender(b.age, b.gender)'), 'printPatientTokenSlip must format age and gender');
   })();
 
+  // 74. Role Switching & 5 Clinic Tab Isolation Regression Suite
+  await test('Regression: Patient role switching, all 5 clinic tab switches, and complete DOM tree hierarchy isolation', async () => {
+    const res = await makeRequest('GET', '/');
+    assert.strictEqual(res.status, 200);
+    const html = res.body;
+
+    // 1. Tag balance verification (zero mismatched/unclosed tags)
+    function verifyTagBalance(src, filename) {
+      let text = src;
+      text = text.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, (m) => m.replace(/[^\n]/g, ' '));
+      text = text.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (m) => m.replace(/[^\n]/g, ' '));
+      text = text.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' '));
+
+      const tagRegex = /<(\/)?([a-zA-Z0-9\-]+)([\s\S]*?)(\/)?>/g;
+      const stack = [];
+      const voidTags = new Set(['meta', 'link', 'img', 'br', 'hr', 'input', 'source', 'col']);
+
+      let match;
+      while ((match = tagRegex.exec(text)) !== null) {
+        const isClose = !!match[1];
+        const tagName = match[2].toLowerCase();
+        const attrs = match[3];
+        const isSelfClose = !!match[4] || voidTags.has(tagName);
+        if (isSelfClose && !isClose) continue;
+        if (tagName === 'option') continue;
+
+        if (isClose) {
+          assert.ok(stack.length > 0, `${filename}: unexpected closing tag </${tagName}> with empty stack`);
+          const top = stack.pop();
+          assert.strictEqual(top.tagName, tagName, `${filename}: expected closing tag </${top.tagName}>, got </${tagName}>`);
+        } else {
+          const idMatch = attrs.match(/\bid\s*=\s*["']([^"']+)["']/i);
+          stack.push({ tagName, id: idMatch ? idMatch[1] : '' });
+        }
+      }
+      assert.strictEqual(stack.length, 0, `${filename} has ${stack.length} unclosed tag(s)`);
+    }
+
+    verifyTagBalance(html, 'index.html');
+    const altHtmlPath = path.join(__dirname, 'parchisetu_indian_clinic_management_token_web_app.html');
+    const altHtml = fs.readFileSync(altHtmlPath, 'utf8');
+    verifyTagBalance(altHtml, 'parchisetu_indian_clinic_management_token_web_app.html');
+    assert.strictEqual(html, altHtml, 'index.html and parchisetu_indian_clinic_management_token_web_app.html must be 100% identical');
+
+    // 2. DOM tree hierarchy parsing & structural isolation
+    function parseTree(src) {
+      let text = src;
+      text = text.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, (m) => m.replace(/[^\n]/g, ' '));
+      text = text.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (m) => m.replace(/[^\n]/g, ' '));
+      text = text.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' '));
+
+      const tagRegex = /<(\/)?([a-zA-Z0-9\-]+)([\s\S]*?)(\/)?>/g;
+      const root = { tag: 'root', children: [], parent: null };
+      let current = root;
+      const voidTags = new Set(['meta', 'link', 'img', 'br', 'hr', 'input', 'source', 'col']);
+
+      let match;
+      while ((match = tagRegex.exec(text)) !== null) {
+        const isClose = !!match[1];
+        const tagName = match[2].toLowerCase();
+        const attrs = match[3];
+        const isSelfClose = !!match[4] || voidTags.has(tagName);
+        if (tagName === 'option' || (isSelfClose && !isClose)) continue;
+
+        if (isClose) {
+          if (current.parent) current = current.parent;
+        } else {
+          const idMatch = attrs.match(/\bid\s*=\s*["']([^"']+)["']/i);
+          const node = { tag: tagName, id: idMatch ? idMatch[1] : '', children: [], parent: current };
+          current.children.push(node);
+          current = node;
+        }
+      }
+      return root;
+    }
+
+    function findNode(node, id) {
+      if (node.id === id) return node;
+      for (const c of node.children) {
+        const found = findNode(c, id);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    const domRoot = parseTree(html);
+    const deskNode = findNode(domRoot, 'viewClinicDesk');
+    const patientNode = findNode(domRoot, 'viewPatientBooking');
+    const gatewayNode = findNode(domRoot, 'viewAuthGateway');
+
+    assert.ok(deskNode, 'viewClinicDesk must exist in DOM');
+    assert.ok(patientNode, 'viewPatientBooking must exist in DOM');
+    assert.ok(gatewayNode, 'viewAuthGateway must exist in DOM');
+    assert.strictEqual(deskNode.parent.tag, 'main', 'viewClinicDesk must be a direct child of main');
+    assert.strictEqual(patientNode.parent.tag, 'main', 'viewPatientBooking must be a direct child of main');
+    assert.strictEqual(gatewayNode.parent.tag, 'main', 'viewAuthGateway must be a direct child of main');
+
+    // All 5 clinic tabs must be inside viewClinicDesk
+    const allClinicTabs = ['clinicTab-queue', 'clinicTab-calendar', 'clinicTab-register', 'clinicTab-galla', 'clinicTab-profile'];
+    for (const t of allClinicTabs) {
+      const tabNode = findNode(domRoot, t);
+      assert.ok(tabNode, `${t} must exist`);
+      assert.strictEqual(tabNode.parent.id, 'viewClinicDesk', `${t} must be contained inside viewClinicDesk`);
+    }
+
+    // Calendar sub-components must be inside clinicTab-calendar, not leaked into outer views
+    const calNode = findNode(domRoot, 'clinicTab-calendar');
+    assert.ok(findNode(calNode, 'calendarDateStrip'), 'calendarDateStrip must be contained inside clinicTab-calendar');
+    assert.ok(findNode(calNode, 'calendarDayControlCard'), 'calendarDayControlCard must be contained inside clinicTab-calendar');
+    assert.ok(findNode(calNode, 'calendarShiftsContainer'), 'calendarShiftsContainer must be contained inside clinicTab-calendar');
+
+    // 3. VM simulation of switchAppRole and all 5 switchClinicTab transitions
+    class MockElement {
+      constructor(id) {
+        this.id = id;
+        this.classList = {
+          classes: new Set(),
+          add: (c) => this.classList.classes.add(c),
+          remove: (c) => this.classList.classes.delete(c),
+          contains: (c) => this.classList.classes.has(c)
+        };
+        this.className = '';
+      }
+    }
+
+    const mockElements = {};
+    function getMockEl(id) {
+      if (!mockElements[id]) mockElements[id] = new MockElement(id);
+      return mockElements[id];
+    }
+
+    const vmSandbox = {
+      document: {
+        getElementById: (id) => getMockEl(id),
+        title: ''
+      },
+      currentRole: 'clinic',
+      currentTab: 'queue',
+      currentAuthUser: { uid: 'doc_1', email: 'test@clinic.com' },
+      clinicProfile: { name: 'Test Clinic' },
+      updateHeaderAuthUI: () => {},
+      refreshAllViews: () => {},
+      renderProfileTab: () => {},
+      renderPatientBookingPage: () => {},
+      showAuthGatewayScreen: () => {},
+      console: console
+    };
+    vm.createContext(vmSandbox);
+
+    const switchClinicTabCode = html.substring(html.indexOf('function switchClinicTab'), html.indexOf('function onFabWalkinClick'));
+    const switchAppRoleCode = html.substring(html.indexOf('function switchAppRole'), html.indexOf('function renderProfileTab'));
+    vm.runInContext(switchClinicTabCode, vmSandbox);
+    vm.runInContext(switchAppRoleCode, vmSandbox);
+
+    // Switch to patient view
+    vmSandbox.switchAppRole('patient');
+    assert.strictEqual(vmSandbox.currentRole, 'patient');
+    assert.ok(getMockEl('viewClinicDesk').classList.contains('hidden'), 'Clinic desk must have hidden class in patient role');
+    assert.ok(!getMockEl('viewPatientBooking').classList.contains('hidden'), 'Patient booking view must NOT have hidden class in patient role');
+    assert.ok(getMockEl('clinicNavTabs').classList.contains('hidden'), 'Clinic nav tabs must be hidden in patient role');
+    assert.ok(getMockEl('mobileFabNewPatient').classList.contains('hidden'), 'Mobile FAB must be hidden in patient role');
+
+    // Switch back to clinic view
+    vmSandbox.switchAppRole('clinic');
+    assert.strictEqual(vmSandbox.currentRole, 'clinic');
+    assert.ok(!getMockEl('viewClinicDesk').classList.contains('hidden'), 'Clinic desk must NOT have hidden class in clinic role');
+    assert.ok(getMockEl('viewPatientBooking').classList.contains('hidden'), 'Patient booking view must have hidden class in clinic role');
+    assert.ok(!getMockEl('clinicNavTabs').classList.contains('hidden'), 'Clinic nav tabs must be visible in clinic role');
+
+    // Verify all 5 clinic tabs transition cleanly
+    const tabsList = ['queue', 'calendar', 'register', 'galla', 'profile'];
+    for (const activeTab of tabsList) {
+      vmSandbox.switchClinicTab(activeTab);
+      assert.strictEqual(vmSandbox.currentTab, activeTab);
+      for (const t of tabsList) {
+        const sec = getMockEl(`clinicTab-${t}`);
+        const btn = getMockEl(`tabBtn-${t}`);
+        if (t === activeTab) {
+          assert.ok(!sec.classList.contains('hidden'), `${t} section must be unhidden when activeTab=${activeTab}`);
+          assert.ok(btn.className.includes('border-[#25D366]'), `${t} tab button must have active border-[#25D366]`);
+        } else {
+          assert.ok(sec.classList.contains('hidden'), `${t} section must be hidden when activeTab=${activeTab}`);
+          assert.ok(btn.className.includes('border-transparent'), `${t} tab button must have inactive border-transparent`);
+        }
+      }
+    }
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

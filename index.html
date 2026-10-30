@@ -934,7 +934,6 @@
             </div>
 
           </div>
-        </div>
 
         <!-- 7-Day Horizontal Date Strip -->
         <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-200">
@@ -1927,7 +1926,6 @@
           >
             🏥 Clinic Staff / Compounder Desk Login ➔
           </button>
-        </div>
         </div>
 
       </div>
@@ -6264,7 +6262,7 @@
           else fab.classList.add('hidden');
         }
         document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
-        refreshAllViews();
+        switchClinicTab(currentTab || 'queue');
       } else {
         const fab = document.getElementById('mobileFabNewPatient');
         if (fab) fab.classList.add('hidden');
