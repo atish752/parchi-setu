@@ -458,16 +458,20 @@ module.exports = {
     return store.clinic;
   },
 
-  getQueue: (phone) => {
+  getQueue: (phone, clinicId) => {
     loadStore();
+    let list = store.queue;
+    if (clinicId) {
+      list = list.filter(p => !p.clinicId || p.clinicId === clinicId);
+    }
     if (phone) {
       const clean = String(phone).replace(/[^0-9]/g, '');
-      return store.queue.filter(p => {
+      return list.filter(p => {
         const pPhone = (p.phone || '').replace(/[^0-9]/g, '');
         return pPhone && (pPhone.endsWith(clean) || clean.endsWith(pPhone));
       });
     }
-    return store.queue;
+    return list;
   },
 
   setQueue: (newQueue) => {
@@ -488,12 +492,20 @@ module.exports = {
       return { isNew: false, booking: store.queue[existingIdx] };
     }
 
+    const targetClinic = (booking.clinicId && store.clinics && store.clinics[booking.clinicId])
+      ? store.clinics[booking.clinicId]
+      : (INITIAL_CLINICS[booking.clinicId] || store.clinic);
+
     const maxToken = store.queue.reduce((max, p) => Math.max(max, p.token || 0), 0);
     const nextToken = booking.token || (maxToken > 0 ? maxToken + 1 : 1);
     const bookingId = booking.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 
     const finalBooking = {
       id: bookingId,
+      clinicId: booking.clinicId || (targetClinic ? targetClinic.id : store.clinic.id),
+      clinicName: booking.clinicName || (targetClinic ? targetClinic.name : store.clinic.name),
+      clinicAddress: booking.clinicAddress || (targetClinic ? targetClinic.address : store.clinic.address),
+      clinicPhone: booking.clinicPhone || (targetClinic ? targetClinic.phone : store.clinic.phone),
       token: nextToken,
       name: (booking.name || '').trim(),
       age: parseInt(booking.age, 10) || 30,
@@ -502,8 +514,8 @@ module.exports = {
       reason: booking.reason || 'General Consultation',
       visitType: booking.visitType || 'new', // 'new' (Pahli Baar) or 'followup' (Dobara)
       doctorId: booking.doctorId || 'doc_1',
-      doctorName: booking.doctorName || store.clinic.doctorName,
-      fee: booking.fee !== undefined ? booking.fee : (store.clinic.fees ? store.clinic.fees.normal : 300),
+      doctorName: booking.doctorName || (targetClinic ? targetClinic.doctorName : store.clinic.doctorName),
+      fee: booking.fee !== undefined ? booking.fee : (targetClinic && targetClinic.fees ? targetClinic.fees.normal : (store.clinic.fees ? store.clinic.fees.normal : 300)),
       payMode: booking.payMode || 'Baaki',
       status: booking.status || 'WAITING',
       source: booking.source || 'QR Booked',

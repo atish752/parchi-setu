@@ -551,21 +551,23 @@ const requestHandler = async (req, res) => {
     return;
   }
 
-  // Get current queue (with optional phone lookup)
+  // Get current queue (with optional phone lookup and clinic filter)
   if (pathname === '/api/queue' && method === 'GET') {
     const phone = parsedUrl.searchParams.get('phone');
+    const clinicId = parsedUrl.searchParams.get('clinic') || parsedUrl.searchParams.get('clinicId');
+    let list = appData.queue || [];
+    if (clinicId) {
+      list = list.filter(p => !p.clinicId || p.clinicId === clinicId);
+    }
     if (phone) {
       const clean = phone.replace(/[^0-9]/g, '');
-      const list = (appData.queue || []).filter(p => {
+      list = list.filter(p => {
         const pPhone = (p.phone || '').replace(/[^0-9]/g, '');
         return pPhone && (pPhone.endsWith(clean) || clean.endsWith(pPhone));
       });
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(list));
-      return;
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(appData.queue));
+    res.end(JSON.stringify(list));
     return;
   }
 
@@ -639,8 +641,16 @@ function getISTDateString(d = new Date()) {
   return `${y}-${m}-${day}`;
 }
 
+      const targetClinic = (body.clinicId && appData.clinics && appData.clinics[body.clinicId])
+        ? appData.clinics[body.clinicId]
+        : (INITIAL_CLINICS[body.clinicId] || appData.clinic);
+
       const newBooking = {
         id: bookingId,
+        clinicId: body.clinicId || (targetClinic ? targetClinic.id : appData.clinic.id),
+        clinicName: body.clinicName || (targetClinic ? targetClinic.name : appData.clinic.name),
+        clinicAddress: body.clinicAddress || (targetClinic ? targetClinic.address : appData.clinic.address),
+        clinicPhone: body.clinicPhone || (targetClinic ? targetClinic.phone : appData.clinic.phone),
         token: nextToken,
         name: body.name.trim(),
         age: parseInt(body.age, 10) || 30,
@@ -649,8 +659,8 @@ function getISTDateString(d = new Date()) {
         reason: body.reason || 'General Consultation',
         visitType: body.visitType || 'new',
         doctorId: body.doctorId || 'doc_1',
-        doctorName: body.doctorName || (appData.clinic.doctorName || 'Dr. Rajesh Sharma'),
-        fee: body.fee !== undefined ? body.fee : (appData.clinic.fees ? appData.clinic.fees.normal : 300),
+        doctorName: body.doctorName || (targetClinic ? targetClinic.doctorName : (appData.clinic.doctorName || 'Dr. Rajesh Sharma')),
+        fee: body.fee !== undefined ? body.fee : (targetClinic && targetClinic.fees ? targetClinic.fees.normal : (appData.clinic.fees ? appData.clinic.fees.normal : 300)),
         payMode: body.payMode || 'Baaki', // online booked pays at clinic desk
         status: body.status || 'WAITING',
         source: body.source || 'QR Booked',

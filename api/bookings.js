@@ -41,9 +41,10 @@ module.exports = async (req, res) => {
   if (method === 'GET') {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     const phone = url.searchParams.get('phone');
+    const clinicId = url.searchParams.get('clinic') || url.searchParams.get('clinicId');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify(store.getQueue(phone)));
+    return res.end(JSON.stringify(store.getQueue(phone, clinicId)));
   }
 
   res.statusCode = 405;

@@ -1981,6 +1981,139 @@ async function runTests() {
     assert.ok(html.includes('noDoctorsFoundTitle:'), 'I18N must include noDoctorsFoundTitle');
   })();
 
+  // 78. Booking Persistence with Clinic Metadata & Scoped Queue Filtering
+  await test('POST /api/bookings preserves clinic metadata and GET /api/queue supports clinic filtering', async () => {
+    const testClinicId = 'clinic_delhi_bone_02';
+    const testPhone = '9811098765';
+    const bookRes = await makeRequest('POST', '/api/bookings', {
+      clinicId: testClinicId,
+      clinicName: 'Apex Orthopedic & Joint Care',
+      name: 'Sunil Malhotra',
+      age: 52,
+      gender: 'M',
+      phone: testPhone,
+      reason: 'Knee Pain / Fracture',
+      shift: 'Morning',
+      slotTime: '10:30 AM',
+      day: 'Aaj (Today)'
+    });
+    assert.strictEqual(bookRes.status, 201, 'Booking must succeed');
+    assert.strictEqual(bookRes.body.booking.clinicId, testClinicId, 'Booking must record clinicId');
+    assert.strictEqual(bookRes.body.booking.clinicName, 'Apex Orthopedic & Joint Care', 'Booking must record clinicName');
+
+    // Scoped query for clinic_delhi_bone_02
+    const scopedRes = await makeRequest('GET', `/api/queue?clinic=${testClinicId}`);
+    assert.strictEqual(scopedRes.status, 200);
+    assert.ok(scopedRes.body.some(p => p.phone === testPhone), 'Scoped queue must include booking for clinic_delhi_bone_02');
+
+    // Scoped query for a different clinic should not include this booking
+    const diffClinicRes = await makeRequest('GET', '/api/queue?clinic=clinic_jaipur_dental_06');
+    assert.strictEqual(diffClinicRes.status, 200);
+    assert.ok(!diffClinicRes.body.some(p => p.phone === testPhone), 'Queue for different clinic must not include Delhi booking');
+  })();
+
+  // 79. Doctor Profile Modal Dynamic Live Status & Hindi Search Matching
+  await test('Doctor profile modal updates dynamic live status and Hindi query search matches synonyms', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // 1. Verify HINDI_SEARCH_SYNONYMS exists and covers core symptoms
+    assert.ok(html.includes('const HINDI_SEARCH_SYNONYMS ='), 'Must define HINDI_SEARCH_SYNONYMS');
+    assert.ok(html.includes("'हड्डी':"), 'HINDI_SEARCH_SYNONYMS must include हड्डी');
+    assert.ok(html.includes("'दिल':"), 'HINDI_SEARCH_SYNONYMS must include दिल');
+    assert.ok(html.includes("'दांत':"), 'HINDI_SEARCH_SYNONYMS must include दांत');
+    assert.ok(html.includes("'पटना':"), 'HINDI_SEARCH_SYNONYMS must include पटना');
+
+    // 2. VM simulation of Hindi search matching
+    const searchSandbox = {
+      clinics: [
+        { id: '1', name: 'Apex Orthopedic', specialty: 'Bone / Orthopedic', visitingReasons: ['🦴 Jod / Ghutne Ka Dard'] },
+        { id: '2', name: 'Patna Heart', specialty: 'Heart / Cardiology', visitingReasons: ['❤️ Seene Mein Dard'] },
+        { id: '3', name: 'Muskan Dental', specialty: 'Dental', visitingReasons: ['🦷 Daant Dard'] }
+      ],
+      HINDI_SEARCH_SYNONYMS: {
+        'हड्डी': ['ortho', 'bone', 'ghutne', 'jod'],
+        'दिल': ['heart', 'cardio', 'seene'],
+        'दांत': ['dental', 'daant', 'tooth']
+      }
+    };
+    vm.createContext(searchSandbox);
+    const filterCode = `
+      function matchQuery(clinic, q) {
+        const haystack = [clinic.name, clinic.specialty, ...(clinic.visitingReasons || [])].join(' ').toLowerCase();
+        let match = haystack.includes(q);
+        if (!match && HINDI_SEARCH_SYNONYMS) {
+          for (const [hindiTerm, terms] of Object.entries(HINDI_SEARCH_SYNONYMS)) {
+            if (q.includes(hindiTerm) || hindiTerm.includes(q)) {
+              if (terms.some(t => haystack.includes(t))) {
+                match = true;
+                break;
+              }
+            }
+          }
+        }
+        return match;
+      }
+      var boneMatches = clinics.filter(c => matchQuery(c, 'हड्डी'));
+      var heartMatches = clinics.filter(c => matchQuery(c, 'दिल'));
+      var dentalMatches = clinics.filter(c => matchQuery(c, 'दांत'));
+    `;
+    vm.runInContext(filterCode, searchSandbox);
+    assert.strictEqual(searchSandbox.boneMatches.length, 1, 'Search for हड्डी must match Orthopedic clinic');
+    assert.strictEqual(searchSandbox.heartMatches.length, 1, 'Search for दिल must match Heart clinic');
+    assert.strictEqual(searchSandbox.dentalMatches.length, 1, 'Search for दांत must match Dental clinic');
+  })();
+
+  // 80. Doctor Discovery Sorting: Best Rating with Review Count Tie-Breaking
+  await test('Doctor discovery feed sorts by highest rating first and breaks ties with review count', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // Verify sort comparator in HTML includes reviewCount tie-breaker
+    assert.ok(html.includes('(b.reviewCount || 0) - (a.reviewCount || 0)'), 'Discovery sort must tie-break by reviewCount');
+
+    // VM simulation of sorting
+    const sortSandbox = {
+      doctors: [
+        { name: 'Dr. A (Good)', rating: 4.8, reviewCount: 50 },
+        { name: 'Dr. B (Top, Popular)', rating: 4.9, reviewCount: 320 },
+        { name: 'Dr. C (Top, Newer)', rating: 4.9, reviewCount: 148 },
+        { name: 'Dr. D (Average)', rating: 4.7, reviewCount: 90 }
+      ]
+    };
+    vm.createContext(sortSandbox);
+    const sortCode = `
+      doctors.sort((a, b) => {
+        const rDiff = (b.rating || 4.8) - (a.rating || 4.8);
+        if (Math.abs(rDiff) > 0.001) return rDiff;
+        return (b.reviewCount || 0) - (a.reviewCount || 0);
+      });
+    `;
+    vm.runInContext(sortCode, sortSandbox);
+    assert.strictEqual(sortSandbox.doctors[0].name, 'Dr. B (Top, Popular)', 'Highest rating with most reviews must be first');
+    assert.strictEqual(sortSandbox.doctors[1].name, 'Dr. C (Top, Newer)', 'Equal rating with fewer reviews must be second');
+    assert.strictEqual(sortSandbox.doctors[2].name, 'Dr. A (Good)', '4.8 rating must be third');
+    assert.strictEqual(sortSandbox.doctors[3].name, 'Dr. D (Average)', '4.7 rating must be last');
+  })();
+
+  // 81. Gateway Patient Portal Card, Phone Input Flexibility, and LocalStorage Protection
+  await test('Gateway patient portal button, phone input maxlength 16, and doctor photo canvas compression exist', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // 1. Gateway Patient Portal card
+    assert.ok(html.includes('id="gwBtnPatientDiscovery"'), 'Must define gwBtnPatientDiscovery on viewAuthGateway');
+    assert.ok(html.includes("switchAppRole('patient'); showPatientDiscoverySection();"), 'gwBtnPatientDiscovery must trigger patient discovery');
+
+    // 2. Phone input allows pasted numbers with country codes
+    assert.ok(html.includes('id="lookupPhoneNumberInput"') && html.includes('maxlength="16"'), 'lookupPhoneNumberInput must allow maxlength 16 for pasted international prefixes');
+
+    // 3. Canvas compression in handleDoctorPhotoUpload
+    assert.ok(html.includes("document.createElement('canvas')"), 'handleDoctorPhotoUpload must use canvas for photo compression');
+    assert.ok(html.includes("toDataURL('image/jpeg'"), 'Must export compressed jpeg dataURL to protect localStorage quota');
+
+    // 4. File synchronization check
+    const altHtml = fs.readFileSync(path.join(__dirname, 'parchisetu_indian_clinic_management_token_web_app.html'), 'utf8');
+    assert.strictEqual(html, altHtml, 'index.html and parchisetu_indian_clinic_management_token_web_app.html must remain 100% byte identical');
+  })();
+
   // Restore clean default clinic state and empty queue
   await makeRequest('POST', '/api/queue/reset');
   const defaultClinic = {

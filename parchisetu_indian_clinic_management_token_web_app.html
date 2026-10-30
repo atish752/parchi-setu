@@ -440,6 +440,26 @@
               <span>⚡ Try Quick Demo (Without Sign-in)</span>
             </button>
           </div>
+
+          <!-- Patient Entry Card on Gateway Screen -->
+          <div class="mt-4 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-300 text-center space-y-2 shadow-xs">
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-xl">🩺</span>
+              <span class="text-xs font-black text-[#075E54] uppercase tracking-wide">Mareez / Patient Portal</span>
+            </div>
+            <p class="text-xs text-slate-700 font-bold">
+              Looking to find a doctor, book an appointment or check your live token pass?
+            </p>
+            <button 
+              type="button" 
+              onclick="switchAppRole('patient'); showPatientDiscoverySection();" 
+              id="gwBtnPatientDiscovery"
+              class="btn-tactile w-full py-2.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs rounded-xl shadow-sm flex items-center justify-center gap-2 transition"
+            >
+              <i class="fa-solid fa-stethoscope"></i>
+              <span>Browse Doctors & Live Token (मरीज़ पोर्टल) ➔</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1571,7 +1591,7 @@
               <input 
                 type="tel" 
                 id="lookupPhoneNumberInput" 
-                maxlength="10" 
+                maxlength="16" 
                 placeholder="Enter 10-digit mobile number" 
                 data-i18n-placeholder="phoneInputPlaceholder"
                 class="w-full pl-8 pr-3 py-2.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:outline-none focus:border-[#128C7E] shadow-2xs"
@@ -10552,6 +10572,10 @@
 
       const newBooking = {
         id: bookingId,
+        clinicId: clinicProfile.id || 'clinic_sanjeevani_01',
+        clinicName: clinicProfile.name || 'Sanjeevani Family Clinic',
+        clinicAddress: clinicProfile.address || '',
+        clinicPhone: clinicProfile.phone || '',
         token: nextToken,
         name: name,
         age: age,
@@ -10606,7 +10630,7 @@
 
       // Add to todayQueue if booked for today
       const todayStr = getLocalDateString();
-      if (savedBooking.date === todayStr || savedBooking.day.includes('Aaj')) {
+      if (savedBooking.date === todayStr || (savedBooking.day && savedBooking.day.includes('Aaj'))) {
         const existingIdx = todayQueue.findIndex(p => p.id === savedBooking.id);
         if (existingIdx >= 0) {
           todayQueue[existingIdx] = savedBooking;
@@ -10622,7 +10646,7 @@
 
       lastPatientBooking = savedBooking;
       try {
-        localStorage.setItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''), JSON.stringify(savedBooking));
+        localStorage.setItem('parchi_last_booking_' + (savedBooking.clinicId || (clinicProfile ? clinicProfile.id : '')), JSON.stringify(savedBooking));
         localStorage.setItem('parchi_active_patient_booking', JSON.stringify(savedBooking));
       } catch (e) {}
 
@@ -10648,7 +10672,7 @@
       }
 
       const passClinicName = document.getElementById('passClinicName');
-      if (passClinicName) passClinicName.textContent = clinicProfile.name;
+      if (passClinicName) passClinicName.textContent = savedBooking.clinicName || clinicProfile.name;
 
       const passDocRow = document.getElementById('passDoctorRow');
       const passDocName = document.getElementById('passDoctorName');
@@ -10952,6 +10976,62 @@
       { key: 'Gynecologist', label: 'Gynecologist', icon: 'fa-venus' }
     ];
 
+    const HINDI_SEARCH_SYNONYMS = {
+      'दांत': ['dental', 'daant', 'tooth', 'dentist'],
+      'दिल': ['heart', 'cardio', 'seene', 'chest'],
+      'हड्डी': ['ortho', 'bone', 'haddi', 'ghutne', 'jod', 'fracture', 'spine', 'trauma'],
+      'चर्म': ['derma', 'skin', 'daad', 'khujli', 'acne', 'rash'],
+      'त्वचा': ['derma', 'skin', 'daad', 'khujli', 'acne'],
+      'बच्चा': ['pediatric', 'child', 'bacche', 'shishu', 'infant'],
+      'बच्चे': ['pediatric', 'child', 'bacche', 'shishu', 'infant'],
+      'शिशु': ['pediatric', 'child', 'shishu', 'infant'],
+      'महिला': ['gynec', 'gynae', 'women', 'mahila', 'pregnancy', 'maternity'],
+      'गर्भवती': ['gynec', 'pregnancy', 'maternity'],
+      'बुखार': ['bukhar', 'fever', 'general', 'physician', 'cold'],
+      'खांसी': ['khansi', 'cough', 'cold'],
+      'पटना': ['patna'],
+      'दिल्ली': ['delhi'],
+      'लखनऊ': ['lucknow'],
+      'वाराणसी': ['varanasi', 'banaras'],
+      'बनारस': ['varanasi', 'banaras'],
+      'मुंबई': ['mumbai'],
+      'जयपुर': ['jaipur'],
+      'राँची': ['ranchi'],
+      'रांची': ['ranchi'],
+      'मुजफ्फरपुर': ['muzaffarpur']
+    };
+
+    function getSpecialtyLocalizedLabel(spec) {
+      if (!spec) return '';
+      if (currentLang === 'hindi') {
+        const hindiMap = {
+          'ALL': 'सभी डॉक्टर',
+          'General Physician': 'सामान्य फिजिशियन',
+          'Heart / Cardiology': 'हृदय रोग (हार्ट)',
+          'Bone / Orthopedic': 'हड्डी व जोड़ (ऑर्थो)',
+          'Skin / Dermatology': 'चर्म रोग (स्किन)',
+          'Child / Pediatric': 'शिशु व बाल रोग',
+          'Dental': 'दांत (डेंटल)',
+          'Gynecologist': 'महिला रोग (गायनी)'
+        };
+        return hindiMap[spec.key] || spec.label;
+      }
+      if (currentLang === 'hinglish') {
+        const hinglishMap = {
+          'ALL': 'Sabhi Doctor',
+          'General Physician': 'General Physician',
+          'Heart / Cardiology': 'Heart / Dil Care',
+          'Bone / Orthopedic': 'Bone / Haddi Care',
+          'Skin / Dermatology': 'Skin / Twacha Care',
+          'Child / Pediatric': 'Child / Bacche',
+          'Dental': 'Dental / Daant',
+          'Gynecologist': 'Gynecologist'
+        };
+        return hinglishMap[spec.key] || spec.label;
+      }
+      return spec.label;
+    }
+
     async function loadClinicsDirectory() {
       if (window.location.protocol.startsWith('http')) {
         try {
@@ -11012,11 +11092,12 @@
       const badge = document.getElementById('activeSpecialtyBadge');
       if (badge) {
         const item = DISCOVERY_SPECIALTIES.find(s => s.key === selectedDiscoverySpecialty);
-        badge.textContent = item ? item.label : selectedDiscoverySpecialty;
+        badge.textContent = item ? getSpecialtyLocalizedLabel(item) : selectedDiscoverySpecialty;
       }
       if (!container) return;
       container.innerHTML = DISCOVERY_SPECIALTIES.map(s => {
         const active = selectedDiscoverySpecialty === s.key;
+        const label = getSpecialtyLocalizedLabel(s);
         return `
           <button 
             type="button" 
@@ -11028,7 +11109,7 @@
             }"
           >
             <i class="fa-solid ${s.icon} text-[11px]"></i>
-            <span>${s.label}</span>
+            <span>${label}</span>
           </button>
         `;
       }).join('');
@@ -11168,13 +11249,32 @@
             ...(clinic.visitingReasons || [])
           ].filter(Boolean).join(' ').toLowerCase();
 
-          if (!haystack.includes(q)) return false;
+          let matchFound = haystack.includes(q);
+
+          // Check Hindi / Hinglish medical & city synonyms
+          if (!matchFound && typeof HINDI_SEARCH_SYNONYMS !== 'undefined') {
+            for (const [hindiTerm, terms] of Object.entries(HINDI_SEARCH_SYNONYMS)) {
+              if (q.includes(hindiTerm) || hindiTerm.includes(q)) {
+                if (terms.some(t => haystack.includes(t))) {
+                  matchFound = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (!matchFound) return false;
         }
 
         return true;
       });
 
-      filtered.sort((a, b) => (b.rating || 4.8) - (a.rating || 4.8));
+      // Starting with best rating and secondary sort by review count
+      filtered.sort((a, b) => {
+        const rDiff = (b.rating || 4.8) - (a.rating || 4.8);
+        if (Math.abs(rDiff) > 0.001) return rDiff;
+        return (b.reviewCount || 0) - (a.reviewCount || 0);
+      });
 
       if (countBadge) {
         countBadge.textContent = `${filtered.length} Doctor${filtered.length === 1 ? '' : 's'}`;
@@ -11209,7 +11309,7 @@
           <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition space-y-3">
             <div class="flex items-start gap-3 cursor-pointer" onclick="openDoctorProfileModal('${clinic.id}', '${doc.id}')">
               <div class="relative w-14 h-14 rounded-2xl overflow-hidden bg-emerald-50 border-2 border-emerald-400 flex-shrink-0 shadow-inner">
-                <img src="${photoUrl}" alt="${doc.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80';" />
+                <img src="${photoUrl}" alt="${doc.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/favicon.svg';" />
                 <span class="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-[#25D366] border-2 border-white"></span>
               </div>
               <div class="flex-1 min-w-0">
@@ -11348,6 +11448,50 @@
         daysEl.textContent = `Open: ${d.join(', ')}`;
       }
 
+      // Dynamic Live Status & Token Info in Modal
+      const status = getClinicDiscoveryStatus(clinic);
+      const liveCard = document.getElementById('detailLiveStatusCard');
+      const liveDot = document.getElementById('detailLiveDot');
+      const liveTitle = document.getElementById('detailLiveStatusTitle');
+      const waitingEl = document.getElementById('detailWaitingCount');
+      const liveSub = document.getElementById('detailLiveStatusSub');
+
+      if (status.isOpen) {
+        if (liveCard) liveCard.className = 'p-3 bg-emerald-50 rounded-2xl border border-emerald-300 text-xs font-bold space-y-1';
+        if (liveDot) liveDot.className = 'w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse';
+        if (liveTitle) liveTitle.textContent = currentLang === 'hindi' ? '🟢 केबिन चालू है' : (currentLang === 'hinglish' ? '🟢 Cabin Chalu Hai' : '🟢 Clinic Open & Cabin Active');
+        
+        const inCabinToken = (clinic.id === clinicProfile.id && getCurrentCabinPatient()) ? getCurrentCabinPatient().token : (clinic.liveStatus?.isDoctorLate ? 8 : 12);
+        const waitCount = (clinic.id === clinicProfile.id) ? todayQueue.filter(p => p.status === 'WAITING').length : 2;
+        
+        if (waitingEl) {
+          waitingEl.textContent = currentLang === 'hindi' ? `${waitCount} मरीज़ कतार में` : (currentLang === 'hinglish' ? `${waitCount} Mareez Line Mein` : `${waitCount} in Queue`);
+          waitingEl.className = 'text-xs font-black text-[#128C7E]';
+        }
+        if (liveSub) {
+          liveSub.textContent = currentLang === 'hindi'
+            ? `वर्तमान टोकन: #${inCabinToken} • डॉक्टर साहब केबिन में मरीज़ देख रहे हैं`
+            : (currentLang === 'hinglish'
+              ? `Current Token: #${inCabinToken} • Doctor Sahab cabin mein hain`
+              : `Current Token: #${inCabinToken} • Doctor is consulting inside cabin`);
+        }
+      } else {
+        if (liveCard) liveCard.className = 'p-3 bg-rose-50 rounded-2xl border border-rose-300 text-xs font-bold space-y-1';
+        if (liveDot) liveDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+        if (liveTitle) liveTitle.textContent = status.text;
+        if (waitingEl) {
+          waitingEl.textContent = currentLang === 'hindi' ? 'ओपीडी अभी बंद' : (currentLang === 'hinglish' ? 'OPD Abhi Band' : 'OPD Closed');
+          waitingEl.className = 'text-xs font-black text-rose-700';
+        }
+        if (liveSub) {
+          liveSub.textContent = currentLang === 'hindi'
+            ? 'डॉक्टर अभी केबिन में नहीं हैं • समय सारिणी के अनुसार ओपीडी खुलेगी'
+            : (currentLang === 'hinglish'
+              ? 'Doctor abhi cabin mein nahi hain • OPD schedule ke anusaar khulegi'
+              : 'Doctor not in cabin • Opens per schedule');
+        }
+      }
+
       const reasonsBox = document.getElementById('detailReasonsContainer');
       if (reasonsBox) {
         const reasons = clinic.visitingReasons || ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up'];
@@ -11412,6 +11556,26 @@
     }
 
     function showPatientClinicBookingSection(clinicId) {
+      if (clinicId) {
+        const list = clinicsDirectory || DEFAULT_CLINICS_DIRECTORY;
+        const c = list.find(item => item.id === clinicId);
+        if (c) {
+          clinicProfile = {
+            ...clinicProfile,
+            ...c,
+            visitingHours: {
+              ...(clinicProfile.visitingHours || {}),
+              ...(c.visitingHours || {})
+            }
+          };
+          if (clinicProfile.liveStatus) {
+            isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+            doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+            expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+            isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+          }
+        }
+      }
       const discovery = document.getElementById('patientDiscoverySection');
       const direct = document.getElementById('patientDirectClinicSection');
       if (discovery) discovery.classList.add('hidden');
@@ -11511,6 +11675,32 @@
             localStorage.setItem('parchi_active_patient_booking', JSON.stringify(found));
           } catch (e) {}
 
+          // Refresh clinicProfile & full queue for this clinic so live pass has accurate metrics
+          const cId = found.clinicId || (clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01');
+          const matchedClinic = (clinicsDirectory || DEFAULT_CLINICS_DIRECTORY).find(c => c.id === cId);
+          if (matchedClinic) {
+            clinicProfile = {
+              ...clinicProfile,
+              ...matchedClinic,
+              visitingHours: {
+                ...(clinicProfile.visitingHours || {}),
+                ...(matchedClinic.visitingHours || {})
+              }
+            };
+          }
+
+          if (window.location.protocol.startsWith('http')) {
+            try {
+              const qRes = await fetch(`/api/queue?clinic=${encodeURIComponent(cId)}`);
+              if (qRes.ok) {
+                const fullQ = await qRes.json();
+                if (Array.isArray(fullQ) && fullQ.length > 0) {
+                  todayQueue = fullQ;
+                }
+              }
+            } catch (e) {}
+          }
+
           if (alertBox) {
             alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-emerald-100 text-emerald-900 border border-emerald-300';
             alertBox.textContent = `🎉 Active Token #${found.token} mila! Live Pass khul raha hai...`;
@@ -11520,10 +11710,10 @@
           showToast(`🎉 Active Token #${found.token} Mila!`);
 
           setTimeout(() => {
-            showPatientClinicBookingSection(found.clinicId || clinicProfile.id);
+            showPatientClinicBookingSection(cId);
             renderTokenPassDetails(found);
             if (alertBox) alertBox.classList.add('hidden');
-          }, 400);
+          }, 300);
         } else {
           if (alertBox) {
             alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-amber-100 text-amber-900 border border-amber-300';
@@ -11551,31 +11741,68 @@
         return;
       }
 
-      if (file.size > 2.5 * 1024 * 1024) {
-        showToast('⚠️ Photo file size 2.5MB se kam hona chahiye!', 'warning');
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('⚠️ Photo file size 5MB se kam hona chahiye!', 'warning');
         return;
       }
 
+      // Automatically compress and resize image using canvas to avoid localStorage quota issues
       const reader = new FileReader();
       reader.onload = function (e) {
-        const dataUrl = e.target.result;
-        clinicProfile.doctorPhoto = dataUrl;
-
-        // Update previews
-        const prevOnboard = document.getElementById('onboardDoctorPhotoPreview');
-        if (prevOnboard) prevOnboard.src = dataUrl;
-        const urlOnboard = document.getElementById('onboardDoctorPhotoUrl');
-        if (urlOnboard) urlOnboard.value = dataUrl;
-
-        const prevProfile = document.getElementById('profileDoctorPhotoPreview');
-        if (prevProfile) prevProfile.src = dataUrl;
-        const urlProfile = document.getElementById('profileDoctorPhotoUrl');
-        if (urlProfile) urlProfile.value = dataUrl;
-
-        saveLocalClinic();
-        showToast('📸 Doctor photo uploaded successfully!');
+        const img = new Image();
+        img.onload = function () {
+          try {
+            const canvas = document.createElement('canvas');
+            const maxDim = 360;
+            let w = img.width;
+            let h = img.height;
+            if (w > h) {
+              if (w > maxDim) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              }
+            } else {
+              if (h > maxDim) {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            applyDoctorPhotoData(dataUrl, source);
+          } catch (err) {
+            applyDoctorPhotoData(e.target.result, source);
+          }
+        };
+        img.onerror = function () {
+          applyDoctorPhotoData(e.target.result, source);
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    }
+
+    function applyDoctorPhotoData(dataUrl, source) {
+      clinicProfile.doctorPhoto = dataUrl;
+      if (clinicProfile.doctors && clinicProfile.doctors[0]) {
+        clinicProfile.doctors[0].photo = dataUrl;
+      }
+
+      const prevOnboard = document.getElementById('onboardDoctorPhotoPreview');
+      if (prevOnboard) prevOnboard.src = dataUrl;
+      const urlOnboard = document.getElementById('onboardDoctorPhotoUrl');
+      if (urlOnboard) urlOnboard.value = dataUrl;
+
+      const prevProfile = document.getElementById('profileDoctorPhotoPreview');
+      if (prevProfile) prevProfile.src = dataUrl;
+      const urlProfile = document.getElementById('profileDoctorPhotoUrl');
+      if (urlProfile) urlProfile.value = dataUrl;
+
+      saveLocalClinic();
+      showToast('📸 Doctor photo uploaded successfully!');
     }
 
     function handleDoctorPhotoUrlChange(url, source = 'profile') {
