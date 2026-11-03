@@ -49,7 +49,8 @@ module.exports = async (req, res) => {
     const clinicId = url.searchParams.get('clinic') || url.searchParams.get('clinicId');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify(store.getQueue(phone, clinicId)));
+    const queue = await store.getQueueAsync(phone, clinicId);
+    return res.end(JSON.stringify(queue));
   }
 
   if (method === 'PUT') {

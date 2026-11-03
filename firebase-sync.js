@@ -1,5 +1,5 @@
 /**
- * KlinicQ - Firebase Cloud & Real-time Synchronization Module
+ * ParchiSetu - Firebase Cloud & Real-time Synchronization Module
  * Powered by Firebase Firestore & Authentication
  * Provides instant real-time sync across Indian Clinics, Compounder Desks and Patient Mobile QR Links.
  */
@@ -53,7 +53,7 @@ function initFirebase() {
       fbAuth = firebase.auth();
       fbDb = firebase.firestore();
       isFirebaseAvailable = true;
-      console.log('🔥 [KlinicQ] Firebase connected successfully to project:', FIREBASE_CONFIG.projectId);
+      console.log('🔥 [ParchiSetu] Firebase connected successfully to project:', FIREBASE_CONFIG.projectId);
 
       // Handle redirect sign-in result (essential for mobile Chrome / Safari)
       if (fbAuth && typeof fbAuth.getRedirectResult === 'function') {
@@ -74,9 +74,28 @@ function initFirebase() {
       return true;
     }
   } catch (err) {
-    console.warn('⚠️ [KlinicQ] Firebase initialization notice (falling back to local API):', err.message);
+    console.warn('⚠️ [ParchiSetu] Firebase initialization notice (falling back to local API):', err.message);
   }
   return false;
+}
+
+/**
+ * Fetch all registered clinics from Firestore
+ */
+async function getAllClinicsFromFirestore() {
+  if (!isFirebaseAvailable || !fbDb) return [];
+  try {
+    const snapshot = await withTimeout(fbDb.collection('clinics').get(), 3000, null);
+    if (!snapshot) return [];
+    const clinics = [];
+    snapshot.forEach(doc => {
+      clinics.push({ id: doc.id, ...doc.data() });
+    });
+    return clinics;
+  } catch (err) {
+    console.warn('Firebase getAllClinics warning:', err.message);
+    return [];
+  }
 }
 
 /**
@@ -415,6 +434,7 @@ if (typeof window !== 'undefined') {
     config: FIREBASE_CONFIG,
     init: initFirebase,
     getClinic: getClinicFromFirestore,
+    getAllClinics: getAllClinicsFromFirestore,
     getQueue: getQueueFromFirestore,
     listen: listenToClinicRealtime,
     syncClinic: syncClinicToFirestore,
@@ -446,6 +466,7 @@ if (typeof module !== 'undefined' && module.exports) {
     initFirebase,
     sanitizeForFirestore,
     getClinicFromFirestore,
+    getAllClinics: getAllClinicsFromFirestore,
     getQueueFromFirestore,
     listenToClinicRealtime,
     syncClinicToFirestore,

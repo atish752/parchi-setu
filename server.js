@@ -1,5 +1,5 @@
 /**
- * KlinicQ - Local Clinic & Token Management Server
+ * ParchiSetu - Local Clinic & Token Management Server
  * Built with Node.js built-in modules (http, fs, path, os, url).
  * Zero external dependencies.
  */
@@ -475,6 +475,31 @@ function getLocalIpAddresses() {
   return addresses;
 }
 
+const DUMMY_CLINIC_NAMES = [
+  'sanjeevani family clinic',
+  'patna central hospital clinic',
+  'apex orthopedic & joint care',
+  'kaya skin, hair & laser clinic',
+  'shishu bal chikitsalaya',
+  'matrutva women & maternity clinic',
+  'aastha women & maternity clinic',
+  'muskan dental & implant center',
+  '32 pearls dental clinic',
+  'aarogya family clinic',
+  'ranchi neuro & spine care',
+  'tirhut bone & trauma clinic',
+  'tirhut ent & allergy care',
+  'dummy clinic',
+  'parchisetu clinic',
+  'klinicq clinic'
+];
+
+function isDummyClinicName(name) {
+  if (!name) return true;
+  const lower = name.trim().toLowerCase();
+  return DUMMY_CLINIC_NAMES.some(d => lower.includes(d) || d.includes(lower));
+}
+
 // Request Handler
 const requestHandler = async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
@@ -501,17 +526,23 @@ const requestHandler = async (req, res) => {
 
   // Get all clinics list for Discovery
   if ((pathname === '/api/clinics' || (pathname === '/api/clinic' && (parsedUrl.searchParams.get('list') === '1' || parsedUrl.searchParams.get('action') === 'list'))) && method === 'GET') {
+    const realOnly = parsedUrl.searchParams.get('realOnly') === '1' || parsedUrl.searchParams.get('realOnly') === 'true';
     const rawList = Object.values(appData.clinics || { [appData.clinic.id]: appData.clinic });
-    const list = rawList.map(c => {
+    let list = rawList.map(c => {
       const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
       return {
         ...init,
         ...c,
+        specialty: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || c.specialty || init.specialty || 'General Physician',
+        category: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || c.category || init.category || 'General Medicine',
         doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto,
         rating: c.rating || init.rating || 4.8,
         reviewCount: c.reviewCount || init.reviewCount || 120
       };
     });
+    if (realOnly) {
+      list = list.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered) && !isDummyClinicName(c.name));
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(list));
     return;
@@ -528,7 +559,7 @@ const requestHandler = async (req, res) => {
         doctorDegree: c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : 'MBBS'),
         doctorRegNo: c.doctorRegNo || 'MCI-REG',
         experienceYears: c.experienceYears || 10,
-        clinicName: c.name || 'KlinicQ Clinic',
+        clinicName: c.name || 'ParchiSetu Clinic',
         category: c.category || c.specialty || 'General Medicine',
         specialty: c.specialty || c.category || 'General Physician',
         city: c.city || 'Patna, Bihar',
@@ -592,7 +623,7 @@ const requestHandler = async (req, res) => {
       }
       saveData();
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, clinicId, subscription: target.subscription }));
+      res.end(JSON.stringify({ success: true, clinicId, subscription: target.subscription, clinic: target }));
       return;
     } catch (e) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -604,6 +635,34 @@ const requestHandler = async (req, res) => {
   // Get clinic info
   if (pathname === '/api/clinic' && method === 'GET') {
     const ips = getLocalIpAddresses();
+    const ownerUid = parsedUrl.searchParams.get('ownerUid') || parsedUrl.searchParams.get('uid');
+    const ownerEmail = parsedUrl.searchParams.get('email') || parsedUrl.searchParams.get('ownerEmail');
+
+    if (ownerUid || ownerEmail) {
+      const allClinics = Object.values(appData.clinics || {});
+      if (appData.clinic && appData.clinic.id) allClinics.push(appData.clinic);
+      const ownerClinic = allClinics.find(c => {
+        if (ownerUid && c.ownerUid === ownerUid) return true;
+        if (ownerEmail && c.ownerEmail && c.ownerEmail.toLowerCase() === ownerEmail.toLowerCase()) return true;
+        return false;
+      });
+      if (!ownerClinic) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Clinic not found for this account' }));
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        ...ownerClinic,
+        network: {
+          port: PORT,
+          localIps: ips,
+          lanUrl: ips.length > 0 ? `http://${ips[0]}:${PORT}` : `http://localhost:${PORT}`
+        }
+      }));
+      return;
+    }
+
     const clinicId = parsedUrl.searchParams.get('id') || parsedUrl.searchParams.get('clinic');
     const targetClinic = (clinicId && appData.clinics && appData.clinics[clinicId]) ? appData.clinics[clinicId] : appData.clinic;
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -888,7 +947,7 @@ function startServer(port = PORT) {
   server.listen(port, () => {
     const ips = getLocalIpAddresses();
     console.log(`\n=============================================================`);
-    console.log(`🏥 KlinicQ • Smart Clinic & Token Web App is RUNNING LOCALLY!`);
+    console.log(`🏥 ParchiSetu • Smart Clinic & Token Web App is RUNNING LOCALLY!`);
     console.log(`=============================================================`);
     console.log(`👉 Home Screen (Patients): http://localhost:${port}/`);
     console.log(`👉 Doctor / Clinic Desk:   http://localhost:${port}/clinic`);

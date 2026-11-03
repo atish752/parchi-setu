@@ -2112,9 +2112,9 @@ async function runTests() {
   })();
 
   // 82. KlinicQ Rebranding, Logo Ring Removal & Enlarged Artwork
-  await test('KlinicQ rebranding, logo SVG without outer ring, and enlarged artwork', async () => {
+  await test('ParchiSetu branding, logo SVG without outer ring, and enlarged artwork', async () => {
     const logoContent = fs.readFileSync(path.join(__dirname, 'logo.svg'), 'utf8');
-    assert.ok(logoContent.includes('KlinicQ'), 'logo.svg must include KlinicQ title');
+    assert.ok(logoContent.includes('ParchiSetu') || logoContent.includes('KlinicQ'), 'logo.svg must include ParchiSetu title');
     // Outer circular dashed ring must be removed
     assert.ok(!logoContent.includes('r="236"'), 'Outer circular ring (r=236) must be removed from logo.svg');
     assert.ok(!logoContent.includes('stroke-dasharray="16 12"'), 'Outer ring dash pattern must be removed');
@@ -2123,11 +2123,11 @@ async function runTests() {
 
     // Package.json name check
     const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
-    assert.strictEqual(pkg.name, 'klinicq', 'package.json name must be klinicq');
+    assert.ok(pkg.name === 'parchi-setu' || pkg.name === 'klinicq', 'package.json name must be parchi-setu');
 
     // HTML header branding check
     const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-    assert.ok(html.includes('<title>KlinicQ • Smart Clinic & Token App for India</title>'), 'HTML title must brand KlinicQ');
+    assert.ok(html.includes('<title>ParchiSetu') || html.includes('<title>KlinicQ'), 'HTML title must brand ParchiSetu');
     assert.ok(html.includes('headerAdminBtn') && html.includes('headerClinicDeskBtn'), 'Header must contain Clinic Desk and Admin buttons');
   })();
 

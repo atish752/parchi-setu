@@ -11,9 +11,12 @@ module.exports = async (req, res) => {
   }
 
   if (req.method.toUpperCase() === 'GET') {
+    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const realOnly = url.searchParams.get('realOnly') === '1' || url.searchParams.get('realOnly') === 'true';
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify(store.getClinics()));
+    const clinics = await store.getClinicsAsync(realOnly);
+    return res.end(JSON.stringify(clinics));
   }
 
   res.statusCode = 405;

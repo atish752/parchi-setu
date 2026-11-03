@@ -1,6 +1,6 @@
 /**
- * Vercel Serverless Function Handler for KlinicQ API
- * Supports /api/health, /api/clinic, /api/queue, /api/bookings
+ * Vercel Serverless Function Handler for ParchiSetu API
+ * Supports /api/health, /api/clinic, /api/queue, /api/bookings, /api/clinics, /api/admin
  */
 
 const store = require('./_store');
@@ -60,23 +60,46 @@ module.exports = async (req, res) => {
 
   // /api/clinics
   if (pathname === '/api/clinics' && method === 'GET') {
-    return res.status(200).json(store.getClinics());
+    const realOnly = url.searchParams.get('realOnly') === '1' || url.searchParams.get('realOnly') === 'true';
+    const clinics = await store.getClinicsAsync(realOnly);
+    return res.status(200).json(clinics);
   }
 
   // /api/clinic
   if (pathname === '/api/clinic') {
     if (method === 'GET') {
       if (url.searchParams.get('list') === '1' || url.searchParams.get('action') === 'list') {
-        return res.status(200).json(store.getClinics());
+        const realOnly = url.searchParams.get('realOnly') === '1' || url.searchParams.get('realOnly') === 'true';
+        const clinics = await store.getClinicsAsync(realOnly);
+        return res.status(200).json(clinics);
       }
+
+      // Owner UID / email lookup for multi-device Google signin sync
+      const ownerUid = url.searchParams.get('ownerUid') || url.searchParams.get('uid');
+      const ownerEmail = url.searchParams.get('email') || url.searchParams.get('ownerEmail');
+      if (ownerUid || ownerEmail) {
+        const ownerClinic = await store.getClinicByOwnerAsync(ownerUid, ownerEmail);
+        if (!ownerClinic) {
+          return res.status(404).json({ error: 'Clinic not found for this account' });
+        }
+        return res.status(200).json({
+          ...ownerClinic,
+          network: {
+            port: 3000,
+            localIps: [],
+            lanUrl: `https://${req.headers.host || 'parchi-setu.vercel.app'}`
+          }
+        });
+      }
+
       const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
-      const targetClinic = store.getClinic(clinicId);
+      const targetClinic = clinicId ? await store.getClinicAsync(clinicId) : store.getClinic();
       return res.status(200).json({
         ...targetClinic,
         network: {
           port: 3000,
           localIps: [],
-          lanUrl: `https://${req.headers.host || 'klinicq.vercel.app'}`
+          lanUrl: `https://${req.headers.host || 'parchi-setu.vercel.app'}`
         }
       });
     }
@@ -91,7 +114,9 @@ module.exports = async (req, res) => {
   if (pathname === '/api/queue') {
     if (method === 'GET') {
       const phone = url.searchParams.get('phone');
-      return res.status(200).json(store.getQueue(phone));
+      const clinicId = url.searchParams.get('clinic') || url.searchParams.get('clinicId');
+      const queue = await store.getQueueAsync(phone, clinicId);
+      return res.status(200).json(queue);
     }
     if (method === 'PUT') {
       const body = await parseReqBody(req);
@@ -128,6 +153,34 @@ module.exports = async (req, res) => {
 
     const { isNew, booking } = store.addOrUpdateBooking(body);
     return res.status(isNew ? 201 : 200).json({ success: true, booking });
+  }
+
+  // /api/admin/doctors and /api/admin/subscription
+  if (pathname === '/api/admin/doctors' || (pathname === '/api/admin' && (!url.searchParams.get('action') || url.searchParams.get('action') === 'doctors'))) {
+    if (method === 'GET') {
+      const doctors = await store.getAdminDoctorsAsync();
+      return res.status(200).json({ success: true, doctors });
+    }
+  }
+
+  if (pathname === '/api/admin/subscription' || (pathname === '/api/admin' && url.searchParams.get('action') === 'subscription')) {
+    if (method === 'POST') {
+      const body = await parseReqBody(req);
+      if (!body.clinicId) {
+        return res.status(400).json({ error: 'Missing clinicId' });
+      }
+      const updated = store.updateSubscription(body.clinicId, {
+        plan: body.plan || 'free',
+        status: body.status || 'active',
+        billingCycle: body.billingCycle || (body.plan === 'annual_pro' ? 'annual' : (body.plan === 'monthly_pro' ? 'monthly' : 'trial')),
+        amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 4000 : (body.plan === 'monthly_pro' ? 399 : 0)),
+        renewalDate: body.renewalDate || new Date(Date.now() + 30 * 86400000).toISOString()
+      });
+      if (!updated) {
+        return res.status(404).json({ error: 'Clinic not found' });
+      }
+      return res.status(200).json({ success: true, clinic: updated });
+    }
   }
 
   return res.status(404).json({ error: 'Not Found' });

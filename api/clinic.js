@@ -26,15 +26,40 @@ module.exports = async (req, res) => {
   const method = req.method.toUpperCase();
 
   if (method === 'GET') {
+    // List clinics
     if (url.searchParams.get('list') === '1' || url.searchParams.get('action') === 'list' || url.pathname.includes('/clinics')) {
-      const clinics = store.getClinics();
+      const realOnly = url.searchParams.get('realOnly') === '1' || url.searchParams.get('realOnly') === 'true';
+      const clinics = await store.getClinicsAsync(realOnly);
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify(clinics));
     }
 
+    // Owner UID or Google email lookup (for multi-device sync upon Google login)
+    const ownerUid = url.searchParams.get('ownerUid') || url.searchParams.get('uid');
+    const ownerEmail = url.searchParams.get('email') || url.searchParams.get('ownerEmail');
+    if (ownerUid || ownerEmail) {
+      const ownerClinic = await store.getClinicByOwnerAsync(ownerUid, ownerEmail);
+      if (!ownerClinic) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ error: 'Clinic not found for this account' }));
+      }
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({
+        ...ownerClinic,
+        network: {
+          port: 3000,
+          localIps: [],
+          lanUrl: `https://${req.headers.host || 'parchi-setu.vercel.app'}`
+        }
+      }));
+    }
+
+    // Clinic ID lookup
     const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
-    const targetClinic = store.getClinic(clinicId);
+    const targetClinic = clinicId ? await store.getClinicAsync(clinicId) : store.getClinic();
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({

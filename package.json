@@ -1,20 +1,23 @@
 {
-  "name": "klinicq",
+  "name": "parchi-setu",
   "version": "1.0.0",
-  "description": "KlinicQ - Smart Indian Clinic & Live Token Management Web App with QR Booking, Multi-Doctor, Patient Discovery and Owner Admin Panel",
+  "description": "ParchiSetu - Smart Indian Clinic & Live Token Management Web App with QR Booking, Multi-Doctor, Patient Discovery and Owner Admin Panel",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
     "test": "node test_runner.js"
   },
   "keywords": [
+    "parchi-setu",
+    "parchisetu",
     "klinicq",
     "clinic-management",
     "token-system",
     "indian-clinics",
     "queue-management",
     "qr-booking",
-    "firebase"
+    "firebase",
+    "supabase"
   ],
   "author": "atish752",
   "license": "MIT"

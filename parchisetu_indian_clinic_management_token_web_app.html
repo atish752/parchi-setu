@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>KlinicQ • Smart Clinic & Token App for India</title>
+  <title>ParchiSetu • Smart Clinic & Token App for India</title>
   <!-- Favicon: Cute Smiling Parchi with Doctor Stethoscope -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.svg" />
@@ -93,15 +93,15 @@
   <header class="sticky top-0 z-40 bg-[#075E54] text-white shadow-lg border-b border-emerald-800">
     <div class="max-w-6xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2">
       
-      <!-- Left: KlinicQ Brand & Logo -->
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="handleLogoClick()" title="KlinicQ">
+      <!-- Left: ParchiSetu Brand & Logo -->
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="handleLogoClick()" title="ParchiSetu">
         <div class="relative flex-shrink-0">
-          <img src="/logo.svg" alt="KlinicQ Logo" class="w-10 h-10 rounded-2xl object-cover bg-emerald-100/20 p-0.5 shadow-sm" onerror="this.onerror=null; this.src='/favicon.svg';" />
+          <img src="/logo.svg" alt="ParchiSetu Logo" class="w-10 h-10 rounded-2xl object-cover bg-emerald-100/20 p-0.5 shadow-sm" onerror="this.onerror=null; this.src='/favicon.svg';" />
           <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#25D366] border border-[#075E54] rounded-full" title="Online"></span>
         </div>
         <div class="flex items-center gap-1.5">
           <span class="font-black text-base sm:text-lg tracking-tight leading-none text-white">
-            KlinicQ
+            ParchiSetu
           </span>
           <span class="bg-[#25D366]/20 border border-[#25D366]/50 text-[#a7f3d0] text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
             Live
@@ -164,7 +164,7 @@
             type="button"
             onclick="openAdminPanel()" 
             id="headerAdminBtn"
-            class="btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition"
+            class="hidden btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition"
             title="Owner Admin Panel (Signed up Doctors & Subscriptions)"
           >
             <span class="text-xs">👑</span>
@@ -287,12 +287,12 @@
         <!-- Header Hero Banner -->
         <div class="bg-gradient-to-r from-[#075E54] via-[#0b6b5e] to-[#128C7E] text-white p-6 sm:p-8 text-center relative overflow-hidden">
           <div class="w-16 h-16 rounded-2xl bg-white text-[#075E54] p-1.5 mx-auto mb-3 shadow-lg flex items-center justify-center">
-            <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+            <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
           </div>
           <span class="inline-block bg-[#25D366] text-slate-950 text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-xs">
             🏥 Doctor & Clinic Portal
           </span>
-          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">KlinicQ Clinic Sign In</h2>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">ParchiSetu Clinic Sign In</h2>
           <p class="text-xs sm:text-sm text-emerald-100 mt-1 max-w-md mx-auto">
             भारत का सबसे सरल डिजिटल पर्ची, लाइव टोकन व कम्पाउंडर डेस्क सिस्टम। क्लिनिक एक्सेस करने के लिए साइन इन या साइन अप करें।
           </p>
@@ -491,13 +491,10 @@
       <div class="flex items-center justify-between bg-emerald-900/80 px-3 py-2 rounded-2xl border border-emerald-700/60 text-xs text-white shadow-xs">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-[#25D366] animate-pulse"></span>
-          <span class="font-black text-white">🏥 KlinicQ Clinic Desk</span>
+          <span class="font-black text-white">🏥 ParchiSetu Clinic Desk</span>
           <span class="text-emerald-200 text-[11px] hidden sm:inline">• Live Appointments & Queue Management</span>
         </div>
         <div class="flex items-center gap-2">
-          <button type="button" onclick="openAdminPanel()" class="btn-tactile px-2.5 py-1 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-300 font-black text-xs flex items-center gap-1 transition">
-            <span>👑 Admin</span>
-          </button>
           <button type="button" onclick="switchAppRole('patient'); showPatientDiscoverySection();" class="btn-tactile px-3 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white font-black text-xs flex items-center gap-1.5 transition">
             <i class="fa-solid fa-house text-[#25D366]"></i>
             <span>← Patient Home</span>
@@ -1538,11 +1535,11 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <div class="w-12 h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md flex-shrink-0">
-                <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+                <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
               </div>
               <div>
                 <div class="flex items-center gap-1.5">
-                  <span class="text-base sm:text-lg font-black tracking-tight leading-tight">KlinicQ</span>
+                  <span class="text-base sm:text-lg font-black tracking-tight leading-tight">ParchiSetu</span>
                   <span class="bg-[#25D366] text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">Live</span>
                 </div>
                 <p class="text-[10px] text-emerald-200 font-semibold" data-i18n="discoveryTagline">Online OPD & Live Token App</p>
@@ -1562,20 +1559,13 @@
               </button>
               <button 
                 type="button" 
-                onclick="switchAppRole('clinic')" 
-                class="btn-tactile px-2.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center gap-1 shadow-xs"
-                title="Clinic Staff / Doctor Panel"
+                onclick="showAuthGatewayScreen()" 
+                id="discoveryClinicAuthBtn"
+                class="btn-tactile px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+                title="Clinic Staff & Doctors Portal Sign In / Register"
               >
-                <i class="fa-solid fa-user-doctor text-[#25D366]"></i>
-                <span class="hidden sm:inline font-black">Clinic Desk</span>
-              </button>
-              <button 
-                type="button" 
-                onclick="openAdminPanel()" 
-                class="btn-tactile p-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition flex items-center justify-center shadow-xs"
-                title="Owner Admin Panel"
-              >
-                👑
+                <i class="fa-solid fa-hospital text-[#25D366]"></i>
+                <span class="font-black">Clinic Sign Up / Login</span>
               </button>
             </div>
           </div>
@@ -1662,7 +1652,7 @@
             <span class="w-7 h-7 rounded-lg bg-[#25D366] text-slate-950 font-black flex items-center justify-center text-xs">#</span>
             <div>
               <span>Aapka Active Token: <strong id="discoveryActiveTokenText" class="font-black text-slate-900">#1</strong></span>
-              <span id="discoveryActiveDocText" class="text-[10px] text-emerald-800 block font-semibold">Dr. Rajesh Sharma</span>
+              <span id="discoveryActiveDocText" class="text-[10px] text-emerald-800 block font-semibold">Doctor OPD</span>
             </div>
           </div>
           <button type="button" onclick="showBookedTokenPass()" class="px-2.5 py-1 bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black rounded-xl transition shadow-2xs">
@@ -1710,7 +1700,7 @@
                 Available Doctors
               </h3>
               <span id="discoveryDoctorCountBadge" class="text-[10px] font-extrabold text-[#075E54] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                9 Doctors
+                0 Doctors
               </span>
             </div>
             <span class="text-[10px] text-slate-400 font-semibold" data-i18n="sortedByRating">
@@ -1724,11 +1714,17 @@
           </div>
 
           <!-- Empty State -->
-          <div id="doctorDiscoveryEmptyState" class="hidden p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-2">
-            <div class="text-3xl">🔍</div>
-            <h4 class="font-black text-slate-800 text-sm" data-i18n="noDoctorsFoundTitle">Koi Doctor Nahi Mila</h4>
-            <p class="text-xs text-slate-500" data-i18n="noDoctorsFoundSub">Is city ya category mein koi doctor nahi mila. Kripya dusra shahar ya specialty chunein.</p>
-            <button type="button" onclick="resetDiscoveryFilters()" class="text-xs font-black text-[#075E54] underline mt-1" data-i18n="resetFiltersBtn">Reset All Filters (Show All Doctors)</button>
+          <div id="doctorDiscoveryEmptyState" class="hidden p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-3">
+            <div class="text-4xl">🏥</div>
+            <h4 class="font-black text-slate-800 text-sm" data-i18n="noDoctorsFoundTitle">Abhi Koi Registered Clinic Uplabdh Nahi Hai</h4>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto" data-i18n="noDoctorsFoundSub">Is directory par keval Google Sign-In se registered clinics hi dikhte hain. Agar aap doctor ya clinic staff hain, to turant apna clinic register karein!</p>
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+              <button type="button" onclick="handleGoogleSignIn()" class="btn-tactile px-4 py-2.5 bg-[#075E54] hover:bg-[#128C7E] text-white font-extrabold text-xs rounded-xl shadow-sm flex items-center gap-2 transition">
+                <i class="fa-brands fa-google text-[#25D366]"></i>
+                <span>Register Clinic with Google</span>
+              </button>
+              <button type="button" onclick="resetDiscoveryFilters()" class="text-xs font-black text-slate-600 hover:text-[#075E54] underline px-2 py-1" data-i18n="resetFiltersBtn">Reset Filters</button>
+            </div>
           </div>
         </div>
 
@@ -1775,7 +1771,7 @@
           <div class="bg-[#075E54] text-white p-5">
           <div class="flex items-start gap-3.5">
             <div class="w-14 h-14 rounded-2xl bg-white text-[#075E54] flex items-center justify-center font-black text-2xl shadow-md flex-shrink-0 overflow-hidden p-1">
-              <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+              <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-1.5 flex-wrap">
@@ -1786,8 +1782,8 @@
                   General Medicine
                 </span>
               </div>
-              <h2 id="patientViewClinicName" class="text-xl font-black mt-1">Sanjeevani Family Clinic</h2>
-              <p id="patientViewDoctorInfo" class="text-xs text-emerald-100 font-medium">Dr. Rajesh Sharma • MBBS, MD (General Physician)</p>
+              <h2 id="patientViewClinicName" class="text-xl font-black mt-1">Doctor Clinic</h2>
+              <p id="patientViewDoctorInfo" class="text-xs text-emerald-100 font-medium">Attending Doctor • In-Clinic Consultation</p>
               <p id="patientViewClinicAddress" class="text-[11px] text-emerald-200/90 mt-1 flex items-center gap-1">
                 <i class="fa-solid fa-location-dot"></i> <span id="patientViewAddressText">Near Main Market Chowk, Station Road</span> • Fee: <span id="patientViewFeeText">₹300</span>
               </p>
@@ -1896,7 +1892,7 @@
             <div class="bg-[#075E54] text-white p-4 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 class="font-black text-base" data-i18n="bookModalHeader">Book Clinic Appointment</h3>
-                <p class="text-xs text-emerald-100/90" id="modalClinicDocTitle">Sanjeevani Clinic • Dr. Rajesh Sharma</p>
+                <p class="text-xs text-emerald-100/90" id="modalClinicDocTitle">Doctor Clinic • Consultation</p>
               </div>
               <button type="button" onclick="closePatientBookingModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-black">
                 <i class="fa-solid fa-xmark"></i>
@@ -2159,8 +2155,8 @@
 
             <div class="text-sm font-bold text-slate-800" id="passPatientName">Suresh Verma (38M)</div>
             <div class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-left">
-              <div>🏥 <strong>Clinic:</strong> <span id="passClinicName">Sanjeevani Family Clinic</span></div>
-              <div id="passDoctorRow" class="hidden">👨‍⚕️ <strong>Doctor:</strong> <span id="passDoctorName">Dr. Rajesh Sharma</span></div>
+              <div>🏥 <strong>Clinic:</strong> <span id="passClinicName">Doctor Clinic</span></div>
+              <div id="passDoctorRow" class="hidden">👨‍⚕️ <strong>Doctor:</strong> <span id="passDoctorName">Doctor</span></div>
               <div>📅 <strong>Din & Slot:</strong> <span id="passSlotText">Aaj • 11:30 AM</span></div>
               <div>⏳ <strong>Number Aane Ka Andaza:</strong> <span id="passEstTime" class="text-[#075E54] font-bold">~20 Mins</span></div>
               <div>💵 <strong>Clinic Fee:</strong> <span id="passFeeAmount">₹300</span> (Pay at Clinic Counter)</div>
@@ -2271,14 +2267,6 @@
           >
             <span>🏥 Clinic Staff / Compounder Desk Login ➔</span>
           </button>
-          <span class="text-slate-300">•</span>
-          <button 
-            type="button" 
-            onclick="openAdminPanel()" 
-            class="text-[11px] font-bold text-amber-700 hover:text-amber-900 hover:underline flex items-center gap-1"
-          >
-            <span>👑 Owner Admin Panel</span>
-          </button>
         </div>
 
         </div>
@@ -2298,7 +2286,7 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h2 class="text-xl sm:text-2xl font-black tracking-tight">KlinicQ Master Admin</h2>
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight">ParchiSetu Master Admin</h2>
                 <span class="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Owner Only</span>
               </div>
               <p class="text-xs text-emerald-200 mt-0.5">Track signed-up doctors, clinics & manage Free vs Pro subscriptions</p>
@@ -2424,9 +2412,9 @@
                     14 Yrs Exp
                   </span>
                 </div>
-                <h3 id="detailDocName" class="text-lg font-black text-white mt-1">Dr. Rajesh Sharma</h3>
-                <p id="detailDocDegree" class="text-xs text-emerald-100 font-medium">MBBS, MD (General Physician)</p>
-                <p id="detailDocRegNo" class="text-[10px] text-emerald-200/90 font-mono mt-0.5">Reg. No: MCI-48291</p>
+                <h3 id="detailDocName" class="text-lg font-black text-white mt-1">Doctor Profile</h3>
+                <p id="detailDocDegree" class="text-xs text-emerald-100 font-medium">MBBS, Specialist</p>
+                <p id="detailDocRegNo" class="text-[10px] text-emerald-200/90 font-mono mt-0.5">Registered Practitioner</p>
               </div>
             </div>
           </div>
@@ -2455,7 +2443,7 @@
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-black text-[#075E54] uppercase flex items-center gap-1.5">
                   <i class="fa-solid fa-hospital text-[#128C7E]"></i>
-                  <span id="detailClinicName">Sanjeevani Family Clinic</span>
+                  <span id="detailClinicName">Doctor Clinic</span>
                 </span>
                 <span id="detailClinicCity" class="text-[10px] font-bold text-slate-500">Patna, Bihar</span>
               </div>
@@ -2883,7 +2871,7 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
-              <i class="fa-solid fa-tag"></i> KlinicQ Membership Plans
+              <i class="fa-solid fa-tag"></i> ParchiSetu Membership Plans
             </h4>
             <span class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">30-Day Free Trial Active</span>
           </div>
@@ -2955,7 +2943,7 @@
         👑
       </div>
       <div>
-        <h3 class="text-lg font-black text-slate-900">KlinicQ Master Admin Access</h3>
+        <h3 class="text-lg font-black text-slate-900">ParchiSetu Master Admin Access</h3>
         <p class="text-xs text-slate-500 mt-1">Enter Master Admin PIN to view and track all registered doctors & subscriptions.</p>
       </div>
       <div class="space-y-2">
@@ -3010,9 +2998,9 @@
           ✕
         </button>
         <div class="w-14 h-14 rounded-2xl bg-white p-1 mx-auto shadow-md mb-2 overflow-hidden flex items-center justify-center">
-          <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+          <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
         </div>
-        <h3 class="text-xl font-black">KlinicQ Clinic Portal</h3>
+        <h3 class="text-xl font-black">ParchiSetu Clinic Portal</h3>
         <p class="text-xs text-emerald-100 mt-0.5">Google account ya Email se sign in karke apna clinic chalayein</p>
 
         <!-- Tabs: Signup vs Login -->
@@ -3790,7 +3778,7 @@
             <div id="successQrContainer" class="w-36 h-36 bg-white p-2 border-2 border-[#25D366] rounded-2xl shadow-sm flex items-center justify-center flex-shrink-0">
               <img 
                 id="successQrImg" 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fklinicq.in" 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fparchi-setu.vercel.app" 
                 alt="Clinic Booking QR" 
                 class="w-full h-full object-contain"
               />
@@ -3979,7 +3967,7 @@
             </button>
           </div>
           <div class="text-[10px] text-slate-500 font-semibold flex items-center justify-between gap-2" id="standeeLinkTextWrapper">
-            <div>🔗 Link: <a href="#" target="_blank" class="underline break-all select-all font-mono text-[#075E54] hover:text-[#128C7E] font-bold" id="standeeLinkText">klinicq.in/book</a></div>
+            <div>🔗 Link: <a href="#" target="_blank" class="underline break-all select-all font-mono text-[#075E54] hover:text-[#128C7E] font-bold" id="standeeLinkText">parchi-setu.vercel.app/book</a></div>
             <a href="#" id="interactiveOpenLinkBtn" target="_blank" class="text-[11px] font-black text-[#128C7E] hover:text-[#075E54] hover:underline flex items-center gap-1 whitespace-nowrap">
               <span>Open Link</span> <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
             </a>
@@ -4664,7 +4652,7 @@
       }
     ];
 
-    let clinicsDirectory = [...DEFAULT_CLINICS_DIRECTORY];
+    let clinicsDirectory = [];
     let selectedDiscoveryCity = 'ALL';
     let selectedDiscoverySpecialty = 'ALL';
     let doctorSearchQuery = '';
@@ -5298,7 +5286,7 @@
       if (!clinicProfile) return;
       // Top Header
       const headerNameEl = document.getElementById('headerClinicName');
-      if (headerNameEl) headerNameEl.textContent = clinicProfile.name || 'KlinicQ Clinic';
+      if (headerNameEl) headerNameEl.textContent = clinicProfile.name || 'ParchiSetu Clinic';
       
       const docDeg = (clinicProfile.doctorDegree || 'MBBS').split(',')[0].trim();
       const headerDocEl = document.getElementById('headerDoctorName');
@@ -5322,7 +5310,7 @@
 
       // Patient View
       const patClinic = document.getElementById('patientViewClinicName');
-      if (patClinic) patClinic.textContent = clinicProfile.name || 'KlinicQ Clinic';
+      if (patClinic) patClinic.textContent = clinicProfile.name || 'ParchiSetu Clinic';
       const patDoc = document.getElementById('patientViewDoctorInfo');
       if (patDoc) patDoc.textContent = `${clinicProfile.doctorName || 'Doctor'} • ${clinicProfile.doctorDegree || 'MBBS'}`;
       const patAddr = document.getElementById('patientViewClinicAddress');
@@ -5951,7 +5939,7 @@
         return `${clinicProfile.network.lanUrl}/?role=patient&clinic=${clinicProfile.id}`;
       }
       const isHttp = typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http');
-      const base = isHttp ? (window.location.origin + window.location.pathname) : 'https://klinicq.in/book';
+      const base = isHttp ? (window.location.origin + window.location.pathname) : 'https://parchi-setu.vercel.app/book';
       return `${base}?role=patient&clinic=${clinicProfile.id}`;
     }
 
@@ -6164,7 +6152,7 @@
         const a = document.createElement('a');
         a.href = blobUrl;
         const clinicSlug = (clinicProfile.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
-        a.download = `klinicq_${clinicSlug}_raw_qr.png`;
+        a.download = `parchisetu_${clinicSlug}_raw_qr.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -6192,7 +6180,7 @@
       const doc = (clinic.doctors && clinic.doctors[0]) || {};
       const docName = doc.name || clinic.doctorName || 'Doctor';
       const docDegree = doc.degree || clinic.doctorDegree || '';
-      const clinicName = clinic.name || 'KlinicQ Clinic';
+      const clinicName = clinic.name || 'ParchiSetu Clinic';
       const address = [clinic.address, clinic.city].filter(Boolean).join(', ');
       const phone = clinic.phone || clinic.whatsapp || '';
       const bookingLink = getShareablePatientLink(false);
@@ -6295,7 +6283,7 @@
         ctx.fillStyle = '#94a3b8';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Powered by KlinicQ • Digital Clinic Assistant', 400, 1035);
+        ctx.fillText('Powered by ParchiSetu • Digital Clinic Assistant', 400, 1035);
 
         ctx.fillStyle = '#25D366';
         ctx.font = 'bold 16px monospace';
@@ -6307,7 +6295,7 @@
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           const slug = (clinic.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
-          a.download = `klinicq_${slug}_standee.png`;
+          a.download = `parchisetu_${slug}_standee.png`;
           a.href = url;
           document.body.appendChild(a);
           a.click();
@@ -6451,7 +6439,7 @@
               </div>
             </div>
             <div class="footer">
-              <span>Powered by <strong>KlinicQ</strong> • Digital Clinic Assistant</span>
+              <span>Powered by <strong>ParchiSetu</strong> • Digital Clinic Assistant</span>
               <span class="footer-url">${link}</span>
             </div>
           </div>
@@ -6546,9 +6534,7 @@
 
     function handleProfileHeaderClick() {
       if (currentRole === 'patient') {
-        if (confirm('यह विकल्प केवल क्लिनिक और डॉक्टरों के लिए है जो अपना क्लिनिक डिजिटल करना चाहते हैं।\n\nमरीज़ों को टोकन लेने के लिए किसी साइन अप की आवश्यकता नहीं है।\n\nक्या आप डॉक्टर / क्लिनिक पोर्टल पर जाना चाहते हैं?')) {
-          showAuthGatewayScreen();
-        }
+        showAuthGatewayScreen();
         return;
       }
 
@@ -6622,7 +6608,7 @@
       if (navTabs) navTabs.classList.add('hidden');
       if (shareBtn) shareBtn.classList.add('hidden');
       if (onboardBtn) onboardBtn.classList.add('hidden');
-      document.title = 'KlinicQ • Doctor & Clinic Sign In Gateway';
+      document.title = 'ParchiSetu • Doctor & Clinic Sign In Gateway';
     }
 
     function enterClinicWorkspace() {
@@ -6806,7 +6792,7 @@
     }
 
     async function handleUserSignOut() {
-      if (confirm('Kya aap KlinicQ Clinic account se sign out karna chahte hain?')) {
+      if (confirm('Kya aap ParchiSetu Clinic account se sign out karna chahte hain?')) {
         if (window.ParchiFirebase && window.ParchiFirebase.signOutUser) {
           try {
             await window.ParchiFirebase.signOutUser();
@@ -6873,12 +6859,13 @@
       };
       try {
         localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+        localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
       } catch (e) {}
 
       showToast(`👋 Swagatam, ${user.displayName || user.email}!`);
       updateHeaderAuthUI(currentAuthUser);
 
-      // Check if clinic mapping exists for this user
+      // Check if clinic mapping exists for this user (Firebase check)
       let userClinic = null;
       try {
         if (window.ParchiFirebase && window.ParchiFirebase.getClinicForUser) {
@@ -6886,6 +6873,21 @@
         }
       } catch (e) {
         console.warn('getClinicForUser warning:', e);
+      }
+
+      // If not in Firebase, query backend API / Supabase by ownerUid & email for multi-device sync
+      if ((!userClinic || !userClinic.name) && window.location.protocol.startsWith('http')) {
+        try {
+          const res = await fetch(`/api/clinic?ownerUid=${encodeURIComponent(user.uid)}&email=${encodeURIComponent(user.email || '')}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.name || data.id) && !isDummyClinicName(data.name)) {
+              userClinic = data;
+            }
+          }
+        } catch (e) {
+          console.warn('API getClinicByOwner notice:', e);
+        }
       }
 
       if (userClinic && (userClinic.name || userClinic.id)) {
@@ -6898,6 +6900,15 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(clinicProfile)
             });
+            // Live sync queue for this clinic from database
+            const qRes = await fetch('/api/queue?clinic=' + encodeURIComponent(clinicProfile.id));
+            if (qRes.ok) {
+              const qData = await qRes.json();
+              if (Array.isArray(qData)) {
+                todayQueue = qData;
+                saveLocalQueue();
+              }
+            }
           } catch (e) {}
         }
         if (window.ParchiFirebase && clinicProfile.id) {
@@ -6905,7 +6916,9 @@
         }
         closeClinicAuthModal();
         enterClinicWorkspace();
-        showToast('✅ Apka Clinic account load ho gaya!');
+        try { updateClinicBranding(); } catch (e) {}
+        try { refreshAllViews(); } catch (e) {}
+        showToast('✅ Apka Clinic account aur live queue load ho gaya!');
       } else {
         // New clinic owner -> prefill doctor name and open onboarding
         closeClinicAuthModal();
@@ -7356,7 +7369,7 @@
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.add('hidden');
         if (clinicOnboardBtn) clinicOnboardBtn.classList.add('hidden');
         if (quickStandeeBtn) quickStandeeBtn.classList.add('hidden');
-        document.title = 'KlinicQ • Owner Master Admin';
+        document.title = 'ParchiSetu • Owner Master Admin';
         return;
       }
 
@@ -7384,7 +7397,7 @@
           if (currentTab === 'queue') fab.classList.remove('hidden');
           else fab.classList.add('hidden');
         }
-        document.title = `KlinicQ • ${clinicProfile.name || 'Compounder Desk'}`;
+        document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
         switchClinicTab(currentTab || 'queue');
       } else {
         const fab = document.getElementById('mobileFabNewPatient');
@@ -7407,7 +7420,7 @@
         if (clinicOnboardBtn) clinicOnboardBtn.classList.add('hidden');
         if (authLabel) authLabel.textContent = 'Clinic Sign Up (Doctors Only)';
         if (authBtn) authBtn.title = 'Strictly for Clinic Owners / Doctors (Patients do not need to sign up)';
-        document.title = `${clinicProfile.name || 'KlinicQ'} • Online Token & Live Queue`;
+        document.title = `${clinicProfile.name || 'ParchiSetu'} • Online Token & Live Queue`;
         renderPatientBookingPage();
       }
     }
@@ -8804,7 +8817,7 @@
 
       msg += `📲 *Agla Slot / Token Book Karne Ke Liye Link:*\n${bookingLink}\n`;
       msg += `--------------------------------\n`;
-      msg += `_Swasth Rahein, KlinicQ Digital Health Assistant_ 🙏`;
+      msg += `_Swasth Rahein, ParchiSetu Digital Health Assistant_ 🙏`;
 
       return msg;
     }
@@ -10084,7 +10097,7 @@
       msg += `--------------------------------\n`;
       msg += `💰 *KUL JAMA (Cash + UPI): ₹${grandTotal}*\n`;
       msg += `--------------------------------\n`;
-      msg += `_KlinicQ Daily Clinic Closing Hisaab_ 🙏`;
+      msg += `_ParchiSetu Daily Clinic Closing Hisaab_ 🙏`;
 
       const docPhone = (typeof normalizePhoneNumber === 'function')
         ? normalizePhoneNumber(clinicProfile.whatsapp || clinicProfile.phone)
@@ -11132,7 +11145,7 @@
       const b = lastPatientBooking;
       const clinic = clinicProfile;
       const ag = formatPatientAgeGender(b.age, b.gender);
-      const text = `🎟️ *KlinicQ Token Confirmation*\n\n` +
+      const text = `🎟️ *ParchiSetu Token Confirmation*\n\n` +
         `🏥 *${clinic.name}*\n` +
         `👨‍⚕️ ${clinic.doctorName} (${clinic.doctorDegree})\n` +
         `📍 ${clinic.address}, ${clinic.city}\n\n` +
@@ -11188,7 +11201,7 @@
           <div class="row"><span>Fee:</span><strong>₹${b.fee} (${b.payMode})</strong></div>
           <div class="dashed"></div>
           <div class="sub">Please arrive 10 mins before your slot.</div>
-          <div class="sub" style="margin-top:6px;">Powered by KlinicQ</div>
+          <div class="sub" style="margin-top:6px;">Powered by ParchiSetu</div>
           <div class="no-print" style="margin-top: 20px;">
             <button class="btn" onclick="window.print()">🖨️ Print Slip</button>
           </div>
@@ -11297,22 +11310,54 @@
     }
 
     async function loadClinicsDirectory() {
+      let remoteList = [];
       if (window.location.protocol.startsWith('http')) {
         try {
-          const res = await fetch('/api/clinics');
+          const res = await fetch('/api/clinics?realOnly=true');
           if (res.ok) {
             const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
-              clinicsDirectory = data;
+            if (Array.isArray(data)) {
+              remoteList = data;
             }
           }
         } catch (e) {
           console.warn('Clinics directory fetch error:', e);
         }
       }
-      if (!clinicsDirectory || clinicsDirectory.length === 0) {
-        clinicsDirectory = [...DEFAULT_CLINICS_DIRECTORY];
+
+      // Also query live registered clinics from Firebase Firestore
+      if (window.ParchiFirebase && typeof window.ParchiFirebase.getAllClinics === 'function') {
+        try {
+          const fbClinics = await window.ParchiFirebase.getAllClinics();
+          if (Array.isArray(fbClinics) && fbClinics.length > 0) {
+            const map = {};
+            remoteList.forEach(c => { if (c && c.id) map[c.id] = c; });
+            fbClinics.forEach(c => {
+              if (c && c.id) {
+                map[c.id] = { ...(map[c.id] || {}), ...c };
+              }
+            });
+            remoteList = Object.values(map);
+          }
+        } catch (fbErr) {
+          console.warn('Firestore getAllClinics notice:', fbErr);
+        }
       }
+
+      // Include current clinicProfile if authenticated via Google
+      if (clinicProfile && clinicProfile.id && (clinicProfile.ownerUid || clinicProfile.isGoogleAuth || clinicProfile.googleRegistered) && !isDummyClinicName(clinicProfile.name)) {
+        if (!remoteList.some(c => c.id === clinicProfile.id)) {
+          remoteList.unshift(clinicProfile);
+        }
+      }
+
+      // Strictly filter: ONLY keep authentic clinics registered via Google Sign-In, ZERO dummy clinics
+      clinicsDirectory = remoteList.filter(clinic => {
+        if (!clinic || !clinic.name) return false;
+        if (isDummyClinicName(clinic.name)) return false;
+        return Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered);
+      });
+
       renderCityChips();
       renderSpecialtyChips();
       renderDoctorDiscoveryFeed();
@@ -11500,7 +11545,14 @@
       const countBadge = document.getElementById('discoveryDoctorCountBadge');
       if (!container) return;
 
-      const list = clinicsDirectory || DEFAULT_CLINICS_DIRECTORY;
+      // Strictly filter: REMOVE ALL DUMMY CLINICS. Only keep authentic clinics made from Google Sign-In
+      const rawList = (clinicsDirectory && clinicsDirectory.length > 0) ? clinicsDirectory : [];
+      const list = rawList.filter(clinic => {
+        if (!clinic || !clinic.name) return false;
+        if (isDummyClinicName(clinic.name)) return false;
+        const isGoogleClinic = Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered);
+        return isGoogleClinic;
+      });
       const q = (doctorSearchQuery || '').toLowerCase();
 
       const filtered = list.filter(clinic => {
@@ -11858,7 +11910,7 @@
 
     function showPatientClinicBookingSection(clinicId) {
       if (clinicId) {
-        const list = clinicsDirectory || DEFAULT_CLINICS_DIRECTORY;
+        const list = (clinicsDirectory && clinicsDirectory.length > 0) ? clinicsDirectory : [];
         const c = list.find(item => item.id === clinicId);
         if (c) {
           clinicProfile = {
@@ -11978,7 +12030,7 @@
 
           // Refresh clinicProfile & full queue for this clinic so live pass has accurate metrics
           const cId = found.clinicId || (clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01');
-          const matchedClinic = (clinicsDirectory || DEFAULT_CLINICS_DIRECTORY).find(c => c.id === cId);
+          const matchedClinic = (clinicsDirectory || []).find(c => c.id === cId);
           if (matchedClinic) {
             clinicProfile = {
               ...clinicProfile,
@@ -12148,7 +12200,7 @@
     let adminCurrentPlanFilter = 'ALL';
 
     function openAdminPanel() {
-      const isAuth = sessionStorage.getItem('klinicq_admin_auth') === '1';
+      const isAuth = sessionStorage.getItem('parchisetu_admin_auth') === '1' || sessionStorage.getItem('klinicq_admin_auth') === '1';
       if (isAuth) {
         switchAppRole('admin');
         loadAdminDoctors();
@@ -12172,7 +12224,8 @@
       const input = document.getElementById('adminPasscodeInput');
       const err = document.getElementById('adminPasscodeError');
       const code = (input?.value || '').trim();
-      if (code === 'admin123' || code === '1234' || code === 'admin' || code === 'klinicq2026') {
+      if (code === 'admin123' || code === '1234' || code === 'admin' || code === 'parchisetu2026' || code === 'klinicq2026') {
+        sessionStorage.setItem('parchisetu_admin_auth', '1');
         sessionStorage.setItem('klinicq_admin_auth', '1');
         closeAdminPasscodeModal();
         switchAppRole('admin');
@@ -12196,6 +12249,7 @@
     }
 
     function adminLogout() {
+      sessionStorage.removeItem('parchisetu_admin_auth');
       sessionStorage.removeItem('klinicq_admin_auth');
       showToast('🔒 Master Admin locked!');
       switchAppRole('patient');
@@ -12218,6 +12272,35 @@
             console.warn('Admin fetch error:', e);
           }
         }
+        if (!list.length && window.ParchiFirebase && typeof window.ParchiFirebase.getAllClinicsFromFirestore === 'function') {
+          try {
+            const fireClinics = await window.ParchiFirebase.getAllClinicsFromFirestore();
+            if (Array.isArray(fireClinics) && fireClinics.length > 0) {
+              list = fireClinics.map(c => ({
+                id: c.id,
+                doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
+                doctorDegree: c.doctorDegree || 'MBBS',
+                doctorRegNo: c.doctorRegNo || 'MCI-REG',
+                experienceYears: c.experienceYears || 10,
+                clinicName: c.name || `${c.doctorName || 'Doctor'}'s Clinic`,
+                category: c.category || 'General Medicine',
+                specialty: c.specialty || 'General Physician',
+                city: c.city || 'India',
+                address: c.address || '',
+                phone: c.phone || '',
+                whatsapp: c.whatsapp || c.phone || '',
+                ownerEmail: c.ownerEmail || `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@parchisetu.com`,
+                doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
+                fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+                subscription: c.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
+                stats: { totalBookings: (c.todayQueue || []).length || 1, todayBookings: (c.todayQueue || []).length || 1 },
+                createdAt: c.createdAt || new Date().toISOString()
+              }));
+            }
+          } catch (e) {
+            console.warn('Admin Firestore fetch error:', e);
+          }
+        }
         if (!list.length) {
           // Robust Fallback: Build unified doctor accounts list from local clinicProfile and directory
           const seen = new Set();
@@ -12230,14 +12313,14 @@
               doctorDegree: clinicProfile.doctorDegree || 'MBBS, MD',
               doctorRegNo: clinicProfile.doctorRegNo || 'MCI-48291',
               experienceYears: clinicProfile.experienceYears || 14,
-              clinicName: clinicProfile.name || 'Sanjeevani Family Clinic',
+              clinicName: clinicProfile.name || 'ParchiSetu Family Clinic',
               category: clinicProfile.category || 'General Medicine',
               specialty: clinicProfile.specialty || 'General Physician',
               city: clinicProfile.city || 'Patna, Bihar',
               address: clinicProfile.address || 'Station Road',
               phone: clinicProfile.phone || '9835012345',
               whatsapp: clinicProfile.whatsapp || '9835012345',
-              ownerEmail: 'doctor.rajesh@klinicq.com',
+              ownerEmail: clinicProfile.ownerEmail || 'doctor.rajesh@parchisetu.com',
               doctorPhoto: clinicProfile.doctorPhoto || '',
               fees: clinicProfile.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
               subscription: clinicProfile.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
@@ -12254,14 +12337,14 @@
                 doctorDegree: c.doctorDegree || 'MBBS',
                 doctorRegNo: c.doctorRegNo || 'MCI-REG',
                 experienceYears: c.experienceYears || 10,
-                clinicName: c.name || 'KlinicQ Clinic',
+                clinicName: c.name || 'ParchiSetu Clinic',
                 category: c.category || 'General Medicine',
                 specialty: c.specialty || 'General Physician',
                 city: c.city || 'Patna, Bihar',
                 address: c.address || '',
                 phone: c.phone || '',
                 whatsapp: c.whatsapp || c.phone || '',
-                ownerEmail: `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@klinicq.com`,
+                ownerEmail: c.ownerEmail || `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@parchisetu.com`,
                 doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
                 fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
                 subscription: c.subscription || {
@@ -12440,7 +12523,7 @@
                 <!-- WhatsApp Action -->
                 ${d.whatsapp ? `
                   <a 
-                    href="https://wa.me/91${d.whatsapp.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Namaste Doctor! KlinicQ Support se baat kar rahe hain.')}" 
+                    href="https://wa.me/91${d.whatsapp.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Namaste Doctor! ParchiSetu Support se baat kar rahe hain.')}" 
                     target="_blank" 
                     class="btn-tactile px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 transition"
                     title="Direct WhatsApp"
@@ -12661,13 +12744,18 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `KlinicQ_Doctors_Admin_Export_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `ParchiSetu_Doctors_Admin_Export_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       showToast('📥 Doctors list CSV download ho gayi!');
     }
+
+    window.addEventListener('hashchange', () => {
+      const h = (window.location.hash || '').toLowerCase();
+      if (h === '#admin') openAdminPanel();
+    });
 
     // =========================================================================
     // 14. MASTER REFRESH & INITIALIZATION
@@ -12700,7 +12788,7 @@
 
       // Check for saved clinic auth user session
       try {
-        const savedAuth = localStorage.getItem('klinicq_auth_user') || localStorage.getItem('parchisetu_auth_user');
+        const savedAuth = localStorage.getItem('parchisetu_auth_user') || localStorage.getItem('klinicq_auth_user');
         if (savedAuth) {
           currentAuthUser = JSON.parse(savedAuth);
         }
@@ -12708,8 +12796,9 @@
 
       // Resolve and apply role immediately for instant UI feedback (zero network delay)
       const currentPath = (window.location.pathname || '').toLowerCase();
+      const currentHash = (window.location.hash || '').toLowerCase();
       const isPatientPath = currentPath.startsWith('/book');
-      const isAdminRoute = currentPath.startsWith('/admin') || roleParam === 'admin';
+      const isAdminRoute = currentPath.startsWith('/admin') || currentHash === '#admin' || roleParam === 'admin';
       const isSignInRoute = currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1';
       const isClinicRoute = currentPath.startsWith('/clinic') || roleParam === 'clinic' || isSignInRoute;
       const isOnboardRoute = currentPath.includes('/onboard') || onboardParam === '1';

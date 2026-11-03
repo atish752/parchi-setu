@@ -1,5 +1,5 @@
 /**
- * KlinicQ - Shared Data Store for Serverless Lambdas & Local Server
+ * ParchiSetu - Shared Data Store for Serverless Lambdas & Local Server
  * Provides atomic persistence across serverless invocations and processes.
  */
 
@@ -7,7 +7,13 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const TMP_FILE = path.join(os.tmpdir(), 'klinicq_shared_data.json');
+let supabase = null;
+try {
+  supabase = require('./_supabase');
+} catch (e) {}
+
+const TMP_FILE = path.join(os.tmpdir(), 'parchisetu_shared_data.json');
+const LEGACY_TMP_FILE = path.join(os.tmpdir(), 'klinicq_shared_data.json');
 
 const DEFAULT_CLINIC = {
   id: 'clinic_sanjeevani_01',
@@ -373,8 +379,9 @@ function getISTDateString(d = new Date()) {
 
 function loadStore() {
   try {
-    if (fs.existsSync(TMP_FILE)) {
-      const content = fs.readFileSync(TMP_FILE, 'utf8');
+    const fileToRead = fs.existsSync(TMP_FILE) ? TMP_FILE : (fs.existsSync(LEGACY_TMP_FILE) ? LEGACY_TMP_FILE : null);
+    if (fileToRead) {
+      const content = fs.readFileSync(fileToRead, 'utf8');
       if (content) {
         const parsed = JSON.parse(content);
         if (parsed && typeof parsed === 'object') {
@@ -415,7 +422,34 @@ function persistStore() {
 // Initial load
 loadStore();
 
+const DUMMY_CLINIC_NAMES = [
+  'sanjeevani family clinic',
+  'patna central hospital clinic',
+  'apex orthopedic & joint care',
+  'kaya skin, hair & laser clinic',
+  'shishu bal chikitsalaya',
+  'matrutva women & maternity clinic',
+  'aastha women & maternity clinic',
+  'muskan dental & implant center',
+  '32 pearls dental clinic',
+  'aarogya family clinic',
+  'ranchi neuro & spine care',
+  'tirhut bone & trauma clinic',
+  'tirhut ent & allergy care',
+  'dummy clinic',
+  'parchisetu clinic',
+  'klinicq clinic'
+];
+
+function isDummyClinicName(name) {
+  if (!name) return true;
+  const lower = name.trim().toLowerCase();
+  return DUMMY_CLINIC_NAMES.some(d => lower.includes(d) || d.includes(lower));
+}
+
 module.exports = {
+  isDummyClinicName,
+
   getClinic: (id) => {
     loadStore();
     if (id && store.clinics && store.clinics[id]) {
@@ -424,22 +458,119 @@ module.exports = {
     return store.clinic;
   },
 
-  getClinics: () => {
+  getClinicAsync: async (id) => {
+    loadStore();
+    if (id && store.clinics && store.clinics[id]) {
+      return store.clinics[id];
+    }
+    if (id && supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        const sbClinic = await supabase.getClinic(id);
+        if (sbClinic && sbClinic.id) {
+          store.clinics = store.clinics || {};
+          store.clinics[sbClinic.id] = sbClinic;
+          persistStore();
+          return sbClinic;
+        }
+      } catch (e) {}
+    }
+    return store.clinic;
+  },
+
+  getClinicByOwner: (uid, email = '') => {
+    loadStore();
+    const all = Object.values(store.clinics || {});
+    if (store.clinic && store.clinic.id) all.push(store.clinic);
+    const found = all.find(c => {
+      if (uid && c.ownerUid === uid) return true;
+      if (email && c.ownerEmail && c.ownerEmail.toLowerCase() === email.toLowerCase()) return true;
+      return false;
+    });
+    return found || null;
+  },
+
+  getClinicByOwnerAsync: async (uid, email = '') => {
+    loadStore();
+    // 1. Check local cache
+    const local = module.exports.getClinicByOwner(uid, email);
+    if (local) return local;
+
+    // 2. Query Supabase
+    if (supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        const sb = await supabase.getClinicByOwner(uid, email);
+        if (sb && sb.id) {
+          store.clinics = store.clinics || {};
+          store.clinics[sb.id] = sb;
+          persistStore();
+          return sb;
+        }
+      } catch (e) {}
+    }
+    return null;
+  },
+
+  getClinics: (realOnly = false) => {
     loadStore();
     const map = { ...INITIAL_CLINICS, ...(store.clinics || {}) };
     if (store.clinic && store.clinic.id) {
       map[store.clinic.id] = { ...map[store.clinic.id], ...store.clinic };
     }
-    return Object.values(map).map(c => {
+    const all = Object.values(map).map(c => {
       const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
       return {
         ...init,
         ...c,
+        specialty: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || c.specialty || init.specialty || 'General Physician',
+        category: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || c.category || init.category || 'General Medicine',
         doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto,
         rating: c.rating || init.rating || 4.8,
         reviewCount: c.reviewCount || init.reviewCount || 120
       };
     });
+    if (realOnly) {
+      return all.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered) && !isDummyClinicName(c.name));
+    }
+    return all;
+  },
+
+  getClinicsAsync: async (realOnly = false) => {
+    loadStore();
+    const map = { ...INITIAL_CLINICS, ...(store.clinics || {}) };
+    if (store.clinic && store.clinic.id) {
+      map[store.clinic.id] = { ...map[store.clinic.id], ...store.clinic };
+    }
+
+    if (supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        const sbClinics = await supabase.getClinics(realOnly);
+        if (Array.isArray(sbClinics)) {
+          sbClinics.forEach(c => {
+            if (c && c.id) {
+              map[c.id] = { ...(map[c.id] || {}), ...c };
+            }
+          });
+        }
+      } catch (e) {}
+    }
+
+    const all = Object.values(map).map(c => {
+      const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
+      return {
+        ...init,
+        ...c,
+        specialty: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || c.specialty || init.specialty || 'General Physician',
+        category: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || c.category || init.category || 'General Medicine',
+        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto,
+        rating: c.rating || init.rating || 4.8,
+        reviewCount: c.reviewCount || init.reviewCount || 120
+      };
+    });
+
+    if (realOnly) {
+      return all.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered) && !isDummyClinicName(c.name));
+    }
+    return all;
   },
 
   setClinic: (clinicData) => {
@@ -455,6 +586,9 @@ module.exports = {
       store.clinics[store.clinic.id] = store.clinic;
     }
     persistStore();
+    if (supabase && typeof supabase.saveClinic === 'function') {
+      supabase.saveClinic(store.clinic).catch(() => {});
+    }
     return store.clinic;
   },
 
@@ -472,6 +606,23 @@ module.exports = {
       });
     }
     return list;
+  },
+
+  getQueueAsync: async (phone, clinicId) => {
+    loadStore();
+    if (clinicId && supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        const sbQueue = await supabase.getQueue(clinicId);
+        if (Array.isArray(sbQueue) && sbQueue.length > 0) {
+          const map = {};
+          store.queue.forEach(item => { if (item && item.id) map[item.id] = item; });
+          sbQueue.forEach(item => { if (item && item.id) map[item.id] = { ...(map[item.id] || {}), ...item }; });
+          store.queue = Object.values(map).sort((a, b) => (a.token || 0) - (b.token || 0));
+          persistStore();
+        }
+      } catch (e) {}
+    }
+    return module.exports.getQueue(phone, clinicId);
   },
 
   setQueue: (newQueue) => {
@@ -538,6 +689,9 @@ module.exports = {
 
     store.queue.push(finalBooking);
     persistStore();
+    if (supabase && typeof supabase.saveBooking === 'function') {
+      supabase.saveBooking(finalBooking).catch(() => {});
+    }
     return { isNew: true, booking: finalBooking };
   },
 
@@ -547,6 +701,9 @@ module.exports = {
     if (!item) return null;
     Object.assign(item, updates);
     persistStore();
+    if (supabase && typeof supabase.updateBooking === 'function') {
+      supabase.updateBooking(id, updates).catch(() => {});
+    }
     return item;
   },
 
@@ -572,6 +729,9 @@ module.exports = {
       store.clinic.subscription = target.subscription;
     }
     persistStore();
+    if (supabase && typeof supabase.updateSubscription === 'function') {
+      supabase.updateSubscription(clinicId, target.subscription).catch(() => {});
+    }
     return target;
   },
 
@@ -589,7 +749,7 @@ module.exports = {
         doctorDegree: c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : 'MBBS'),
         doctorRegNo: c.doctorRegNo || 'MCI-REG',
         experienceYears: c.experienceYears || 10,
-        clinicName: c.name || 'KlinicQ Clinic',
+        clinicName: c.name || 'ParchiSetu Clinic',
         category: c.category || c.specialty || 'General Medicine',
         specialty: c.specialty || c.category || 'General Physician',
         city: c.city || 'Patna, Bihar',
@@ -616,5 +776,22 @@ module.exports = {
         createdAt: c.createdAt || new Date().toISOString()
       };
     });
+  },
+
+  getAdminDoctorsAsync: async () => {
+    loadStore();
+    let doctors = module.exports.getAdminDoctors();
+    if (supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        const sbDoctors = await supabase.getAdminDoctors();
+        if (Array.isArray(sbDoctors) && sbDoctors.length > 0) {
+          const map = {};
+          doctors.forEach(d => { if (d && d.id) map[d.id] = d; });
+          sbDoctors.forEach(d => { if (d && d.id) map[d.id] = { ...(map[d.id] || {}), ...d }; });
+          doctors = Object.values(map);
+        }
+      } catch (e) {}
+    }
+    return doctors;
   }
 };

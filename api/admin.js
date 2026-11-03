@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
   const action = url.searchParams.get('action') || (url.pathname.includes('/subscription') ? 'subscription' : 'doctors');
 
   if (method === 'GET') {
-    const doctors = store.getAdminDoctors();
+    const doctors = await store.getAdminDoctorsAsync();
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ success: true, doctors }));
