@@ -1,5 +1,5 @@
 /**
- * ParchiSetu - Shared Data Store for Serverless Lambdas & Local Server
+ * KlinicQ - Shared Data Store for Serverless Lambdas & Local Server
  * Provides atomic persistence across serverless invocations and processes.
  */
 
@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const TMP_FILE = path.join(os.tmpdir(), 'parchisetu_shared_data.json');
+const TMP_FILE = path.join(os.tmpdir(), 'klinicq_shared_data.json');
 
 const DEFAULT_CLINIC = {
   id: 'clinic_sanjeevani_01',
@@ -554,5 +554,67 @@ module.exports = {
     store.queue = [];
     persistStore();
     return [];
+  },
+
+  updateSubscription: (clinicId, subscriptionData) => {
+    loadStore();
+    if (!clinicId) return null;
+    store.clinics = store.clinics || {};
+    const target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null);
+    if (!target) return null;
+    target.subscription = {
+      ...(target.subscription || {}),
+      ...subscriptionData,
+      updatedAt: new Date().toISOString()
+    };
+    store.clinics[clinicId] = target;
+    if (store.clinic && store.clinic.id === clinicId) {
+      store.clinic.subscription = target.subscription;
+    }
+    persistStore();
+    return target;
+  },
+
+  getAdminDoctors: () => {
+    loadStore();
+    const map = { ...INITIAL_CLINICS, ...(store.clinics || {}) };
+    if (store.clinic && store.clinic.id) {
+      map[store.clinic.id] = { ...map[store.clinic.id], ...store.clinic };
+    }
+    return Object.values(map).map(c => {
+      const q = (store.queue || []).filter(b => b.clinicId === c.id);
+      return {
+        id: c.id,
+        doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
+        doctorDegree: c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : 'MBBS'),
+        doctorRegNo: c.doctorRegNo || 'MCI-REG',
+        experienceYears: c.experienceYears || 10,
+        clinicName: c.name || 'KlinicQ Clinic',
+        category: c.category || c.specialty || 'General Medicine',
+        specialty: c.specialty || c.category || 'General Physician',
+        city: c.city || 'Patna, Bihar',
+        address: c.address || '',
+        phone: c.phone || '',
+        whatsapp: c.whatsapp || c.phone || '',
+        ownerEmail: c.ownerEmail || c.email || '',
+        ownerUid: c.ownerUid || '',
+        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
+        fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+        visitingHours: c.visitingHours || {},
+        subscription: c.subscription || {
+          plan: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free',
+          status: 'active',
+          billingCycle: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly' : 'trial',
+          amount: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 399 : 0,
+          startDate: c.createdAt || '2026-10-01T00:00:00.000Z',
+          renewalDate: new Date(Date.now() + 25 * 86400000).toISOString()
+        },
+        stats: {
+          totalBookings: q.length,
+          todayBookings: q.filter(b => b.date === getISTDateString()).length
+        },
+        createdAt: c.createdAt || new Date().toISOString()
+      };
+    });
   }
 };

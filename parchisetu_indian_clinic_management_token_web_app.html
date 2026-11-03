@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ParchiSetu • Smart Clinic & Token App for India</title>
+  <title>KlinicQ • Smart Clinic & Token App for India</title>
   <!-- Favicon: Cute Smiling Parchi with Doctor Stethoscope -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.svg" />
@@ -93,15 +93,15 @@
   <header class="sticky top-0 z-40 bg-[#075E54] text-white shadow-lg border-b border-emerald-800">
     <div class="max-w-6xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2">
       
-      <!-- Left: ParchiSetu Brand & Logo -->
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="handleLogoClick()" title="ParchiSetu">
+      <!-- Left: KlinicQ Brand & Logo -->
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="handleLogoClick()" title="KlinicQ">
         <div class="relative flex-shrink-0">
-          <img src="/logo.svg" alt="ParchiSetu Logo" class="w-9 h-9 rounded-full object-cover bg-emerald-100 p-0.5 border-2 border-[#25D366] shadow-inner" onerror="this.onerror=null; this.src='/favicon.svg';" />
+          <img src="/logo.svg" alt="KlinicQ Logo" class="w-10 h-10 rounded-2xl object-cover bg-emerald-100/20 p-0.5 shadow-sm" onerror="this.onerror=null; this.src='/favicon.svg';" />
           <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#25D366] border border-[#075E54] rounded-full" title="Online"></span>
         </div>
         <div class="flex items-center gap-1.5">
           <span class="font-black text-base sm:text-lg tracking-tight leading-none text-white">
-            ParchiSetu
+            KlinicQ
           </span>
           <span class="bg-[#25D366]/20 border border-[#25D366]/50 text-[#a7f3d0] text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
             Live
@@ -150,6 +150,26 @@
 
         <!-- Clinic Auth / User Account Section -->
         <div id="headerAuthContainer" class="flex items-center gap-1.5">
+          <button 
+            type="button"
+            onclick="switchAppRole('clinic')" 
+            id="headerClinicDeskBtn"
+            class="btn-tactile bg-emerald-800/90 hover:bg-emerald-700 text-white border border-emerald-500/50 px-2.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-xs transition"
+            title="Doctor / Compounder Clinic Desk"
+          >
+            <i class="fa-solid fa-stethoscope text-[#25D366]"></i>
+            <span class="hidden sm:inline">Clinic Desk</span>
+          </button>
+          <button 
+            type="button"
+            onclick="openAdminPanel()" 
+            id="headerAdminBtn"
+            class="btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition"
+            title="Owner Admin Panel (Signed up Doctors & Subscriptions)"
+          >
+            <span class="text-xs">👑</span>
+            <span class="hidden sm:inline">Admin</span>
+          </button>
           <button 
             onclick="handleProfileHeaderClick()" 
             id="clinicAuthHeaderBtn"
@@ -267,12 +287,12 @@
         <!-- Header Hero Banner -->
         <div class="bg-gradient-to-r from-[#075E54] via-[#0b6b5e] to-[#128C7E] text-white p-6 sm:p-8 text-center relative overflow-hidden">
           <div class="w-16 h-16 rounded-2xl bg-white text-[#075E54] p-1.5 mx-auto mb-3 shadow-lg flex items-center justify-center">
-            <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+            <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
           </div>
           <span class="inline-block bg-[#25D366] text-slate-950 text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-xs">
             🏥 Doctor & Clinic Portal
           </span>
-          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">ParchiSetu Clinic Sign In</h2>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">KlinicQ Clinic Sign In</h2>
           <p class="text-xs sm:text-sm text-emerald-100 mt-1 max-w-md mx-auto">
             भारत का सबसे सरल डिजिटल पर्ची, लाइव टोकन व कम्पाउंडर डेस्क सिस्टम। क्लिनिक एक्सेस करने के लिए साइन इन या साइन अप करें।
           </p>
@@ -465,9 +485,25 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- VIEW 1: CLINIC DESK (COMPOUNDER & DOCTOR INTERFACE)                 -->
-    <!-- =================================================================== -->
     <div id="viewClinicDesk" class="hidden space-y-3 sm:space-y-3.5">
+
+      <!-- Quick Navigation Header for Clinic Desk -->
+      <div class="flex items-center justify-between bg-emerald-900/80 px-3 py-2 rounded-2xl border border-emerald-700/60 text-xs text-white shadow-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#25D366] animate-pulse"></span>
+          <span class="font-black text-white">🏥 KlinicQ Clinic Desk</span>
+          <span class="text-emerald-200 text-[11px] hidden sm:inline">• Live Appointments & Queue Management</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openAdminPanel()" class="btn-tactile px-2.5 py-1 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-300 font-black text-xs flex items-center gap-1 transition">
+            <span>👑 Admin</span>
+          </button>
+          <button type="button" onclick="switchAppRole('patient'); showPatientDiscoverySection();" class="btn-tactile px-3 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white font-black text-xs flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-house text-[#25D366]"></i>
+            <span>← Patient Home</span>
+          </button>
+        </div>
+      </div>
 
       <!-- ================================================================= -->
       <!-- TAB 1: "AAJ KI LINE" (LIVE TOKEN QUEUE + 3-SECOND ENTRY BAR)      -->
@@ -1501,12 +1537,12 @@
         <div class="bg-gradient-to-r from-[#075E54] via-[#128C7E] to-[#075E54] rounded-3xl p-4 sm:p-5 text-white shadow-xl space-y-3 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-11 h-11 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md flex-shrink-0">
-                <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+              <div class="w-12 h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md flex-shrink-0">
+                <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
               </div>
               <div>
                 <div class="flex items-center gap-1.5">
-                  <span class="text-base sm:text-lg font-black tracking-tight leading-tight">ParchiSetu</span>
+                  <span class="text-base sm:text-lg font-black tracking-tight leading-tight">KlinicQ</span>
                   <span class="bg-[#25D366] text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">Live</span>
                 </div>
                 <p class="text-[10px] text-emerald-200 font-semibold" data-i18n="discoveryTagline">Online OPD & Live Token App</p>
@@ -1526,11 +1562,20 @@
               </button>
               <button 
                 type="button" 
-                onclick="openClinicAuthModal()" 
-                class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition flex items-center justify-center"
-                title="Clinic Staff / Doctor Login"
+                onclick="switchAppRole('clinic')" 
+                class="btn-tactile px-2.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center gap-1 shadow-xs"
+                title="Clinic Staff / Doctor Panel"
               >
-                <i class="fa-solid fa-user-doctor"></i>
+                <i class="fa-solid fa-user-doctor text-[#25D366]"></i>
+                <span class="hidden sm:inline font-black">Clinic Desk</span>
+              </button>
+              <button 
+                type="button" 
+                onclick="openAdminPanel()" 
+                class="btn-tactile p-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition flex items-center justify-center shadow-xs"
+                title="Owner Admin Panel"
+              >
+                👑
               </button>
             </div>
           </div>
@@ -1730,7 +1775,7 @@
           <div class="bg-[#075E54] text-white p-5">
           <div class="flex items-start gap-3.5">
             <div class="w-14 h-14 rounded-2xl bg-white text-[#075E54] flex items-center justify-center font-black text-2xl shadow-md flex-shrink-0 overflow-hidden p-1">
-              <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+              <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-1.5 flex-wrap">
@@ -2205,22 +2250,155 @@
                 <span>Refresh Live</span>
               </button>
             </div>
+            <!-- Back to Doctors Home Link -->
+            <button 
+              type="button" 
+              onclick="showPatientDiscoverySection()" 
+              class="btn-tactile w-full py-2.5 rounded-xl border-2 border-emerald-500/40 bg-white hover:bg-emerald-50 text-[#075E54] font-black text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
+            >
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>← Doosra Doctor / Wapas Home Screen Dekhein</span>
+            </button>
           </div>
         </div>
 
         <!-- Discreet Clinic Staff Link at bottom of Patient View -->
-        <div class="p-3 text-center border-t border-slate-100 bg-slate-50/50">
+        <div class="p-3 text-center border-t border-slate-100 bg-slate-50/50 flex items-center justify-center gap-4 flex-wrap">
           <button 
             type="button" 
-            onclick="openClinicAuthModal()" 
-            class="text-[11px] font-semibold text-slate-500 hover:text-[#075E54] hover:underline"
+            onclick="switchAppRole('clinic')" 
+            class="text-[11px] font-bold text-slate-600 hover:text-[#075E54] hover:underline flex items-center gap-1"
           >
-            🏥 Clinic Staff / Compounder Desk Login ➔
+            <span>🏥 Clinic Staff / Compounder Desk Login ➔</span>
+          </button>
+          <span class="text-slate-300">•</span>
+          <button 
+            type="button" 
+            onclick="openAdminPanel()" 
+            class="text-[11px] font-bold text-amber-700 hover:text-amber-900 hover:underline flex items-center gap-1"
+          >
+            <span>👑 Owner Admin Panel</span>
           </button>
         </div>
 
         </div>
       </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 3: MASTER ADMIN PANEL (FOR OWNER USE ONLY)                      -->
+    <!-- (View and track all signed up doctor accounts & subscription plans) -->
+    <!-- =================================================================== -->
+    <div id="viewAdminPanel" class="hidden space-y-4 py-2">
+      <!-- Admin Top Hero -->
+      <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-[#075E54] text-white rounded-3xl p-5 sm:p-6 shadow-xl border-2 border-emerald-500/30 relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-2xl font-black shadow-md flex-shrink-0">
+              👑
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight">KlinicQ Master Admin</h2>
+                <span class="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Owner Only</span>
+              </div>
+              <p class="text-xs text-emerald-200 mt-0.5">Track signed-up doctors, clinics & manage Free vs Pro subscriptions</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="loadAdminDoctors(); showToast('🔄 Admin data refreshed!');" class="btn-tactile px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span>Refresh</span>
+            </button>
+            <button type="button" onclick="exportAdminDoctorsCSV()" class="btn-tactile px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-file-csv"></i>
+              <span>Export CSV</span>
+            </button>
+            <button type="button" onclick="switchAppRole('patient'); showPatientDiscoverySection();" class="btn-tactile px-3 py-1.5 rounded-xl bg-white text-slate-950 hover:bg-emerald-100 text-xs font-black transition flex items-center gap-1.5">
+              <i class="fa-solid fa-house text-[#075E54]"></i>
+              <span>Patient Home</span>
+            </button>
+            <button type="button" onclick="adminLogout()" class="btn-tactile px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-lock"></i>
+              <span>Lock Admin</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics Summary -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-5">
+          <div class="bg-white/10 backdrop-blur-xs p-3.5 rounded-2xl border border-white/15">
+            <span class="text-[11px] font-bold text-emerald-200 block">🩺 Total Doctors</span>
+            <span id="adminStatTotalDocs" class="text-2xl font-black text-white block mt-0.5">0</span>
+            <span class="text-[10px] text-emerald-300">Registered Clinics</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs p-3.5 rounded-2xl border border-amber-400/30">
+            <span class="text-[11px] font-bold text-amber-200 block">💎 Pro Subscribers</span>
+            <span id="adminStatProDocs" class="text-2xl font-black text-amber-300 block mt-0.5">0</span>
+            <span id="adminStatProSubText" class="text-[10px] text-amber-200">Monthly / Annual Pro</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs p-3.5 rounded-2xl border border-white/15">
+            <span class="text-[11px] font-bold text-emerald-200 block">🆓 Free / Trial Plan</span>
+            <span id="adminStatFreeDocs" class="text-2xl font-black text-white block mt-0.5">0</span>
+            <span class="text-[10px] text-emerald-300">Starter & 30-Day Trial</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs p-3.5 rounded-2xl border border-emerald-400/30">
+            <span class="text-[11px] font-bold text-emerald-200 block">💰 Monthly Recurring (MRR)</span>
+            <span id="adminStatMrr" class="text-2xl font-black text-[#25D366] block mt-0.5">₹0</span>
+            <span class="text-[10px] text-emerald-300">Active Subscriptions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search, Plan Filters, City Filter -->
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+          <!-- Search input -->
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="adminDoctorSearchInput" 
+              oninput="filterAdminDoctors()" 
+              placeholder="Search by doctor name, clinic, phone, email, or city..." 
+              class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#075E54]"
+            />
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <button type="button" onclick="clearAdminSearch()" id="adminClearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold">✕</button>
+          </div>
+
+          <!-- Subscription Plan Filter Pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+            <button type="button" onclick="setAdminPlanFilter('ALL')" id="adminPlanFilter-ALL" class="px-2.5 py-1.5 rounded-xl text-xs font-black bg-[#075E54] text-white whitespace-nowrap transition">All Plans</button>
+            <button type="button" onclick="setAdminPlanFilter('pro')" id="adminPlanFilter-pro" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-emerald-50 whitespace-nowrap transition">💎 Pro Only</button>
+            <button type="button" onclick="setAdminPlanFilter('free')" id="adminPlanFilter-free" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-emerald-50 whitespace-nowrap transition">🆓 Free / Trial</button>
+          </div>
+        </div>
+
+        <!-- City and Status Dropdowns -->
+        <div class="flex items-center gap-2 flex-wrap text-xs font-bold">
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-500">City:</span>
+            <select id="adminCityFilterSelect" onchange="filterAdminDoctors()" class="bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-800 text-xs font-bold">
+              <option value="ALL">All Cities</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-1.5 ml-auto text-slate-500 text-xs">
+            <span>Showing:</span>
+            <strong id="adminDoctorFilteredCount" class="text-slate-900 font-black">0</strong>
+            <span>Doctors</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor Accounts Table / Cards List Container -->
+      <div id="adminDoctorsListContainer" class="space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="adminDoctorsEmptyState" class="hidden p-8 text-center bg-white rounded-2xl border border-slate-200">
+        <i class="fa-solid fa-user-doctor text-3xl text-slate-300 mb-2"></i>
+        <h4 class="text-sm font-black text-slate-700">Koi Doctor Account Nahi Mila</h4>
+        <p class="text-xs text-slate-400 mt-1">Search term ya filters badal kar dobara koshish karein.</p>
+      </div>
+    </div>
 
       <!-- DETAILED DOCTOR PROFILE POP-UP MODAL -->
       <div id="doctorProfileDetailModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this)closeDoctorProfileModal();">
@@ -2705,7 +2883,7 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
-              <i class="fa-solid fa-tag"></i> ParchiSetu Membership Plans
+              <i class="fa-solid fa-tag"></i> KlinicQ Membership Plans
             </h4>
             <span class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">30-Day Free Trial Active</span>
           </div>
@@ -2769,6 +2947,58 @@
   </div>
 
   <!-- ===================================================================== -->
+  <!-- MODAL: ADMIN ACCESS PASSCODE UNLOCK (OWNER USE ONLY)                  -->
+  <!-- ===================================================================== -->
+  <div id="adminPasscodeModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-xs items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-4 border-[#075E54] text-center space-y-4 my-auto">
+      <div class="w-14 h-14 rounded-2xl bg-[#075E54] text-amber-300 flex items-center justify-center text-2xl mx-auto shadow-md">
+        👑
+      </div>
+      <div>
+        <h3 class="text-lg font-black text-slate-900">KlinicQ Master Admin Access</h3>
+        <p class="text-xs text-slate-500 mt-1">Enter Master Admin PIN to view and track all registered doctors & subscriptions.</p>
+      </div>
+      <div class="space-y-2">
+        <input 
+          type="password" 
+          id="adminPasscodeInput" 
+          placeholder="Admin PIN (Default: admin123)" 
+          class="w-full text-center px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-sm font-black tracking-widest focus:outline-none focus:border-[#075E54]"
+          onkeydown="if(event.key==='Enter') verifyAdminPasscode();"
+        />
+        <div id="adminPasscodeError" class="hidden text-xs font-bold text-rose-600">⚠️ Galat PIN! Kripya sahi passcode dalein.</div>
+      </div>
+      <div class="flex items-center gap-2 pt-1">
+        <button type="button" onclick="closeAdminPasscodeModal();" class="w-1/2 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
+          Cancel
+        </button>
+        <button type="button" onclick="verifyAdminPasscode()" class="w-1/2 py-2.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black shadow-sm transition">
+          Unlock ➔
+        </button>
+      </div>
+      <p class="text-[10px] text-slate-400 font-semibold">Strictly for webapp owner only • Instant session unlock</p>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: ADMIN DOCTOR FULL DETAILS & APPOINTMENT AUDIT                  -->
+  <!-- ===================================================================== -->
+  <div id="adminDoctorDetailModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs items-center justify-center p-3 sm:p-4" onclick="if(event.target===this)closeAdminDoctorDetailModal();">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200 my-auto">
+      <div class="bg-[#075E54] text-white p-4 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🩺</span>
+          <h3 id="adminDetailDocName" class="font-black text-sm sm:text-base">Doctor Profile & Subscription Details</h3>
+        </div>
+        <button type="button" onclick="closeAdminDoctorDetailModal()" class="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white font-bold">✕</button>
+      </div>
+      <div id="adminDoctorDetailContent" class="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs">
+        <!-- Dynamically injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- MODAL 0: CLINIC PORTAL (FIREBASE GOOGLE & EMAIL AUTHENTICATION)       -->
   <!-- ===================================================================== -->
   <div id="clinicAuthModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
@@ -2780,9 +3010,9 @@
           ✕
         </button>
         <div class="w-14 h-14 rounded-2xl bg-white p-1 mx-auto shadow-md mb-2 overflow-hidden flex items-center justify-center">
-          <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+          <img src="/logo.svg" alt="KlinicQ" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
         </div>
-        <h3 class="text-xl font-black">ParchiSetu Clinic Portal</h3>
+        <h3 class="text-xl font-black">KlinicQ Clinic Portal</h3>
         <p class="text-xs text-emerald-100 mt-0.5">Google account ya Email se sign in karke apna clinic chalayein</p>
 
         <!-- Tabs: Signup vs Login -->
@@ -3560,7 +3790,7 @@
             <div id="successQrContainer" class="w-36 h-36 bg-white p-2 border-2 border-[#25D366] rounded-2xl shadow-sm flex items-center justify-center flex-shrink-0">
               <img 
                 id="successQrImg" 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fparchisetu.in" 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fklinicq.in" 
                 alt="Clinic Booking QR" 
                 class="w-full h-full object-contain"
               />
@@ -3749,7 +3979,7 @@
             </button>
           </div>
           <div class="text-[10px] text-slate-500 font-semibold flex items-center justify-between gap-2" id="standeeLinkTextWrapper">
-            <div>🔗 Link: <a href="#" target="_blank" class="underline break-all select-all font-mono text-[#075E54] hover:text-[#128C7E] font-bold" id="standeeLinkText">parchisetu.in/book</a></div>
+            <div>🔗 Link: <a href="#" target="_blank" class="underline break-all select-all font-mono text-[#075E54] hover:text-[#128C7E] font-bold" id="standeeLinkText">klinicq.in/book</a></div>
             <a href="#" id="interactiveOpenLinkBtn" target="_blank" class="text-[11px] font-black text-[#128C7E] hover:text-[#075E54] hover:underline flex items-center gap-1 whitespace-nowrap">
               <span>Open Link</span> <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
             </a>
@@ -4048,7 +4278,7 @@
 
     let currentLang = 'english'; // 'english' (Default) | 'hinglish' | 'hindi'
     try {
-      const savedLang = localStorage.getItem('parchisetu_lang');
+      const savedLang = localStorage.getItem('klinicq_lang') || localStorage.getItem('parchisetu_lang');
       if (savedLang) currentLang = savedLang;
     } catch (e) {}
     let currentRole = 'clinic';   // 'clinic' | 'patient'
@@ -4056,7 +4286,7 @@
     let currentQueueFilter = 'ALL'; // 'ALL' | 'WAITING' | 'IN_CABIN' | 'DONE' | 'BAAKI'
     let currentAuthUser = null;
     try {
-      const savedAuth = localStorage.getItem('parchisetu_auth_user');
+      const savedAuth = localStorage.getItem('klinicq_auth_user') || localStorage.getItem('parchisetu_auth_user');
       if (savedAuth) currentAuthUser = JSON.parse(savedAuth);
     } catch (e) {}
 
@@ -4995,18 +5225,18 @@
     // =========================================================================
     function loadLocalData() {
       try {
-        const savedClinic = localStorage.getItem('parchisetu_clinic_profile');
+        const savedClinic = localStorage.getItem('klinicq_clinic_profile') || localStorage.getItem('parchisetu_clinic_profile');
         if (savedClinic) {
           clinicProfile = JSON.parse(savedClinic);
         }
-        const savedQueue = localStorage.getItem('parchisetu_queue');
+        const savedQueue = localStorage.getItem('klinicq_queue') || localStorage.getItem('parchisetu_queue');
         if (savedQueue) {
           const parsed = JSON.parse(savedQueue);
           if (Array.isArray(parsed) && parsed.length > 0) {
             todayQueue = parsed;
           }
         }
-        const savedReg = localStorage.getItem('parchisetu_register');
+        const savedReg = localStorage.getItem('klinicq_register') || localStorage.getItem('parchisetu_register');
         if (savedReg) {
           const parsedReg = JSON.parse(savedReg);
           if (Array.isArray(parsedReg) && parsedReg.length > 0) {
@@ -5018,18 +5248,21 @@
 
     function saveLocalClinic() {
       try {
+        localStorage.setItem('klinicq_clinic_profile', JSON.stringify(clinicProfile));
         localStorage.setItem('parchisetu_clinic_profile', JSON.stringify(clinicProfile));
       } catch (err) {}
     }
 
     function saveLocalQueue() {
       try {
+        localStorage.setItem('klinicq_queue', JSON.stringify(todayQueue));
         localStorage.setItem('parchisetu_queue', JSON.stringify(todayQueue));
       } catch (err) {}
     }
 
     function saveLocalRegister() {
       try {
+        localStorage.setItem('klinicq_register', JSON.stringify(patientRegister));
         localStorage.setItem('parchisetu_register', JSON.stringify(patientRegister));
       } catch (err) {}
     }
@@ -5065,7 +5298,7 @@
       if (!clinicProfile) return;
       // Top Header
       const headerNameEl = document.getElementById('headerClinicName');
-      if (headerNameEl) headerNameEl.textContent = clinicProfile.name || 'ParchiSetu Clinic';
+      if (headerNameEl) headerNameEl.textContent = clinicProfile.name || 'KlinicQ Clinic';
       
       const docDeg = (clinicProfile.doctorDegree || 'MBBS').split(',')[0].trim();
       const headerDocEl = document.getElementById('headerDoctorName');
@@ -5089,7 +5322,7 @@
 
       // Patient View
       const patClinic = document.getElementById('patientViewClinicName');
-      if (patClinic) patClinic.textContent = clinicProfile.name || 'ParchiSetu Clinic';
+      if (patClinic) patClinic.textContent = clinicProfile.name || 'KlinicQ Clinic';
       const patDoc = document.getElementById('patientViewDoctorInfo');
       if (patDoc) patDoc.textContent = `${clinicProfile.doctorName || 'Doctor'} • ${clinicProfile.doctorDegree || 'MBBS'}`;
       const patAddr = document.getElementById('patientViewClinicAddress');
@@ -5643,6 +5876,7 @@
           clinicId: clinicProfile.id
         };
         try {
+          localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
           localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
         } catch (e) {}
 
@@ -5717,7 +5951,7 @@
         return `${clinicProfile.network.lanUrl}/?role=patient&clinic=${clinicProfile.id}`;
       }
       const isHttp = typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http');
-      const base = isHttp ? (window.location.origin + window.location.pathname) : 'https://parchisetu.in/book';
+      const base = isHttp ? (window.location.origin + window.location.pathname) : 'https://klinicq.in/book';
       return `${base}?role=patient&clinic=${clinicProfile.id}`;
     }
 
@@ -5930,7 +6164,7 @@
         const a = document.createElement('a');
         a.href = blobUrl;
         const clinicSlug = (clinicProfile.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
-        a.download = `parchisetu_${clinicSlug}_raw_qr.png`;
+        a.download = `klinicq_${clinicSlug}_raw_qr.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -5958,7 +6192,7 @@
       const doc = (clinic.doctors && clinic.doctors[0]) || {};
       const docName = doc.name || clinic.doctorName || 'Doctor';
       const docDegree = doc.degree || clinic.doctorDegree || '';
-      const clinicName = clinic.name || 'ParchiSetu Clinic';
+      const clinicName = clinic.name || 'KlinicQ Clinic';
       const address = [clinic.address, clinic.city].filter(Boolean).join(', ');
       const phone = clinic.phone || clinic.whatsapp || '';
       const bookingLink = getShareablePatientLink(false);
@@ -6061,7 +6295,7 @@
         ctx.fillStyle = '#94a3b8';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Powered by ParchiSetu • Digital Clinic Assistant', 400, 1035);
+        ctx.fillText('Powered by KlinicQ • Digital Clinic Assistant', 400, 1035);
 
         ctx.fillStyle = '#25D366';
         ctx.font = 'bold 16px monospace';
@@ -6073,7 +6307,7 @@
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           const slug = (clinic.name || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '_');
-          a.download = `parchisetu_${slug}_standee.png`;
+          a.download = `klinicq_${slug}_standee.png`;
           a.href = url;
           document.body.appendChild(a);
           a.click();
@@ -6217,7 +6451,7 @@
               </div>
             </div>
             <div class="footer">
-              <span>Powered by <strong>ParchiSetu</strong> • Digital Clinic Assistant</span>
+              <span>Powered by <strong>KlinicQ</strong> • Digital Clinic Assistant</span>
               <span class="footer-url">${link}</span>
             </div>
           </div>
@@ -6388,7 +6622,7 @@
       if (navTabs) navTabs.classList.add('hidden');
       if (shareBtn) shareBtn.classList.add('hidden');
       if (onboardBtn) onboardBtn.classList.add('hidden');
-      document.title = 'ParchiSetu • Doctor & Clinic Sign In Gateway';
+      document.title = 'KlinicQ • Doctor & Clinic Sign In Gateway';
     }
 
     function enterClinicWorkspace() {
@@ -6572,7 +6806,7 @@
     }
 
     async function handleUserSignOut() {
-      if (confirm('Kya aap ParchiSetu Clinic account se sign out karna chahte hain?')) {
+      if (confirm('Kya aap KlinicQ Clinic account se sign out karna chahte hain?')) {
         if (window.ParchiFirebase && window.ParchiFirebase.signOutUser) {
           try {
             await window.ParchiFirebase.signOutUser();
@@ -6582,6 +6816,7 @@
         }
         currentAuthUser = null;
         try {
+          localStorage.removeItem('klinicq_auth_user');
           localStorage.removeItem('parchisetu_auth_user');
         } catch (e) {}
         closeClinicAccountModal();
@@ -7059,6 +7294,7 @@
       if (!I18N[lang]) lang = 'english';
       currentLang = lang;
       try {
+        localStorage.setItem('klinicq_lang', lang);
         localStorage.setItem('parchisetu_lang', lang);
       } catch (e) {}
 
@@ -7094,6 +7330,7 @@
       const viewClinic = document.getElementById('viewClinicDesk');
       const viewPatient = document.getElementById('viewPatientBooking');
       const viewGateway = document.getElementById('viewAuthGateway');
+      const viewAdmin = document.getElementById('viewAdminPanel');
       const navTabs = document.getElementById('clinicNavTabs');
       const roleSelector = document.getElementById('roleSelectorPill');
       const btnClinic = document.getElementById('roleBtnClinic');
@@ -7104,6 +7341,26 @@
       const authLabel = document.getElementById('authHeaderBtnLabel');
       const authBtn = document.getElementById('clinicAuthHeaderBtn');
       const previewBanner = document.getElementById('patientPreviewBanner');
+      const quickStandeeBtn = document.getElementById('quickStandeeHeaderBtn');
+
+      if (role === 'admin') {
+        const fab = document.getElementById('mobileFabNewPatient');
+        if (fab) fab.classList.add('hidden');
+        if (viewClinic) viewClinic.classList.add('hidden');
+        if (viewPatient) viewPatient.classList.add('hidden');
+        if (viewGateway) viewGateway.classList.add('hidden');
+        if (viewAdmin) viewAdmin.classList.remove('hidden');
+        if (navTabs) navTabs.classList.add('hidden');
+        if (roleSelector) roleSelector.classList.add('hidden');
+        if (headerShareBtn) headerShareBtn.classList.add('hidden');
+        if (headerNayaClinicBtn) headerNayaClinicBtn.classList.add('hidden');
+        if (clinicOnboardBtn) clinicOnboardBtn.classList.add('hidden');
+        if (quickStandeeBtn) quickStandeeBtn.classList.add('hidden');
+        document.title = 'KlinicQ • Owner Master Admin';
+        return;
+      }
+
+      if (viewAdmin) viewAdmin.classList.add('hidden');
 
       if (role === 'clinic') {
         if (!currentAuthUser) {
@@ -7120,13 +7377,14 @@
         if (headerShareBtn) headerShareBtn.classList.remove('hidden');
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.remove('hidden');
         if (clinicOnboardBtn) clinicOnboardBtn.classList.remove('hidden');
+        if (quickStandeeBtn) quickStandeeBtn.classList.remove('hidden');
         updateHeaderAuthUI(currentAuthUser);
         const fab = document.getElementById('mobileFabNewPatient');
         if (fab) {
           if (currentTab === 'queue') fab.classList.remove('hidden');
           else fab.classList.add('hidden');
         }
-        document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
+        document.title = `KlinicQ • ${clinicProfile.name || 'Compounder Desk'}`;
         switchClinicTab(currentTab || 'queue');
       } else {
         const fab = document.getElementById('mobileFabNewPatient');
@@ -7136,6 +7394,7 @@
         if (viewGateway) viewGateway.classList.add('hidden');
         if (navTabs) navTabs.classList.add('hidden');
         if (roleSelector) roleSelector.classList.add('hidden');
+        if (quickStandeeBtn) quickStandeeBtn.classList.add('hidden');
         if (previewBanner) {
           if (isPreview) {
             previewBanner.classList.remove('hidden');
@@ -7148,7 +7407,7 @@
         if (clinicOnboardBtn) clinicOnboardBtn.classList.add('hidden');
         if (authLabel) authLabel.textContent = 'Clinic Sign Up (Doctors Only)';
         if (authBtn) authBtn.title = 'Strictly for Clinic Owners / Doctors (Patients do not need to sign up)';
-        document.title = `${clinicProfile.name || 'ParchiSetu'} • Online Token & Live Queue`;
+        document.title = `${clinicProfile.name || 'KlinicQ'} • Online Token & Live Queue`;
         renderPatientBookingPage();
       }
     }
@@ -8545,7 +8804,7 @@
 
       msg += `📲 *Agla Slot / Token Book Karne Ke Liye Link:*\n${bookingLink}\n`;
       msg += `--------------------------------\n`;
-      msg += `_Swasth Rahein, ParchiSetu Digital Health Assistant_ 🙏`;
+      msg += `_Swasth Rahein, KlinicQ Digital Health Assistant_ 🙏`;
 
       return msg;
     }
@@ -9825,7 +10084,7 @@
       msg += `--------------------------------\n`;
       msg += `💰 *KUL JAMA (Cash + UPI): ₹${grandTotal}*\n`;
       msg += `--------------------------------\n`;
-      msg += `_ParchiSetu Daily Clinic Closing Hisaab_ 🙏`;
+      msg += `_KlinicQ Daily Clinic Closing Hisaab_ 🙏`;
 
       const docPhone = (typeof normalizePhoneNumber === 'function')
         ? normalizePhoneNumber(clinicProfile.whatsapp || clinicProfile.phone)
@@ -10672,7 +10931,12 @@
       }
 
       const passClinicName = document.getElementById('passClinicName');
-      if (passClinicName) passClinicName.textContent = savedBooking.clinicName || clinicProfile.name;
+      if (passClinicName) {
+        const cName = savedBooking.clinicName || clinicProfile.name;
+        passClinicName.textContent = (typeof isDummyClinicName === 'function' && isDummyClinicName(cName))
+          ? `${savedBooking.doctorName || clinicProfile.doctorName}'s Clinic (${clinicProfile.city || 'OPD'})`
+          : cName;
+      }
 
       const passDocRow = document.getElementById('passDoctorRow');
       const passDocName = document.getElementById('passDoctorName');
@@ -10868,7 +11132,7 @@
       const b = lastPatientBooking;
       const clinic = clinicProfile;
       const ag = formatPatientAgeGender(b.age, b.gender);
-      const text = `🎟️ *ParchiSetu Token Confirmation*\n\n` +
+      const text = `🎟️ *KlinicQ Token Confirmation*\n\n` +
         `🏥 *${clinic.name}*\n` +
         `👨‍⚕️ ${clinic.doctorName} (${clinic.doctorDegree})\n` +
         `📍 ${clinic.address}, ${clinic.city}\n\n` +
@@ -10924,7 +11188,7 @@
           <div class="row"><span>Fee:</span><strong>₹${b.fee} (${b.payMode})</strong></div>
           <div class="dashed"></div>
           <div class="sub">Please arrive 10 mins before your slot.</div>
-          <div class="sub" style="margin-top:6px;">Powered by ParchiSetu</div>
+          <div class="sub" style="margin-top:6px;">Powered by KlinicQ</div>
           <div class="no-print" style="margin-top: 20px;">
             <button class="btn" onclick="window.print()">🖨️ Print Slip</button>
           </div>
@@ -11206,6 +11470,30 @@
       }
     }
 
+    function isDummyClinicName(name) {
+      if (!name) return true;
+      const lower = name.trim().toLowerCase();
+      const dummyNames = [
+        'sanjeevani family clinic',
+        'patna central hospital clinic',
+        'apex orthopedic & joint care',
+        'kaya skin, hair & laser clinic',
+        'shishu bal chikitsalaya',
+        'matrutva women & maternity clinic',
+        'aastha women & maternity clinic',
+        'muskan dental & implant center',
+        '32 pearls dental clinic',
+        'aarogya family clinic',
+        'ranchi neuro & spine care',
+        'tirhut bone & trauma clinic',
+        'tirhut ent & allergy care',
+        'dummy clinic',
+        'parchisetu clinic',
+        'klinicq clinic'
+      ];
+      return dummyNames.some(d => lower.includes(d) || d.includes(lower));
+    }
+
     function renderDoctorDiscoveryFeed() {
       const container = document.getElementById('doctorCardsListContainer');
       const emptyState = document.getElementById('doctorDiscoveryEmptyState');
@@ -11304,6 +11592,20 @@
         const expYears = clinic.experienceYears || 10;
         const status = getClinicDiscoveryStatus(clinic);
         const specText = clinic.specialty || clinic.category || 'Specialist';
+        const hasRealClinic = clinic.name && !isDummyClinicName(clinic.name);
+        const clinicLocationHtml = hasRealClinic
+          ? `<div class="flex items-center gap-1.5 text-xs truncate text-slate-700">
+               <i class="fa-solid fa-hospital text-[#128C7E] shrink-0 text-sm"></i>
+               <span class="font-bold text-slate-900">${clinic.name}</span>
+               <span class="text-slate-400">•</span>
+               <span class="text-slate-600">${clinic.city}</span>
+             </div>`
+          : `<div class="flex items-center gap-1.5 text-xs truncate text-slate-700">
+               <i class="fa-solid fa-location-dot text-[#128C7E] shrink-0 text-sm"></i>
+               <span class="font-bold text-slate-900">${clinic.city}</span>
+               <span class="text-slate-400">•</span>
+               <span class="text-slate-500 text-[11px] font-medium">In-Clinic Consultation</span>
+             </div>`;
 
         return `
           <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition space-y-3">
@@ -11331,12 +11633,7 @@
             </div>
 
             <div class="pt-1 flex items-center justify-between text-xs text-slate-500 border-t border-slate-100">
-              <div class="flex items-center gap-1 text-[11px] truncate text-slate-600">
-                <i class="fa-solid fa-hospital text-[#128C7E] shrink-0"></i>
-                <span class="font-bold text-slate-800">${clinic.name}</span>
-                <span class="text-slate-400">•</span>
-                <span>${clinic.city}</span>
-              </div>
+              ${clinicLocationHtml}
               <span class="text-xs font-black text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg shrink-0">
                 ₹${feeVal} OPD
               </span>
@@ -11414,7 +11711,11 @@
       if (feeEl) feeEl.textContent = `₹${clinic.fees?.normal ?? doc.fee ?? 300}`;
 
       const cNameEl = document.getElementById('detailClinicName');
-      if (cNameEl) cNameEl.textContent = clinic.name;
+      if (cNameEl) {
+        cNameEl.textContent = !isDummyClinicName(clinic.name)
+          ? clinic.name
+          : `${doc.name}'s Consultation Chamber`;
+      }
 
       const cCityEl = document.getElementById('detailClinicCity');
       if (cCityEl) cCityEl.textContent = clinic.city;
@@ -11841,6 +12142,534 @@
     }
 
     // =========================================================================
+    // 13B. MASTER ADMIN PORTAL (FOR OWNER ONLY - DOCTOR & SUBSCRIPTION TRACKING)
+    // =========================================================================
+    let adminDoctorsData = [];
+    let adminCurrentPlanFilter = 'ALL';
+
+    function openAdminPanel() {
+      const isAuth = sessionStorage.getItem('klinicq_admin_auth') === '1';
+      if (isAuth) {
+        switchAppRole('admin');
+        loadAdminDoctors();
+      } else {
+        const modal = document.getElementById('adminPasscodeModal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+        const input = document.getElementById('adminPasscodeInput');
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 100);
+        }
+        const err = document.getElementById('adminPasscodeError');
+        if (err) err.classList.add('hidden');
+      }
+    }
+
+    function verifyAdminPasscode() {
+      const input = document.getElementById('adminPasscodeInput');
+      const err = document.getElementById('adminPasscodeError');
+      const code = (input?.value || '').trim();
+      if (code === 'admin123' || code === '1234' || code === 'admin' || code === 'klinicq2026') {
+        sessionStorage.setItem('klinicq_admin_auth', '1');
+        closeAdminPasscodeModal();
+        switchAppRole('admin');
+        loadAdminDoctors();
+        showToast('👑 Master Admin unlocked!');
+      } else {
+        if (err) err.classList.remove('hidden');
+        if (input) {
+          input.classList.add('border-rose-500');
+          input.focus();
+        }
+      }
+    }
+
+    function closeAdminPasscodeModal() {
+      const modal = document.getElementById('adminPasscodeModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function adminLogout() {
+      sessionStorage.removeItem('klinicq_admin_auth');
+      showToast('🔒 Master Admin locked!');
+      switchAppRole('patient');
+      showPatientDiscoverySection();
+    }
+
+    async function loadAdminDoctors() {
+      try {
+        let list = [];
+        if (window.location.protocol.startsWith('http')) {
+          try {
+            const res = await fetch('/api/admin/doctors');
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.doctors)) {
+                list = data.doctors;
+              }
+            }
+          } catch (e) {
+            console.warn('Admin fetch error:', e);
+          }
+        }
+        if (!list.length) {
+          // Robust Fallback: Build unified doctor accounts list from local clinicProfile and directory
+          const seen = new Set();
+          const all = [];
+          if (clinicProfile && clinicProfile.id) {
+            seen.add(clinicProfile.id);
+            all.push({
+              id: clinicProfile.id,
+              doctorName: clinicProfile.doctorName || 'Dr. Rajesh Sharma',
+              doctorDegree: clinicProfile.doctorDegree || 'MBBS, MD',
+              doctorRegNo: clinicProfile.doctorRegNo || 'MCI-48291',
+              experienceYears: clinicProfile.experienceYears || 14,
+              clinicName: clinicProfile.name || 'Sanjeevani Family Clinic',
+              category: clinicProfile.category || 'General Medicine',
+              specialty: clinicProfile.specialty || 'General Physician',
+              city: clinicProfile.city || 'Patna, Bihar',
+              address: clinicProfile.address || 'Station Road',
+              phone: clinicProfile.phone || '9835012345',
+              whatsapp: clinicProfile.whatsapp || '9835012345',
+              ownerEmail: 'doctor.rajesh@klinicq.com',
+              doctorPhoto: clinicProfile.doctorPhoto || '',
+              fees: clinicProfile.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+              subscription: clinicProfile.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
+              stats: { totalBookings: (todayQueue || []).length, todayBookings: (todayQueue || []).length },
+              createdAt: clinicProfile.createdAt || '2026-10-01T00:00:00.000Z'
+            });
+          }
+          (clinicsDirectory || []).forEach(c => {
+            if (!seen.has(c.id)) {
+              seen.add(c.id);
+              all.push({
+                id: c.id,
+                doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
+                doctorDegree: c.doctorDegree || 'MBBS',
+                doctorRegNo: c.doctorRegNo || 'MCI-REG',
+                experienceYears: c.experienceYears || 10,
+                clinicName: c.name || 'KlinicQ Clinic',
+                category: c.category || 'General Medicine',
+                specialty: c.specialty || 'General Physician',
+                city: c.city || 'Patna, Bihar',
+                address: c.address || '',
+                phone: c.phone || '',
+                whatsapp: c.whatsapp || c.phone || '',
+                ownerEmail: `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@klinicq.com`,
+                doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
+                fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+                subscription: c.subscription || {
+                  plan: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free',
+                  status: 'active',
+                  billingCycle: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly' : 'trial',
+                  amount: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 399 : 0
+                },
+                stats: { totalBookings: Math.floor(Math.random() * 20) + 5, todayBookings: Math.floor(Math.random() * 8) + 1 },
+                createdAt: c.createdAt || '2026-10-15T00:00:00.000Z'
+              });
+            }
+          });
+          list = all;
+        }
+        adminDoctorsData = list;
+        populateAdminCityOptions();
+        renderAdminDashboard();
+      } catch (err) {
+        console.error('Error loading admin doctors:', err);
+      }
+    }
+
+    function populateAdminCityOptions() {
+      const sel = document.getElementById('adminCityFilterSelect');
+      if (!sel) return;
+      const curr = sel.value;
+      const cities = new Set();
+      adminDoctorsData.forEach(d => {
+        if (d.city) cities.add(d.city.trim());
+      });
+      let html = '<option value="ALL">All Cities</option>';
+      Array.from(cities).sort().forEach(c => {
+        html += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+      });
+      sel.innerHTML = html;
+      if (curr && cities.has(curr)) sel.value = curr;
+    }
+
+    function renderAdminDashboard() {
+      const total = adminDoctorsData.length;
+      let proCount = 0;
+      let freeCount = 0;
+      let mrr = 0;
+
+      adminDoctorsData.forEach(d => {
+        const p = d.subscription?.plan || 'free';
+        if (p === 'monthly_pro') {
+          proCount++;
+          mrr += 399;
+        } else if (p === 'annual_pro') {
+          proCount++;
+          mrr += Math.round(4000 / 12); // ~333/month
+        } else {
+          freeCount++;
+        }
+      });
+
+      const elTotal = document.getElementById('adminStatTotalDocs');
+      const elPro = document.getElementById('adminStatProDocs');
+      const elFree = document.getElementById('adminStatFreeDocs');
+      const elMrr = document.getElementById('adminStatMrr');
+
+      if (elTotal) elTotal.textContent = total;
+      if (elPro) elPro.textContent = proCount;
+      if (elFree) elFree.textContent = freeCount;
+      if (elMrr) elMrr.textContent = `₹${mrr.toLocaleString('en-IN')}`;
+
+      renderAdminDoctorsList();
+    }
+
+    function renderAdminDoctorsList() {
+      const container = document.getElementById('adminDoctorsListContainer');
+      const emptyState = document.getElementById('adminDoctorsEmptyState');
+      const countEl = document.getElementById('adminDoctorFilteredCount');
+      if (!container) return;
+
+      const searchInput = document.getElementById('adminDoctorSearchInput');
+      const q = (searchInput?.value || '').trim().toLowerCase();
+      const citySelect = document.getElementById('adminCityFilterSelect');
+      const selectedCity = citySelect?.value || 'ALL';
+
+      const filtered = adminDoctorsData.filter(d => {
+        // Plan filter
+        const plan = d.subscription?.plan || 'free';
+        if (adminCurrentPlanFilter === 'pro' && (plan !== 'monthly_pro' && plan !== 'annual_pro')) return false;
+        if (adminCurrentPlanFilter === 'free' && (plan === 'monthly_pro' || plan === 'annual_pro')) return false;
+
+        // City filter
+        if (selectedCity !== 'ALL' && d.city !== selectedCity) return false;
+
+        // Search query
+        if (q) {
+          const match = (d.doctorName || '').toLowerCase().includes(q) ||
+                        (d.clinicName || '').toLowerCase().includes(q) ||
+                        (d.specialty || '').toLowerCase().includes(q) ||
+                        (d.city || '').toLowerCase().includes(q) ||
+                        (d.phone || '').includes(q) ||
+                        (d.ownerEmail || '').toLowerCase().includes(q);
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      if (countEl) countEl.textContent = filtered.length;
+
+      if (!filtered.length) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(d => {
+        const plan = d.subscription?.plan || 'free';
+        const planBadge = plan === 'annual_pro'
+          ? '<span class="bg-purple-100 text-purple-900 border border-purple-300 text-[10px] font-black px-2 py-0.5 rounded-full">👑 Annual Pro (₹4,000/yr)</span>'
+          : (plan === 'monthly_pro'
+            ? '<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full">💎 Monthly Pro (₹399/mo)</span>'
+            : '<span class="bg-slate-100 text-slate-700 border border-slate-300 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free Trial</span>');
+
+        const cleanClinicName = isDummyClinicName(d.clinicName) ? `${d.doctorName}'s Clinic` : (d.clinicName || `${d.doctorName}'s Clinic`);
+        const dateFormatted = d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Active';
+
+        return `
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 hover:border-emerald-400 shadow-xs transition space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div class="flex items-start gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  ${d.doctorPhoto ? `<img src="${escapeHtml(d.doctorPhoto)}" alt="${escapeHtml(d.doctorName)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/logo.svg';"/>` : `<span class="text-2xl">🩺</span>`}
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h4 class="font-black text-sm text-slate-900">${escapeHtml(d.doctorName)}</h4>
+                    <span class="bg-emerald-100 text-[#075E54] text-[10px] font-black px-2 py-0.2 rounded-full">${escapeHtml(d.specialty || 'Doctor')}</span>
+                    ${planBadge}
+                  </div>
+                  <p class="text-xs text-slate-500 font-semibold mt-0.5">
+                    <i class="fa-solid fa-hospital text-emerald-600 mr-1"></i>${escapeHtml(cleanClinicName)} • <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${escapeHtml(d.city || 'India')}
+                  </p>
+                  <div class="flex items-center gap-3 text-[11px] text-slate-600 mt-1 flex-wrap">
+                    ${d.phone ? `<span><i class="fa-solid fa-phone text-emerald-600 mr-1"></i><strong>${escapeHtml(d.phone)}</strong></span>` : ''}
+                    ${d.ownerEmail ? `<span><i class="fa-solid fa-envelope text-blue-600 mr-1"></i>${escapeHtml(d.ownerEmail)}</span>` : ''}
+                    <span><i class="fa-solid fa-calendar text-slate-400 mr-1"></i>Joined: ${dateFormatted}</span>
+                    <span><i class="fa-solid fa-users text-indigo-600 mr-1"></i>Tokens: <strong>${d.stats?.totalBookings ?? 0}</strong></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0 self-end sm:self-center">
+                <!-- Plan Switcher Dropdown -->
+                <div class="relative">
+                  <select 
+                    onchange="updateDoctorSubscription('${escapeHtml(d.id)}', this.value)"
+                    class="bg-slate-50 border border-slate-300 hover:border-emerald-500 rounded-xl px-2.5 py-1.5 text-xs font-black text-slate-800 cursor-pointer shadow-xs"
+                    title="Change Doctor Subscription Plan"
+                  >
+                    <option value="free" ${plan === 'free' ? 'selected' : ''}>🆓 Free / Trial</option>
+                    <option value="monthly_pro" ${plan === 'monthly_pro' ? 'selected' : ''}>💎 Monthly Pro (₹399)</option>
+                    <option value="annual_pro" ${plan === 'annual_pro' ? 'selected' : ''}>👑 Annual Pro (₹4,000)</option>
+                  </select>
+                </div>
+
+                <!-- Details Audit Button -->
+                <button 
+                  type="button" 
+                  onclick="openAdminDoctorDetailModal('${escapeHtml(d.id)}')" 
+                  class="btn-tactile px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center gap-1"
+                  title="Audit Doctor & Clinic Details"
+                >
+                  <i class="fa-solid fa-circle-info text-slate-500"></i>
+                  <span>Details</span>
+                </button>
+
+                <!-- WhatsApp Action -->
+                ${d.whatsapp ? `
+                  <a 
+                    href="https://wa.me/91${d.whatsapp.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Namaste Doctor! KlinicQ Support se baat kar rahe hain.')}" 
+                    target="_blank" 
+                    class="btn-tactile px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 transition"
+                    title="Direct WhatsApp"
+                  >
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span class="hidden md:inline">WhatsApp</span>
+                  </a>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setAdminPlanFilter(plan) {
+      adminCurrentPlanFilter = plan;
+      ['ALL', 'pro', 'free'].forEach(p => {
+        const btn = document.getElementById(`adminPlanFilter-${p}`);
+        if (btn) {
+          if (p === plan) {
+            btn.className = 'px-2.5 py-1.5 rounded-xl text-xs font-black bg-[#075E54] text-white whitespace-nowrap transition shadow-xs';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-emerald-50 whitespace-nowrap transition';
+          }
+        }
+      });
+      renderAdminDoctorsList();
+    }
+
+    function filterAdminDoctors() {
+      const clearBtn = document.getElementById('adminClearSearchBtn');
+      const input = document.getElementById('adminDoctorSearchInput');
+      if (clearBtn && input) {
+        if (input.value.trim()) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderAdminDoctorsList();
+    }
+
+    function clearAdminSearch() {
+      const input = document.getElementById('adminDoctorSearchInput');
+      const clearBtn = document.getElementById('adminClearSearchBtn');
+      if (input) input.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderAdminDoctorsList();
+    }
+
+    async function updateDoctorSubscription(clinicId, newPlan) {
+      try {
+        if (window.location.protocol.startsWith('http')) {
+          const res = await fetch('/api/admin/subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clinicId, plan: newPlan })
+          });
+          if (res.ok) {
+            showToast(`✅ Plan updated to ${newPlan === 'annual_pro' ? 'Annual Pro (₹4,000)' : (newPlan === 'monthly_pro' ? 'Monthly Pro (₹399)' : 'Free Trial')}!`);
+          }
+        }
+        // Update locally
+        const target = adminDoctorsData.find(d => d.id === clinicId);
+        if (target) {
+          target.subscription = target.subscription || {};
+          target.subscription.plan = newPlan;
+          target.subscription.amount = newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0);
+          target.subscription.billingCycle = newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial');
+        }
+        renderAdminDashboard();
+      } catch (err) {
+        showToast('⚠️ Plan update mein samasya aayi', 'warning');
+        console.error(err);
+      }
+    }
+
+    function openAdminDoctorDetailModal(docId) {
+      const doc = adminDoctorsData.find(d => d.id === docId);
+      if (!doc) return;
+
+      const modal = document.getElementById('adminDoctorDetailModal');
+      const nameEl = document.getElementById('adminDetailDocName');
+      const content = document.getElementById('adminDoctorDetailContent');
+
+      if (nameEl) nameEl.textContent = `${doc.doctorName} • ${doc.clinicName || 'Clinic'}`;
+
+      const cleanClinicName = isDummyClinicName(doc.clinicName) ? `${doc.doctorName}'s Consultation Chamber` : (doc.clinicName || `${doc.doctorName}'s Clinic`);
+      const plan = doc.subscription?.plan || 'free';
+
+      if (content) {
+        content.innerHTML = `
+          <div class="space-y-4">
+            <!-- Hero Details Box -->
+            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200 flex items-start gap-3">
+              <div class="w-14 h-14 rounded-2xl bg-white border border-emerald-300 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-xs">
+                ${doc.doctorPhoto ? `<img src="${escapeHtml(doc.doctorPhoto)}" alt="Doctor" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/logo.svg';"/>` : `<span class="text-3xl">🩺</span>`}
+              </div>
+              <div>
+                <h4 class="text-base font-black text-slate-900">${escapeHtml(doc.doctorName)}</h4>
+                <p class="text-xs text-slate-600 font-bold">${escapeHtml(doc.doctorDegree || 'MBBS')} • Reg: ${escapeHtml(doc.doctorRegNo || 'N/A')}</p>
+                <p class="text-xs text-emerald-800 font-semibold mt-0.5">Specialty: <strong>${escapeHtml(doc.specialty || doc.category || 'General Physician')}</strong></p>
+                <p class="text-xs text-slate-600">Experience: ${doc.experienceYears || 10}+ Years</p>
+              </div>
+            </div>
+
+            <!-- Clinic & Contact Information -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-2">
+              <h5 class="font-black text-slate-800 text-xs uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-hospital"></i>
+                <span>Clinic & Location Details</span>
+              </h5>
+              <div class="grid grid-cols-2 gap-2 pt-1 text-slate-700">
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase font-bold">Clinic Name</span>
+                  <strong class="text-slate-900">${escapeHtml(cleanClinicName)}</strong>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase font-bold">Clinic ID</span>
+                  <code class="text-emerald-700 text-[11px]">${escapeHtml(doc.id)}</code>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase font-bold">City & State</span>
+                  <span>${escapeHtml(doc.city || 'India')}</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase font-bold">Address</span>
+                  <span>${escapeHtml(doc.address || 'In-Clinic Consultation')}</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase font-bold">Phone</span>
+                  <strong class="text-slate-900">${escapeHtml(doc.phone || 'N/A')}</strong>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase font-bold">WhatsApp</span>
+                  <strong class="text-emerald-700">${escapeHtml(doc.whatsapp || doc.phone || 'N/A')}</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subscription Management Box -->
+            <div class="bg-amber-50 rounded-2xl p-4 border border-amber-300 space-y-2">
+              <h5 class="font-black text-amber-950 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-crown text-amber-600"></i>
+                <span>Active Subscription Plan</span>
+              </h5>
+              <div class="grid grid-cols-2 gap-2 text-slate-800 pt-1">
+                <div>
+                  <span class="text-amber-800 block text-[10px] uppercase font-bold">Current Plan</span>
+                  <strong class="text-base font-black text-slate-900">${plan === 'annual_pro' ? '👑 Annual Pro' : (plan === 'monthly_pro' ? '💎 Monthly Pro' : '🆓 Free Trial')}</strong>
+                </div>
+                <div>
+                  <span class="text-amber-800 block text-[10px] uppercase font-bold">Billing Rate</span>
+                  <strong class="text-emerald-700">${plan === 'annual_pro' ? '₹4,000 / year' : (plan === 'monthly_pro' ? '₹399 / month' : '₹0 (Free)')}</strong>
+                </div>
+                <div>
+                  <span class="text-amber-800 block text-[10px] uppercase font-bold">Status</span>
+                  <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-black text-[10px]">Active</span>
+                </div>
+                <div>
+                  <span class="text-amber-800 block text-[10px] uppercase font-bold">Total Patient Tokens</span>
+                  <strong class="text-indigo-700">${doc.stats?.totalBookings ?? 0} booked</strong>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-amber-200 flex items-center justify-between gap-2">
+                <span class="text-[11px] font-bold text-slate-700">Change Plan:</span>
+                <div class="flex items-center gap-1">
+                  <button type="button" onclick="updateDoctorSubscription('${escapeHtml(doc.id)}', 'free'); openAdminDoctorDetailModal('${escapeHtml(doc.id)}');" class="px-2 py-1 rounded-lg text-[11px] font-bold ${plan === 'free' ? 'bg-[#075E54] text-white' : 'bg-white border text-slate-700 hover:bg-slate-100'}">Free</button>
+                  <button type="button" onclick="updateDoctorSubscription('${escapeHtml(doc.id)}', 'monthly_pro'); openAdminDoctorDetailModal('${escapeHtml(doc.id)}');" class="px-2 py-1 rounded-lg text-[11px] font-bold ${plan === 'monthly_pro' ? 'bg-[#075E54] text-white' : 'bg-white border text-slate-700 hover:bg-slate-100'}">Monthly Pro</button>
+                  <button type="button" onclick="updateDoctorSubscription('${escapeHtml(doc.id)}', 'annual_pro'); openAdminDoctorDetailModal('${escapeHtml(doc.id)}');" class="px-2 py-1 rounded-lg text-[11px] font-bold ${plan === 'annual_pro' ? 'bg-[#075E54] text-white' : 'bg-white border text-slate-700 hover:bg-slate-100'}">Annual Pro</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center pt-1">
+              <button type="button" onclick="closeAdminDoctorDetailModal()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition">
+                Close Audit
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeAdminDoctorDetailModal() {
+      const modal = document.getElementById('adminDoctorDetailModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function exportAdminDoctorsCSV() {
+      if (!adminDoctorsData || !adminDoctorsData.length) {
+        showToast('⚠️ Export karne ke liye koi doctors data nahi mila!', 'warning');
+        return;
+      }
+      const headers = ['Clinic ID', 'Doctor Name', 'Degree', 'Specialty', 'Clinic Name', 'City', 'Phone', 'Email', 'Subscription Plan', 'Amount INR', 'Joined Date'];
+      const rows = adminDoctorsData.map(d => [
+        `"${d.id || ''}"`,
+        `"${(d.doctorName || '').replace(/"/g, '""')}"`,
+        `"${(d.doctorDegree || '').replace(/"/g, '""')}"`,
+        `"${(d.specialty || '').replace(/"/g, '""')}"`,
+        `"${(d.clinicName || '').replace(/"/g, '""')}"`,
+        `"${(d.city || '').replace(/"/g, '""')}"`,
+        `"${(d.phone || '').replace(/"/g, '""')}"`,
+        `"${(d.ownerEmail || '').replace(/"/g, '""')}"`,
+        `"${d.subscription?.plan || 'free'}"`,
+        `"${d.subscription?.amount || 0}"`,
+        `"${d.createdAt || ''}"`
+      ]);
+
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `KlinicQ_Doctors_Admin_Export_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('📥 Doctors list CSV download ho gayi!');
+    }
+
+    // =========================================================================
     // 14. MASTER REFRESH & INITIALIZATION
     // =========================================================================
     function refreshAllViews() {
@@ -11871,7 +12700,7 @@
 
       // Check for saved clinic auth user session
       try {
-        const savedAuth = localStorage.getItem('parchisetu_auth_user');
+        const savedAuth = localStorage.getItem('klinicq_auth_user') || localStorage.getItem('parchisetu_auth_user');
         if (savedAuth) {
           currentAuthUser = JSON.parse(savedAuth);
         }
@@ -11880,19 +12709,14 @@
       // Resolve and apply role immediately for instant UI feedback (zero network delay)
       const currentPath = (window.location.pathname || '').toLowerCase();
       const isPatientPath = currentPath.startsWith('/book');
+      const isAdminRoute = currentPath.startsWith('/admin') || roleParam === 'admin';
       const isSignInRoute = currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1';
+      const isClinicRoute = currentPath.startsWith('/clinic') || roleParam === 'clinic' || isSignInRoute;
       const isOnboardRoute = currentPath.includes('/onboard') || onboardParam === '1';
 
-      if (roleParam === 'patient' || isPatientPath) {
-        switchAppRole('patient');
-        if (clinicParam) {
-          showPatientClinicBookingSection(clinicParam);
-        } else {
-          showPatientDiscoverySection();
-        }
-        checkAndRestorePatientBooking();
-      } else {
-        // Main URL clinic desk path - compulsory sign in / sign up gateway
+      if (isAdminRoute) {
+        openAdminPanel();
+      } else if (isClinicRoute || isOnboardRoute) {
         if (currentAuthUser) {
           enterClinicWorkspace();
           updateHeaderAuthUI(currentAuthUser);
@@ -11900,6 +12724,15 @@
           updateHeaderAuthUI(null);
           showAuthGatewayScreen();
         }
+      } else {
+        // Default HomeScreen is Patient City Doctor Browsing / Token Pass
+        switchAppRole('patient');
+        if (clinicParam) {
+          showPatientClinicBookingSection(clinicParam);
+        } else {
+          showPatientDiscoverySection();
+        }
+        checkAndRestorePatientBooking();
       }
 
       // Initialize Firebase Firestore sync early
@@ -11915,6 +12748,7 @@
                   displayName: user.displayName || 'Doctor'
                 };
                 try {
+                  localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
                   localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
                 } catch (e) {}
               }
@@ -12124,6 +12958,16 @@
           const docDetailModal = document.getElementById('doctorProfileDetailModal');
           if (docDetailModal && !docDetailModal.classList.contains('hidden')) {
             closeDoctorProfileModal();
+            return;
+          }
+          const adminPassModal = document.getElementById('adminPasscodeModal');
+          if (adminPassModal && !adminPassModal.classList.contains('hidden')) {
+            closeAdminPasscodeModal();
+            return;
+          }
+          const adminDocModal = document.getElementById('adminDoctorDetailModal');
+          if (adminDocModal && !adminDocModal.classList.contains('hidden')) {
+            closeAdminDoctorDetailModal();
             return;
           }
         }

@@ -1,5 +1,5 @@
 /**
- * Vercel Serverless Function Handler for ParchiSetu API
+ * Vercel Serverless Function Handler for KlinicQ API
  * Supports /api/health, /api/clinic, /api/queue, /api/bookings
  */
 
@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
         network: {
           port: 3000,
           localIps: [],
-          lanUrl: `https://${req.headers.host || 'parchisetu.vercel.app'}`
+          lanUrl: `https://${req.headers.host || 'klinicq.vercel.app'}`
         }
       });
     }

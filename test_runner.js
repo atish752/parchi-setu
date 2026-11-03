@@ -399,7 +399,7 @@ async function runTests() {
     assert.ok(fs.existsSync(path.join(__dirname, 'favicon.svg')), 'favicon.svg must exist');
     const logoContent = fs.readFileSync(path.join(__dirname, 'logo.svg'), 'utf8');
     assert.ok(logoContent.includes('<svg'), 'logo.svg must be an SVG file');
-    assert.ok(logoContent.includes('ParchiSetu'), 'logo.svg must brand ParchiSetu');
+    assert.ok(logoContent.includes('KlinicQ') || logoContent.includes('ParchiSetu'), 'logo.svg must brand KlinicQ');
   })();
 
   // 20. HTML includes Firebase SDKs, Auth Modal, Calendar Controls, and Live Token Ticker
@@ -1196,7 +1196,7 @@ async function runTests() {
     assert.strictEqual(phoneSandbox.res3, '919835012345', 'Formatted phone must normalize to 919835012345');
 
     // 4. Greeting typo check
-    assert.ok(html.includes('_Swasth Rahein, ParchiSetu Digital Health Assistant_'), 'Prescription must use correct Hindi spelling Swasth Rahein');
+    assert.ok(html.includes('_Swasth Rahein, KlinicQ Digital Health Assistant_') || html.includes('_Swasth Rahein, ParchiSetu Digital Health Assistant_'), 'Prescription must use correct Hindi spelling Swasth Rahein');
   })();
 
   // 63. Doctor Arrival Alert on Token Pass, Heartbeat Dual-Polling, and Early Arrival Non-Penalization
@@ -2109,7 +2109,193 @@ async function runTests() {
     assert.ok(html.includes("document.createElement('canvas')"), 'handleDoctorPhotoUpload must use canvas for photo compression');
     assert.ok(html.includes("toDataURL('image/jpeg'"), 'Must export compressed jpeg dataURL to protect localStorage quota');
 
-    // 4. File synchronization check
+  })();
+
+  // 82. KlinicQ Rebranding, Logo Ring Removal & Enlarged Artwork
+  await test('KlinicQ rebranding, logo SVG without outer ring, and enlarged artwork', async () => {
+    const logoContent = fs.readFileSync(path.join(__dirname, 'logo.svg'), 'utf8');
+    assert.ok(logoContent.includes('KlinicQ'), 'logo.svg must include KlinicQ title');
+    // Outer circular dashed ring must be removed
+    assert.ok(!logoContent.includes('r="236"'), 'Outer circular ring (r=236) must be removed from logo.svg');
+    assert.ok(!logoContent.includes('stroke-dasharray="16 12"'), 'Outer ring dash pattern must be removed');
+    // Artwork must be enlarged (~1.12x)
+    assert.ok(logoContent.includes('scale(1.12)'), 'Inner artwork must be scaled up ~12% in logo.svg');
+
+    // Package.json name check
+    const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+    assert.strictEqual(pkg.name, 'klinicq', 'package.json name must be klinicq');
+
+    // HTML header branding check
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+    assert.ok(html.includes('<title>KlinicQ • Smart Clinic & Token App for India</title>'), 'HTML title must brand KlinicQ');
+    assert.ok(html.includes('headerAdminBtn') && html.includes('headerClinicDeskBtn'), 'Header must contain Clinic Desk and Admin buttons');
+  })();
+
+  // 83. Master Admin API: Doctor Accounts & Subscription Tracking
+  await test('GET /api/admin/doctors and POST /api/admin/subscription endpoints operate correctly', async () => {
+    // 1. Get doctors list
+    const res = await makeRequest('GET', '/api/admin/doctors');
+    assert.strictEqual(res.status, 200, 'GET /api/admin/doctors must return 200 OK');
+    const data = typeof res.body === 'string' ? JSON.parse(res.body) : res.body;
+    assert.ok(data.success, 'Response must indicate success');
+    assert.ok(Array.isArray(data.doctors) && data.doctors.length > 0, 'Must return doctors array');
+
+    const firstDoc = data.doctors[0];
+    assert.ok(firstDoc.id, 'Doctor record must have clinic ID');
+    assert.ok(firstDoc.doctorName, 'Doctor record must have doctorName');
+    assert.ok(firstDoc.subscription, 'Doctor record must have subscription object');
+    assert.ok(typeof firstDoc.subscription.plan === 'string', 'Subscription must specify plan');
+
+    // 2. Update subscription plan
+    const targetClinicId = firstDoc.id;
+    const updateRes = await makeRequest('POST', '/api/admin/subscription', {
+      clinicId: targetClinicId,
+      plan: 'annual_pro'
+    });
+    assert.strictEqual(updateRes.status, 200, 'POST /api/admin/subscription must return 200 OK');
+    const updateData = typeof updateRes.body === 'string' ? JSON.parse(updateRes.body) : updateRes.body;
+    assert.ok(updateData.success, 'Update must indicate success');
+
+    // Verify change reflected in subsequent GET
+    const checkRes = await makeRequest('GET', '/api/admin/doctors');
+    const checkData = typeof checkRes.body === 'string' ? JSON.parse(checkRes.body) : checkRes.body;
+    const updatedTarget = checkData.doctors.find(d => d.id === targetClinicId);
+    assert.ok(updatedTarget, 'Updated clinic must be present');
+    assert.strictEqual(updatedTarget.subscription.plan, 'annual_pro', 'Subscription plan must be updated to annual_pro');
+
+    // 3. Test edge case: 404 for non-existent clinic ID
+    const notFoundRes = await makeRequest('POST', '/api/admin/subscription', {
+      clinicId: 'non_existent_clinic_xyz_999',
+      plan: 'annual_pro'
+    });
+    assert.strictEqual(notFoundRes.status, 404, 'POST /api/admin/subscription with invalid ID must return 404');
+
+    // 4. Test edge case: 400 for missing clinicId
+    const badReqRes = await makeRequest('POST', '/api/admin/subscription', {
+      plan: 'annual_pro'
+    });
+    assert.strictEqual(badReqRes.status, 400, 'POST /api/admin/subscription without clinicId must return 400');
+  })();
+
+  // 84. Master Admin Panel UI & Passcode Security
+  await test('Master Admin Panel UI contains 4 KPI metrics, plan filters, PIN modal, and doctor audit modal', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // Admin container and modals
+    assert.ok(html.includes('id="viewAdminPanel"'), 'Must define viewAdminPanel');
+    assert.ok(html.includes('id="adminPasscodeModal"'), 'Must define adminPasscodeModal');
+    assert.ok(html.includes('id="adminDoctorDetailModal"'), 'Must define adminDoctorDetailModal');
+
+    // 4 KPI stat counters
+    assert.ok(html.includes('id="adminStatTotalDocs"'), 'Must define adminStatTotalDocs KPI');
+    assert.ok(html.includes('id="adminStatProDocs"'), 'Must define adminStatProDocs KPI');
+    assert.ok(html.includes('id="adminStatFreeDocs"'), 'Must define adminStatFreeDocs KPI');
+    assert.ok(html.includes('id="adminStatMrr"'), 'Must define adminStatMrr KPI');
+
+    // Plan filters and search
+    assert.ok(html.includes('id="adminPlanFilter-ALL"'), 'Must define adminPlanFilter-ALL');
+    assert.ok(html.includes('id="adminPlanFilter-pro"'), 'Must define adminPlanFilter-pro');
+    assert.ok(html.includes('id="adminPlanFilter-free"'), 'Must define adminPlanFilter-free');
+    assert.ok(html.includes('id="adminDoctorSearchInput"'), 'Must define adminDoctorSearchInput');
+    assert.ok(html.includes('id="adminCityFilterSelect"'), 'Must define adminCityFilterSelect');
+
+    // Script functions
+    assert.ok(html.includes('function openAdminPanel('), 'Must define openAdminPanel');
+    assert.ok(html.includes('function verifyAdminPasscode('), 'Must define verifyAdminPasscode');
+    assert.ok(html.includes('function updateDoctorSubscription('), 'Must define updateDoctorSubscription');
+    assert.ok(html.includes('function exportAdminDoctorsCSV('), 'Must define exportAdminDoctorsCSV');
+    assert.ok(html.includes('function openAdminDoctorDetailModal('), 'Must define openAdminDoctorDetailModal');
+  })();
+
+  // 85. HomeScreen Default Routing to Doctor Discovery & Dummy Clinic Name Filtering
+  await test('HomeScreen defaults to city doctor discovery feed and filters dummy clinic names', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // Helper isDummyClinicName must be defined
+    assert.ok(html.includes('function isDummyClinicName('), 'Must define isDummyClinicName helper');
+
+    // VM simulation of isDummyClinicName
+    const sandbox = {};
+    vm.createContext(sandbox);
+    const helperCode = html.substring(html.indexOf('function isDummyClinicName'), html.indexOf('function renderDoctorDiscoveryFeed'));
+    vm.runInContext(helperCode, sandbox);
+
+    assert.strictEqual(sandbox.isDummyClinicName('Apex Orthopedic & Joint Care'), true, 'Must identify dummy clinic name');
+    assert.strictEqual(sandbox.isDummyClinicName('Sanjeevani Family Clinic'), true, 'Must identify default mock clinic name');
+    assert.strictEqual(sandbox.isDummyClinicName('Matrutva Women & Maternity Clinic'), true, 'Must identify seed maternity clinic');
+    assert.strictEqual(sandbox.isDummyClinicName('Muskan Dental & Implant Center'), true, 'Must identify seed dental clinic');
+    assert.strictEqual(sandbox.isDummyClinicName('Aarogya Family Clinic'), true, 'Must identify seed general clinic');
+    assert.strictEqual(sandbox.isDummyClinicName('Tirhut Bone & Trauma Clinic'), true, 'Must identify seed trauma clinic');
+    assert.strictEqual(sandbox.isDummyClinicName('Dr. Sharma Eye & Laser Hospital'), false, 'Authentic clinic name must not be flagged');
+
+    // window.onload routing must default to patient discovery feed
+    assert.ok(html.includes("switchAppRole('patient');"), 'Must default to patient role');
+    assert.ok(html.includes("showPatientDiscoverySection();"), 'Must default to doctor discovery screen');
+  })();
+
+  // 86. Full Runtime Integrity: window.onload, Admin Local Fallback, and Clean Scoping
+  await test('Full Runtime Integrity: window.onload executes with zero ReferenceErrors, admin fallback uses todayQueue, and standee button scopes cleanly', async () => {
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+    // 1. Verify isSignInRoute is declared and queue reference error is fixed
+    assert.ok(html.includes('const isSignInRoute ='), 'Must declare isSignInRoute in window.onload');
+    assert.ok(!html.includes('stats: { totalBookings: (queue || []).length'), 'Must not reference undeclared queue in admin fallback');
+    assert.ok(html.includes('stats: { totalBookings: (todayQueue || []).length'), 'Must reference todayQueue for admin fallback stats');
+
+    // 2. VM execution test of window.onload
+    const scriptContent = html.match(/<script(?![^>]*src=)>([\s\S]*?)<\/script>/g)
+      .map(s => s.replace(/<script[^>]*>/, '').replace(/<\/script>/, ''))
+      .join('\n');
+
+    const mockEl = {
+      value: '', textContent: '', innerHTML: '', classList: { add: ()=>{}, remove: ()=>{}, contains: ()=>false, toggle: ()=>{} },
+      style: {}, setAttribute: ()=>{}, getAttribute: ()=>null, querySelector: ()=>null, querySelectorAll: ()=>[],
+      addEventListener: ()=>{}, appendChild: ()=>{}, removeChild: ()=>{}
+    };
+    const mockDoc = {
+      getElementById: (id) => mockEl,
+      querySelectorAll: () => [],
+      querySelector: () => mockEl,
+      createElement: () => mockEl,
+      addEventListener: () => {},
+      body: mockEl
+    };
+
+    const sandbox = {
+      window: {
+        location: { search: '', pathname: '/', protocol: 'http:' },
+        addEventListener: ()=>{},
+        onload: null,
+        BroadcastChannel: null
+      },
+      document: mockDoc,
+      localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
+      sessionStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
+      fetch: () => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }),
+      setInterval: () => {},
+      setTimeout: () => {},
+      console: console,
+      navigator: { userAgent: 'test' },
+      tailwind: {},
+      URL: { createObjectURL: ()=>{}, revokeObjectURL: ()=>{} },
+      URLSearchParams: URLSearchParams
+    };
+    sandbox.window.document = mockDoc;
+    sandbox.window.location = sandbox.window.location;
+    sandbox.global = sandbox;
+
+    vm.createContext(sandbox);
+    vm.runInContext(scriptContent, sandbox);
+
+    assert.strictEqual(typeof sandbox.window.onload, 'function', 'window.onload must be a function');
+    await sandbox.window.onload(); // Must not throw ReferenceError
+
+    // 3. Test loadAdminDoctors fallback execution in VM
+    assert.strictEqual(typeof sandbox.loadAdminDoctors, 'function', 'loadAdminDoctors must be a function');
+    sandbox.fetch = () => Promise.reject(new Error('Network error simulation'));
+    await sandbox.loadAdminDoctors(); // Must execute fallback cleanly using todayQueue
+
+    // 100% byte identical check between files
     const altHtml = fs.readFileSync(path.join(__dirname, 'parchisetu_indian_clinic_management_token_web_app.html'), 'utf8');
     assert.strictEqual(html, altHtml, 'index.html and parchisetu_indian_clinic_management_token_web_app.html must remain 100% byte identical');
   })();

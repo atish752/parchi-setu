@@ -6,6 +6,9 @@
     { "source": "/signin", "destination": "/index.html" },
     { "source": "/login", "destination": "/index.html" },
     { "source": "/onboard", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/api/admin", "destination": "/api/admin.js" },
+    { "source": "/api/admin/(.*)", "destination": "/api/admin.js" },
     { "source": "/api/clinics", "destination": "/api/clinics.js" },
     { "source": "/api/queue/:id", "destination": "/api/queue.js?id=:id" }
   ]

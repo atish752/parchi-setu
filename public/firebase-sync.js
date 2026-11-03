@@ -1,5 +1,5 @@
 /**
- * ParchiSetu - Firebase Cloud & Real-time Synchronization Module
+ * KlinicQ - Firebase Cloud & Real-time Synchronization Module
  * Powered by Firebase Firestore & Authentication
  * Provides instant real-time sync across Indian Clinics, Compounder Desks and Patient Mobile QR Links.
  */
@@ -53,7 +53,7 @@ function initFirebase() {
       fbAuth = firebase.auth();
       fbDb = firebase.firestore();
       isFirebaseAvailable = true;
-      console.log('🔥 [ParchiSetu] Firebase connected successfully to project:', FIREBASE_CONFIG.projectId);
+      console.log('🔥 [KlinicQ] Firebase connected successfully to project:', FIREBASE_CONFIG.projectId);
 
       // Handle redirect sign-in result (essential for mobile Chrome / Safari)
       if (fbAuth && typeof fbAuth.getRedirectResult === 'function') {
@@ -74,7 +74,7 @@ function initFirebase() {
       return true;
     }
   } catch (err) {
-    console.warn('⚠️ [ParchiSetu] Firebase initialization notice (falling back to local API):', err.message);
+    console.warn('⚠️ [KlinicQ] Firebase initialization notice (falling back to local API):', err.message);
   }
   return false;
 }

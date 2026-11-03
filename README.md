@@ -1,17 +1,30 @@
-# 🩺 ParchiSetu (पर्चीसेतु)
+# 🩺 KlinicQ
 ### Smart Clinic & Token Management Web App for Indian Doctors & Compounders
 
-**ParchiSetu** is an ultra-fast, mobile-first clinic token and OPD management web application tailored specifically for the realities of Indian private clinics, family physicians, and compounder desks.
+**KlinicQ** is an ultra-fast, mobile-first clinic token and OPD management web application tailored specifically for the realities of Indian private clinics, family physicians, and compounder desks.
 
-![ParchiSetu Logo](logo.svg)
+![KlinicQ Logo](logo.svg)
 
 ---
 
 ## ✨ Key Capabilities
 
-1. **Strict View Separation: Compounder Desk vs Patient QR Link**
+1. **Patient City Doctor Discovery HomeScreen & Live Token Booking**
+   - **Default Home View**: Allows patients to browse doctors by Indian cities (Delhi, Mumbai, Patna, Lucknow, Varanasi, etc.) and specialties (General Physician, Cardiology, Orthopedics, Pediatrics, Gynecology, etc.).
+   - Clean, authentic clinic listing (no dummy clinic placeholders displayed to patients).
+   - Zero-login phone token lookup and live distance ticker (*"2 Mareez Aage Hain"*, *"Aap Agle Hain!"*).
+   - Instant digital token pass with live cabin notifications.
+
+2. **Compounder Desk & Clinic Management (`/clinic`)**
    - **Compounder Desk**: Live cabin status, 1-tap "Ho Gaya • Agla Bulao (#X)" button, 3-second fast walk-in parchi entry with voice dictation, cash/UPI daily hisaab (Galla), and patient digital khata.
-   - **Patient View**: Clean, branded booking link designed for Google Maps profiles and clinic QR standees. Live cabin token ticker, waiting count, advance date selection, and instant digital token pass.
+   - **Multi-Doctor Clinic Support**: Add up to 3–5 doctors per clinic, designate visiting specialists, and manage advance dates and leaves.
+
+3. **Master Owner Admin Portal (`/admin`)**
+   - Direct tracking dashboard for all registered doctor accounts across Indian cities.
+   - Real-time KPI metrics: Total Doctors, Pro Plan Doctors, Free Trial Doctors, and estimated MRR.
+   - Instant subscription manager: Switch doctor accounts between **Free Trial**, **Monthly Pro (₹399/mo)**, and **Annual Pro (₹4,000/yr)**.
+   - Filter by subscription plan, search by doctor name, phone, or clinic, and view audit details with direct WhatsApp support button.
+   - Secured with master admin PIN verification (`admin123`).
 
 2. **Multi-Doctor Clinic Support**
    - Add up to 3–5 doctors per clinic during onboarding or via the settings wizard.

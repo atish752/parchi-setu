@@ -1,5 +1,5 @@
 /**
- * Parchisetu - Local Clinic & Token Management Server
+ * KlinicQ - Local Clinic & Token Management Server
  * Built with Node.js built-in modules (http, fs, path, os, url).
  * Zero external dependencies.
  */
@@ -454,6 +454,14 @@ function parseBody(req) {
   });
 }
 
+function getISTDateString(d = new Date()) {
+  const istDate = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const y = istDate.getFullYear();
+  const m = String(istDate.getMonth() + 1).padStart(2, '0');
+  const day = String(istDate.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function getLocalIpAddresses() {
   const interfaces = os.networkInterfaces();
   const addresses = [];
@@ -507,6 +515,90 @@ const requestHandler = async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(list));
     return;
+  }
+
+  // Admin: Get all signed up doctor accounts & tracking details
+  if ((pathname === '/api/admin/doctors' || (pathname === '/api/admin' && (parsedUrl.searchParams.get('action') === 'doctors' || !parsedUrl.searchParams.get('action')))) && method === 'GET') {
+    const rawList = Object.values(appData.clinics || { [appData.clinic.id]: appData.clinic });
+    const doctors = rawList.map(c => {
+      const q = (appData.queue || []).filter(b => b.clinicId === c.id);
+      return {
+        id: c.id,
+        doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
+        doctorDegree: c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : 'MBBS'),
+        doctorRegNo: c.doctorRegNo || 'MCI-REG',
+        experienceYears: c.experienceYears || 10,
+        clinicName: c.name || 'KlinicQ Clinic',
+        category: c.category || c.specialty || 'General Medicine',
+        specialty: c.specialty || c.category || 'General Physician',
+        city: c.city || 'Patna, Bihar',
+        address: c.address || '',
+        phone: c.phone || '',
+        whatsapp: c.whatsapp || c.phone || '',
+        ownerEmail: c.ownerEmail || c.email || '',
+        ownerUid: c.ownerUid || '',
+        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
+        fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+        visitingHours: c.visitingHours || {},
+        subscription: c.subscription || {
+          plan: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free',
+          status: 'active',
+          billingCycle: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly' : 'trial',
+          amount: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 399 : 0,
+          startDate: c.createdAt || '2026-10-01T00:00:00.000Z',
+          renewalDate: new Date(Date.now() + 25 * 86400000).toISOString()
+        },
+        stats: {
+          totalBookings: q.length,
+          todayBookings: q.filter(b => b.date === getISTDateString()).length
+        },
+        createdAt: c.createdAt || new Date().toISOString()
+      };
+    });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true, doctors }));
+    return;
+  }
+
+  // Admin: Update subscription plan (Free or Pro) for a doctor / clinic
+  if ((pathname === '/api/admin/subscription' || (pathname === '/api/admin' && parsedUrl.searchParams.get('action') === 'subscription')) && method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const clinicId = body.clinicId;
+      if (!clinicId) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Missing clinicId' }));
+        return;
+      }
+      appData.clinics = appData.clinics || {};
+      const target = appData.clinics[clinicId] || (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null);
+      if (!target) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Clinic not found' }));
+        return;
+      }
+      target.subscription = {
+        ...(target.subscription || {}),
+        plan: body.plan || 'free', // 'free' | 'monthly_pro' | 'annual_pro'
+        status: body.status || 'active', // 'active' | 'trial' | 'expired'
+        billingCycle: body.billingCycle || (body.plan === 'annual_pro' ? 'annual' : (body.plan === 'monthly_pro' ? 'monthly' : 'trial')),
+        amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 4000 : (body.plan === 'monthly_pro' ? 399 : 0)),
+        renewalDate: body.renewalDate || new Date(Date.now() + 30 * 86400000).toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      appData.clinics[clinicId] = target;
+      if (appData.clinic && appData.clinic.id === clinicId) {
+        appData.clinic.subscription = target.subscription;
+      }
+      saveData();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, clinicId, subscription: target.subscription }));
+      return;
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+      return;
+    }
   }
 
   // Get clinic info
@@ -632,14 +724,6 @@ const requestHandler = async (req, res) => {
       const maxToken = appData.queue.reduce((max, p) => Math.max(max, p.token || 0), 0);
       const nextToken = body.token || (maxToken > 0 ? maxToken + 1 : 1);
       const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
-
-function getISTDateString(d = new Date()) {
-  const istDate = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-  const y = istDate.getFullYear();
-  const m = String(istDate.getMonth() + 1).padStart(2, '0');
-  const day = String(istDate.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
 
       const targetClinic = (body.clinicId && appData.clinics && appData.clinics[body.clinicId])
         ? appData.clinics[body.clinicId]
@@ -804,12 +888,12 @@ function startServer(port = PORT) {
   server.listen(port, () => {
     const ips = getLocalIpAddresses();
     console.log(`\n=============================================================`);
-    console.log(`🏥 Parchisetu Clinic & Token Web App is RUNNING LOCALLY!`);
+    console.log(`🏥 KlinicQ • Smart Clinic & Token Web App is RUNNING LOCALLY!`);
     console.log(`=============================================================`);
-    console.log(`👉 Local Computer:         http://localhost:${port}`);
+    console.log(`👉 Home Screen (Patients): http://localhost:${port}/`);
+    console.log(`👉 Doctor / Clinic Desk:   http://localhost:${port}/clinic`);
     console.log(`👉 Clinic Sign In / Portal:http://localhost:${port}/signin`);
-    console.log(`👉 Direct Patient Link:    http://localhost:${port}/?role=patient`);
-    console.log(`👉 Compounder Desk Link:   http://localhost:${port}/?role=clinic`);
+    console.log(`👉 Owner Admin Panel:      http://localhost:${port}/admin`);
     if (ips.length > 0) {
       console.log(`-------------------------------------------------------------`);
       console.log(`📱 Connect your Mobile on the same Wi-Fi:`);
@@ -817,6 +901,7 @@ function startServer(port = PORT) {
         console.log(`   http://${ip}:${port}`);
         console.log(`   Patient Link: http://${ip}:${port}/?role=patient`);
         console.log(`   Sign In Link: http://${ip}:${port}/signin`);
+        console.log(`   Admin Link:   http://${ip}:${port}/admin`);
       });
     }
     console.log(`=============================================================\n`);
