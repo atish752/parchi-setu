@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
 
   if (method === 'POST') {
     // Check if it's a reset action
-    if (url.pathname.includes('reset') || url.searchParams.get('action') === 'reset') {
+    if (url.pathname.includes('reset') || url.searchParams.get('action') === 'reset' || itemId === 'reset') {
       store.resetQueue();
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');

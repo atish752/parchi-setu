@@ -1,6 +1,6 @@
 {
   "clinic": {
-    "id": "clinic_verma_eye_1793724847678",
+    "id": "clinic_test_deep",
     "name": "Dr. Verma Eye & Laser Hospital",
     "tagline": "General Physician & Family Healthcare",
     "category": "General Medicine",
@@ -61,7 +61,7 @@
     "leaves": {},
     "onboarded": true,
     "createdAt": "2026-10-26T06:00:00.000Z",
-    "updatedAt": "2026-11-03T16:54:07.678Z",
+    "updatedAt": "2026-11-04T09:04:19.726Z",
     "visitingReasons": [
       "🤒 Bukhar / Cold",
       "🩸 BP / Sugar",
@@ -78,12 +78,13 @@
       "lanUrl": "http://192.168.1.34:3000"
     },
     "mapUrl": "",
-    "ownerUid": "google_uid_test_1793724847678",
+    "ownerUid": "google_uid_test_1793783055748",
     "ownerEmail": "doctor.verma@example.com",
     "liveStatus": {
-      "isDoctorLate": false,
-      "doctorDelayMinutes": 0,
-      "expectedArrivalTime": "10:00 AM"
+      "isDoctorLate": true,
+      "doctorDelayMinutes": 45,
+      "expectedArrivalTime": "10:45 AM",
+      "isQRBookingPaused": true
     },
     "specialty": "Eye Care",
     "isGoogleAuth": true,
@@ -93,8 +94,8 @@
       "status": "active",
       "billingCycle": "annual",
       "amount": 4000,
-      "renewalDate": "2026-12-03T16:54:07.705Z",
-      "updatedAt": "2026-11-03T16:54:07.705Z"
+      "renewalDate": "2026-12-04T09:04:15.783Z",
+      "updatedAt": "2026-11-04T09:04:15.783Z"
     }
   },
   "clinics": {
@@ -160,7 +161,7 @@
       "leaves": {},
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-11-03T16:54:03.186Z",
+      "updatedAt": "2026-11-04T09:04:11.026Z",
       "visitingReasons": [
         "🤒 Bukhar / Cold",
         "🩸 BP / Sugar",
@@ -177,7 +178,7 @@
         "lanUrl": "http://192.168.1.34:3000"
       },
       "mapUrl": "",
-      "ownerUid": "google_uid_test_1793724667349",
+      "ownerUid": "google_uid_test_1793724847678",
       "ownerEmail": "doctor.verma@example.com",
       "liveStatus": {
         "isDoctorLate": false,
@@ -192,8 +193,8 @@
         "status": "active",
         "billingCycle": "annual",
         "amount": 4000,
-        "renewalDate": "2026-12-03T16:51:07.395Z",
-        "updatedAt": "2026-11-03T16:51:07.395Z"
+        "renewalDate": "2026-12-03T16:54:07.705Z",
+        "updatedAt": "2026-11-03T16:54:07.705Z"
       }
     },
     "clinic_patna_central_99": {
@@ -286,7 +287,7 @@
       },
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-11-03T16:54:02.998Z",
+      "updatedAt": "2026-11-04T09:04:10.809Z",
       "visitingReasons": [
         "🌸 Daad / Khujli",
         "🧴 Muhase / Acne",
@@ -301,7 +302,7 @@
         "lanUrl": "http://192.168.1.34:3000"
       },
       "mapUrl": "",
-      "ownerUid": "google_uid_test_1793724667349",
+      "ownerUid": "google_uid_test_1793724847678",
       "ownerEmail": "doctor.verma@example.com",
       "liveStatus": {
         "isDoctorLate": true,
@@ -316,8 +317,8 @@
         "status": "active",
         "billingCycle": "annual",
         "amount": 4000,
-        "renewalDate": "2026-12-03T16:51:07.395Z",
-        "updatedAt": "2026-11-03T16:51:07.395Z"
+        "renewalDate": "2026-12-03T16:54:07.705Z",
+        "updatedAt": "2026-11-03T16:54:07.705Z"
       }
     },
     "clinic_delhi_bone_02": {
@@ -1330,6 +1331,132 @@
     },
     "clinic_verma_eye_1793724847678": {
       "id": "clinic_verma_eye_1793724847678",
+      "name": "Aarogya Multi-Specialty Clinic",
+      "tagline": "Complete Family Healthcare & Diabetes Care",
+      "category": "General Medicine",
+      "address": "Kankarbagh Main Road, Opposite Pillar 42",
+      "city": "Patna, Bihar",
+      "phone": "9835123456",
+      "whatsapp": "9835123456",
+      "upiId": "aarogyaclinic@upi",
+      "doctorName": "Dr. Anand Kishore",
+      "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
+      "doctorRegNo": "BRMC-52194",
+      "experienceYears": 16,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD",
+          "specialty": "General Physician",
+          "fee": 300,
+          "isMain": true
+        },
+        {
+          "id": "doc_2",
+          "name": "Dr. Priya Kishore",
+          "degree": "MBBS, MS",
+          "specialty": "Gynecologist",
+          "fee": 450,
+          "isMain": false
+        },
+        {
+          "id": "doc_3",
+          "name": "Dr. Amit Patel",
+          "degree": "BDS, MDS",
+          "specialty": "Dental Surgeon",
+          "fee": 350,
+          "isMain": false
+        }
+      ],
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "09:30 AM",
+          "end": "01:30 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:30 PM",
+          "end": "09:30 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "leaves": {
+        "2026-10-28": {
+          "fullDay": true,
+          "reason": "Doctor Conference"
+        },
+        "2026-10-29": {
+          "fullDay": false,
+          "morningOff": true,
+          "eveningOff": false,
+          "blockedSlots": [
+            "05:30 PM"
+          ]
+        }
+      },
+      "onboarded": true,
+      "createdAt": "2026-10-26T06:00:00.000Z",
+      "updatedAt": "2026-11-04T09:04:10.512Z",
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "network": {
+        "port": 3000,
+        "localIps": [
+          "192.168.1.34"
+        ],
+        "lanUrl": "http://192.168.1.34:3000"
+      },
+      "mapUrl": "",
+      "ownerUid": "google_uid_test_1793724847678",
+      "ownerEmail": "doctor.verma@example.com",
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM"
+      },
+      "specialty": "Eye Care",
+      "isGoogleAuth": true,
+      "googleRegistered": true,
+      "subscription": {
+        "plan": "annual_pro",
+        "status": "active",
+        "billingCycle": "annual",
+        "amount": 4000,
+        "renewalDate": "2026-12-03T16:54:07.705Z",
+        "updatedAt": "2026-11-03T16:54:07.705Z"
+      }
+    },
+    "clinic_verma_eye_1793783055748": {
+      "id": "clinic_verma_eye_1793783055748",
       "name": "Dr. Verma Eye & Laser Hospital",
       "tagline": "General Physician & Family Healthcare",
       "category": "General Medicine",
@@ -1390,7 +1517,7 @@
       "leaves": {},
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-11-03T16:54:07.678Z",
+      "updatedAt": "2026-11-04T09:04:15.749Z",
       "visitingReasons": [
         "🤒 Bukhar / Cold",
         "🩸 BP / Sugar",
@@ -1407,7 +1534,7 @@
         "lanUrl": "http://192.168.1.34:3000"
       },
       "mapUrl": "",
-      "ownerUid": "google_uid_test_1793724847678",
+      "ownerUid": "google_uid_test_1793783055748",
       "ownerEmail": "doctor.verma@example.com",
       "liveStatus": {
         "isDoctorLate": false,
@@ -1422,37 +1549,136 @@
         "status": "active",
         "billingCycle": "annual",
         "amount": 4000,
-        "renewalDate": "2026-12-03T16:54:07.705Z",
-        "updatedAt": "2026-11-03T16:54:07.705Z"
+        "renewalDate": "2026-12-04T09:04:15.783Z",
+        "updatedAt": "2026-11-04T09:04:15.783Z"
+      }
+    },
+    "clinic_test_deep": {
+      "id": "clinic_test_deep",
+      "name": "Dr. Verma Eye & Laser Hospital",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9876543210",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Neeraj Verma",
+      "doctorDegree": "MBBS, MS (Ophthalmology)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Physician",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "isMain": true
+        }
+      ],
+      "fees": {
+        "normal": 500,
+        "followup": 300,
+        "emergency": 800,
+        "report": 0
+      },
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-10-26T06:00:00.000Z",
+      "updatedAt": "2026-11-04T09:04:19.726Z",
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "network": {
+        "port": 3000,
+        "localIps": [
+          "192.168.1.34"
+        ],
+        "lanUrl": "http://192.168.1.34:3000"
+      },
+      "mapUrl": "",
+      "ownerUid": "google_uid_test_1793783055748",
+      "ownerEmail": "doctor.verma@example.com",
+      "liveStatus": {
+        "isDoctorLate": true,
+        "doctorDelayMinutes": 45,
+        "expectedArrivalTime": "10:45 AM",
+        "isQRBookingPaused": true
+      },
+      "specialty": "Eye Care",
+      "isGoogleAuth": true,
+      "googleRegistered": true,
+      "subscription": {
+        "plan": "annual_pro",
+        "status": "active",
+        "billingCycle": "annual",
+        "amount": 4000,
+        "renewalDate": "2026-12-04T09:04:15.783Z",
+        "updatedAt": "2026-11-04T09:04:15.783Z"
       }
     }
   },
   "queue": [
     {
-      "id": "q_1793724847685_495",
-      "clinicId": "clinic_verma_eye_1793724847678",
+      "id": "q_1793783059706_989",
+      "clinicId": "clinic_test_deep",
       "clinicName": "Dr. Verma Eye & Laser Hospital",
       "clinicAddress": "Near Main Market Chowk, Station Road",
       "clinicPhone": "9876543210",
       "token": 1,
-      "name": "Rameshwar Lal",
-      "age": 48,
-      "gender": "M",
-      "phone": "9835123456",
-      "reason": "Eye Checkup",
+      "name": "Sunita Devi",
+      "age": 42,
+      "gender": "F",
+      "phone": "",
+      "reason": "General Consultation",
       "visitType": "new",
       "doctorId": "doc_1",
       "doctorName": "Dr. Neeraj Verma",
       "fee": 500,
-      "payMode": "UPI",
-      "status": "IN_CABIN",
-      "source": "Online QR",
+      "payMode": "Baaki",
+      "status": "WAITING",
+      "source": "Walk-in",
       "shift": "Morning",
-      "slotTime": "10:30 AM",
+      "slotTime": "Online Booking",
       "day": "Aaj (Today)",
-      "date": "2026-11-03",
-      "bp": "120/80",
-      "weight": "68 kg",
+      "date": "2026-11-04",
+      "bp": "",
+      "weight": "",
       "temp": "",
       "sugar": "",
       "spo2": "",
@@ -1461,7 +1687,7 @@
       "followUpDate": "",
       "hasParchiPhoto": false,
       "notes": "",
-      "createdAt": "2026-11-03T16:54:07.698Z"
+      "createdAt": "2026-11-04T09:04:19.721Z"
     }
   ]
 }

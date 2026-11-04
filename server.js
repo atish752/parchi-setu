@@ -497,7 +497,7 @@ const DUMMY_CLINIC_NAMES = [
 function isDummyClinicName(name) {
   if (!name) return true;
   const lower = name.trim().toLowerCase();
-  return DUMMY_CLINIC_NAMES.some(d => lower.includes(d) || d.includes(lower));
+  return DUMMY_CLINIC_NAMES.some(d => lower === d || lower.includes(d));
 }
 
 // Request Handler
@@ -527,7 +527,11 @@ const requestHandler = async (req, res) => {
   // Get all clinics list for Discovery
   if ((pathname === '/api/clinics' || (pathname === '/api/clinic' && (parsedUrl.searchParams.get('list') === '1' || parsedUrl.searchParams.get('action') === 'list'))) && method === 'GET') {
     const realOnly = parsedUrl.searchParams.get('realOnly') === '1' || parsedUrl.searchParams.get('realOnly') === 'true';
-    const rawList = Object.values(appData.clinics || { [appData.clinic.id]: appData.clinic });
+    const map = { ...INITIAL_CLINICS, ...(appData.clinics || {}) };
+    if (appData.clinic && appData.clinic.id) {
+      map[appData.clinic.id] = { ...map[appData.clinic.id], ...appData.clinic };
+    }
+    const rawList = Object.values(map);
     let list = rawList.map(c => {
       const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
       return {
@@ -541,7 +545,7 @@ const requestHandler = async (req, res) => {
       };
     });
     if (realOnly) {
-      list = list.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered) && !isDummyClinicName(c.name));
+      list = list.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered || c.createdViaClinicPanel || c.ownerEmail) && !isDummyClinicName(c.name));
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(list));
@@ -550,7 +554,11 @@ const requestHandler = async (req, res) => {
 
   // Admin: Get all signed up doctor accounts & tracking details
   if ((pathname === '/api/admin/doctors' || (pathname === '/api/admin' && (parsedUrl.searchParams.get('action') === 'doctors' || !parsedUrl.searchParams.get('action')))) && method === 'GET') {
-    const rawList = Object.values(appData.clinics || { [appData.clinic.id]: appData.clinic });
+    const map = { ...INITIAL_CLINICS, ...(appData.clinics || {}) };
+    if (appData.clinic && appData.clinic.id) {
+      map[appData.clinic.id] = { ...map[appData.clinic.id], ...appData.clinic };
+    }
+    const rawList = Object.values(map);
     const doctors = rawList.map(c => {
       const q = (appData.queue || []).filter(b => b.clinicId === c.id);
       return {
@@ -780,7 +788,10 @@ const requestHandler = async (req, res) => {
       }
 
       // Determine next token number
-      const maxToken = appData.queue.reduce((max, p) => Math.max(max, p.token || 0), 0);
+      const clinicBookings = (body.clinicId && appData.queue)
+        ? appData.queue.filter(p => !p.clinicId || p.clinicId === body.clinicId)
+        : (appData.queue || []);
+      const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
       const nextToken = body.token || (maxToken > 0 ? maxToken + 1 : 1);
       const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 

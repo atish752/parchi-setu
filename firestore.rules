@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 1. Clinics Collection & Documents
+    // Public read: Patients can discover all registered doctors and clinics in real-time.
+    // Public write: Doctors/Compounders can create and update clinic profiles, live delay status, and consultation fees.
+    match /clinics/{clinicId} {
+      allow read: if true;
+      allow write: if true;
+
+      // 2. Bookings Subcollection (Queue, appointments, tokens, vital signs, fee status)
+      // Public read: Patients check live queue position and wait times.
+      // Public write: Patients book appointment tokens; Compounders update cabin/payment status.
+      match /bookings/{bookingId} {
+        allow read: if true;
+        allow create, update, delete: if true;
+      }
+    }
+
+    // 3. User to Clinic Mapping Collection (Firebase Auth user account linkage)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 4. Catch-all fallback for complete system reliability across all collections & subcollections
+    match /{document=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

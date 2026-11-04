@@ -19,6 +19,7 @@ let fbDb = null;
 let isFirebaseAvailable = false;
 let clinicUnsubscribe = null;
 let queueUnsubscribe = null;
+let allClinicsUnsubscribe = null;
 
 function sanitizeForFirestore(obj) {
   if (obj === null || typeof obj !== 'object') return obj;
@@ -34,7 +35,7 @@ function sanitizeForFirestore(obj) {
   return clean;
 }
 
-function withTimeout(promise, ms = 2500, fallback = null) {
+function withTimeout(promise, ms = 5000, fallback = null) {
   if (!promise || typeof promise.then !== 'function') return Promise.resolve(fallback);
   return Promise.race([
     promise,
@@ -42,17 +43,25 @@ function withTimeout(promise, ms = 2500, fallback = null) {
   ]);
 }
 
+function ensureFirebaseInitialized() {
+  if (!isFirebaseAvailable || !fbDb) {
+    initFirebase();
+  }
+  return isFirebaseAvailable && !!fbDb;
+}
+
 function initFirebase() {
   try {
-    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-      if (!firebase.apps.length) {
-        fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+    const fb = (typeof firebase !== 'undefined') ? firebase : ((typeof window !== 'undefined' && window.firebase) ? window.firebase : null);
+    if (fb && fb.initializeApp) {
+      if (!fb.apps || !fb.apps.length) {
+        fbApp = fb.initializeApp(FIREBASE_CONFIG);
       } else {
-        fbApp = firebase.app();
+        fbApp = fb.app();
       }
-      fbAuth = firebase.auth();
-      fbDb = firebase.firestore();
-      isFirebaseAvailable = true;
+      fbAuth = fb.auth ? fb.auth() : null;
+      fbDb = fb.firestore ? fb.firestore() : null;
+      isFirebaseAvailable = !!fbDb;
       console.log('🔥 [ParchiSetu] Firebase connected successfully to project:', FIREBASE_CONFIG.projectId);
 
       // Handle redirect sign-in result (essential for mobile Chrome / Safari)
@@ -83,13 +92,17 @@ function initFirebase() {
  * Fetch all registered clinics from Firestore
  */
 async function getAllClinicsFromFirestore() {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb) return [];
   try {
-    const snapshot = await withTimeout(fbDb.collection('clinics').get(), 3000, null);
+    const snapshot = await withTimeout(fbDb.collection('clinics').get(), 8000, null);
     if (!snapshot) return [];
     const clinics = [];
     snapshot.forEach(doc => {
-      clinics.push({ id: doc.id, ...doc.data() });
+      const data = doc.data();
+      if (data) {
+        clinics.push({ id: doc.id, ...data });
+      }
     });
     return clinics;
   } catch (err) {
@@ -99,13 +112,47 @@ async function getAllClinicsFromFirestore() {
 }
 
 /**
+ * Start listening in real-time to all registered clinics for patient discovery feed
+ */
+function listenToClinicsRealtime(onClinicsChange) {
+  ensureFirebaseInitialized();
+  if (!isFirebaseAvailable || !fbDb) return () => {};
+  try {
+    if (allClinicsUnsubscribe) {
+      try { allClinicsUnsubscribe(); } catch (e) {}
+    }
+    allClinicsUnsubscribe = fbDb.collection('clinics').onSnapshot(snapshot => {
+      const clinics = [];
+      if (snapshot) {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data) {
+            clinics.push({ id: doc.id, ...data });
+          }
+        });
+      }
+      if (typeof onClinicsChange === 'function') {
+        onClinicsChange(clinics);
+      }
+    }, err => {
+      console.warn('Firebase all clinics realtime listener warning:', err.message);
+    });
+    return allClinicsUnsubscribe;
+  } catch (err) {
+    console.warn('Error starting all clinics listener:', err.message);
+    return () => {};
+  }
+}
+
+/**
  * Fetch clinic by clinic ID once from Firestore
  */
 async function getClinicFromFirestore(clinicId) {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !clinicId) return null;
   try {
-    const doc = await fbDb.collection('clinics').doc(clinicId).get();
-    if (doc.exists) {
+    const doc = await withTimeout(fbDb.collection('clinics').doc(clinicId).get(), 6000, null);
+    if (doc && doc.exists) {
       return { id: doc.id, ...doc.data() };
     }
   } catch (err) {
@@ -118,15 +165,39 @@ async function getClinicFromFirestore(clinicId) {
  * Fetch queue bookings once from Firestore
  */
 async function getQueueFromFirestore(clinicId) {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !clinicId) return [];
   try {
-    const snapshot = await fbDb.collection('clinics').doc(clinicId).collection('bookings')
-      .orderBy('token', 'asc')
-      .get();
     const bookings = [];
-    snapshot.forEach(doc => {
-      bookings.push({ id: doc.id, ...doc.data() });
-    });
+    try {
+      const snapshot = await withTimeout(
+        fbDb.collection('clinics').doc(clinicId).collection('bookings').orderBy('token', 'asc').get(),
+        6000,
+        null
+      );
+      if (snapshot) {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data) bookings.push({ id: doc.id, ...data });
+        });
+        return bookings;
+      }
+    } catch (orderErr) {
+      // Fallback without orderBy
+      const fallbackSnap = await withTimeout(
+        fbDb.collection('clinics').doc(clinicId).collection('bookings').get(),
+        6000,
+        null
+      );
+      if (fallbackSnap) {
+        fallbackSnap.forEach(doc => {
+          const data = doc.data();
+          if (data) bookings.push({ id: doc.id, ...data });
+        });
+        bookings.sort((a, b) => (a.token || 0) - (b.token || 0));
+        return bookings;
+      }
+    }
     return bookings;
   } catch (err) {
     console.warn('Firebase getQueue warning:', err.message);
@@ -138,39 +209,68 @@ async function getQueueFromFirestore(clinicId) {
  * Start listening in real-time to clinic data and bookings
  */
 function listenToClinicRealtime(clinicId, onClinicChange, onQueueChange) {
-  if (!isFirebaseAvailable || !fbDb || !clinicId) return;
+  ensureFirebaseInitialized();
+  if (!isFirebaseAvailable || !fbDb || !clinicId) return () => {};
 
   try {
     // 1. Listen to Clinic Profile & Live Status
-    if (clinicUnsubscribe) clinicUnsubscribe();
+    if (clinicUnsubscribe) {
+      try { clinicUnsubscribe(); } catch (e) {}
+    }
     clinicUnsubscribe = fbDb.collection('clinics').doc(clinicId).onSnapshot(doc => {
-      if (doc.exists) {
+      if (doc && doc.exists) {
         const data = doc.data();
         if (typeof onClinicChange === 'function') {
-          onClinicChange(data);
+          onClinicChange({ id: doc.id, ...data });
         }
       }
     }, err => {
       console.warn('Firebase clinic snapshot warning:', err.message);
     });
 
-    // 2. Listen to Bookings Subcollection
-    if (queueUnsubscribe) queueUnsubscribe();
-    queueUnsubscribe = fbDb.collection('clinics').doc(clinicId).collection('bookings')
-      .orderBy('token', 'asc')
-      .onSnapshot(snapshot => {
-        const bookings = [];
+    // 2. Listen to Bookings Subcollection (with fallback if orderBy encounters error or missing index)
+    if (queueUnsubscribe) {
+      try { queueUnsubscribe(); } catch (e) {}
+    }
+
+    const bookingsRef = fbDb.collection('clinics').doc(clinicId).collection('bookings');
+
+    function handleBookingsSnapshot(snapshot) {
+      const bookings = [];
+      if (snapshot) {
         snapshot.forEach(doc => {
-          bookings.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          if (data) bookings.push({ id: doc.id, ...data });
         });
-        if (typeof onQueueChange === 'function') {
-          onQueueChange(bookings);
-        }
-      }, err => {
+      }
+      bookings.sort((a, b) => (a.token || 0) - (b.token || 0));
+      if (typeof onQueueChange === 'function') {
+        onQueueChange(bookings);
+      }
+    }
+
+    try {
+      queueUnsubscribe = bookingsRef.orderBy('token', 'asc').onSnapshot(handleBookingsSnapshot, err => {
+        console.warn('Firebase bookings ordered snapshot warning (falling back to unordered listener):', err.message);
+        try {
+          queueUnsubscribe = bookingsRef.onSnapshot(handleBookingsSnapshot, err2 => {
+            console.warn('Firebase bookings fallback snapshot warning:', err2.message);
+          });
+        } catch (e2) {}
+      });
+    } catch (e) {
+      queueUnsubscribe = bookingsRef.onSnapshot(handleBookingsSnapshot, err => {
         console.warn('Firebase bookings snapshot warning:', err.message);
       });
+    }
+
+    return () => {
+      if (clinicUnsubscribe) { try { clinicUnsubscribe(); } catch (e) {} }
+      if (queueUnsubscribe) { try { queueUnsubscribe(); } catch (e) {} }
+    };
   } catch (err) {
     console.warn('Error starting Firebase listeners:', err.message);
+    return () => {};
   }
 }
 
@@ -178,17 +278,19 @@ function listenToClinicRealtime(clinicId, onClinicChange, onQueueChange) {
  * Save / Update Clinic Profile in Firestore
  */
 async function syncClinicToFirestore(clinicOrId, optionalClinic = null) {
+  ensureFirebaseInitialized();
   const clinic = (optionalClinic && typeof optionalClinic === 'object') ? optionalClinic : clinicOrId;
   const clinicId = (clinic && clinic.id) || (typeof clinicOrId === 'string' ? clinicOrId : null);
   if (!isFirebaseAvailable || !fbDb || !clinic || !clinicId) return false;
   try {
     const cleanData = sanitizeForFirestore({ ...clinic, id: clinicId });
+    const payload = { ...cleanData };
+    if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+      payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
     const res = await withTimeout(
-      fbDb.collection('clinics').doc(clinicId).set({
-        ...cleanData,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }),
-      2500,
+      fbDb.collection('clinics').doc(clinicId).set(payload, { merge: true }),
+      6000,
       false
     );
     return res !== false;
@@ -202,30 +304,41 @@ async function syncClinicToFirestore(clinicOrId, optionalClinic = null) {
  * Save a new patient booking to Firestore
  */
 async function saveBookingToFirestore(clinicId, booking) {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !clinicId || !booking) return false;
   try {
     const docId = booking.id || ('bk_' + Date.now());
     const cleanBooking = sanitizeForFirestore(booking);
+    const bookingPayload = {
+      ...cleanBooking,
+      id: docId
+    };
+    if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+      bookingPayload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
+
     const res = await withTimeout(
-      fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(docId).set({
-        ...cleanBooking,
-        id: docId,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }),
-      2500,
+      fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(docId).set(bookingPayload, { merge: true }),
+      6000,
       false
     );
 
-    // Also update clinic's latest live token info in background
+    // Also update clinic's latest live token info in background without undefined values
     if (res !== false) {
-      withTimeout(
-        fbDb.collection('clinics').doc(clinicId).set({
-          lastTokenAssigned: booking.token,
-          lastBookingAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }),
-        2000,
-        null
-      ).catch(() => {});
+      const tokenPayload = {};
+      if (booking.token !== undefined && booking.token !== null) {
+        tokenPayload.lastTokenAssigned = booking.token;
+      }
+      if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+        tokenPayload.lastBookingAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+      if (Object.keys(tokenPayload).length > 0) {
+        withTimeout(
+          fbDb.collection('clinics').doc(clinicId).set(tokenPayload, { merge: true }),
+          3000,
+          null
+        ).catch(() => {});
+      }
     }
 
     return res !== false;
@@ -239,15 +352,17 @@ async function saveBookingToFirestore(clinicId, booking) {
  * Update an existing booking in Firestore
  */
 async function updateBookingInFirestore(clinicId, bookingId, updates) {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !clinicId || !bookingId) return false;
   try {
     const cleanUpdates = sanitizeForFirestore(updates);
+    const updatePayload = { ...cleanUpdates };
+    if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+      updatePayload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
     const res = await withTimeout(
-      fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(bookingId).set({
-        ...cleanUpdates,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }),
-      2500,
+      fbDb.collection('clinics').doc(clinicId).collection('bookings').doc(bookingId).set(updatePayload, { merge: true }),
+      6000,
       false
     );
     return res !== false;
@@ -261,15 +376,17 @@ async function updateBookingInFirestore(clinicId, bookingId, updates) {
  * Update live cabin status in Firestore (called when token moves to cabin)
  */
 async function updateLiveStatusInFirestore(clinicId, statusData) {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !clinicId) return false;
   try {
     const cleanStatus = sanitizeForFirestore(statusData);
+    const payload = { liveCabinStatus: cleanStatus };
+    if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+      payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
     const res = await withTimeout(
-      fbDb.collection('clinics').doc(clinicId).set({
-        liveCabinStatus: cleanStatus,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }),
-      2500,
+      fbDb.collection('clinics').doc(clinicId).set(payload, { merge: true }),
+      6000,
       false
     );
     return res !== false;
@@ -369,6 +486,7 @@ function getCurrentUser() {
  * Fast non-blocking lookup with strict 1200ms overall timeout
  */
 async function getClinicForUser(user) {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !user) return null;
   const uid = typeof user === 'string' ? user : (user && user.uid ? user.uid : '');
   if (!uid) return null;
@@ -411,15 +529,18 @@ async function getClinicForUser(user) {
  * Save user to clinic mapping in Firestore
  */
 async function saveUserClinicMapping(uid, clinicId, email = '', clinicName = '') {
+  ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !uid) return false;
   try {
     const data = {
       clinicId,
       email: email || '',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      updatedAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+        ? firebase.firestore.FieldValue.serverTimestamp()
+        : new Date().toISOString()
     };
     if (clinicName) data.clinicName = clinicName;
-    const res = await withTimeout(fbDb.collection('users').doc(uid).set(data, { merge: true }), 2500, false);
+    const res = await withTimeout(fbDb.collection('users').doc(uid).set(data, { merge: true }), 3000, false);
     return res !== false;
   } catch (err) {
     console.warn('Firebase saveUserClinicMapping error:', err.message);
@@ -433,15 +554,26 @@ if (typeof window !== 'undefined') {
   window.ParchiFirebase = {
     config: FIREBASE_CONFIG,
     init: initFirebase,
+    initFirebase: initFirebase,
     getClinic: getClinicFromFirestore,
+    getClinicFromFirestore: getClinicFromFirestore,
     getAllClinics: getAllClinicsFromFirestore,
+    getAllClinicsFromFirestore: getAllClinicsFromFirestore,
+    listenToClinics: listenToClinicsRealtime,
+    listenToClinicsRealtime: listenToClinicsRealtime,
     getQueue: getQueueFromFirestore,
+    getQueueFromFirestore: getQueueFromFirestore,
     listen: listenToClinicRealtime,
+    listenToClinicRealtime: listenToClinicRealtime,
     syncClinic: syncClinicToFirestore,
+    syncClinicToFirestore: syncClinicToFirestore,
     saveClinic: syncClinicToFirestore,
     saveBooking: saveBookingToFirestore,
+    saveBookingToFirestore: saveBookingToFirestore,
     updateBooking: updateBookingInFirestore,
+    updateBookingInFirestore: updateBookingInFirestore,
     updateLiveStatus: updateLiveStatusInFirestore,
+    updateLiveStatusInFirestore: updateLiveStatusInFirestore,
     signInWithGoogle: signInWithGoogle,
     signUpWithEmail: signUpWithEmail,
     signInWithEmail: signInWithEmail,
@@ -465,14 +597,24 @@ if (typeof module !== 'undefined' && module.exports) {
     FIREBASE_CONFIG,
     initFirebase,
     sanitizeForFirestore,
+    getClinic: getClinicFromFirestore,
     getClinicFromFirestore,
     getAllClinics: getAllClinicsFromFirestore,
+    getAllClinicsFromFirestore,
+    listenToClinics: listenToClinicsRealtime,
+    listenToClinicsRealtime,
+    getQueue: getQueueFromFirestore,
     getQueueFromFirestore,
+    listen: listenToClinicRealtime,
     listenToClinicRealtime,
+    syncClinic: syncClinicToFirestore,
     syncClinicToFirestore,
     saveClinic: syncClinicToFirestore,
+    saveBooking: saveBookingToFirestore,
     saveBookingToFirestore,
+    updateBooking: updateBookingInFirestore,
     updateBookingInFirestore,
+    updateLiveStatus: updateLiveStatusInFirestore,
     updateLiveStatusInFirestore,
     signInWithGoogle,
     signUpWithEmail,
@@ -485,4 +627,3 @@ if (typeof module !== 'undefined' && module.exports) {
     saveUserClinicMapping
   };
 }
-

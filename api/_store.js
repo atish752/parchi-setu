@@ -444,7 +444,7 @@ const DUMMY_CLINIC_NAMES = [
 function isDummyClinicName(name) {
   if (!name) return true;
   const lower = name.trim().toLowerCase();
-  return DUMMY_CLINIC_NAMES.some(d => lower.includes(d) || d.includes(lower));
+  return DUMMY_CLINIC_NAMES.some(d => lower === d || lower.includes(d));
 }
 
 module.exports = {
@@ -529,7 +529,7 @@ module.exports = {
       };
     });
     if (realOnly) {
-      return all.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered) && !isDummyClinicName(c.name));
+      return all.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered || c.createdViaClinicPanel || c.ownerEmail) && !isDummyClinicName(c.name));
     }
     return all;
   },
@@ -568,7 +568,7 @@ module.exports = {
     });
 
     if (realOnly) {
-      return all.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered) && !isDummyClinicName(c.name));
+      return all.filter(c => (c.ownerUid || c.isGoogleAuth || c.googleRegistered || c.createdViaClinicPanel || c.ownerEmail) && !isDummyClinicName(c.name));
     }
     return all;
   },
@@ -647,7 +647,10 @@ module.exports = {
       ? store.clinics[booking.clinicId]
       : (INITIAL_CLINICS[booking.clinicId] || store.clinic);
 
-    const maxToken = store.queue.reduce((max, p) => Math.max(max, p.token || 0), 0);
+    const clinicBookings = (booking.clinicId && store.queue)
+      ? store.queue.filter(p => !p.clinicId || p.clinicId === booking.clinicId)
+      : (store.queue || []);
+    const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
     const nextToken = booking.token || (maxToken > 0 ? maxToken + 1 : 1);
     const bookingId = booking.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 

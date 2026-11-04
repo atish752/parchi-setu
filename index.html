@@ -4831,16 +4831,30 @@
                 saveLocalQueue();
                 refreshAllViews();
               } else if (msg.event === 'CLINIC_UPDATED' && msg.data) {
-                clinicProfile = msg.data;
-                if (clinicProfile.liveStatus) {
-                  isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
-                  doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
-                  expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
-                  isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+                const updatedData = msg.data;
+                if (!clinicProfile || !clinicProfile.id || clinicProfile.id === updatedData.id) {
+                  clinicProfile = { ...clinicProfile, ...updatedData };
+                  if (clinicProfile.liveStatus) {
+                    isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                    doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                    expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+                    isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+                  }
+                  saveLocalClinic();
+                  updateClinicBranding();
+                  updateDoctorArrivalControlsUI();
                 }
-                saveLocalClinic();
-                updateClinicBranding();
-                updateDoctorArrivalControlsUI();
+                if (updatedData && updatedData.id) {
+                  const idx = clinicsDirectory.findIndex(c => c.id === updatedData.id);
+                  if (idx >= 0) {
+                    clinicsDirectory[idx] = { ...clinicsDirectory[idx], ...updatedData };
+                  } else if (!isDummyClinicName(updatedData.name)) {
+                    clinicsDirectory.unshift(updatedData);
+                  }
+                  renderCityChips();
+                  renderSpecialtyChips();
+                  renderDoctorDiscoveryFeed();
+                }
                 refreshAllViews();
               } else if (msg.event === 'QUEUE_UPDATED' && msg.data) {
                 if (Array.isArray(msg.data.queue)) {
@@ -5804,8 +5818,10 @@
         const currentUser = (window.ParchiFirebase && window.ParchiFirebase.getCurrentUser)
           ? window.ParchiFirebase.getCurrentUser()
           : currentAuthUser;
-        const ownerUid = currentUser ? (currentUser.uid || currentUser.id || '') : (clinicProfile.ownerUid || '');
-        const ownerEmail = currentUser ? (currentUser.email || '') : (clinicProfile.ownerEmail || '');
+        const ownerUid = (currentUser && (currentUser.uid || currentUser.id)) || (clinicProfile && clinicProfile.ownerUid) || (currentAuthUser && currentAuthUser.uid) || ('usr_' + Date.now());
+        const ownerEmail = (currentUser && currentUser.email) || (clinicProfile && clinicProfile.ownerEmail) || (currentAuthUser && currentAuthUser.email) || '';
+        const finalOwnerUid = ownerUid;
+        const isGoogle = Boolean((currentUser && (currentUser.isGoogleAuth || (currentUser.email && !currentUser.isEmailPassword))) || (clinicProfile && (clinicProfile.isGoogleAuth || clinicProfile.googleRegistered)));
 
         clinicProfile = {
           ...clinicProfile,
@@ -5819,8 +5835,11 @@
           whatsapp: finalPhone,
           upiId,
           mapUrl,
-          ownerUid,
-          ownerEmail,
+          ownerUid: finalOwnerUid,
+          ownerEmail: ownerEmail,
+          isGoogleAuth: isGoogle,
+          googleRegistered: true,
+          createdViaClinicPanel: true,
           doctorName: finalDocName,
           doctorDegree: degree,
           doctorRegNo: regNo,
@@ -5914,6 +5933,17 @@
 
         closeClinicOnboardingModal();
         try { updateHeaderAuthUI(currentAuthUser); } catch (e) {}
+        try {
+          const dirIdx = clinicsDirectory.findIndex(c => c.id === clinicProfile.id);
+          if (dirIdx >= 0) {
+            clinicsDirectory[dirIdx] = { ...clinicsDirectory[dirIdx], ...clinicProfile };
+          } else {
+            clinicsDirectory.unshift(clinicProfile);
+          }
+          renderCityChips();
+          renderSpecialtyChips();
+          renderDoctorDiscoveryFeed();
+        } catch (e) {}
         try { updateClinicBranding(); } catch (e) {}
         try { refreshAllViews(); } catch (e) {}
 
@@ -6609,6 +6639,9 @@
       if (shareBtn) shareBtn.classList.add('hidden');
       if (onboardBtn) onboardBtn.classList.add('hidden');
       document.title = 'ParchiSetu • Doctor & Clinic Sign In Gateway';
+      if (typeof window !== 'undefined' && window.history && window.history.pushState && window.location.pathname === '/') {
+        try { window.history.pushState(null, '', '/clinic'); } catch (e) {}
+      }
     }
 
     function enterClinicWorkspace() {
@@ -6621,6 +6654,9 @@
       if (navTabs) navTabs.classList.remove('hidden');
       switchAppRole('clinic');
       refreshAllViews();
+      if (typeof window !== 'undefined' && window.history && window.history.pushState && window.location.pathname === '/') {
+        try { window.history.pushState(null, '', '/clinic'); } catch (e) {}
+      }
     }
 
     function switchGatewayTab(tab) {
@@ -7265,10 +7301,13 @@
       clinicProfile = { ...clinicProfile, ...data };
       if (clinicProfile.liveStatus) {
         isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+        doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+        expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
         isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
       }
       saveLocalClinic();
       updateClinicBranding();
+      try { updateDoctorArrivalControlsUI(); } catch (e) {}
       refreshAllViews();
     }
 
@@ -7370,6 +7409,9 @@
         if (clinicOnboardBtn) clinicOnboardBtn.classList.add('hidden');
         if (quickStandeeBtn) quickStandeeBtn.classList.add('hidden');
         document.title = 'ParchiSetu • Owner Master Admin';
+        if (typeof window !== 'undefined' && window.history && window.history.pushState && !window.location.pathname.startsWith('/admin')) {
+          try { window.history.pushState(null, '', '/admin'); } catch (e) {}
+        }
         return;
       }
 
@@ -7398,6 +7440,9 @@
           else fab.classList.add('hidden');
         }
         document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
+        if (typeof window !== 'undefined' && window.history && window.history.pushState && !window.location.pathname.startsWith('/clinic')) {
+          try { window.history.pushState(null, '', '/clinic'); } catch (e) {}
+        }
         switchClinicTab(currentTab || 'queue');
       } else {
         const fab = document.getElementById('mobileFabNewPatient');
@@ -7421,6 +7466,9 @@
         if (authLabel) authLabel.textContent = 'Clinic Sign Up (Doctors Only)';
         if (authBtn) authBtn.title = 'Strictly for Clinic Owners / Doctors (Patients do not need to sign up)';
         document.title = `${clinicProfile.name || 'ParchiSetu'} • Online Token & Live Queue`;
+        if (!isPreview && typeof window !== 'undefined' && window.history && window.history.pushState && (window.location.pathname.startsWith('/clinic') || window.location.pathname.startsWith('/admin'))) {
+          try { window.history.pushState(null, '', '/'); } catch (e) {}
+        }
         renderPatientBookingPage();
       }
     }
@@ -7937,6 +7985,8 @@
       const newStatus = hasCabin ? 'WAITING' : 'IN_CABIN';
 
       const newEntry = {
+        clinicId: clinicProfile.id || 'clinic_sanjeevani_01',
+        clinicName: clinicProfile.name || 'Sanjeevani Family Clinic',
         name,
         age,
         gender,
@@ -7982,6 +8032,23 @@
           id: 'q_' + Date.now(),
           token: nextToken
         };
+      }
+
+      // Sync walk-in to Firebase Cloud Firestore for real-time patient pass and desk live sync
+      if (window.ParchiFirebase && clinicProfile && clinicProfile.id) {
+        try {
+          window.ParchiFirebase.saveBooking(clinicProfile.id, savedBooking);
+          if (savedBooking.status === 'IN_CABIN') {
+            window.ParchiFirebase.updateLiveStatus(clinicProfile.id, {
+              cabinToken: savedBooking.token,
+              cabinPatient: savedBooking.name,
+              status: 'IN_CABIN',
+              timestamp: Date.now()
+            });
+          }
+        } catch (e) {
+          console.warn('Firebase walkin booking sync notice:', e);
+        }
       }
 
       const existingIdx = todayQueue.findIndex(p => p.id === savedBooking.id);
@@ -9216,6 +9283,9 @@
           body: JSON.stringify({ liveStatus: clinicProfile.liveStatus })
         }).catch(() => {});
       }
+      if (window.ParchiFirebase && clinicProfile.id) {
+        window.ParchiFirebase.syncClinic(clinicProfile);
+      }
       if (syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
@@ -9248,7 +9318,7 @@
         }).catch(() => {});
       }
       if (window.ParchiFirebase) {
-        ParchiFirebase.syncClinic(clinicProfile);
+        window.ParchiFirebase.syncClinic(clinicProfile);
       }
       if (syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
@@ -9275,7 +9345,7 @@
         }).catch(() => {});
       }
       if (window.ParchiFirebase) {
-        ParchiFirebase.syncClinic(clinicProfile);
+        window.ParchiFirebase.syncClinic(clinicProfile);
       }
       if (syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
@@ -9306,7 +9376,7 @@
         }).catch(() => {});
       }
       if (window.ParchiFirebase) {
-        ParchiFirebase.syncClinic(clinicProfile);
+        window.ParchiFirebase.syncClinic(clinicProfile);
       }
       if (syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
@@ -11344,23 +11414,49 @@
         }
       }
 
-      // Include current clinicProfile if authenticated via Google
-      if (clinicProfile && clinicProfile.id && (clinicProfile.ownerUid || clinicProfile.isGoogleAuth || clinicProfile.googleRegistered) && !isDummyClinicName(clinicProfile.name)) {
+      // Include current clinicProfile if authenticated via Google or created via Clinic Panel
+      if (clinicProfile && clinicProfile.id && (clinicProfile.ownerUid || clinicProfile.isGoogleAuth || clinicProfile.googleRegistered || clinicProfile.createdViaClinicPanel || clinicProfile.ownerEmail) && !isDummyClinicName(clinicProfile.name)) {
         if (!remoteList.some(c => c.id === clinicProfile.id)) {
           remoteList.unshift(clinicProfile);
         }
       }
 
-      // Strictly filter: ONLY keep authentic clinics registered via Google Sign-In, ZERO dummy clinics
+      // Strictly filter: ONLY keep authentic clinics registered via Google Sign-In or Clinic Panel, ZERO dummy clinics
       clinicsDirectory = remoteList.filter(clinic => {
         if (!clinic || !clinic.name) return false;
         if (isDummyClinicName(clinic.name)) return false;
-        return Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered);
+        return Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered || clinic.createdViaClinicPanel || clinic.ownerEmail);
       });
 
       renderCityChips();
       renderSpecialtyChips();
       renderDoctorDiscoveryFeed();
+
+      // Start live real-time Firestore synchronization for all clinics
+      if (window.ParchiFirebase && typeof window.ParchiFirebase.listenToClinics === 'function' && !window._clinicsRealtimeActive) {
+        const unsub = window.ParchiFirebase.listenToClinics(liveClinics => {
+          if (Array.isArray(liveClinics) && liveClinics.length > 0) {
+            const map = {};
+            clinicsDirectory.forEach(c => { if (c && c.id) map[c.id] = c; });
+            liveClinics.forEach(c => {
+              if (c && c.id && !isDummyClinicName(c.name)) {
+                map[c.id] = { ...(map[c.id] || {}), ...c };
+              }
+            });
+            clinicsDirectory = Object.values(map).filter(clinic => {
+              if (!clinic || !clinic.name) return false;
+              if (isDummyClinicName(clinic.name)) return false;
+              return Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered || clinic.createdViaClinicPanel || clinic.ownerEmail);
+            });
+            renderCityChips();
+            renderSpecialtyChips();
+            renderDoctorDiscoveryFeed();
+          }
+        });
+        if (typeof unsub === 'function') {
+          window._clinicsRealtimeActive = true;
+        }
+      }
     }
 
     function renderCityChips() {
@@ -11372,7 +11468,20 @@
           : selectedDiscoveryCity;
       }
       if (!container) return;
-      container.innerHTML = DISCOVERY_CITIES.map(c => {
+
+      const citiesMap = new Map();
+      DISCOVERY_CITIES.forEach(c => citiesMap.set(c.key.toLowerCase(), c));
+      (clinicsDirectory || []).forEach(clinic => {
+        if (clinic.city) {
+          const rawCity = String(clinic.city).split(',')[0].trim();
+          if (rawCity && !citiesMap.has(rawCity.toLowerCase())) {
+            citiesMap.set(rawCity.toLowerCase(), { key: rawCity, label: rawCity });
+          }
+        }
+      });
+      const allCities = Array.from(citiesMap.values());
+
+      container.innerHTML = allCities.map(c => {
         const active = selectedDiscoveryCity === c.key;
         return `
           <button 
@@ -11536,7 +11645,7 @@
         'parchisetu clinic',
         'klinicq clinic'
       ];
-      return dummyNames.some(d => lower.includes(d) || d.includes(lower));
+      return dummyNames.some(d => lower === d || lower.includes(d));
     }
 
     function renderDoctorDiscoveryFeed() {
@@ -11545,12 +11654,12 @@
       const countBadge = document.getElementById('discoveryDoctorCountBadge');
       if (!container) return;
 
-      // Strictly filter: REMOVE ALL DUMMY CLINICS. Only keep authentic clinics made from Google Sign-In
+      // Strictly filter: REMOVE ALL DUMMY CLINICS. Only keep authentic clinics made from Google Sign-In or Clinic Panel
       const rawList = (clinicsDirectory && clinicsDirectory.length > 0) ? clinicsDirectory : [];
       const list = rawList.filter(clinic => {
         if (!clinic || !clinic.name) return false;
         if (isDummyClinicName(clinic.name)) return false;
-        const isGoogleClinic = Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered);
+        const isGoogleClinic = Boolean(clinic.ownerUid || clinic.isGoogleAuth || clinic.googleRegistered || clinic.createdViaClinicPanel || clinic.ownerEmail);
         return isGoogleClinic;
       });
       const q = (doctorSearchQuery || '').toLowerCase();
@@ -11904,6 +12013,10 @@
       if (direct) direct.classList.add('hidden');
       if (tokenPass) tokenPass.classList.add('hidden');
 
+      if (typeof window !== 'undefined' && window.history && window.history.pushState && (window.location.pathname.startsWith('/clinic') || window.location.pathname.startsWith('/admin'))) {
+        try { window.history.pushState(null, '', '/'); } catch (e) {}
+      }
+
       updateDiscoveryActivePassBanner();
       renderDoctorDiscoveryFeed();
     }
@@ -11927,6 +12040,53 @@
             expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
             isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
           }
+        } else {
+          // Fallback fetch from server API & Firestore if not yet loaded in local list
+          if (window.location.protocol.startsWith('http')) {
+            fetch(`/api/clinic?clinic=${encodeURIComponent(clinicId)}`).then(res => res.ok && res.json()).then(remoteClinic => {
+              if (remoteClinic && remoteClinic.name) {
+                clinicProfile = { ...clinicProfile, ...remoteClinic };
+                if (clinicProfile.liveStatus) {
+                  isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                  doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                  expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+                  isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+                }
+                updateClinicBranding();
+                renderPatientBookingPage();
+              }
+            }).catch(() => {});
+          }
+          if (window.ParchiFirebase && typeof window.ParchiFirebase.getClinic === 'function') {
+            window.ParchiFirebase.getClinic(clinicId).then(fbClinic => {
+              if (fbClinic && fbClinic.name) {
+                clinicProfile = { ...clinicProfile, ...fbClinic };
+                if (clinicProfile.liveStatus) {
+                  isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                  doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                  expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+                  isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+                }
+                updateClinicBranding();
+                renderPatientBookingPage();
+              }
+            }).catch(() => {});
+          }
+        }
+        // Live queue fetch & Firestore subscription for this specific clinic
+        if (window.location.protocol.startsWith('http')) {
+          fetch(`/api/queue?clinic=${encodeURIComponent(clinicId)}`).then(res => {
+            if (res.ok) return res.json();
+          }).then(q => {
+            if (Array.isArray(q)) {
+              todayQueue = q;
+              saveLocalQueue();
+              refreshAllViews();
+            }
+          }).catch(() => {});
+        }
+        if (window.ParchiFirebase && typeof window.ParchiFirebase.listen === 'function') {
+          window.ParchiFirebase.listen(clinicId, handleRemoteClinicChange, handleRemoteQueueChange);
         }
       }
       const discovery = document.getElementById('patientDiscoverySection');
@@ -12200,7 +12360,10 @@
     let adminCurrentPlanFilter = 'ALL';
 
     function openAdminPanel() {
-      const isAuth = sessionStorage.getItem('parchisetu_admin_auth') === '1' || sessionStorage.getItem('klinicq_admin_auth') === '1';
+      if (typeof window !== 'undefined' && window.history && window.history.pushState && !window.location.pathname.startsWith('/admin')) {
+        try { window.history.pushState(null, '', '/admin'); } catch (e) {}
+      }
+      const isAuth = (typeof sessionStorage !== 'undefined') && (sessionStorage.getItem('parchisetu_admin_auth') === '1' || sessionStorage.getItem('klinicq_admin_auth') === '1');
       if (isAuth) {
         switchAppRole('admin');
         loadAdminDoctors();
@@ -12224,9 +12387,11 @@
       const input = document.getElementById('adminPasscodeInput');
       const err = document.getElementById('adminPasscodeError');
       const code = (input?.value || '').trim();
-      if (code === 'admin123' || code === '1234' || code === 'admin' || code === 'parchisetu2026' || code === 'klinicq2026') {
-        sessionStorage.setItem('parchisetu_admin_auth', '1');
-        sessionStorage.setItem('klinicq_admin_auth', '1');
+      if (code === 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0' || code === 'admin123' || code === '1234' || code === 'admin' || code === 'parchisetu2026' || code === 'klinicq2026') {
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('parchisetu_admin_auth', '1');
+          sessionStorage.setItem('klinicq_admin_auth', '1');
+        }
         closeAdminPasscodeModal();
         switchAppRole('admin');
         loadAdminDoctors();
@@ -12249,11 +12414,16 @@
     }
 
     function adminLogout() {
-      sessionStorage.removeItem('parchisetu_admin_auth');
-      sessionStorage.removeItem('klinicq_admin_auth');
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('parchisetu_admin_auth');
+        sessionStorage.removeItem('klinicq_admin_auth');
+      }
       showToast('🔒 Master Admin locked!');
       switchAppRole('patient');
       showPatientDiscoverySection();
+      if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+        try { window.history.pushState(null, '', '/'); } catch (e) {}
+      }
     }
 
     async function loadAdminDoctors() {
@@ -12272,9 +12442,10 @@
             console.warn('Admin fetch error:', e);
           }
         }
-        if (!list.length && window.ParchiFirebase && typeof window.ParchiFirebase.getAllClinicsFromFirestore === 'function') {
+        if (!list.length && window.ParchiFirebase && typeof (window.ParchiFirebase.getAllClinicsFromFirestore || window.ParchiFirebase.getAllClinics) === 'function') {
           try {
-            const fireClinics = await window.ParchiFirebase.getAllClinicsFromFirestore();
+            const getClinicsFn = window.ParchiFirebase.getAllClinicsFromFirestore || window.ParchiFirebase.getAllClinics;
+            const fireClinics = await getClinicsFn();
             if (Array.isArray(fireClinics) && fireClinics.length > 0) {
               list = fireClinics.map(c => ({
                 id: c.id,
@@ -12757,6 +12928,22 @@
       if (h === '#admin') openAdminPanel();
     });
 
+    window.addEventListener('popstate', () => {
+      const p = (window.location.pathname || '').toLowerCase();
+      if (p.startsWith('/admin')) {
+        openAdminPanel();
+      } else if (p.startsWith('/clinic') || p.startsWith('/signin') || p.startsWith('/login')) {
+        if (currentAuthUser) {
+          enterClinicWorkspace();
+        } else {
+          showAuthGatewayScreen();
+        }
+      } else {
+        switchAppRole('patient');
+        showPatientDiscoverySection();
+      }
+    });
+
     // =========================================================================
     // 14. MASTER REFRESH & INITIALIZATION
     // =========================================================================
@@ -12778,6 +12965,32 @@
 
     window.onload = async function () {
       loadLocalData();
+
+      // Initialize Firebase Firestore sync early before loading directory & listeners
+      if (window.ParchiFirebase) {
+        try {
+          window.ParchiFirebase.init();
+          if (window.ParchiFirebase.onAuthStateChanged) {
+            window.ParchiFirebase.onAuthStateChanged(user => {
+              if (user) {
+                currentAuthUser = {
+                  uid: user.uid,
+                  email: user.email || '',
+                  displayName: user.displayName || 'Doctor'
+                };
+                try {
+                  localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
+                  localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+                } catch (e) {}
+              }
+              updateHeaderAuthUI(currentAuthUser);
+            });
+          }
+        } catch (e) {
+          console.warn('Firebase initialization error:', e);
+        }
+      }
+
       loadClinicsDirectory();
 
       // Check URL query parameters
@@ -12822,31 +13035,6 @@
           showPatientDiscoverySection();
         }
         checkAndRestorePatientBooking();
-      }
-
-      // Initialize Firebase Firestore sync early
-      if (window.ParchiFirebase) {
-        try {
-          window.ParchiFirebase.init();
-          if (window.ParchiFirebase.onAuthStateChanged) {
-            window.ParchiFirebase.onAuthStateChanged(user => {
-              if (user) {
-                currentAuthUser = {
-                  uid: user.uid,
-                  email: user.email || '',
-                  displayName: user.displayName || 'Doctor'
-                };
-                try {
-                  localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
-                  localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
-                } catch (e) {}
-              }
-              updateHeaderAuthUI(currentAuthUser);
-            });
-          }
-        } catch (e) {
-          console.warn('Firebase initialization error:', e);
-        }
       }
 
       // If a specific clinic ID is passed in the URL (e.g. from Google Maps or QR Code)
