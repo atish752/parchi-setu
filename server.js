@@ -779,6 +779,11 @@ const requestHandler = async (req, res) => {
       // Check if this booking ID already exists to prevent duplicate creation
       const existingIdx = body.id ? appData.queue.findIndex(p => p.id === body.id) : -1;
       if (existingIdx >= 0) {
+        if (appData.queue[existingIdx].status === 'CANCELLED' && body.status !== 'CANCELLED' && !body.forceUncancel) {
+          body.status = 'CANCELLED';
+          body.cancelledBy = appData.queue[existingIdx].cancelledBy || 'clinic';
+          body.cancelReason = appData.queue[existingIdx].cancelReason || 'Cancelled by clinic';
+        }
         Object.assign(appData.queue[existingIdx], body);
         saveData();
         broadcastEvent('QUEUE_UPDATED', { id: body.id, updated: body, queue: appData.queue });

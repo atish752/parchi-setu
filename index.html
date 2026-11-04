@@ -494,7 +494,18 @@
           <span class="font-black text-white">🏥 ParchiSetu Clinic Desk</span>
           <span class="text-emerald-200 text-[11px] hidden sm:inline">• Live Appointments & Queue Management</span>
         </div>
-        <div class="flex items-center gap-2">
+<div class="flex items-center gap-2">
+          <!-- Highlighted "Booked Appointments" Button on Top of Clinic Panel -->
+          <button 
+            type="button" 
+            onclick="openBookedAppointmentsModal()" 
+            id="btnTopBookedAppointments"
+            class="btn-tactile px-3.5 py-1.5 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-200 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-md border-2 border-amber-500 flex items-center gap-1.5 transition active:scale-95"
+            title="Monthly Interactive Calendar of All Booked Appointments"
+          >
+            <i class="fa-solid fa-calendar-days text-[#075E54]"></i>
+            <span>📅 Booked Appointments</span>
+          </button>
           <button type="button" onclick="switchAppRole('patient'); showPatientDiscoverySection();" class="btn-tactile px-3 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white font-black text-xs flex items-center gap-1.5 transition">
             <i class="fa-solid fa-house text-[#25D366]"></i>
             <span>← Patient Home</span>
@@ -2104,10 +2115,19 @@
                   </div>
                 </div>
 
-                <!-- Quick Reason Chips -->
+                <!-- Quick Reason Chips & Custom Reason Option -->
                 <div>
                   <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5">Kya Takleef Hai? (Reason for Visit):</label>
                   <div id="patBookReasonChips" class="flex flex-wrap gap-1.5"></div>
+                  <div class="mt-2 relative">
+                    <input 
+                      type="text" 
+                      id="patBookCustomReason" 
+                      placeholder="✏️ Ya apni takleef yahan likhein (Or write your own reason)..." 
+                      class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-xs sm:text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white transition"
+                      oninput="onPatientCustomReasonInput(this.value)"
+                    />
+                  </div>
                 </div>
 
                 <!-- Submit Button -->
@@ -2130,132 +2150,160 @@
           </div>
         </div>
 
-        <!-- Digital Token Pass Confirmation (Shown after booking) -->
-        <div id="patientTokenPassBox" class="hidden p-5 bg-emerald-50/70 space-y-4">
-          <div class="bg-white rounded-2xl p-5 border-2 border-[#25D366] shadow-md text-center space-y-3 relative overflow-hidden">
-            <div class="w-12 h-12 rounded-full bg-emerald-100 text-[#075E54] flex items-center justify-center mx-auto text-xl font-black">
-              <i class="fa-solid fa-check"></i>
-            </div>
-            <span class="text-xs font-black uppercase tracking-wider text-[#128C7E] block">
-              🎉 Aapka Token Book Ho Gaya Hai!
-            </span>
-            <div class="py-3 bg-[#075E54] text-white rounded-2xl max-w-[200px] mx-auto shadow-inner">
-              <span class="text-[10px] uppercase tracking-widest text-emerald-200 block">TOKEN NUMBER</span>
-              <span id="passTokenNumber" class="text-4xl font-black text-[#25D366]">#15</span>
-            </div>
-
-            <!-- PROMINENT SCREENSHOT CALLOUT AS REQUESTED -->
-            <div class="p-3.5 bg-amber-100 border-2 border-amber-400 rounded-2xl text-amber-950 font-black text-xs sm:text-sm flex items-center gap-2.5 shadow-sm text-left">
-              <span class="text-3xl flex-shrink-0">📸</span>
-              <div>
-                <div class="font-black text-amber-950 leading-tight" data-i18n="screenshotTitle">Apne Token Number Ka SCREENSHOT Zaroor Le Lein!</div>
-                <div class="text-[11px] font-semibold text-amber-900 mt-0.5" data-i18n="screenshotSub">Taaki aap token number bhoolen nahi aur clinic counter par asaani se dikha sakein.</div>
+        <!-- Transformed Digital Token Pass (Visual, Pictographic, Zero Clutter) -->
+        <div id="patientTokenPassBox" class="hidden p-4 sm:p-5 bg-gradient-to-b from-emerald-50/80 via-white to-emerald-50/50 space-y-3.5">
+          
+          <!-- Clinic Branding & Doctor Header -->
+          <div class="bg-white rounded-2xl p-3 border border-emerald-200/80 shadow-xs flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-9 h-9 rounded-xl bg-emerald-100 text-[#075E54] flex items-center justify-center text-lg flex-shrink-0">🏥</span>
+              <div class="min-w-0">
+                <h3 id="passClinicName" class="font-black text-xs sm:text-sm text-slate-900 truncate">Sanjeevani Family Clinic</h3>
+                <div id="passDoctorRow" class="text-[11px] text-[#075E54] font-bold truncate flex items-center gap-1">
+                  <span>👨‍⚕️</span> <span id="passDoctorName">Dr. Rajesh Sharma</span>
+                </div>
               </div>
             </div>
-
-            <div class="text-sm font-bold text-slate-800" id="passPatientName">Suresh Verma (38M)</div>
-            <div class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-left">
-              <div>🏥 <strong>Clinic:</strong> <span id="passClinicName">Doctor Clinic</span></div>
-              <div id="passDoctorRow" class="hidden">👨‍⚕️ <strong>Doctor:</strong> <span id="passDoctorName">Doctor</span></div>
-              <div>📅 <strong>Din & Slot:</strong> <span id="passSlotText">Aaj • 11:30 AM</span></div>
-              <div>⏳ <strong>Number Aane Ka Andaza:</strong> <span id="passEstTime" class="text-[#075E54] font-bold">~20 Mins</span></div>
-              <div>💵 <strong>Clinic Fee:</strong> <span id="passFeeAmount">₹300</span> (Pay at Clinic Counter)</div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="updatePatientTokenPassLiveStatus(); showToast('🔄 Live token status refresh ho gaya!');" class="btn-tactile px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#075E54] font-bold text-xs border border-emerald-200 flex items-center gap-1" title="Refresh Live Status">
+                <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                <span class="hidden sm:inline">Refresh</span>
+              </button>
             </div>
+          </div>
 
+          <!-- Main Live Visual Token Card -->
+          <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-emerald-400 shadow-lg text-center space-y-3.5 relative overflow-hidden">
+            
             <!-- Doctor Delay/Early Alert Banner on Token Pass (High-contrast, never dark green on red) -->
             <div id="passDoctorDelayAlert" class="hidden p-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-xs text-left"></div>
 
-            <!-- REAL-TIME LIVE QUEUE TRACKER FOR BOOKED PATIENT -->
-            <div id="passLiveStatusCard" class="p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-left space-y-1.5 shadow-inner">
+            <!-- Top Pill: Patient Name & Screenshot prompt -->
+            <div class="flex items-center justify-between gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
+              <div class="font-black text-slate-800 truncate" id="passPatientName">Suresh Verma (38M)</div>
+              <span class="text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full flex-shrink-0" data-i18n="screenshotTitle">
+                📸 Screenshot Le Lein
+              </span>
+            </div>
+
+            <!-- BIG PICTOGRAPHIC TOKEN NUMBER DISPLAY -->
+            <div class="py-4 px-3 bg-gradient-to-br from-[#075E54] to-[#043d37] text-white rounded-2xl shadow-inner relative overflow-hidden">
+              <span class="text-[10px] uppercase tracking-widest text-emerald-200 font-extrabold block">AAPKA TOKEN NUMBER</span>
+              <div id="passTokenNumber" class="text-5xl sm:text-6xl font-black text-[#25D366] my-1 tracking-tight">#15</div>
+              <div class="text-xs text-emerald-100 font-bold flex items-center justify-center gap-2 mt-1">
+                <span>📅 <span id="passSlotText">Aaj • 11:30 AM</span></span>
+                <span>•</span>
+                <span>💵 <span id="passFeeAmount">₹300</span></span>
+              </div>
+            </div>
+
+            <!-- REAL-TIME LIVE QUEUE TRACKER (Visual Pictography Meter) -->
+            <div id="passLiveStatusCard" class="p-3 bg-emerald-50 rounded-2xl border border-emerald-300 text-left space-y-2 shadow-xs">
               <div class="flex items-center justify-between">
                 <span id="passLiveStatusHeader" class="text-[10px] font-black uppercase text-[#075E54] flex items-center gap-1.5">
                   <span id="passLiveStatusDot" class="w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse"></span>
-                  <span id="passLiveStatusTitle">Live Clinic Status</span>
+                  <span id="passLiveStatusTitle">Live Clinic Tracker</span>
                 </span>
                 <span id="passLiveQueueDistance" class="text-xs font-black text-[#128C7E]">2 Mareez Aage Hain</span>
               </div>
-              <div id="passLiveStatusRow" class="text-xs font-bold text-slate-800 flex items-center justify-between">
-                <span id="passLiveCabinStatus">Abhi Cabin Mein: <strong id="passCabinTokenLive">Token #12</strong></span>
-                <span id="passLiveWaitEst" class="text-[11px] text-slate-600 font-semibold">~20 Mins Baaki</span>
+
+              <!-- 3-Step Visual Progress Meter -->
+              <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+                <!-- Step 1: Doctor Cabin -->
+                <div class="bg-white p-2 rounded-xl border border-emerald-200 shadow-2xs">
+                  <div class="text-base sm:text-lg">🩺</div>
+                  <div class="text-[10px] text-slate-500 font-bold uppercase mt-0.5">Doctor Cabin</div>
+                  <div id="passCabinTokenLive" class="text-xs sm:text-sm font-black text-slate-900">Token #12</div>
+                </div>
+
+                <!-- Step 2: Distance Ahead -->
+                <div class="bg-white p-2 rounded-xl border border-emerald-200 shadow-2xs">
+                  <div class="text-base sm:text-lg">👥</div>
+                  <div class="text-[10px] text-slate-500 font-bold uppercase mt-0.5">Aapke Aage</div>
+                  <div id="passLiveCabinStatus" class="text-xs sm:text-sm font-black text-[#075E54]">
+                    <span id="passPeopleAheadVisual">2 Log</span>
+                  </div>
+                </div>
+
+                <!-- Step 3: Estimated Wait Time -->
+                <div class="bg-white p-2 rounded-xl border border-emerald-200 shadow-2xs">
+                  <div class="text-base sm:text-lg">⏳</div>
+                  <div class="text-[10px] text-slate-500 font-bold uppercase mt-0.5">Wait Time</div>
+                  <div id="passEstTime" class="text-xs sm:text-sm font-black text-amber-700">~20 Mins</div>
+                </div>
               </div>
-              <!-- In cabin arrival banner -->
-              <div id="passInCabinNotice" class="hidden mt-2 p-2.5 bg-[#25D366] text-slate-950 font-black text-xs rounded-xl text-center shadow-md animate-bounce">
+
+              <div id="passLiveStatusRow" class="hidden">
+                <span id="passLiveWaitEst"></span>
+              </div>
+
+              <!-- In-Cabin Notification Banner (When called inside) -->
+              <div id="passInCabinNotice" class="hidden p-3 bg-[#25D366] text-slate-950 font-black text-xs sm:text-sm rounded-xl text-center shadow-md animate-bounce">
                 🔔 AAPKA NUMBER AA GAYA! Kripya Doctor Sahab ke cabin mein jayein.
               </div>
             </div>
 
-            <!-- Punchy Reassurance Note on Token Pass -->
-            <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-300 text-amber-950 text-[11px] font-semibold text-left flex items-start gap-2 shadow-xs">
-              <i class="fa-solid fa-lightbulb text-amber-600 text-sm flex-shrink-0 mt-0.5"></i>
+            <!-- Privacy Search Warning (Shown only if searched by phone) -->
+            <div id="passPrivacySearchNotice" class="hidden p-2.5 bg-amber-50 rounded-xl border border-amber-300 text-amber-900 text-[11px] font-bold text-left flex items-center gap-2">
+              <span class="text-base">🔒</span>
               <div>
-                <strong class="font-bold text-amber-950">Doctor sahab ya compounder ko call karne ki zaroorat nahi hai!</strong>
-                <p class="text-[10px] text-amber-900 mt-0.5">
-                  Is page ko refresh karein ya khula rakhein — live cabin token number yahan lagatar update hota rahega.
-                </p>
+                <strong>Phone Search View (Privacy Protected):</strong>
+                <p class="text-[10px] text-amber-800 mt-0.5">Personal mobile number aur private records surakshit rakhe gaye hain.</p>
               </div>
             </div>
 
-            <p class="text-[11px] text-slate-500">
-              📸 Iska screenshot le lein ya WhatsApp par save karein aur clinic counter par dikhayein.
-            </p>
           </div>
 
-          <div class="space-y-2 pt-1">
+          <!-- Clean 2-Button Action Bar -->
+          <div class="space-y-2 pt-0.5">
             <button 
               type="button" 
               onclick="sharePatientTokenOnWhatsApp()" 
-              class="btn-tactile w-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3 px-4 rounded-xl shadow-md text-sm flex items-center justify-center gap-2 transition"
+              class="btn-tactile w-full bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1eb053] text-slate-950 font-black py-3.5 px-4 rounded-2xl shadow-md text-sm flex items-center justify-center gap-2 transition"
             >
-              <i class="fa-brands fa-whatsapp text-lg"></i>
-              <span>WhatsApp Par Token Parchi Bhejein</span>
+              <i class="fa-brands fa-whatsapp text-lg text-slate-950"></i>
+              <span>WhatsApp Par Token Parchi Save Karein</span>
             </button>
 
-            <div class="grid grid-cols-4 gap-1.5">
+            <div class="flex items-center justify-between gap-1.5 pt-1">
               <button 
                 type="button" 
-                onclick="openInteractiveQRModal()" 
-                id="passClinicQrBtn"
-                class="btn-tactile py-2.5 px-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-[11px] text-slate-800 flex items-center justify-center gap-1 shadow-xs transition"
-                title="Clinic QR Code & Booking Link"
+                onclick="showPatientDiscoverySection()" 
+                class="btn-tactile flex-1 py-2 px-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-xs text-slate-700 flex items-center justify-center gap-1 transition"
               >
-                <i class="fa-solid fa-qrcode text-[#075E54]"></i>
-                <span>QR Code</span>
-              </button>
-              <button 
-                type="button" 
-                onclick="printPatientTokenSlip()" 
-                class="btn-tactile py-2.5 px-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-[11px] text-slate-800 flex items-center justify-center gap-1 shadow-xs transition"
-              >
-                <i class="fa-solid fa-print text-slate-600"></i>
-                <span>Print Slip</span>
+                <i class="fa-solid fa-house text-[#075E54]"></i>
+                <span>Home</span>
               </button>
               <button 
                 type="button" 
                 onclick="resetPatientBookingForm()" 
-                class="btn-tactile py-2.5 px-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-[11px] text-slate-700 flex items-center justify-center shadow-xs transition"
+                class="btn-tactile flex-1 py-2 px-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-xs text-slate-700 flex items-center justify-center gap-1 transition"
               >
-                + Naya Token
+                <i class="fa-solid fa-plus text-emerald-600"></i>
+                <span>+ Naya</span>
               </button>
               <button 
                 type="button" 
-                onclick="updatePatientTokenPassLiveStatus(); showToast('🔄 Live token status refresh ho gaya!');" 
-                class="btn-tactile py-2.5 px-1 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs transition"
-                title="Live status dobara check karein"
+                onclick="openInteractiveQRModal()" 
+                id="passClinicQrBtn" 
+                class="btn-tactile py-2 px-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-xs text-slate-700 flex items-center justify-center gap-1 transition"
+                title="Clinic QR Code"
               >
-                <i class="fa-solid fa-arrows-rotate"></i>
-                <span>Refresh Live</span>
+                <i class="fa-solid fa-qrcode text-[#075E54]"></i>
+                <span>QR</span>
+              </button>
+              <button 
+                type="button" 
+                onclick="printPatientTokenSlip()" 
+                class="btn-tactile py-2 px-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-xs text-slate-700 flex items-center justify-center gap-1 transition"
+                title="Print Slip"
+              >
+                <i class="fa-solid fa-print"></i>
+                <span>Print</span>
               </button>
             </div>
-            <!-- Back to Doctors Home Link -->
-            <button 
-              type="button" 
-              onclick="showPatientDiscoverySection()" 
-              class="btn-tactile w-full py-2.5 rounded-xl border-2 border-emerald-500/40 bg-white hover:bg-emerald-50 text-[#075E54] font-black text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
-            >
-              <i class="fa-solid fa-arrow-left"></i>
-              <span>← Doosra Doctor / Wapas Home Screen Dekhein</span>
-            </button>
           </div>
+
         </div>
 
         <!-- Discreet Clinic Staff Link at bottom of Patient View -->
@@ -4095,12 +4143,311 @@
         </button>
         <button 
           type="button" 
+          onclick="executeConfirmedNoShow()" 
+          class="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-black text-xs sm:text-sm shadow-md transition"
+          title="Mark patient as No-Show (Nahi Aaye)"
+        >
+          🚫 No-Show (Nahi Aaye)
+        </button>
+        <button 
+          type="button" 
           onclick="executeConfirmedCancellation()" 
           id="btnConfirmExecuteCancel"
           class="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-black text-xs sm:text-sm shadow-md transition"
         >
           Haan, Cancel Karein ✕
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: EDIT APPOINTMENT DETAILS (FAST APPOINTMENT EDITOR)             -->
+  <!-- ===================================================================== -->
+  <div id="editAppointmentModal" onclick="if(event.target===this)closeEditAppointmentModal()" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border-2 border-emerald-500/30 space-y-4 max-h-[90vh] overflow-y-auto my-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-emerald-100 text-[#075E54] flex items-center justify-center text-lg font-black shadow-xs">
+            ✏️
+          </span>
+          <div>
+            <h3 class="font-black text-slate-900 text-base sm:text-lg">Edit Appointment Details</h3>
+            <p class="text-xs text-slate-500 font-semibold" id="editApptSubInfo">Token # & Clinic info</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeEditAppointmentModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="editAppointmentForm" onsubmit="event.preventDefault(); saveEditedAppointment();" class="space-y-3.5">
+        <input type="hidden" id="editApptId" />
+
+        <!-- Patient Name -->
+        <div>
+          <label for="editApptName" class="block text-xs font-black text-slate-700 uppercase mb-1">Mareez Ka Naam (Patient Name) *</label>
+          <input type="text" id="editApptName" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white" />
+        </div>
+
+        <!-- Mobile & Age/Gender -->
+        <div class="grid grid-cols-12 gap-2">
+          <div class="col-span-6">
+            <label for="editApptPhone" class="block text-xs font-black text-slate-700 uppercase mb-1">Mobile No.</label>
+            <input type="tel" id="editApptPhone" maxlength="10" class="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white" />
+          </div>
+          <div class="col-span-3">
+            <label for="editApptAge" class="block text-xs font-black text-slate-700 uppercase mb-1">Umar (Age)</label>
+            <input type="number" id="editApptAge" min="1" max="120" class="w-full px-2 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white" />
+          </div>
+          <div class="col-span-3">
+            <label for="editApptGender" class="block text-xs font-black text-slate-700 uppercase mb-1">Gender</label>
+            <select id="editApptGender" class="w-full px-2 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white">
+              <option value="M">M</option>
+              <option value="F">F</option>
+              <option value="O">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Reason for visit -->
+        <div>
+          <label for="editApptReason" class="block text-xs font-black text-slate-700 uppercase mb-1">Kya Takleef Hai? (Reason for Visit)</label>
+          <input type="text" id="editApptReason" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-[#128C7E] focus:bg-white" />
+        </div>
+
+        <!-- Date, Shift, and Time Slot -->
+        <div class="p-3 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-2.5">
+          <span class="text-xs font-black text-amber-950 block">📅 Appointment Time & Date Reschedule:</span>
+          <div class="grid grid-cols-12 gap-2">
+            <div class="col-span-5">
+              <label for="editApptDate" class="block text-[10px] font-black text-slate-600 uppercase mb-1">Date</label>
+              <input type="date" id="editApptDate" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:border-[#128C7E]" />
+            </div>
+            <div class="col-span-4">
+              <label for="editApptShift" class="block text-[10px] font-black text-slate-600 uppercase mb-1">Shift</label>
+              <select id="editApptShift" class="w-full px-2 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:border-[#128C7E]">
+                <option value="Morning">Morning</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
+            <div class="col-span-3">
+              <label for="editApptSlot" class="block text-[10px] font-black text-slate-600 uppercase mb-1">Time Slot</label>
+              <input type="text" id="editApptSlot" placeholder="10:30 AM" class="w-full px-2 py-2 bg-white border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:border-[#128C7E]" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Status & Fees -->
+        <div class="grid grid-cols-12 gap-2">
+          <div class="col-span-6">
+            <label for="editApptStatus" class="block text-xs font-black text-slate-700 uppercase mb-1">Status</label>
+            <select id="editApptStatus" class="w-full px-2.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#128C7E]">
+              <option value="WAITING">⏳ WAITING (Line Mein)</option>
+              <option value="IN_CABIN">🟢 IN_CABIN (Doctor Ke Saath)</option>
+              <option value="DONE">✅ DONE (Pura Hua)</option>
+              <option value="NO_SHOW">🚫 NO_SHOW (Mareez Nahi Aaye)</option>
+              <option value="CANCELLED">❌ CANCELLED (Radd Kiya)</option>
+            </select>
+          </div>
+          <div class="col-span-3">
+            <label for="editApptFee" class="block text-xs font-black text-slate-700 uppercase mb-1">Fee (₹)</label>
+            <input type="number" id="editApptFee" min="0" class="w-full px-2 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#128C7E]" />
+          </div>
+          <div class="col-span-3">
+            <label for="editApptPayMode" class="block text-xs font-black text-slate-700 uppercase mb-1">Payment</label>
+            <select id="editApptPayMode" class="w-full px-2 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#128C7E]">
+              <option value="Baaki">Baaki ⚠️</option>
+              <option value="Cash">Cash ✓</option>
+              <option value="UPI">UPI ✓</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeEditAppointmentModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100 transition">
+            Cancel
+          </button>
+          <button type="submit" class="btn-tactile px-5 py-2.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm shadow-md transition flex items-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: ONLINE BOOKING TEMPORARY OVERRIDE DURATION POPUP               -->
+  <!-- ===================================================================== -->
+  <div id="onlineBookingOverrideModal" onclick="if(event.target===this)closeOnlineBookingOverrideModal()" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border-2 border-emerald-500/30 space-y-4 my-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <span id="bookingOverrideIcon" class="w-10 h-10 rounded-2xl flex items-center justify-center text-xl font-black">
+            🛑
+          </span>
+          <div>
+            <h3 id="bookingOverrideTitle" class="font-black text-slate-900 text-base">Online Booking Control</h3>
+            <p id="bookingOverrideSub" class="text-xs text-slate-500 font-semibold">Kitni der ke liye badlav karna chahte hain?</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeOnlineBookingOverrideModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-600 font-medium">
+        Aap online bookings ka status badal rahe hain. Kripya samay chunein taaki samay pura hone par ye automatically normal schedule par wapas aa jaye:
+      </p>
+
+      <!-- Duration Choice Buttons -->
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="applyOnlineBookingOverride(30)" class="btn-tactile p-3 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-slate-50 hover:bg-emerald-50/50 text-left transition">
+          <div class="text-xs font-black text-slate-900">⚡ 30 Minutes</div>
+          <div class="text-[10px] text-slate-500 font-semibold mt-0.5">30 min baad normal</div>
+        </button>
+        <button type="button" onclick="applyOnlineBookingOverride(60)" class="btn-tactile p-3 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-slate-50 hover:bg-emerald-50/50 text-left transition">
+          <div class="text-xs font-black text-slate-900">⏰ 1 Hour (60 Min)</div>
+          <div class="text-[10px] text-slate-500 font-semibold mt-0.5">1 ghante baad normal</div>
+        </button>
+        <button type="button" onclick="applyOnlineBookingOverride(120)" class="btn-tactile p-3 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-slate-50 hover:bg-emerald-50/50 text-left transition">
+          <div class="text-xs font-black text-slate-900">⏳ 2 Hours</div>
+          <div class="text-[10px] text-slate-500 font-semibold mt-0.5">2 ghante baad normal</div>
+        </button>
+        <button type="button" onclick="applyOnlineBookingOverride('shift')" class="btn-tactile p-3 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-slate-50 hover:bg-emerald-50/50 text-left transition">
+          <div class="text-xs font-black text-slate-900">🌙 Shift Ant Tak</div>
+          <div class="text-[10px] text-slate-500 font-semibold mt-0.5">Aaj ki shift khatam hone tak</div>
+        </button>
+      </div>
+
+      <!-- Permanent Option -->
+      <button type="button" onclick="applyOnlineBookingOverride(0)" class="w-full py-2.5 px-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+        <span>♾️ Hamesha / Permanent (Jab tak khud na badlein)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: BOOKED APPOINTMENTS & INTERACTIVE MONTHLY DENSITY CALENDAR     -->
+  <!-- ===================================================================== -->
+  <div id="bookedAppointmentsModal" onclick="if(event.target===this)closeBookedAppointmentsModal()" class="fixed inset-0 bg-slate-950/75 z-50 hidden items-center justify-center p-2 sm:p-4 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border-2 border-emerald-500/40 my-auto">
+      
+      <!-- Top Modal Header -->
+      <div class="bg-gradient-to-r from-[#075E54] via-[#0b6e63] to-[#128C7E] text-white p-4 sm:p-5 flex items-center justify-between flex-shrink-0 shadow-md">
+        <div class="flex items-center gap-3">
+          <span class="w-11 h-11 rounded-2xl bg-amber-400 text-slate-950 font-black text-xl flex items-center justify-center shadow-md flex-shrink-0">
+            📅
+          </span>
+          <div>
+            <h3 class="font-black text-base sm:text-xl leading-tight">Booked Appointments & Monthly Overview</h3>
+            <p class="text-xs text-emerald-100 font-semibold mt-0.5">Mahn-war calendar: Choose any date to view and edit appointments</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeBookedAppointmentsModal()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center font-bold text-sm transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div class="p-3 sm:p-5 overflow-y-auto space-y-4 flex-1 bg-slate-50/50">
+        
+        <!-- Month Navigation Bar -->
+        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-xs space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="changeBookedCalendarMonth(-1)" class="btn-tactile px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs flex items-center gap-1 transition">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span class="hidden sm:inline">Pichla Mahina</span>
+              </button>
+              <h4 id="bookedCalMonthYear" class="text-base sm:text-lg font-black text-slate-900 tracking-tight min-w-[140px] text-center">
+                November 2026
+              </h4>
+              <button type="button" onclick="changeBookedCalendarMonth(1)" class="btn-tactile px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs flex items-center gap-1 transition">
+                <span class="hidden sm:inline">Agla Mahina</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="selectBookedCalendarToday()" class="btn-tactile px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#075E54] border border-emerald-300 font-black text-xs flex items-center gap-1 transition">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>Aaj (Today)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Color Coding Density Legend -->
+          <div class="flex items-center gap-3 sm:gap-4 flex-wrap text-[11px] font-bold pt-1 border-t border-slate-100">
+            <span class="text-slate-500 font-semibold">Booking Density:</span>
+            <div class="flex items-center gap-1.5">
+              <span class="w-3.5 h-3.5 rounded-md bg-rose-100 border border-rose-300"></span>
+              <span class="text-rose-800 font-bold">0 Bookings (No Booking)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-3.5 h-3.5 rounded-md bg-emerald-100 border border-emerald-300 flex items-center justify-center">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              </span>
+              <span class="text-emerald-900 font-bold">1 - 4 Bookings (Low •)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-3.5 h-3.5 rounded-md bg-[#075E54] border border-emerald-800 flex items-center justify-center">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#25D366]"></span>
+              </span>
+              <span class="text-[#075E54] font-bold">5+ Bookings (High •)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-3.5 h-3.5 rounded-md bg-white border-2 border-amber-400"></span>
+              <span class="text-slate-800 font-bold">Selected Date</span>
+            </div>
+          </div>
+
+          <!-- Interactive 7-Day Monthly Calendar Grid -->
+          <div class="space-y-1">
+            <!-- Day of Week Headers -->
+            <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center text-xs font-black text-slate-500 py-1">
+              <div class="text-rose-500">Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div class="text-indigo-600">Sat</div>
+            </div>
+            <!-- Calendar Date Cells Grid -->
+            <div id="bookedCalendarDaysGrid" class="grid grid-cols-7 gap-1 sm:gap-1.5">
+              <!-- Dynamically populated by renderBookedAppointmentsCalendar() -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Booked Appointments for Selected Date Section -->
+        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-xs space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="text-sm sm:text-base font-black text-slate-900">
+                📅 Appointments on: <span id="bookedCalSelectedDateTitle" class="text-[#075E54]">Today</span>
+              </span>
+              <span id="bookedCalCountBadge" class="bg-emerald-100 text-emerald-900 text-xs font-black px-2.5 py-0.5 rounded-full border border-emerald-300">
+                0 Booked
+              </span>
+            </div>
+
+            <!-- Shift Filter Pills -->
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+              <button type="button" onclick="setBookedListShiftFilter('ALL')" id="bookedShiftPill-ALL" class="px-2.5 py-1 rounded-lg text-xs font-black bg-white text-slate-900 shadow-2xs">Sabhi</button>
+              <button type="button" onclick="setBookedListShiftFilter('Morning')" id="bookedShiftPill-Morning" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">Morning</button>
+              <button type="button" onclick="setBookedListShiftFilter('Evening')" id="bookedShiftPill-Evening" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">Evening</button>
+            </div>
+          </div>
+
+          <!-- Appointments List Container -->
+          <div id="bookedAppointmentsListContainer" class="space-y-2">
+            <!-- Dynamically populated by renderBookedAppointmentsList() -->
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -4349,6 +4696,22 @@
     let doctorDelayMinutes = 0;
     let expectedDoctorArrivalTime = '';
     let isQRBookingPaused = false;
+    let patientPassViewMode = 'direct';
+    let cancelledPatientIds = new Set();
+    try {
+      const savedCancels = localStorage.getItem('parchisetu_cancelled_ids');
+      if (savedCancels) {
+        const arr = JSON.parse(savedCancels);
+        if (Array.isArray(arr)) cancelledPatientIds = new Set(arr);
+      }
+    } catch (e) {}
+    let bookedCalendarYear = new Date().getFullYear();
+    let bookedCalendarMonth = new Date().getMonth();
+    let selectedBookedCalendarDate = (function() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    })();
+    let bookedListShiftFilter = 'ALL';
 
     // Fast Walk-in Selected Defaults
     let selectedWalkinReason = '🤒 Bukhar / Cold';
@@ -4737,9 +5100,10 @@
     let patientRegister = [];
 
     // Multi-tab sync channel
-    const syncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('parchisetu_sync') : null;
+    var syncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('parchisetu_sync') : null;
+    if (typeof window !== 'undefined') window.syncChannel = syncChannel;
 
-    if (syncChannel) {
+    if (typeof syncChannel !== 'undefined' && syncChannel) {
       syncChannel.onmessage = function (e) {
         if (!e.data) return;
         if (e.data.type === 'NEW_BOOKING') {
@@ -4773,6 +5137,10 @@
           } else if (e.data.id && e.data.updated) {
             const item = todayQueue.find(p => p.id === e.data.id);
             if (item) {
+              const wasCancelled = item.status === 'CANCELLED' || (typeof cancelledPatientIds !== 'undefined' && cancelledPatientIds.has(e.data.id));
+              if (wasCancelled && e.data.updated.status !== 'CANCELLED') {
+                e.data.updated.status = 'CANCELLED';
+              }
               Object.assign(item, e.data.updated);
               saveLocalQueue();
               refreshAllViews();
@@ -4820,13 +5188,25 @@
               if (msg.event === 'NEW_BOOKING' && msg.data) {
                 const b = msg.data;
                 const existingIdx = todayQueue.findIndex(p => p.id === b.id);
+                const wasCancelled = (existingIdx >= 0 && todayQueue[existingIdx].status === 'CANCELLED') || (typeof cancelledPatientIds !== 'undefined' && cancelledPatientIds.has(b.id));
+                const wasNoShow = (existingIdx >= 0 && todayQueue[existingIdx].status === 'NO_SHOW');
+
+                if (wasCancelled) {
+                  b.status = 'CANCELLED';
+                  b.cancelledBy = (existingIdx >= 0 && todayQueue[existingIdx].cancelledBy) || b.cancelledBy || 'clinic';
+                  b.cancelReason = (existingIdx >= 0 && todayQueue[existingIdx].cancelReason) || b.cancelReason || 'Cancelled by clinic';
+                } else if (wasNoShow && b.status === 'WAITING') {
+                  b.status = 'NO_SHOW';
+                }
+
                 if (existingIdx >= 0) {
-                  todayQueue[existingIdx] = b;
+                  todayQueue[existingIdx] = { ...todayQueue[existingIdx], ...b };
                 } else {
                   todayQueue.push(b);
-                  playClinicBellSound();
-                  refreshAllViews();
-                  showToast(`🔔 Naya Mareez Online Book Hua: ${b.name} (Token #${b.token})!`);
+                  if (b.status !== 'CANCELLED' && b.status !== 'NO_SHOW') {
+                    playClinicBellSound();
+                    showToast(`🔔 Naya Mareez Online Book Hua: ${b.name} (Token #${b.token})!`);
+                  }
                 }
                 saveLocalQueue();
                 refreshAllViews();
@@ -5237,6 +5617,42 @@
           if (Array.isArray(parsed) && parsed.length > 0) {
             todayQueue = parsed;
           }
+        }
+        try {
+          const savedCancels = localStorage.getItem('parchisetu_cancelled_ids');
+          if (savedCancels) {
+            const arr = JSON.parse(savedCancels);
+            if (Array.isArray(arr)) {
+              cancelledPatientIds = new Set(arr);
+              todayQueue.forEach(p => {
+                if (cancelledPatientIds.has(p.id)) {
+                  p.status = 'CANCELLED';
+                  p.cancelledBy = p.cancelledBy || 'clinic';
+                  p.cancelReason = p.cancelReason || 'Cancelled by clinic';
+                }
+              });
+            }
+          }
+        } catch (e) {}
+        const todayStr = getLocalDateString();
+        todayQueue.forEach(p => {
+          if (p.date && p.date < todayStr) {
+            if (p.day === 'Aaj (Today)') p.day = p.date;
+            if (p.status === 'WAITING') {
+              p.status = 'NO_SHOW';
+              p.noShow = true;
+              p.noShowAt = p.noShowAt || new Date().toISOString();
+            }
+          }
+        });
+        if (clinicProfile?.liveStatus?.qrOverrideExpiresAt && Date.now() >= clinicProfile.liveStatus.qrOverrideExpiresAt) {
+          const orig = clinicProfile.liveStatus.qrOverrideOriginalState !== undefined ? clinicProfile.liveStatus.qrOverrideOriginalState : false;
+          isQRBookingPaused = orig;
+          clinicProfile.liveStatus.isQRBookingPaused = orig;
+          delete clinicProfile.liveStatus.qrOverrideExpiresAt;
+          delete clinicProfile.liveStatus.qrOverrideOriginalState;
+          delete clinicProfile.liveStatus.qrOverrideAction;
+          saveLocalClinic();
         }
         const savedReg = localStorage.getItem('klinicq_register') || localStorage.getItem('parchisetu_register');
         if (savedReg) {
@@ -5927,7 +6343,7 @@
           });
         }
 
-        if (syncChannel) {
+        if (typeof syncChannel !== 'undefined' && syncChannel) {
           syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
         }
 
@@ -7319,10 +7735,38 @@
       }
       const queueMap = new Map();
       todayQueue.forEach(p => { if (p && p.id) queueMap.set(p.id, p); });
+      const todayStr = getLocalDateString();
       remoteQueue.forEach(p => {
         if (p && p.id) {
-          if (queueMap.has(p.id)) {
-            queueMap.set(p.id, { ...queueMap.get(p.id), ...p });
+          const existing = queueMap.get(p.id);
+          const wasCancelled = (existing && existing.status === 'CANCELLED') || (typeof cancelledPatientIds !== 'undefined' && cancelledPatientIds.has(p.id)) || p.status === 'CANCELLED';
+          const wasNoShow = (existing && existing.status === 'NO_SHOW') || p.status === 'NO_SHOW';
+          const isPastDate = p.date && p.date < todayStr;
+
+          if (wasCancelled) {
+            p.status = 'CANCELLED';
+            p.cancelledBy = (existing && existing.cancelledBy) || p.cancelledBy || 'clinic';
+            p.cancelReason = (existing && existing.cancelReason) || p.cancelReason || 'Cancelled by clinic';
+            if (typeof cancelledPatientIds !== 'undefined' && cancelledPatientIds.add) {
+              cancelledPatientIds.add(p.id);
+            }
+          } else if (isPastDate && (p.status === 'WAITING' || wasNoShow)) {
+            p.status = 'NO_SHOW';
+            p.noShow = true;
+            if (p.day === 'Aaj (Today)') p.day = p.date;
+          } else if (wasNoShow && p.status === 'WAITING') {
+            p.status = 'NO_SHOW';
+          }
+
+          if (existing) {
+            const finalStatus = wasCancelled ? 'CANCELLED' : (p.status === 'NO_SHOW' ? 'NO_SHOW' : p.status);
+            queueMap.set(p.id, { 
+              ...existing, 
+              ...p, 
+              status: finalStatus,
+              cancelledBy: existing.cancelledBy || p.cancelledBy,
+              cancelReason: existing.cancelReason || p.cancelReason
+            });
           } else {
             queueMap.set(p.id, p);
           }
@@ -8059,7 +8503,7 @@
       }
       saveLocalQueue();
 
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'NEW_BOOKING', booking: savedBooking });
       }
 
@@ -8135,7 +8579,7 @@
       }
 
       saveLocalQueue();
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
       }
       refreshAllViews();
@@ -8164,7 +8608,7 @@
       syncQueuePatchToServer(target.id, { status: 'IN_CABIN' });
       speakTokenAnnouncement(target.token, target.name);
       saveLocalQueue();
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
       }
       refreshAllViews();
@@ -8184,7 +8628,7 @@
       }
       syncQueuePatchToServer(p.id, { payMode: p.payMode });
       saveLocalQueue();
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
       }
       refreshAllViews();
@@ -8206,7 +8650,7 @@
       }
       syncQueuePatchToServer(p.id, { payMode: p.payMode });
       saveLocalQueue();
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
       }
       refreshAllViews();
@@ -8214,7 +8658,7 @@
 
     function parseSlotTimeToMinutes(slotStr) {
       if (!slotStr) return null;
-      const match = String(slotStr).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+      const match = String(slotStr).trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
       if (!match) return null;
       let hours = parseInt(match[1], 10);
       const minutes = parseInt(match[2], 10);
@@ -8248,9 +8692,32 @@
         return;
       }
       p.status = 'CANCELLED';
+      p.cancelledBy = 'clinic';
+      p.cancelReason = 'Cancelled by clinic';
+      p.cancelledAt = new Date().toISOString();
+      if (typeof cancelledPatientIds !== 'undefined' && cancelledPatientIds && typeof cancelledPatientIds.add === 'function') {
+        cancelledPatientIds.add(patientId);
+      }
+      try {
+        if (typeof localStorage !== 'undefined' && localStorage && typeof cancelledPatientIds !== 'undefined') {
+          localStorage.setItem('parchisetu_cancelled_ids', JSON.stringify(Array.from(cancelledPatientIds)));
+        }
+      } catch (e) {}
       saveLocalQueue();
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
+        syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
+      }
       refreshAllViews();
-      await syncQueuePatchToServer(patientId, { status: 'CANCELLED' });
+      if (typeof renderBookedAppointmentsCalendar === 'function') {
+        renderBookedAppointmentsCalendar();
+        renderBookedAppointmentsList();
+      }
+      await syncQueuePatchToServer(patientId, { 
+        status: 'CANCELLED', 
+        cancelledBy: 'clinic', 
+        cancelReason: 'Cancelled by clinic',
+        cancelledAt: p.cancelledAt
+      });
       showToast(`❌ Token #${p.token} (${p.name}) appointment cancel ho gaya.`);
     }
 
@@ -8288,14 +8755,45 @@
       await cancelPatientAppointment(idToCancel, true);
     }
 
+    async function markPatientNoShow(patientId) {
+      const p = todayQueue.find(item => item.id === patientId);
+      if (!p) return;
+      p.status = 'NO_SHOW';
+      p.noShow = true;
+      p.noShowAt = new Date().toISOString();
+      saveLocalQueue();
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
+        syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
+      }
+      refreshAllViews();
+      if (typeof renderBookedAppointmentsCalendar === 'function') {
+        renderBookedAppointmentsCalendar();
+        renderBookedAppointmentsList();
+      }
+      await syncQueuePatchToServer(patientId, { 
+        status: 'NO_SHOW',
+        noShow: true,
+        noShowAt: p.noShowAt
+      });
+      showToast(`🚫 Token #${p.token} (${p.name}) marked as No-Show.`);
+    }
+
+    async function executeConfirmedNoShow() {
+      const idToMark = pendingCancellationPatientId;
+      closeCancelConfirmModal();
+      if (!idToMark) return;
+      await markPatientNoShow(idToMark);
+    }
+
     function renderQueueFilterPills() {
       const activeQueue = todayQueue.filter(p => p.status !== 'CANCELLED');
       const counts = {
-        ALL: activeQueue.length,
+        ALL: activeQueue.filter(p => p.status !== 'NO_SHOW').length,
         WAITING: todayQueue.filter(p => p.status === 'WAITING').length,
         IN_CABIN: todayQueue.filter(p => p.status === 'IN_CABIN').length,
         DONE: todayQueue.filter(p => p.status === 'DONE').length,
-        BAAKI: activeQueue.filter(p => p.payMode === 'Baaki').length
+        BAAKI: activeQueue.filter(p => p.payMode === 'Baaki').length,
+        NO_SHOW: todayQueue.filter(p => p.status === 'NO_SHOW').length
       };
 
       const pills = [
@@ -8318,6 +8816,10 @@
         {
           key: 'BAAKI',
           label: currentLang === 'hindi' ? `⚠️ बाकी शुल्क (${counts.BAAKI})` : (currentLang === 'hinglish' ? `⚠️ Baaki (${counts.BAAKI})` : `⚠️ Unpaid (${counts.BAAKI})`)
+        },
+        {
+          key: 'NO_SHOW',
+          label: currentLang === 'hindi' ? `🚫 नहीं आए (${counts.NO_SHOW})` : (currentLang === 'hinglish' ? `🚫 No-Show (${counts.NO_SHOW})` : `🚫 No-Show (${counts.NO_SHOW})`)
         }
       ];
 
@@ -8359,11 +8861,12 @@
       const container = document.getElementById('queueListContainer');
 
       let filtered = todayQueue.filter(p => {
-        if (currentQueueFilter === 'ALL' && !searchQ && p.status === 'CANCELLED') return false;
+        if (currentQueueFilter === 'ALL' && !searchQ && (p.status === 'CANCELLED' || p.status === 'NO_SHOW')) return false;
         if (currentQueueFilter === 'WAITING' && p.status !== 'WAITING') return false;
         if (currentQueueFilter === 'IN_CABIN' && p.status !== 'IN_CABIN') return false;
         if (currentQueueFilter === 'DONE' && p.status !== 'DONE') return false;
         if (currentQueueFilter === 'BAAKI' && p.payMode !== 'Baaki') return false;
+        if (currentQueueFilter === 'NO_SHOW' && p.status !== 'NO_SHOW') return false;
         if (searchQ) {
           const matchName = (p.name || '').toLowerCase().includes(searchQ);
           const matchToken = String(p.token).includes(searchQ);
@@ -8403,9 +8906,13 @@
         const slotDisplay = (revisedSlot && revisedSlot.hasChange) ? revisedSlot.displayText : (p.slotTime || 'Slot');
 
         if (p.status === 'IN_CABIN') {
-          tokenCircleClass = 'bg-[#25D366] text-slate-950 ring-4 ring-[#25D366]/30 live-token-pulse font-black';
-          rowBgClass = 'bg-emerald-50/40';
-          statusBadge = `<span class="bg-[#25D366] text-slate-950 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[5px]"></i> Andar</span>`;
+          tokenCircleClass = 'bg-[#25D366] text-slate-950 ring-4 ring-[#25D366]/40 live-token-pulse font-black';
+          rowBgClass = 'bg-gradient-to-r from-emerald-100/90 via-emerald-50 to-teal-50 border-2 border-[#25D366] shadow-sm rounded-2xl';
+          statusBadge = `<span class="bg-[#075E54] text-[#25D366] text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5 shadow-xs"><span class="w-2 h-2 rounded-full bg-[#25D366] animate-ping"></span> ⚡ ANDAR HAI (In-Process)</span>`;
+        } else if (p.status === 'NO_SHOW') {
+          tokenCircleClass = 'bg-amber-100 text-amber-900 border border-amber-300';
+          rowBgClass = 'bg-amber-50/40 opacity-80';
+          statusBadge = `<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">🚫 No-Show</span>`;
         } else if (p.status === 'WAITING' && isLate) {
           tokenCircleClass = 'bg-amber-50 text-amber-950 border-2 border-amber-400 font-black';
           rowBgClass = 'bg-amber-50/30';
@@ -8506,8 +9013,18 @@
               </div>
             </div>
 
-            <!-- WhatsApp Actions: 1-Tap Bulao or Cabin/Done Badge & Cancel Option -->
+            <!-- WhatsApp Actions: 1-Tap Bulao or Cabin/Done Badge & Edit / Cancel Options -->
             <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+              <!-- Fast Edit Button for every appointment -->
+              <button 
+                type="button" 
+                onclick="event.stopPropagation(); openEditAppointmentModal('${p.id}')" 
+                class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-black shadow-2xs transition"
+                title="Edit Details (Naam, Phone, Samay, Takleef)"
+              >
+                <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
+              </button>
+
               ${
                 p.status === 'WAITING'
                   ? `<button 
@@ -8518,6 +9035,14 @@
                     >
                       <span>Bulao</span>
                       <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                    <button 
+                      type="button" 
+                      onclick="event.stopPropagation(); markPatientNoShow('${p.id}')" 
+                      class="px-2 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs transition"
+                      title="Mark as No-Show (Nahi Aaye)"
+                    >
+                      No-Show
                     </button>
                     <button 
                       type="button" 
@@ -8541,6 +9066,12 @@
                         <i class="fa-solid fa-xmark"></i>
                       </button>
                     </div>`
+                  : p.status === 'NO_SHOW'
+                  ? `<div class="flex items-center gap-1">
+                      <span class="text-amber-800 bg-amber-100 border border-amber-300 font-bold text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                        <i class="fa-solid fa-user-slash text-[10px]"></i> No-Show
+                      </span>
+                    </div>`
                   : p.status === 'CANCELLED'
                   ? `<span class="text-rose-400 font-bold text-xs inline-flex items-center gap-1">
                       <i class="fa-solid fa-ban text-sm"></i> Cancelled
@@ -8548,8 +9079,7 @@
                   : `<span class="text-slate-400 font-bold text-xs inline-flex items-center gap-1">
                       <i class="fa-solid fa-check-double text-[#53bdeb] text-sm"></i> Done
                     </span>`
-              }
-            </div>
+              }</div>
 
           </div>
         `;
@@ -9041,14 +9571,25 @@
       return doctorDelayMinutes || 0;
     }
 
+    function getActiveClinicShift() {
+      const now = new Date();
+      const curHour = now.getHours();
+      const eveningHours = clinicProfile?.visitingHours?.evening;
+      if (eveningHours && eveningHours.enabled && curHour >= 15) {
+        return 'Evening';
+      }
+      return 'Morning';
+    }
+
     function getDoctorExpectedArrivalTime() {
-      if (clinicProfile && clinicProfile.liveStatus && clinicProfile.liveStatus.expectedArrivalTime) {
+      const shift = getActiveClinicShift();
+      if (clinicProfile && clinicProfile.liveStatus && clinicProfile.liveStatus.expectedArrivalTime && clinicProfile.liveStatus.expectedArrivalTimeShift === shift) {
         return clinicProfile.liveStatus.expectedArrivalTime;
       }
       const delay = getDoctorDelayMinutes();
-      const morning = clinicProfile?.visitingHours?.morning;
-      const startStr = (morning && morning.enabled && morning.start) || '10:00 AM';
-      const startMins = parseSlotTimeToMinutes(startStr) || 600;
+      const shiftConfig = shift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
+      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (shift === 'Evening' ? '05:00 PM' : '10:00 AM');
+      const startMins = parseSlotTimeToMinutes(startStr) || (shift === 'Evening' ? 1020 : 600);
       return formatMinutesToTime(startMins + delay);
     }
 
@@ -9102,9 +9643,10 @@
       doctorDelayMinutes = delay;
       isDoctorLate = delay > 0;
 
-      const morning = clinicProfile?.visitingHours?.morning;
-      const startStr = (morning && morning.enabled && morning.start) || '10:00 AM';
-      const startMins = parseSlotTimeToMinutes(startStr) || 600;
+      const shift = getActiveClinicShift();
+      const shiftConfig = shift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
+      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (shift === 'Evening' ? '05:00 PM' : '10:00 AM');
+      const startMins = parseSlotTimeToMinutes(startStr) || (shift === 'Evening' ? 1020 : 600);
       const computedArrival = arrivalTimeStr || formatMinutesToTime(startMins + delay);
       expectedDoctorArrivalTime = computedArrival;
 
@@ -9113,6 +9655,7 @@
         isDoctorLate,
         doctorDelayMinutes: delay,
         expectedArrivalTime: computedArrival,
+        expectedArrivalTimeShift: shift,
         isQRBookingPaused,
         updatedAt: new Date().toISOString()
       };
@@ -9129,7 +9672,7 @@
       if (window.ParchiFirebase && clinicProfile.id) {
         window.ParchiFirebase.syncClinic(clinicProfile);
       }
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
 
@@ -9153,9 +9696,10 @@
       }
       const [hStr, mStr] = input.value.split(':');
       const targetMins = parseInt(hStr, 10) * 60 + parseInt(mStr, 10);
-      const morning = clinicProfile?.visitingHours?.morning;
-      const startStr = (morning && morning.enabled && morning.start) || '10:00 AM';
-      const startMins = parseSlotTimeToMinutes(startStr) || 600;
+      const shift = getActiveClinicShift();
+      const shiftConfig = shift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
+      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (shift === 'Evening' ? '05:00 PM' : '10:00 AM');
+      const startMins = parseSlotTimeToMinutes(startStr) || (shift === 'Evening' ? 1020 : 600);
       const offset = targetMins - startMins;
       const formattedArrival = formatMinutesToTime(targetMins);
       setDoctorDelayMinutes(offset, formattedArrival);
@@ -9177,6 +9721,16 @@
       const badgeText = document.getElementById('doctorArrivalLiveBadgeText');
       const delay = getDoctorDelayMinutes();
       const arrival = getDoctorExpectedArrivalTime();
+
+      const timeInput = document.getElementById('customDoctorArrivalTimeInput');
+      if (timeInput && document.activeElement !== timeInput) {
+        const arrMins = parseSlotTimeToMinutes(arrival);
+        if (arrMins !== null) {
+          const hh = String(Math.floor(arrMins / 60)).padStart(2, '0');
+          const mm = String(arrMins % 60).padStart(2, '0');
+          timeInput.value = `${hh}:${mm}`;
+        }
+      }
 
       if (badge && badgeText) {
         if (delay === 0) {
@@ -9249,14 +9803,22 @@
       const btn = document.getElementById('btnPauseQRToggle');
       const pill = document.getElementById('pauseQRStatusPill');
       if (btn && pill) {
+        let overrideRemainingMins = null;
+        if (clinicProfile?.liveStatus?.qrOverrideExpiresAt) {
+          const diff = clinicProfile.liveStatus.qrOverrideExpiresAt - Date.now();
+          if (diff > 0) {
+            overrideRemainingMins = Math.ceil(diff / 60000);
+          }
+        }
+
         if (isQRBookingPaused) {
           btn.className = 'btn-tactile px-4 py-2.5 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-rose-100 border-rose-500 text-rose-950 shadow-xs';
           pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-rose-600 text-white font-black';
-          pill.textContent = 'PAUSED';
+          pill.textContent = overrideRemainingMins ? `PAUSED (${overrideRemainingMins}m)` : 'PAUSED';
         } else {
           btn.className = 'btn-tactile px-4 py-2.5 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs';
           pill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-black';
-          pill.textContent = 'OPEN';
+          pill.textContent = overrideRemainingMins ? `OPEN (${overrideRemainingMins}m)` : 'OPEN';
         }
       }
     }
@@ -9267,15 +9829,76 @@
       setDoctorDelayMinutes(newDelay);
     }
 
-    function togglePauseQR() {
-      isQRBookingPaused = !isQRBookingPaused;
-      clinicProfile.liveStatus = {
-        ...(clinicProfile.liveStatus || {}),
-        isDoctorLate,
-        doctorDelayMinutes: getDoctorDelayMinutes(),
-        expectedArrivalTime: getDoctorExpectedArrivalTime(),
-        isQRBookingPaused
-      };
+    function promptToggleOnlineBooking() {
+      const modal = document.getElementById('onlineBookingOverrideModal');
+      const icon = document.getElementById('bookingOverrideIcon');
+      const title = document.getElementById('bookingOverrideTitle');
+      const sub = document.getElementById('bookingOverrideSub');
+
+      if (isQRBookingPaused) {
+        if (icon) {
+          icon.className = 'w-10 h-10 rounded-2xl bg-emerald-100 text-[#075E54] flex items-center justify-center text-xl font-black';
+          icon.innerHTML = '<i class="fa-solid fa-play"></i>';
+        }
+        if (title) title.textContent = '🟢 Online Booking Kholna (Open Bookings)';
+        if (sub) sub.textContent = 'Online booking kitni der ke liye kholna chahte hain?';
+      } else {
+        if (icon) {
+          icon.className = 'w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-black';
+          icon.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        }
+        if (title) title.textContent = '🛑 Online Booking Band / Pause Karein';
+        if (sub) sub.textContent = 'Online booking kitni der ke liye pause karna chahte hain?';
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeOnlineBookingOverrideModal() {
+      const modal = document.getElementById('onlineBookingOverrideModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function applyOnlineBookingOverride(duration) {
+      closeOnlineBookingOverrideModal();
+      const targetState = !isQRBookingPaused;
+      isQRBookingPaused = targetState;
+
+      clinicProfile.liveStatus = clinicProfile.liveStatus || {};
+      clinicProfile.liveStatus.isQRBookingPaused = targetState;
+
+      let durationMins = 0;
+      if (duration === 'shift') {
+        durationMins = 240;
+      } else if (typeof duration === 'number' && duration > 0) {
+        durationMins = duration;
+      }
+
+      if (durationMins > 0) {
+        clinicProfile.liveStatus.qrOverrideExpiresAt = Date.now() + (durationMins * 60 * 1000);
+        clinicProfile.liveStatus.qrOverrideOriginalState = !targetState;
+        clinicProfile.liveStatus.qrOverrideAction = targetState ? 'closed' : 'open';
+        showToast(targetState 
+          ? `🛑 Online booking ${durationMins} minute ke liye pause kiya gaya.`
+          : `🟢 Online booking ${durationMins} minute ke liye khol diya gaya.`
+        );
+      } else {
+        delete clinicProfile.liveStatus.qrOverrideExpiresAt;
+        delete clinicProfile.liveStatus.qrOverrideOriginalState;
+        delete clinicProfile.liveStatus.qrOverrideAction;
+        showToast(targetState 
+          ? '🛑 Online booking hamesha ke liye pause kiya gaya.'
+          : '🟢 Online booking hamesha ke liye khol diya gaya.'
+        );
+      }
+
+      saveLocalClinic();
       if (window.location.protocol.startsWith('http')) {
         fetch('/api/clinic', {
           method: 'POST',
@@ -9286,16 +9909,16 @@
       if (window.ParchiFirebase && clinicProfile.id) {
         window.ParchiFirebase.syncClinic(clinicProfile);
       }
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
 
       updatePauseQRUI();
-      if (isQRBookingPaused) {
-        showToast('🛑 Online QR Bookings Paused (Full House Mode)', 'warning');
-      } else {
-        showToast('🟢 Online QR Bookings Re-Opened!');
-      }
+      refreshAllViews();
+    }
+
+    function togglePauseQR() {
+      promptToggleOnlineBooking();
     }
 
     function onCalendarCustomDateSelected(dateVal) {
@@ -9320,7 +9943,7 @@
       if (window.ParchiFirebase) {
         window.ParchiFirebase.syncClinic(clinicProfile);
       }
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
       showToast(current.fullDay ? `🌴 ${selectedCalendarDateStr} chhutti (Leave) mark ki gayi!` : `✅ ${selectedCalendarDateStr} chhutti hata di gayi.`);
@@ -9347,7 +9970,7 @@
       if (window.ParchiFirebase) {
         window.ParchiFirebase.syncClinic(clinicProfile);
       }
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
       showToast(`${shift} shift status update ho gaya.`);
@@ -9378,7 +10001,7 @@
       if (window.ParchiFirebase) {
         window.ParchiFirebase.syncClinic(clinicProfile);
       }
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
       }
       renderCalendarTab();
@@ -9514,11 +10137,17 @@
         for (let m = sm; m < em; m += step) allEveningSlots.push(formatTimeMinutes(m));
       }
 
+      const activeShift = getActiveClinicShift();
+      const delayMins = getDoctorDelayMinutes();
+      const delayNote = delayMins > 0 ? ` (Delayed ${delayMins}m)` : (delayMins < 0 ? ` (Early ${Math.abs(delayMins)}m)` : '');
+
       const shiftsHTML = [
         {
           title: '☀️ Subah OP (Morning Shift)',
           shiftKey: 'Morning',
-          time: (mCfg && mCfg.start && mCfg.end) ? (isDoctorLate ? `${mCfg.start} - ${mCfg.end} (Delayed 30m)` : `${mCfg.start} - ${mCfg.end}`) : '10:00 AM - 02:00 PM',
+          time: (mCfg && mCfg.start && mCfg.end) 
+            ? `${mCfg.start} - ${mCfg.end}${activeShift === 'Morning' && delayMins !== 0 ? delayNote : ''}` 
+            : '10:00 AM - 02:00 PM',
           capacity: (mCfg && mCfg.maxTokens) || 25,
           list: mList,
           enabled: mCfg ? (mCfg.enabled && !mOff && !isFullDayLeave) : false,
@@ -9527,7 +10156,9 @@
         {
           title: '🌙 Shaam OP (Evening Shift)',
           shiftKey: 'Evening',
-          time: (eCfg && eCfg.start && eCfg.end) ? `${eCfg.start} - ${eCfg.end}` : '05:00 PM - 09:00 PM',
+          time: (eCfg && eCfg.start && eCfg.end) 
+            ? `${eCfg.start} - ${eCfg.end}${activeShift === 'Evening' && delayMins !== 0 ? delayNote : ''}` 
+            : '05:00 PM - 09:00 PM',
           capacity: (eCfg && eCfg.maxTokens) || 30,
           list: eList,
           enabled: eCfg ? (eCfg.enabled && !eOff && !isFullDayLeave) : false,
@@ -9948,7 +10579,7 @@
 
       todayQueue.push(newBooking);
       saveLocalQueue();
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
       }
 
@@ -10457,9 +11088,38 @@
       const mEnd = mOpen ? parseTimeString(morning.end) : -1;
       const eStart = eOpen ? parseTimeString(evening.start) : -1;
       const eEnd = eOpen ? parseTimeString(evening.end) : -1;
+      // Check temporary compounder override to OPEN outside scheduled hours
+      if (clinicProfile?.liveStatus?.qrOverrideAction === 'open' && clinicProfile?.liveStatus?.qrOverrideExpiresAt && Date.now() < clinicProfile.liveStatus.qrOverrideExpiresAt) {
+        const remainingMins = Math.ceil((clinicProfile.liveStatus.qrOverrideExpiresAt - Date.now()) / 60000);
+        return {
+          isOpen: true,
+          isHoliday: false,
+          shift: 'Special Open',
+          bannerBg: 'bg-black/25 border border-emerald-500/40 text-white',
+          badgeText: '🟢 LIVE CLINIC STATUS (ONLINE BOOKING KHULA HAI)',
+          statusMessage: 'Online Booking / OPD Chalu Hai',
+          subMessage: `Compounder dwara agle ${remainingMins} minute ke liye khola gaya hai.`,
+          waitingCountText: 'Live'
+        };
+      }
 
       // Check if currently inside Morning OPD
       if (mOpen && currentMins >= mStart && currentMins < mEnd) {
+        if (isQRBookingPaused) {
+          const remainingMins = (clinicProfile?.liveStatus?.qrOverrideExpiresAt && clinicProfile.liveStatus.qrOverrideExpiresAt > Date.now())
+            ? Math.ceil((clinicProfile.liveStatus.qrOverrideExpiresAt - Date.now()) / 60000)
+            : null;
+          return {
+            isOpen: false,
+            isHoliday: false,
+            reason: 'MANUAL_PAUSE',
+            bannerBg: 'bg-amber-600 text-white border-2 border-amber-800 shadow-md',
+            badgeText: '🛑 ONLINE BOOKING ABHI PAUSED HAI',
+            statusMessage: 'Online Booking Abhi Ruki Hui Hai',
+            subMessage: remainingMins ? `Agla booking ${remainingMins} minute mein wapas chalu hoga.` : 'Kripya clinic desk par sampark karein.',
+            waitingCountText: 'Paused'
+          };
+        }
         return {
           isOpen: true,
           isHoliday: false,
@@ -10474,6 +11134,21 @@
 
       // Check if currently inside Evening OPD
       if (eOpen && currentMins >= eStart && currentMins < eEnd) {
+        if (isQRBookingPaused) {
+          const remainingMins = (clinicProfile?.liveStatus?.qrOverrideExpiresAt && clinicProfile.liveStatus.qrOverrideExpiresAt > Date.now())
+            ? Math.ceil((clinicProfile.liveStatus.qrOverrideExpiresAt - Date.now()) / 60000)
+            : null;
+          return {
+            isOpen: false,
+            isHoliday: false,
+            reason: 'MANUAL_PAUSE',
+            bannerBg: 'bg-amber-600 text-white border-2 border-amber-800 shadow-md',
+            badgeText: '🛑 ONLINE BOOKING ABHI PAUSED HAI',
+            statusMessage: 'Online Booking Abhi Ruki Hui Hai',
+            subMessage: remainingMins ? `Agla booking ${remainingMins} minute mein wapas chalu hoga.` : 'Kripya clinic desk par sampark karein.',
+            waitingCountText: 'Paused'
+          };
+        }
         return {
           isOpen: true,
           isHoliday: false,
@@ -10514,6 +11189,9 @@
 
     function openPatientBookingModal() {
       currentPatBookingStep = 1;
+      isCustomPatReason = false;
+      const customInput = document.getElementById('patBookCustomReason');
+      if (customInput) customInput.value = '';
       const modal = document.getElementById('patientBookingModal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -10828,15 +11506,15 @@
       const reasonChipsBox = document.getElementById('patBookReasonChips');
       if (reasonChipsBox) {
         const rList = getVisitingReasons();
-        if (!rList.includes(selectedPatReason)) {
+        if (!selectedPatReason && rList.length > 0) {
           selectedPatReason = rList[0] || 'General Consultation';
         }
         reasonChipsBox.innerHTML = rList.map(r => {
-          const active = selectedPatReason === r;
+          const active = selectedPatReason === r && !isCustomPatReason;
           return `
             <button 
               type="button" 
-              onclick="selectedPatReason='${r}'; renderPatientBookingPage();" 
+              onclick="selectPatientReasonChip('${escapeHtml(r)}')" 
               class="px-3 py-1.5 rounded-xl font-bold text-xs border transition ${
                 active
                   ? 'bg-[#128C7E] text-white border-[#128C7E]'
@@ -10864,11 +11542,42 @@
       renderPatientBookingPage();
     }
 
+    let isCustomPatReason = false;
+    function selectPatientReasonChip(reason) {
+      selectedPatReason = reason;
+      isCustomPatReason = false;
+      const customInput = document.getElementById('patBookCustomReason');
+      if (customInput) customInput.value = '';
+      renderPatientBookingPage();
+    }
+
+    function onPatientCustomReasonInput(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed) {
+        selectedPatReason = trimmed;
+        isCustomPatReason = true;
+      } else {
+        isCustomPatReason = false;
+      }
+      const reasonChipsBox = document.getElementById('patBookReasonChips');
+      if (reasonChipsBox) {
+        const btns = reasonChipsBox.querySelectorAll('button');
+        btns.forEach(btn => {
+          if (!isCustomPatReason && btn.textContent.trim() === selectedPatReason) {
+            btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs border transition bg-[#128C7E] text-white border-[#128C7E]';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs border transition bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+          }
+        });
+      }
+    }
+
     async function submitPatientOnlineBooking() {
       const nameInput = document.getElementById('patBookName');
       const ageInput = document.getElementById('patBookAge');
       const genderSelect = document.getElementById('patBookGender');
       const phoneInput = document.getElementById('patBookPhone');
+      const customReasonInput = document.getElementById('patBookCustomReason');
 
       const name = (nameInput?.value || '').trim();
       const phone = (phoneInput?.value || '').trim();
@@ -10923,7 +11632,7 @@
         age: age,
         gender: gender,
         phone: phone,
-        reason: selectedPatReason || 'General Consultation',
+        reason: (customReasonInput?.value || '').trim() || selectedPatReason || 'General Consultation',
         doctorId: docId,
         doctorName: docName,
         fee: fee,
@@ -10982,11 +11691,12 @@
         saveLocalQueue();
       }
 
-      if (syncChannel) {
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'NEW_BOOKING', booking: savedBooking });
       }
 
       lastPatientBooking = savedBooking;
+      patientPassViewMode = 'direct';
       try {
         localStorage.setItem('parchi_last_booking_' + (savedBooking.clinicId || (clinicProfile ? clinicProfile.id : '')), JSON.stringify(savedBooking));
         localStorage.setItem('parchi_active_patient_booking', JSON.stringify(savedBooking));
@@ -11010,7 +11720,20 @@
       const passPatName = document.getElementById('passPatientName');
       if (passPatName) {
         const ag = formatPatientAgeGender(savedBooking.age, savedBooking.gender);
-        passPatName.textContent = `${savedBooking.name}${ag ? ` (${ag})` : ''} • ${savedBooking.phone}`;
+        if (patientPassViewMode === 'search') {
+          passPatName.textContent = `${savedBooking.name}${ag ? ` (${ag})` : ''}`;
+        } else {
+          passPatName.textContent = `${savedBooking.name}${ag ? ` (${ag})` : ''} • ${savedBooking.phone}`;
+        }
+      }
+
+      const privacyNotice = document.getElementById('passPrivacySearchNotice');
+      if (privacyNotice) {
+        if (patientPassViewMode === 'search') {
+          privacyNotice.classList.remove('hidden');
+        } else {
+          privacyNotice.classList.add('hidden');
+        }
       }
 
       const passClinicName = document.getElementById('passClinicName');
@@ -11058,6 +11781,7 @@
         if (!isTodayOrFuture) return false;
 
         lastPatientBooking = b;
+        patientPassViewMode = 'direct';
         renderTokenPassDetails(b);
         return true;
       } catch (e) {
@@ -11122,6 +11846,61 @@
         }
       }
 
+      const myBooking = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
+      const visualAheadEl = document.getElementById('passPeopleAheadVisual');
+
+      if (myBooking.status === 'CANCELLED') {
+        card.className = 'p-3.5 bg-rose-50 border-2 border-rose-300 rounded-2xl text-left space-y-2 shadow-sm';
+        if (headerEl) headerEl.className = 'text-[10px] font-black uppercase text-rose-700 flex items-center gap-1.5';
+        if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-rose-600';
+        if (distEl) {
+          distEl.textContent = '❌ APPOINTMENT CANCELLED';
+          distEl.className = 'text-xs font-black text-rose-700';
+        }
+        if (waitEstEl) {
+          waitEstEl.textContent = myBooking.cancelReason || 'Cancelled by clinic';
+          waitEstEl.className = 'text-[11px] text-rose-800 font-semibold';
+        }
+        if (passEstTimeEl) {
+          passEstTimeEl.textContent = 'Cancelled';
+          passEstTimeEl.className = 'text-rose-600 font-bold';
+        }
+        if (visualAheadEl) visualAheadEl.textContent = 'Cancelled';
+        if (cabinTokenEl) cabinTokenEl.textContent = 'Cancelled';
+        if (inCabinNotice) {
+          inCabinNotice.classList.remove('hidden');
+          inCabinNotice.className = 'p-3 bg-rose-600 text-white font-black text-xs sm:text-sm rounded-xl text-center shadow-md';
+          inCabinNotice.innerHTML = '❌ <strong>Appointment Clinic dwara cancel kar diya gaya hai (Cancelled by Clinic).</strong> Kripya nayi booking karein ya clinic se sampark karein.';
+        }
+        return;
+      }
+
+      if (myBooking.status === 'NO_SHOW') {
+        card.className = 'p-3.5 bg-amber-50 border-2 border-amber-300 rounded-2xl text-left space-y-2 shadow-sm';
+        if (headerEl) headerEl.className = 'text-[10px] font-black uppercase text-amber-800 flex items-center gap-1.5';
+        if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-amber-600';
+        if (distEl) {
+          distEl.textContent = '🚫 NO-SHOW (Nahi Aaye)';
+          distEl.className = 'text-xs font-black text-amber-800';
+        }
+        if (waitEstEl) {
+          waitEstEl.textContent = 'Appointment miss ho gaya. Clinic counter se sampark karein.';
+          waitEstEl.className = 'text-[11px] text-amber-800 font-semibold';
+        }
+        if (passEstTimeEl) {
+          passEstTimeEl.textContent = 'No-Show';
+          passEstTimeEl.className = 'text-amber-800 font-bold';
+        }
+        if (visualAheadEl) visualAheadEl.textContent = 'No-Show';
+        if (cabinTokenEl) cabinTokenEl.textContent = 'No-Show';
+        if (inCabinNotice) {
+          inCabinNotice.classList.remove('hidden');
+          inCabinNotice.className = 'p-3 bg-amber-500 text-slate-950 font-black text-xs sm:text-sm rounded-xl text-center shadow-md';
+          inCabinNotice.innerHTML = '🚫 <strong>Aap samay par clinic nahi pahunche (No-Show).</strong> Naya slot lene ke liye reception se sampark karein.';
+        }
+        return;
+      }
+
       if (!statusInfo.isOpen) {
         // Red background banner for closed clinic or doctor holiday
         // High contrast styling: eliminate dark green (text-[#075E54]) on red, use light green / amber / white
@@ -11148,7 +11927,7 @@
       }
 
       // Normal open clinic card
-      card.className = 'p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-left space-y-1.5 shadow-inner';
+      card.className = 'p-3 bg-emerald-50 rounded-2xl border border-emerald-300 text-left space-y-2 shadow-xs';
       if (headerEl) headerEl.className = 'text-[10px] font-black uppercase text-[#075E54] flex items-center gap-1.5';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-[#25D366] live-token-pulse';
       if (distEl) distEl.className = 'text-xs font-black text-[#128C7E]';
@@ -11156,7 +11935,6 @@
       if (cabinStatusSpan) cabinStatusSpan.className = 'text-slate-800';
       if (waitEstEl) waitEstEl.className = 'text-[11px] text-slate-600 font-semibold';
 
-      const myBooking = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
       const inCabin = getCurrentCabinPatient();
       const avgMins = (clinicProfile.visitingHours && clinicProfile.visitingHours.avgConsultationMins) || 10;
 
@@ -11171,7 +11949,12 @@
           passEstTimeEl.textContent = 'Abhi Cabin Mein';
           passEstTimeEl.className = 'text-emerald-700 font-bold';
         }
-        if (inCabinNotice) inCabinNotice.classList.remove('hidden');
+        if (visualAheadEl) visualAheadEl.textContent = '🟢 Andar Hain';
+        if (inCabinNotice) {
+          inCabinNotice.classList.remove('hidden');
+          inCabinNotice.className = 'p-3 bg-[#25D366] text-slate-950 font-black text-xs sm:text-sm rounded-xl text-center shadow-md animate-bounce';
+          inCabinNotice.innerHTML = '🔔 <strong>AAPKA NUMBER AA GAYA!</strong> Kripya Doctor Sahab ke cabin mein jayein (Currently Under Consultation).';
+        }
       } else if (myBooking.status === 'DONE') {
         if (distEl) distEl.textContent = '✅ CONSULTATION COMPLETE';
         if (waitEstEl) waitEstEl.textContent = 'Parchi lekar counter par check karein';
@@ -11179,6 +11962,7 @@
           passEstTimeEl.textContent = 'Pura Ho Gaya (Done)';
           passEstTimeEl.className = 'text-slate-600 font-bold';
         }
+        if (visualAheadEl) visualAheadEl.textContent = 'Done ✓';
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
       } else {
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
@@ -11192,6 +11976,7 @@
             passEstTimeEl.textContent = '~0-5 Mins (Agla Number)';
             passEstTimeEl.className = 'text-[#075E54] font-bold';
           }
+          if (visualAheadEl) visualAheadEl.textContent = 'Agla Number!';
         } else if (aheadCount === 1) {
           if (distEl) distEl.textContent = '1 Mareez Aage Hai';
           if (waitEstEl) waitEstEl.textContent = `~${avgMins} Mins Baaki`;
@@ -11199,6 +11984,7 @@
             passEstTimeEl.textContent = `~${avgMins} Mins`;
             passEstTimeEl.className = 'text-[#075E54] font-bold';
           }
+          if (visualAheadEl) visualAheadEl.textContent = '1 Log Aage';
         } else {
           if (distEl) distEl.textContent = `${aheadCount} Mareez Aage Hain`;
           if (waitEstEl) waitEstEl.textContent = `~${aheadCount * avgMins} Mins Baaki`;
@@ -11206,6 +11992,7 @@
             passEstTimeEl.textContent = `~${aheadCount * avgMins} Mins`;
             passEstTimeEl.className = 'text-[#075E54] font-bold';
           }
+          if (visualAheadEl) visualAheadEl.textContent = `${aheadCount} Log Aage`;
         }
       }
     }
@@ -12159,8 +12946,11 @@
         let found = null;
         const todayStr = getLocalDateString();
 
-        // 1. Check local todayQueue
-        found = todayQueue.find(p => p.phone && p.phone.replace(/\D/g, '').endsWith(phone) && p.status !== 'CANCELLED');
+        // 1. Check local todayQueue (prefer active non-cancelled, but fall back to cancelled/no-show)
+        const localMatches = todayQueue.filter(p => p.phone && p.phone.replace(/\D/g, '').endsWith(phone));
+        found = localMatches.find(p => p.status !== 'CANCELLED' && p.status !== 'NO_SHOW') 
+             || localMatches.find(p => p.status !== 'CANCELLED') 
+             || localMatches[0];
 
         // 2. Check local lastPatientBooking
         if (!found && lastPatientBooking && lastPatientBooking.phone) {
@@ -12176,7 +12966,9 @@
             if (res.ok) {
               const qList = await res.json();
               if (Array.isArray(qList) && qList.length > 0) {
-                found = qList.find(p => p.status !== 'CANCELLED') || qList[0];
+                found = qList.find(p => p.status !== 'CANCELLED' && p.status !== 'NO_SHOW') 
+                     || qList.find(p => p.status !== 'CANCELLED') 
+                     || qList[0];
               }
             }
           } catch (e) {}
@@ -12184,6 +12976,7 @@
 
         if (found) {
           lastPatientBooking = found;
+          patientPassViewMode = 'search';
           try {
             localStorage.setItem('parchi_active_patient_booking', JSON.stringify(found));
           } catch (e) {}
@@ -12214,13 +13007,28 @@
             } catch (e) {}
           }
 
-          if (alertBox) {
-            alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-emerald-100 text-emerald-900 border border-emerald-300';
-            alertBox.textContent = `🎉 Active Token #${found.token} mila! Live Pass khul raha hai...`;
-            alertBox.classList.remove('hidden');
+          if (found.status === 'CANCELLED') {
+            if (alertBox) {
+              alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-rose-100 text-rose-900 border border-rose-300';
+              alertBox.textContent = `⚠️ Token #${found.token} Clinic dwara cancel kar diya gaya hai (Cancelled by Clinic).`;
+              alertBox.classList.remove('hidden');
+            }
+            showToast(`⚠️ Token #${found.token} Cancelled by Clinic`, 'warning');
+          } else if (found.status === 'NO_SHOW') {
+            if (alertBox) {
+              alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-amber-100 text-amber-900 border border-amber-300';
+              alertBox.textContent = `⚠️ Token #${found.token} No-Show mark kiya gaya hai.`;
+              alertBox.classList.remove('hidden');
+            }
+            showToast(`⚠️ Token #${found.token} Mark kiya gaya No-Show`, 'warning');
+          } else {
+            if (alertBox) {
+              alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-emerald-100 text-emerald-900 border border-emerald-300';
+              alertBox.textContent = `🎉 Active Token #${found.token} mila! Live Pass khul raha hai...`;
+              alertBox.classList.remove('hidden');
+            }
+            showToast(`🎉 Active Token #${found.token} Mila!`);
           }
-
-          showToast(`🎉 Active Token #${found.token} Mila!`);
 
           setTimeout(() => {
             showPatientClinicBookingSection(cId);
@@ -12963,6 +13771,362 @@
       updateDiscoveryActivePassBanner();
     }
 
+        // =========================================================================
+    // BOOKED APPOINTMENTS MONTHLY DENSITY CALENDAR & FAST APPOINTMENT EDITOR
+    // =========================================================================
+    function openBookedAppointmentsModal(initialDate) {
+      if (initialDate) {
+        selectedBookedCalendarDate = initialDate;
+        const parts = initialDate.split('-');
+        if (parts[0] && parts[1]) {
+          bookedCalendarYear = parseInt(parts[0], 10);
+          bookedCalendarMonth = parseInt(parts[1], 10) - 1;
+        }
+      } else {
+        const today = new Date();
+        bookedCalendarYear = today.getFullYear();
+        bookedCalendarMonth = today.getMonth();
+        selectedBookedCalendarDate = getLocalDateString();
+      }
+      renderBookedAppointmentsCalendar();
+      renderBookedAppointmentsList();
+      const modal = document.getElementById('bookedAppointmentsModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeBookedAppointmentsModal() {
+      const modal = document.getElementById('bookedAppointmentsModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function changeBookedCalendarMonth(delta) {
+      bookedCalendarMonth += delta;
+      if (bookedCalendarMonth < 0) {
+        bookedCalendarMonth = 11;
+        bookedCalendarYear -= 1;
+      } else if (bookedCalendarMonth > 11) {
+        bookedCalendarMonth = 0;
+        bookedCalendarYear += 1;
+      }
+      renderBookedAppointmentsCalendar();
+    }
+
+    function selectBookedCalendarToday() {
+      const today = new Date();
+      bookedCalendarYear = today.getFullYear();
+      bookedCalendarMonth = today.getMonth();
+      selectedBookedCalendarDate = getLocalDateString();
+      renderBookedAppointmentsCalendar();
+      renderBookedAppointmentsList();
+    }
+
+    function setBookedListShiftFilter(shift) {
+      bookedListShiftFilter = shift;
+      ['ALL', 'Morning', 'Evening'].forEach(s => {
+        const btn = document.getElementById('bookedShiftPill-' + s);
+        if (btn) {
+          if (s === shift) {
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-white text-slate-900 shadow-2xs';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900';
+          }
+        }
+      });
+      renderBookedAppointmentsList();
+    }
+
+    function onBookedCalendarDateClick(dateStr) {
+      selectedBookedCalendarDate = dateStr;
+      renderBookedAppointmentsCalendar();
+      renderBookedAppointmentsList();
+    }
+
+    function renderBookedAppointmentsCalendar() {
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      const monthYearTitle = document.getElementById('bookedCalMonthYear');
+      if (monthYearTitle) {
+        monthYearTitle.textContent = monthNames[bookedCalendarMonth] + ' ' + bookedCalendarYear;
+      }
+
+      const grid = document.getElementById('bookedCalendarDaysGrid');
+      if (!grid) return;
+
+      const firstDayIndex = new Date(bookedCalendarYear, bookedCalendarMonth, 1).getDay();
+      const daysInMonth = new Date(bookedCalendarYear, bookedCalendarMonth + 1, 0).getDate();
+      const todayStr = getLocalDateString();
+
+      const clinicId = clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01';
+      const cAppts = todayQueue.filter(p => !p.clinicId || p.clinicId === clinicId);
+
+      let gridHtml = '';
+
+      // Empty offset cells
+      for (let i = 0; i < firstDayIndex; i++) {
+        gridHtml += '<div class="p-1 sm:p-2 min-h-[46px] rounded-xl bg-slate-100/50 opacity-40"></div>';
+      }
+
+      // Day cells
+      for (let day = 1; day <= daysInMonth; day++) {
+        const mm = String(bookedCalendarMonth + 1).padStart(2, '0');
+        const dd = String(day).padStart(2, '0');
+        const dateStr = bookedCalendarYear + '-' + mm + '-' + dd;
+
+        const dayBookings = cAppts.filter(p => {
+          if (p.status === 'CANCELLED') return false;
+          const pDate = p.date || (p.day === 'Aaj (Today)' ? todayStr : '');
+          return pDate === dateStr;
+        });
+        const count = dayBookings.length;
+        const isSelected = dateStr === selectedBookedCalendarDate;
+        const isToday = dateStr === todayStr;
+
+        let bgClass = '';
+        let dotIndicator = '';
+        let badge = '';
+
+        if (count === 0) {
+          bgClass = 'bg-red-100/90 text-red-900 border-red-300 hover:bg-red-200/90';
+          badge = '<span class="text-[9px] text-red-600 font-extrabold">0</span>';
+        } else if (count < 5) {
+          bgClass = 'bg-emerald-100 text-emerald-950 border-emerald-300 hover:bg-emerald-200';
+          dotIndicator = '<span class="w-2 h-2 rounded-full bg-emerald-600 inline-block shadow-2xs"></span>';
+          badge = '<span class="text-[10px] font-black text-emerald-800">' + count + '</span>';
+        } else {
+          bgClass = 'bg-[#075E54] text-white border-[#05433c] shadow-2xs hover:bg-[#05433c]';
+          dotIndicator = '<span class="w-2 h-2 rounded-full bg-[#25D366] inline-block shadow-2xs"></span>';
+          badge = '<span class="text-[10px] font-black text-emerald-200">' + count + '</span>';
+        }
+
+        const ringClass = isSelected ? 'ring-4 ring-amber-400 font-black scale-[1.03] z-10' : '';
+        const todayMark = isToday ? '<span class="text-[8px] uppercase tracking-wider block font-extrabold text-amber-500">Aaj</span>' : '';
+
+        gridHtml += `
+          <div onclick="onBookedCalendarDateClick('${dateStr}')" class="p-1 sm:p-1.5 min-h-[50px] sm:min-h-[56px] rounded-xl border flex flex-col justify-between cursor-pointer transition select-none ${bgClass} ${ringClass}" title="${dateStr}: ${count} Appointments">
+            <div class="flex items-center justify-between">
+              <span class="text-xs sm:text-sm font-extrabold leading-none">${day}</span>
+              ${dotIndicator}
+            </div>
+            ${todayMark}
+            <div class="text-right leading-none mt-1">
+              ${badge}
+            </div>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = gridHtml;
+    }
+
+    function renderBookedAppointmentsList() {
+      const container = document.getElementById('bookedAppointmentsListContainer');
+      const titleEl = document.getElementById('bookedCalSelectedDateTitle');
+      const badgeEl = document.getElementById('bookedCalCountBadge');
+      if (!container) return;
+
+      const todayStr = getLocalDateString();
+      const clinicId = clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01';
+
+      if (titleEl) {
+        const parts = selectedBookedCalendarDate.split('-');
+        const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = dayNames[dateObj.getDay()] || '';
+        const isToday = selectedBookedCalendarDate === todayStr;
+        titleEl.textContent = selectedBookedCalendarDate + ' (' + dayName + ')' + (isToday ? ' • Aaj' : '');
+      }
+
+      const allDayList = todayQueue.filter(p => {
+        if (p.clinicId && p.clinicId !== clinicId) return false;
+        const pDate = p.date || (p.day === 'Aaj (Today)' ? todayStr : '');
+        return pDate === selectedBookedCalendarDate;
+      });
+
+      let filtered = allDayList;
+      if (bookedListShiftFilter !== 'ALL') {
+        filtered = filtered.filter(p => p.shift === bookedListShiftFilter);
+      }
+
+      if (badgeEl) {
+        const activeCount = allDayList.filter(p => p.status !== 'CANCELLED').length;
+        badgeEl.textContent = activeCount + ' Booked';
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-300 space-y-2">
+            <div class="text-3xl">📅</div>
+            <p class="text-sm font-bold text-slate-700">Is date (${selectedBookedCalendarDate}) par abhi koi booked appointment nahi hai.</p>
+            <p class="text-xs text-slate-500">Aap naya advance appointment book kar sakte hain.</p>
+            <button type="button" onclick="closeBookedAppointmentsModal(); toggleFastWalkinCollapse(true);" class="btn-tactile mt-2 px-4 py-2 bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs rounded-xl shadow-xs transition">+ Naya Appointment Book Karein</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => {
+        let statusBadge = '';
+        if (p.status === 'IN_CABIN') {
+          statusBadge = '<span class="bg-[#25D366] text-slate-950 text-xs font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">🟢 In Cabin</span>';
+        } else if (p.status === 'DONE') {
+          statusBadge = '<span class="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">✅ Done</span>';
+        } else if (p.status === 'NO_SHOW') {
+          statusBadge = '<span class="bg-amber-100 text-amber-900 border border-amber-300 text-xs font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">🚫 No-Show</span>';
+        } else if (p.status === 'CANCELLED') {
+          statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 text-xs font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">❌ Cancelled</span>';
+        } else {
+          statusBadge = '<span class="bg-emerald-50 text-[#075E54] border border-emerald-300 text-xs font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">⏳ Waiting</span>';
+        }
+
+        const ag = formatPatientAgeGender(p.age, p.gender);
+
+        const waLink = p.phone ? `
+          <a href="https://api.whatsapp.com/send/?phone=91${p.phone.replace(/\\D/g, '')}&text=${encodeURIComponent('Namaste ' + p.name + ', aapka clinic appointment Token #' + p.token + ' (' + p.date + ' • ' + p.slotTime + ') confirm hai.')}" target="_blank" class="w-8 h-8 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 flex items-center justify-center text-xs font-black shadow-2xs transition" title="Contact on WhatsApp">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+          </a>
+        ` : '';
+
+        const waitActions = p.status === 'WAITING' ? `
+          <button type="button" onclick="markPatientNoShow('${p.id}')" class="px-2 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs transition" title="Mark as No-Show">No-Show</button>
+          <button type="button" onclick="promptCancelPatient('${p.id}')" class="w-8 h-8 rounded-xl bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center text-xs font-black shadow-2xs transition" title="Cancel Appointment">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        ` : '';
+
+        return `
+          <div class="p-3 bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-xs transition">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#075E54] border-2 border-[#128C7E] font-black text-sm flex items-center justify-center flex-shrink-0 shadow-2xs">#${p.token}</div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <h4 class="font-extrabold text-sm text-slate-900 truncate">${escapeHtml(p.name)}</h4>
+                  ${ag ? `<span class="text-xs text-slate-500 font-semibold">(${ag})</span>` : ''}
+                  ${statusBadge}
+                </div>
+                <div class="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span class="font-bold text-slate-700">⏰ ${p.shift || 'Shift'} • ${p.slotTime || 'Slot'}</span>
+                  <span>•</span>
+                  <span>${p.reason || 'Consultation'}</span>
+                  ${p.phone ? `<span>• 📞 ${p.phone}</span>` : ''}
+                  <span>•</span>
+                  <span class="font-bold ${p.payMode === 'Baaki' ? 'text-amber-800' : 'text-emerald-700'}">₹${p.fee} (${p.payMode})</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="openEditAppointmentModal('${p.id}')" class="btn-tactile px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs flex items-center gap-1 shadow-2xs transition" title="Edit Appointment Details">
+                <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
+                <span>Edit</span>
+              </button>
+              ${waLink}
+              ${waitActions}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openEditAppointmentModal(patientId) {
+      const p = todayQueue.find(item => item.id === patientId);
+      if (!p) return;
+      document.getElementById('editApptId').value = p.id;
+      document.getElementById('editApptName').value = p.name || '';
+      document.getElementById('editApptPhone').value = p.phone || '';
+      document.getElementById('editApptAge').value = p.age || 30;
+      document.getElementById('editApptGender').value = p.gender || 'M';
+      document.getElementById('editApptReason').value = p.reason || '';
+      document.getElementById('editApptDate').value = p.date || getLocalDateString();
+      document.getElementById('editApptShift').value = p.shift || 'Morning';
+      document.getElementById('editApptSlot').value = p.slotTime || '10:30 AM';
+      document.getElementById('editApptStatus').value = p.status || 'WAITING';
+      document.getElementById('editApptFee').value = p.fee !== undefined ? p.fee : 300;
+      document.getElementById('editApptPayMode').value = p.payMode || 'Baaki';
+      const subInfo = document.getElementById('editApptSubInfo');
+      if (subInfo) subInfo.textContent = 'Token #' + p.token + ' • ' + (p.source || 'Online/Walk-in');
+      const modal = document.getElementById('editAppointmentModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeEditAppointmentModal() {
+      const modal = document.getElementById('editAppointmentModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    async function saveEditedAppointment() {
+      const id = document.getElementById('editApptId').value;
+      const p = todayQueue.find(item => item.id === id);
+      if (!p) return;
+
+      const newDate = document.getElementById('editApptDate').value || p.date || getLocalDateString();
+      const todayStr = getLocalDateString();
+      const tomStr = getLocalDateString(new Date(Date.now() + 86400000));
+      const parsonStr = getLocalDateString(new Date(Date.now() + 2 * 86400000));
+      let newDay = newDate;
+      if (newDate === todayStr) newDay = 'Aaj (Today)';
+      else if (newDate === tomStr) newDay = 'Kal (Tomorrow)';
+      else if (newDate === parsonStr) newDay = 'Parson';
+
+      const newStatus = document.getElementById('editApptStatus').value || p.status;
+
+      const updated = {
+        name: (document.getElementById('editApptName').value || '').trim() || p.name,
+        phone: (document.getElementById('editApptPhone').value || '').trim(),
+        age: parseInt(document.getElementById('editApptAge').value, 10) || p.age,
+        gender: document.getElementById('editApptGender').value || p.gender,
+        reason: (document.getElementById('editApptReason').value || '').trim() || p.reason,
+        date: newDate,
+        day: newDay,
+        shift: document.getElementById('editApptShift').value || p.shift,
+        slotTime: (document.getElementById('editApptSlot').value || '').trim() || p.slotTime,
+        status: newStatus,
+        noShow: (newStatus === 'NO_SHOW'),
+        fee: parseInt(document.getElementById('editApptFee').value, 10) || p.fee,
+        payMode: document.getElementById('editApptPayMode').value || p.payMode
+      };
+
+      if (updated.status === 'CANCELLED') {
+        updated.cancelledBy = 'clinic';
+        updated.cancelReason = 'Cancelled by clinic';
+        updated.cancelledAt = p.cancelledAt || new Date().toISOString();
+        if (typeof cancelledPatientIds !== 'undefined') cancelledPatientIds.add(id);
+      } else {
+        if (typeof cancelledPatientIds !== 'undefined') cancelledPatientIds.delete(id);
+      }
+      try {
+        if (typeof localStorage !== 'undefined' && localStorage && typeof cancelledPatientIds !== 'undefined') {
+          localStorage.setItem('parchisetu_cancelled_ids', JSON.stringify(Array.from(cancelledPatientIds)));
+        }
+      } catch (e) {}
+
+      Object.assign(p, updated);
+      saveLocalQueue();
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
+        syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
+      }
+      closeEditAppointmentModal();
+      refreshAllViews();
+      if (typeof renderBookedAppointmentsCalendar === 'function') {
+        renderBookedAppointmentsCalendar();
+        renderBookedAppointmentsList();
+      }
+      await syncQueuePatchToServer(id, updated);
+      showToast('✅ Token #' + p.token + ' (' + p.name + ') details updated successfully!');
+    }
+
     window.onload = async function () {
       loadLocalData();
 
@@ -13140,6 +14304,36 @@
       // Real-time periodic heartbeat (every 10s) to keep live clinic status & queue synced for waiting patients
       setInterval(async () => {
         try {
+          // Check temporary online booking override expiry
+          if (clinicProfile?.liveStatus?.qrOverrideExpiresAt) {
+            if (Date.now() >= clinicProfile.liveStatus.qrOverrideExpiresAt) {
+              const orig = clinicProfile.liveStatus.qrOverrideOriginalState !== undefined ? clinicProfile.liveStatus.qrOverrideOriginalState : false;
+              isQRBookingPaused = orig;
+              clinicProfile.liveStatus.isQRBookingPaused = orig;
+              delete clinicProfile.liveStatus.qrOverrideExpiresAt;
+              delete clinicProfile.liveStatus.qrOverrideOriginalState;
+              delete clinicProfile.liveStatus.qrOverrideAction;
+              saveLocalClinic();
+              if (window.location.protocol.startsWith('http')) {
+                fetch('/api/clinic', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ liveStatus: clinicProfile.liveStatus })
+                }).catch(() => {});
+              }
+              if (window.ParchiFirebase && clinicProfile.id) {
+                window.ParchiFirebase.syncClinic(clinicProfile);
+              }
+              if (typeof syncChannel !== 'undefined' && syncChannel) {
+                syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
+              }
+              updatePauseQRUI();
+              refreshAllViews();
+              showToast('⏰ Online booking temporary override samapt ho gaya, normal schedule par wapas aa gaya.');
+            } else {
+              updatePauseQRUI();
+            }
+          }
           if (window.location.protocol.startsWith('http')) {
             const [qRes, cRes] = await Promise.all([
               fetch('/api/queue').catch(() => null),
@@ -13192,6 +14386,21 @@
       // Keyboard shortcut: Escape key closes topmost open modal or drawer
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' || e.key === 'Esc') {
+          const bookedModal = document.getElementById('bookedAppointmentsModal');
+          if (bookedModal && !bookedModal.classList.contains('hidden')) {
+            closeBookedAppointmentsModal();
+            return;
+          }
+          const editModal = document.getElementById('editAppointmentModal');
+          if (editModal && !editModal.classList.contains('hidden')) {
+            closeEditAppointmentModal();
+            return;
+          }
+          const qrOverrideModal = document.getElementById('onlineBookingOverrideModal');
+          if (qrOverrideModal && !qrOverrideModal.classList.contains('hidden')) {
+            closeOnlineBookingOverrideModal();
+            return;
+          }
           const cancelModal = document.getElementById('cancelConfirmModal');
           if (cancelModal && !cancelModal.classList.contains('hidden')) {
             closeCancelConfirmModal();

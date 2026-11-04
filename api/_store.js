@@ -638,6 +638,11 @@ module.exports = {
     loadStore();
     const existingIdx = booking.id ? store.queue.findIndex(p => p.id === booking.id) : -1;
     if (existingIdx >= 0) {
+      if (store.queue[existingIdx].status === 'CANCELLED' && booking.status !== 'CANCELLED' && !booking.forceUncancel) {
+        booking.status = 'CANCELLED';
+        booking.cancelledBy = store.queue[existingIdx].cancelledBy || 'clinic';
+        booking.cancelReason = store.queue[existingIdx].cancelReason || 'Cancelled by clinic';
+      }
       Object.assign(store.queue[existingIdx], booking);
       persistStore();
       return { isNew: false, booking: store.queue[existingIdx] };
