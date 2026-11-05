@@ -85,25 +85,25 @@
     }
   </style>
 </head>
-<body class="text-slate-900 min-h-screen flex flex-col selection:bg-emerald-200">
+<body class="text-slate-900 min-h-screen flex flex-col selection:bg-emerald-200 overflow-x-hidden">
 
   <!-- ===================================================================== -->
   <!-- TOP STICKY APP HEADER (WHATSAPP EMERALD BAR + ONBOARDING & ROLES)     -->
   <!-- ===================================================================== -->
-  <header class="sticky top-0 z-40 bg-[#075E54] text-white shadow-lg border-b border-emerald-800">
-    <div class="max-w-6xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2">
+  <header class="sticky top-0 z-40 bg-[#075E54] text-white shadow-lg border-b border-emerald-800 overflow-x-hidden">
+    <div class="max-w-6xl mx-auto px-2.5 sm:px-5 py-2 flex items-center justify-between gap-1.5 sm:gap-2">
       
       <!-- Left: ParchiSetu Brand & Logo -->
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="handleLogoClick()" title="ParchiSetu">
+      <div class="flex items-center gap-2 cursor-pointer shrink-0" onclick="handleLogoClick()" title="ParchiSetu">
         <div class="relative flex-shrink-0">
-          <img src="/logo.svg" alt="ParchiSetu Logo" class="w-10 h-10 rounded-2xl object-cover bg-emerald-100/20 p-0.5 shadow-sm" onerror="this.onerror=null; this.src='/favicon.svg';" />
+          <img src="/logo.svg" alt="ParchiSetu Logo" class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl object-cover bg-emerald-100/20 p-0.5 shadow-sm" onerror="this.onerror=null; this.src='/favicon.svg';" />
           <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#25D366] border border-[#075E54] rounded-full" title="Online"></span>
         </div>
-        <div class="flex items-center gap-1.5">
-          <span class="font-black text-base sm:text-lg tracking-tight leading-none text-white">
+        <div class="flex items-center gap-1 sm:gap-1.5">
+          <span class="font-black text-sm sm:text-lg tracking-tight leading-none text-white">
             ParchiSetu
           </span>
-          <span class="bg-[#25D366]/20 border border-[#25D366]/50 text-[#a7f3d0] text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
+          <span class="bg-[#25D366]/20 border border-[#25D366]/50 text-[#a7f3d0] text-[8px] sm:text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
             Live
           </span>
         </div>
@@ -114,16 +114,16 @@
       </div>
 
       <!-- Right Action Cluster: Quick Standee QR / 3-Language Selector / Profile Auth -->
-      <div class="flex items-center gap-2 ml-auto">
+      <div class="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0">
         
-        <!-- Quick Clinic QR Standee & Link Button (Fast 1-tap essential button as requested) -->
+        <!-- Quick Clinic QR Standee & Link Button (Hidden on mobile to eliminate header sway, accessible on desktop and in Slots tab) -->
         <button 
           onclick="printClinicQRStandee()" 
           id="quickStandeeHeaderBtn"
-          class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-2.5 sm:px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+          class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-2 sm:px-3 py-1.5 rounded-xl text-xs hidden sm:flex items-center gap-1 sm:gap-1.5 shadow-sm transition shrink-0"
           title="Print or View Clinic QR Standee"
         >
-          <i class="fa-solid fa-qrcode text-sm"></i>
+          <i class="fa-solid fa-qrcode text-xs sm:text-sm"></i>
           <span class="hidden sm:inline">QR Standee</span>
         </button>
 
@@ -131,37 +131,37 @@
         <button onclick="openClinicOnboardingModal()" id="clinicOnboardHeaderBtn" class="hidden" title="Setup Clinic"></button>
         <button onclick="openOnboardingSuccessModal()" id="headerShareLinkBtn" class="hidden" title="Share Link"></button>
 
-        <!-- 3-Language Selector Dropdown: English (Default), Hinglish, Hindi -->
-        <div class="relative inline-flex items-center">
-          <i class="fa-solid fa-language text-[#25D366] absolute left-2.5 pointer-events-none text-xs"></i>
+        <!-- 3-Language Selector Dropdown: Compressed on mobile to eliminate right sway -->
+        <div class="relative inline-flex items-center shrink-0">
+          <i class="fa-solid fa-language text-[#25D366] absolute left-2 pointer-events-none text-xs"></i>
           <select 
             id="langSelectDropdown" 
             onchange="changeLanguage(this.value)" 
-            class="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 pl-7 pr-2.5 py-1.5 rounded-xl text-xs font-bold transition focus:outline-none focus:border-[#25D366] cursor-pointer"
+            class="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 pl-4 sm:pl-7 pr-1 sm:pr-2.5 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition focus:outline-none focus:border-[#25D366] cursor-pointer max-w-[65px] sm:max-w-none"
             title="Choose Language (English / Hinglish / हिंदी)"
           >
             <option value="english">English</option>
             <option value="hinglish">Hinglish</option>
-            <option value="hindi">हिंदी (Hindi)</option>
+            <option value="hindi">हिंदी</option>
           </select>
           <!-- Preserved legacy toggle button for test suite compatibility -->
           <button onclick="toggleLanguage()" id="langToggleBtn" class="hidden"><span id="langToggleLabel">English</span></button>
         </div>
 
-        <!-- Clinic Auth / User Account Section -->
-        <div id="headerAuthContainer" class="flex items-center gap-1.5">
+        <!-- Clinic Auth / User Account Section (Unified single button to eliminate horizontal clutter) -->
+        <div id="headerAuthContainer" class="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <button 
             type="button"
-            onclick="switchAppRole('clinic')" 
+            onclick="handleClinicDeskHeaderClick()" 
             id="headerClinicDeskBtn"
-            class="btn-tactile bg-emerald-800/90 hover:bg-emerald-700 text-white border border-emerald-500/50 px-2.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-xs transition"
+            class="btn-tactile bg-emerald-800/90 hover:bg-emerald-700 text-white border border-emerald-500/50 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1 sm:gap-1.5 shadow-xs transition shrink-0"
             title="Doctor / Compounder Clinic Desk"
           >
             <i class="fa-solid fa-stethoscope text-[#25D366]"></i>
             <span class="hidden sm:inline">Clinic Desk</span>
           </button>
           <button 
-            type="button"
+            type="button" 
             onclick="openAdminPanel()" 
             id="headerAdminBtn"
             class="hidden btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition"
@@ -170,10 +170,11 @@
             <span class="text-xs">👑</span>
             <span class="hidden sm:inline">Admin</span>
           </button>
+          <!-- Hidden duplicate profile button to avoid header overflow while preserving DOM binding for test suites -->
           <button 
             onclick="handleProfileHeaderClick()" 
             id="clinicAuthHeaderBtn"
-            class="btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+            class="hidden btn-tactile bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
             title="Clinic Sign In / Naya Clinic Account"
           >
             <i class="fa-solid fa-circle-user text-[#25D366]"></i>
@@ -487,14 +488,14 @@
     <!-- =================================================================== -->
     <div id="viewClinicDesk" class="hidden space-y-3 sm:space-y-3.5">
 
-      <!-- Quick Navigation Header for Clinic Desk -->
-      <div class="flex items-center justify-between bg-emerald-900/80 px-3 py-2 rounded-2xl border border-emerald-700/60 text-xs text-white shadow-xs">
+      <!-- Quick Navigation Header for Clinic Desk (Hidden on Live and Profile tabs to maximize patient workspace) -->
+      <div id="clinicDeskQuickNavHeader" class="hidden flex items-center justify-between bg-emerald-900/80 px-3 py-2 rounded-2xl border border-emerald-700/60 text-xs text-white shadow-xs">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-[#25D366] animate-pulse"></span>
           <span class="font-black text-white">🏥 ParchiSetu Clinic Desk</span>
           <span class="text-emerald-200 text-[11px] hidden sm:inline">• Live Appointments & Queue Management</span>
         </div>
-<div class="flex items-center gap-2">
+        <div class="flex items-center gap-2">
           <!-- Highlighted "Booked Appointments" Button on Top of Clinic Panel -->
           <button 
             type="button" 
@@ -1321,20 +1322,13 @@
               <img id="profileDoctorPhotoPreview" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80" alt="Doctor" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'" />
             </div>
             <div class="flex-1 w-full space-y-2">
-              <div class="flex gap-2">
-                <input 
-                  type="text" 
-                  id="profileDoctorPhotoUrl" 
-                  placeholder="Doctor Photo Image URL (https://...)" 
-                  oninput="handleDoctorPhotoUrlChange(this.value, 'profile')"
-                  class="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#128C7E]"
-                />
-                <label class="btn-tactile inline-flex items-center gap-1.5 px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl cursor-pointer transition shrink-0">
-                  <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline">Upload</span>
-                  <input type="file" id="profileDoctorPhotoFile" accept="image/*" class="hidden" onchange="handleDoctorPhotoUpload(event, 'profile')" />
-                </label>
-              </div>
-              <p class="text-[11px] text-slate-500">Supports JPG, PNG, WebP or direct image link</p>
+              <input type="hidden" id="profileDoctorPhotoUrl" />
+              <label class="btn-tactile w-full py-2.5 px-3 bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black rounded-xl cursor-pointer transition flex items-center justify-center gap-2 shadow-xs">
+                <i class="fa-solid fa-camera text-sm"></i>
+                <span>Direct Photo Upload / Camera Se Dalein</span>
+                <input type="file" id="profileDoctorPhotoFile" accept="image/*" class="hidden" onchange="handleDoctorPhotoUpload(event, 'profile')" />
+              </label>
+              <p class="text-[11px] text-slate-500 text-center sm:text-left">Gallery ya camera se doctor ki photo chunein (JPG, PNG, WebP)</p>
             </div>
           </div>
 
@@ -1346,6 +1340,30 @@
             <i class="fa-solid fa-floppy-disk"></i>
             <span>Save Doctor Photo / फ़ोटो सुरक्षित करें</span>
           </button>
+        </div>
+
+        <!-- Highlighted Pricing & Membership Plan Section -->
+        <div class="bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-teal-500/15 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-amber-400 space-y-2.5">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-base shadow-xs">
+                <i class="fa-solid fa-crown text-slate-950"></i>
+              </div>
+              <div>
+                <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">ParchiSetu Membership & Pricing Plans</h3>
+                <p class="text-xs text-slate-600 font-semibold mt-0.5">Monthly Pro: ₹399/mo • Annual Pro: ₹4,000/yr (Save ₹788)</p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onclick="openClinicAccountModal()" 
+              id="profilePricingOpenBtn"
+              class="btn-tactile px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition shrink-0"
+            >
+              <i class="fa-solid fa-tag"></i>
+              <span>Plans Dekhein ➔</span>
+            </button>
+          </div>
         </div>
 
         <!-- Consultation & Follow-Up Fees Configuration Card -->
@@ -1755,112 +1773,121 @@
       <!-- SECTION 2B: SPECIFIC CLINIC DIRECT BOOKING SECTION -->
       <div id="patientDirectClinicSection" class="hidden space-y-3">
         
-        <!-- Top Back Bar to Return to Discovery -->
-        <div class="flex items-center justify-between px-1">
+        <!-- Top Back Bar & 3-Language Selector Dropdown -->
+        <div class="flex items-center justify-between gap-2 px-1">
           <button 
             type="button" 
             onclick="showPatientDiscoverySection()" 
-            class="btn-tactile inline-flex items-center gap-1.5 text-xs font-black text-[#075E54] bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3 py-1.5 rounded-xl shadow-xs transition"
+            class="btn-tactile inline-flex items-center gap-1.5 text-xs font-black text-[#075E54] bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-2.5 py-1.5 rounded-xl shadow-xs transition shrink-0"
           >
             <i class="fa-solid fa-arrow-left"></i>
-            <span data-i18n="backToDoctors">← Browse All Doctors / शहर के अन्य डॉक्टर</span>
+            <span data-i18n="backToDoctors">← Doctors</span>
           </button>
-          <button 
-            type="button" 
-            onclick="scrollToPhoneLookup()" 
-            class="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline flex items-center gap-1"
-          >
-            <i class="fa-solid fa-ticket"></i>
-            <span data-i18n="navMeraToken">Mera Token</span>
-          </button>
+
+          <!-- 3-Language Selector Directly on Patient View -->
+          <div class="flex items-center gap-1.5 ml-auto shrink-0">
+            <div class="relative inline-flex items-center shrink-0">
+              <i class="fa-solid fa-language text-[#075E54] absolute left-2 pointer-events-none text-xs"></i>
+              <select 
+                id="patientViewLangSelect" 
+                onchange="changeLanguage(this.value)" 
+                class="bg-white hover:bg-emerald-50 text-[#075E54] border-2 border-emerald-500 pl-6 pr-2 py-1 rounded-xl text-xs font-black shadow-2xs transition focus:outline-none"
+                title="Change Language / भाषा बदलें"
+              >
+                <option value="english">English</option>
+                <option value="hinglish">Hinglish</option>
+                <option value="hindi">हिंदी</option>
+              </select>
+            </div>
+
+            <button 
+              type="button" 
+              onclick="scrollToPhoneLookup()" 
+              class="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline flex items-center gap-1 shrink-0"
+            >
+              <i class="fa-solid fa-ticket"></i>
+              <span data-i18n="navMeraToken">Mera Token</span>
+            </button>
+          </div>
         </div>
 
         <!-- Patient Mobile App Card Container -->
         <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
           
-          <!-- Clinic Verified Header -->
-          <div class="bg-[#075E54] text-white p-5">
-          <div class="flex items-start gap-3.5">
-            <div class="w-14 h-14 rounded-2xl bg-white text-[#075E54] flex items-center justify-center font-black text-2xl shadow-md flex-shrink-0 overflow-hidden p-1">
-              <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
-            </div>
-            <div class="flex-1">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
-                  <i class="fa-solid fa-check-circle"></i> Live Clinic Board
-                </span>
-                <span id="patientViewSpecialtyBadge" class="bg-white/20 text-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  General Medicine
-                </span>
-              </div>
-              <h2 id="patientViewClinicName" class="text-xl font-black mt-1">Doctor Clinic</h2>
-              <p id="patientViewDoctorInfo" class="text-xs text-emerald-100 font-medium">Attending Doctor • In-Clinic Consultation</p>
-              <p id="patientViewClinicAddress" class="text-[11px] text-emerald-200/90 mt-1 flex items-center gap-1">
-                <i class="fa-solid fa-location-dot"></i> <span id="patientViewAddressText">Near Main Market Chowk, Station Road</span> • Fee: <span id="patientViewFeeText">₹300</span>
-              </p>
-              <div class="mt-2 flex flex-wrap items-center gap-2">
-                <a 
-                  id="patientViewMapLink" 
-                  href="https://maps.google.com" 
-                  target="_blank" 
-                  class="inline-flex items-center gap-1 text-[11px] bg-white/15 hover:bg-white/25 text-white font-bold px-2.5 py-1 rounded-lg transition"
-                >
-                  <i class="fa-solid fa-location-arrow text-[#25D366]"></i>
-                  <span id="patientViewMapBtnText">Google Maps Par Rasta Dekhein</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-75"></i>
-                </a>
-                <button 
-                  type="button" 
-                  onclick="openInteractiveQRModal()" 
-                  id="patientViewQrBtn" 
-                  class="inline-flex items-center gap-1 text-[11px] bg-white/15 hover:bg-white/25 text-white font-bold px-2.5 py-1 rounded-lg transition"
-                >
-                  <i class="fa-solid fa-qrcode text-[#25D366]"></i>
-                  <span>Clinic QR & Link</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- DYNAMIC LIVE CLINIC STATUS BANNER (OPEN / CLOSED / HOLIDAY) -->
-          <div id="patientViewLiveStatusCard" class="mt-4 bg-black/25 border border-emerald-500/40 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition">
+          <!-- Clinic Verified Header (Simplified, 80% Text Noise Removed, Pictographic) -->
+          <div id="patientClinicHeaderBlock" class="bg-[#075E54] text-white p-4 sm:p-5">
             <div class="flex items-center gap-3">
-              <span id="patientStatusLiveDot" class="w-3.5 h-3.5 rounded-full bg-[#25D366] live-token-pulse flex-shrink-0"></span>
-              <div>
-                <span id="patientStatusBadgeText" class="text-[11px] uppercase tracking-wider text-emerald-200 font-black block">
-                  🟢 LIVE CLINIC STATUS (ABHI ANDAR)
-                </span>
-                <span id="patientViewLiveToken" class="text-base sm:text-lg font-black text-white block">
-                  Token #12 chal raha hai
-                </span>
-                <span id="patientStatusSubText" class="text-[11px] text-emerald-100/90 block">
-                  Doctor Sahab cabin mein mareez dekh rahe hain.
-                </span>
+              <div class="w-12 h-12 rounded-2xl bg-white text-[#075E54] flex items-center justify-center font-black text-xl shadow-md flex-shrink-0 overflow-hidden p-1">
+                <img src="/logo.svg" alt="ParchiSetu" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='/favicon.svg';" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <h2 id="patientViewClinicName" class="text-base sm:text-lg font-black truncate leading-tight">Doctor Clinic</h2>
+                  <span id="patientViewSpecialtyBadge" class="bg-emerald-400/20 text-[#a7f3d0] border border-[#25D366]/40 text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
+                    General
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-emerald-100 font-semibold mt-0.5 truncate">
+                  <span>👨‍⚕️ <span id="patientViewDoctorInfo">Attending Doctor</span></span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-emerald-200 mt-1 flex-wrap">
+                  <span>📍 <span id="patientViewAddressText">Main Market</span></span>
+                  <span>•</span>
+                  <span>💵 <span id="patientViewFeeText">₹300</span></span>
+                  <a 
+                    id="patientViewMapLink" 
+                    href="https://maps.google.com" 
+                    target="_blank" 
+                    class="inline-flex items-center gap-1 text-[10px] bg-white/15 hover:bg-white/25 text-white font-bold px-2 py-0.5 rounded-lg transition"
+                  >
+                    <i class="fa-solid fa-location-arrow text-[#25D366]"></i>
+                    <span id="patientViewMapBtnText">Map</span>
+                  </a>
+                  <button 
+                    type="button" 
+                    onclick="openInteractiveQRModal()" 
+                    id="patientViewQrBtn" 
+                    class="inline-flex items-center gap-1 text-[10px] bg-white/15 hover:bg-white/25 text-white font-bold px-2 py-0.5 rounded-lg transition"
+                  >
+                    <i class="fa-solid fa-qrcode text-[#25D366]"></i>
+                    <span>QR</span>
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="text-left sm:text-right flex-shrink-0 bg-black/20 sm:bg-transparent p-2 sm:p-0 rounded-xl">
-              <span class="text-[10px] text-emerald-200 block uppercase font-bold">Waiting Line</span>
-              <span id="patientViewWaitingCount" class="text-sm font-black text-[#25D366]">2 Mareez</span>
+
+            <!-- DYNAMIC LIVE CLINIC STATUS BANNER (OPEN / CLOSED / HOLIDAY) -->
+            <div id="patientViewLiveStatusCard" class="mt-3 bg-black/25 border border-emerald-500/40 rounded-2xl p-3 flex items-center justify-between gap-2.5 transition">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span id="patientStatusLiveDot" class="w-3 h-3 rounded-full bg-[#25D366] live-token-pulse flex-shrink-0"></span>
+                <div class="min-w-0">
+                  <span id="patientStatusBadgeText" class="text-[9px] uppercase tracking-wider text-emerald-300 font-black block">
+                    🟢 LIVE CABIN STATUS
+                  </span>
+                  <span id="patientViewLiveToken" class="text-sm sm:text-base font-black text-white truncate block">
+                    Token #12 chal raha hai
+                  </span>
+                  <span id="patientStatusSubText" class="hidden">Doctor Sahab cabin mein mareez dekh rahe hain.</span>
+                </div>
+              </div>
+              <div class="text-right flex-shrink-0 bg-black/20 px-2 py-1 rounded-xl">
+                <span class="text-[9px] text-emerald-200 block uppercase font-bold">Line</span>
+                <span id="patientViewWaitingCount" class="text-xs sm:text-sm font-black text-[#25D366]">2 Mareez</span>
+              </div>
+            </div>
+
+            <!-- Doctor Late Alert Banner -->
+            <div id="patientViewLateAlert" class="hidden mt-2 bg-amber-400 text-slate-950 rounded-xl px-2.5 py-1.5 text-xs font-black flex items-center gap-2">
+              <i class="fa-solid fa-clock"></i>
+              <span>Soochna: Doctor Sahab aaj late hain.</span>
+            </div>
+
+            <!-- Rural-friendly 1-line pictographic reassurance note -->
+            <div class="mt-2.5 px-3 py-1.5 bg-amber-100/90 rounded-xl border border-amber-300 text-amber-950 text-xs font-bold flex items-center gap-2 shadow-2xs">
+              <span class="text-sm shrink-0">📵</span>
+              <span class="text-[11px] leading-tight">Phone karne ki <strong class="font-black text-amber-950">zaroorat nahi hai</strong> • Yahan live token status badalta rahega 👀</span>
             </div>
           </div>
-
-          <!-- Doctor Late Alert Banner -->
-          <div id="patientViewLateAlert" class="hidden mt-2.5 bg-amber-400 text-slate-950 rounded-xl px-3 py-2 text-xs font-extrabold flex items-center gap-2">
-            <i class="fa-solid fa-clock"></i>
-            <span>Soochna: Doctor Sahab aaj 30 minute late hain. Kripya us hisaab se aayein.</span>
-          </div>
-
-          <!-- Punchy Reassurance Note for Waiting Patients -->
-          <div class="mt-3 p-3 bg-amber-50 rounded-2xl border border-amber-300 text-amber-950 text-xs font-semibold flex items-start gap-2.5 shadow-xs">
-            <i class="fa-solid fa-lightbulb text-amber-600 text-base flex-shrink-0 mt-0.5"></i>
-            <div>
-              <strong class="font-black text-amber-950">Doctor sahab ya compounder ko baar-baar phone karne ki bilkul zaroorat nahi hai!</strong>
-              <p class="text-[11px] text-amber-900 mt-0.5 leading-snug">
-                Bas is link ko khula rakhein ya refresh karein, yahan live token status badalta rahega. Jab aapka number paas aaye tabhi aaram se clinic pahunchein.
-              </p>
-            </div>
-          </div>
-        </div>
 
         <!-- Paused Booking Alert -->
         <div id="patientViewPausedBox" class="hidden p-6 text-center space-y-3">
@@ -6992,6 +7019,18 @@
       }
     }
 
+    function handleClinicDeskHeaderClick() {
+      if (currentRole === 'patient') {
+        if (currentAuthUser) {
+          enterClinicWorkspace();
+        } else {
+          showAuthGatewayScreen();
+        }
+      } else {
+        openClinicAccountModal();
+      }
+    }
+
     function openClinicAccountModal() {
       const modal = document.getElementById('clinicAccountModal');
       if (!modal) return;
@@ -7797,6 +7836,9 @@
       const dropdown = document.getElementById('langSelectDropdown');
       if (dropdown) dropdown.value = lang;
 
+      const patLangDropdown = document.getElementById('patientViewLangSelect');
+      if (patLangDropdown) patLangDropdown.value = (lang === 'english' ? 'english' : lang);
+
       const toggleLabel = document.getElementById('langToggleLabel');
       if (toggleLabel) {
         toggleLabel.textContent = lang === 'english' ? 'English' : (lang === 'hindi' ? 'हिंदी' : 'Hinglish');
@@ -7876,7 +7918,10 @@
         if (headerShareBtn) headerShareBtn.classList.remove('hidden');
         if (headerNayaClinicBtn) headerNayaClinicBtn.classList.remove('hidden');
         if (clinicOnboardBtn) clinicOnboardBtn.classList.remove('hidden');
-        if (quickStandeeBtn) quickStandeeBtn.classList.remove('hidden');
+        if (quickStandeeBtn) {
+          if (typeof window !== 'undefined' && window.innerWidth >= 640) quickStandeeBtn.classList.remove('hidden');
+          else quickStandeeBtn.classList.add('hidden');
+        }
         updateHeaderAuthUI(currentAuthUser);
         const fab = document.getElementById('mobileFabNewPatient');
         if (fab) {
@@ -8061,6 +8106,14 @@
       if (targetTab === 'profile') {
         renderProfileTab();
       }
+      const quickNav = document.getElementById('clinicDeskQuickNavHeader');
+      if (quickNav) {
+        if (targetTab === 'calendar' || targetTab === 'register' || targetTab === 'galla') {
+          quickNav.classList.remove('hidden');
+        } else {
+          quickNav.classList.add('hidden');
+        }
+      }
       const fab = document.getElementById('mobileFabNewPatient');
       if (fab) {
         if (targetTab === 'queue' && currentRole === 'clinic') fab.classList.remove('hidden');
@@ -8123,7 +8176,7 @@
       const inCabin = getCurrentCabinPatient();
       const nextWait = getNextWaitingPatient();
       const waitingCount = todayQueue.filter(p => p.status === 'WAITING').length;
-      const baakiCount = todayQueue.filter(p => p.payMode === 'Baaki').length;
+      const baakiCount = todayQueue.filter(p => p.status === 'WAITING' && p.payMode === 'Baaki').length;
 
       document.getElementById('navBadgeWaiting').textContent = waitingCount;
       const navBaaki = document.getElementById('navBadgeBaaki');
@@ -8792,7 +8845,7 @@
         WAITING: todayQueue.filter(p => p.status === 'WAITING').length,
         IN_CABIN: todayQueue.filter(p => p.status === 'IN_CABIN').length,
         DONE: todayQueue.filter(p => p.status === 'DONE').length,
-        BAAKI: activeQueue.filter(p => p.payMode === 'Baaki').length,
+        BAAKI: todayQueue.filter(p => p.status === 'WAITING' && p.payMode === 'Baaki').length,
         NO_SHOW: todayQueue.filter(p => p.status === 'NO_SHOW').length
       };
 
@@ -8865,7 +8918,7 @@
         if (currentQueueFilter === 'WAITING' && p.status !== 'WAITING') return false;
         if (currentQueueFilter === 'IN_CABIN' && p.status !== 'IN_CABIN') return false;
         if (currentQueueFilter === 'DONE' && p.status !== 'DONE') return false;
-        if (currentQueueFilter === 'BAAKI' && p.payMode !== 'Baaki') return false;
+        if (currentQueueFilter === 'BAAKI' && (p.status !== 'WAITING' || p.payMode !== 'Baaki')) return false;
         if (currentQueueFilter === 'NO_SHOW' && p.status !== 'NO_SHOW') return false;
         if (searchQ) {
           const matchName = (p.name || '').toLowerCase().includes(searchQ);
@@ -8952,27 +9005,28 @@
         const agLabel = formatPatientAgeGender(p.age, p.gender);
 
         return `
-          <div class="p-3 sm:p-3.5 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-center justify-between gap-2.5 sm:gap-3 ${rowBgClass}">
+          <div class="p-2.5 sm:p-3.5 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-start sm:items-center justify-between gap-2 sm:gap-3 ${rowBgClass} border-b border-slate-100">
             
-            <!-- WhatsApp Contact Avatar + Clean Chat Subtitle (Tap to open Parchi & Vitals) -->
-            <div onclick="openParchiDrawer('${p.id}')" class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer select-none">
-              <!-- Token Circle Avatar (WhatsApp DP Style) -->
-              <div class="w-12 h-12 sm:w-13 sm:h-13 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-base sm:text-lg shadow-xs">
+            <!-- Left Info Cluster: Token Avatar on Left + Patient Info using all White Space -->
+            <div onclick="openParchiDrawer('${p.id}')" class="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer select-none">
+              <!-- Token Badge (Compact & High Contrast) -->
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-sm sm:text-base shadow-xs mt-0.5 sm:mt-0">
                 #${p.token}
               </div>
 
-              <!-- Contact Name & WhatsApp 2-Line Preview -->
+              <!-- Contact & Details - Utilizing all Available Horizontal Space -->
               <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <h4 class="font-extrabold text-sm sm:text-base text-slate-900 truncate leading-snug">${escapeHtml(p.name)}</h4>
-                  ${agLabel ? `<span class="text-xs font-semibold text-slate-500">(${agLabel})</span>` : ''}
+                <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                  <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 truncate leading-snug">${escapeHtml(p.name)}</h4>
+                  ${agLabel ? `<span class="text-[11px] sm:text-xs font-semibold text-slate-500">(${agLabel})</span>` : ''}
                   ${statusBadge}
                 </div>
 
-                <div class="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1.5 flex-wrap">
-                  <span class="font-medium text-slate-700">${p.reason}</span>
+                <div class="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                  <span class="font-medium text-slate-700">${escapeHtml(p.reason || 'OPD')}</span>
                   <span>•</span>
                   <span>${sourceTag}</span>
+                  ${p.phone ? `<span>• 📞 ${escapeHtml(p.phone)}</span>` : ''}
                   ${visitTag}
                   ${bpTag}
                   ${parchiTag}
@@ -8984,26 +9038,26 @@
                 </div>
 
                 ${
-                  p.payMode === 'Baaki'
+                  p.payMode === 'Baaki' && p.status === 'WAITING'
                     ? `
-                      <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        <span class="text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded">₹${p.fee} Baaki:</span>
+                      <div class="flex items-center gap-1 sm:gap-1.5 mt-1 flex-wrap">
+                        <span class="text-[9px] sm:text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-1.5 py-0.2 rounded">₹${p.fee} Baaki:</span>
                         <button 
                           type="button" 
                           onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'Cash')" 
-                          class="btn-tactile px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                          class="btn-tactile px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-[10px] sm:text-xs flex items-center gap-1 shadow-2xs transition"
                           title="Cash Vasool Hua"
                         >
-                          <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
+                          <i class="fa-solid fa-money-bill-wave text-[9px]"></i>
                           <span>Cash</span>
                         </button>
                         <button 
                           type="button" 
                           onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'UPI')" 
-                          class="btn-tactile px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-black text-xs flex items-center gap-1 shadow-xs transition"
+                          class="btn-tactile px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-black text-[10px] sm:text-xs flex items-center gap-1 shadow-2xs transition"
                           title="UPI Online Payment Hua"
                         >
-                          <i class="fa-solid fa-mobile-screen-button text-[10px]"></i>
+                          <i class="fa-solid fa-mobile-screen-button text-[9px]"></i>
                           <span>UPI</span>
                         </button>
                       </div>
@@ -9013,54 +9067,58 @@
               </div>
             </div>
 
-            <!-- WhatsApp Actions: 1-Tap Bulao or Cabin/Done Badge & Edit / Cancel Options -->
-            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-              <!-- Fast Edit Button for every appointment -->
-              <button 
-                type="button" 
-                onclick="event.stopPropagation(); openEditAppointmentModal('${p.id}')" 
-                class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-black shadow-2xs transition"
-                title="Edit Details (Naam, Phone, Samay, Takleef)"
-              >
-                <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
-              </button>
-
+            <!-- Very Right Side: Action Buttons (Stacked Vertically on Mobile, Horizontal on Desktop) -->
+            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 flex-shrink-0 self-start sm:self-center">
               ${
                 p.status === 'WAITING'
-                  ? `<button 
+                  ? `
+                    <!-- 1-Tap Bulao Button -->
+                    <button 
                       type="button" 
                       onclick="event.stopPropagation(); sendPatientInsideCabin('${p.id}')" 
-                      class="btn-tactile px-3.5 sm:px-4 py-2.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-xs transition whitespace-nowrap"
+                      class="btn-tactile px-2.5 sm:px-3.5 py-1 sm:py-2 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1 shadow-xs transition whitespace-nowrap w-full sm:w-auto"
                       title="Call Patient Inside Cabin"
                     >
                       <span>Bulao</span>
-                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                      <i class="fa-solid fa-arrow-right text-[9px]"></i>
                     </button>
-                    <button 
-                      type="button" 
-                      onclick="event.stopPropagation(); markPatientNoShow('${p.id}')" 
-                      class="px-2 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs transition"
-                      title="Mark as No-Show (Nahi Aaye)"
-                    >
-                      No-Show
-                    </button>
-                    <button 
-                      type="button" 
-                      onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
-                      class="w-7 h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
-                      title="Cancel Appointment"
-                    >
-                      <i class="fa-solid fa-xmark"></i>
-                    </button>`
+
+                    <!-- Compact Sub-row: No-Show, X Cancel, Edit in one tight row below Bulao on mobile -->
+                    <div class="flex items-center gap-1 mt-0.5 sm:mt-0">
+                      <button 
+                        type="button" 
+                        onclick="event.stopPropagation(); markPatientNoShow('${p.id}')" 
+                        class="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-[10px] sm:text-xs transition whitespace-nowrap"
+                        title="Mark as No-Show (Nahi Aaye)"
+                      >
+                        No-Show
+                      </button>
+                      <button 
+                        type="button" 
+                        onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
+                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-2xs transition"
+                        title="Cancel Appointment"
+                      >
+                        <i class="fa-solid fa-xmark"></i>
+                      </button>
+                      <button 
+                        type="button" 
+                        onclick="event.stopPropagation(); openEditAppointmentModal('${p.id}')" 
+                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-black shadow-2xs transition"
+                        title="Edit Details (Naam, Phone, Samay, Takleef)"
+                      >
+                        <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
+                      </button>
+                    </div>`
                   : p.status === 'IN_CABIN'
-                  ? `<div class="flex items-center gap-1.5">
-                      <span class="bg-[#25D366] text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
+                  ? `<div class="flex items-center gap-1">
+                      <span class="bg-[#25D366] text-slate-950 font-black text-[10px] sm:text-xs px-2 py-1 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
                         <i class="fa-solid fa-circle text-[6px]"></i> Andar
                       </span>
                       <button 
                         type="button" 
                         onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
-                        class="w-7 h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
+                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
                         title="Cancel In-Cabin Appointment"
                       >
                         <i class="fa-solid fa-xmark"></i>
@@ -9068,18 +9126,19 @@
                     </div>`
                   : p.status === 'NO_SHOW'
                   ? `<div class="flex items-center gap-1">
-                      <span class="text-amber-800 bg-amber-100 border border-amber-300 font-bold text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <span class="text-amber-800 bg-amber-100 border border-amber-300 font-bold text-[10px] sm:text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1">
                         <i class="fa-solid fa-user-slash text-[10px]"></i> No-Show
                       </span>
                     </div>`
                   : p.status === 'CANCELLED'
-                  ? `<span class="text-rose-400 font-bold text-xs inline-flex items-center gap-1">
-                      <i class="fa-solid fa-ban text-sm"></i> Cancelled
+                  ? `<span class="text-rose-400 font-bold text-[10px] sm:text-xs inline-flex items-center gap-1">
+                      <i class="fa-solid fa-ban text-xs"></i> Cancelled
                     </span>`
-                  : `<span class="text-slate-400 font-bold text-xs inline-flex items-center gap-1">
-                      <i class="fa-solid fa-check-double text-[#53bdeb] text-sm"></i> Done
+                  : `<span class="text-slate-400 font-bold text-[10px] sm:text-xs inline-flex items-center gap-1">
+                      <i class="fa-solid fa-check-double text-[#53bdeb] text-xs"></i> Done
                     </span>`
-              }</div>
+              }
+            </div>
 
           </div>
         `;
@@ -10633,10 +10692,10 @@
       const upiTotal = activeQueue
         .filter(p => p.payMode === 'UPI')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
-      const baakiTotal = activeQueue
-        .filter(p => p.payMode === 'Baaki')
+      const baakiTotal = todayQueue
+        .filter(p => p.status === 'WAITING' && p.payMode === 'Baaki')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
-      const baakiCount = activeQueue.filter(p => p.payMode === 'Baaki').length;
+      const baakiCount = todayQueue.filter(p => p.status === 'WAITING' && p.payMode === 'Baaki').length;
       const grandTotal = cashTotal + upiTotal;
 
       document.getElementById('gallaTotalAmount').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
@@ -10738,12 +10797,14 @@
             .reverse()
             .map(p => {
               const isCancelled = p.status === 'CANCELLED';
+              const isNoShow = p.status === 'NO_SHOW';
+              const isWaitingBaaki = p.status === 'WAITING' && p.payMode === 'Baaki';
               return `
-                <div class="py-3 flex items-center justify-between gap-2 text-xs sm:text-sm ${isCancelled ? 'opacity-50 line-through bg-slate-50 rounded-xl px-2' : ''}">
+                <div class="py-3 flex items-center justify-between gap-2 text-xs sm:text-sm ${(isCancelled || isNoShow) ? 'opacity-60 bg-slate-50 rounded-xl px-2' : ''}">
                   <div class="flex items-center gap-2.5">
                     <span class="font-black text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">#${p.token}</span>
                     <div>
-                      <div class="font-bold text-slate-900">${escapeHtml(p.name)} ${isCancelled ? '<span class="text-rose-600 font-extrabold text-[10px] uppercase no-underline">[Cancelled]</span>' : ''}</div>
+                      <div class="font-bold text-slate-900">${escapeHtml(p.name)} ${isCancelled ? '<span class="text-rose-600 font-extrabold text-[10px] uppercase no-underline">[Cancelled]</span>' : (isNoShow ? '<span class="text-amber-800 font-extrabold text-[10px] uppercase no-underline">[No-Show]</span>' : '')}</div>
                       <div class="text-[11px] text-slate-500">${escapeHtml(p.reason)} • ${p.slotTime}</div>
                     </div>
                   </div>
@@ -10752,18 +10813,20 @@
                     ${
                       isCancelled
                         ? `<span class="px-3 py-1.5 rounded-xl font-bold text-xs bg-rose-50 text-rose-600 border border-rose-200">Cancelled</span>`
+                        : isNoShow
+                        ? `<span class="px-3 py-1.5 rounded-xl font-bold text-xs bg-amber-50 text-amber-800 border border-amber-200">No-Show</span>`
                         : `<button 
                             type="button"
                             onclick="togglePatientFeeStatus('${p.id}')" 
                             class="px-3 py-1.5 rounded-xl font-extrabold text-xs border ${
-                              p.payMode === 'Baaki'
+                              isWaitingBaaki
                                 ? 'bg-amber-100 text-amber-950 border-amber-400'
                                 : p.payMode === 'UPI'
                                 ? 'bg-sky-50 text-sky-900 border-sky-200'
                                 : 'bg-emerald-50 text-emerald-900 border-emerald-200'
                             }"
                           >
-                            ₹${p.fee} • ${p.payMode === 'Baaki' ? '⏳ Baaki (Click to Collect)' : p.payMode + ' ✓'}
+                            ₹${p.fee} • ${isWaitingBaaki ? '⏳ Baaki (Click to Collect)' : (p.status === 'DONE' ? 'Done ✓' : p.payMode + ' ✓')}
                           </button>`
                     }
                   </div>
@@ -10782,8 +10845,8 @@
       const upiTotal = activeQueue
         .filter(p => p.payMode === 'UPI')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
-      const baakiTotal = activeQueue
-        .filter(p => p.payMode === 'Baaki')
+      const baakiTotal = todayQueue
+        .filter(p => p.status === 'WAITING' && p.payMode === 'Baaki')
         .reduce((sum, p) => sum + (p.fee || 0), 0);
       const grandTotal = cashTotal + upiTotal;
 
@@ -11764,6 +11827,9 @@
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
       document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
       document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
+      document.getElementById('patientClinicHeaderBlock')?.classList.add('hidden');
+      document.getElementById('patientViewLiveStatusCard')?.classList.add('hidden');
+      document.getElementById('patientViewPausedBox')?.classList.add('hidden');
 
       updatePatientTokenPassLiveStatus();
     }
@@ -12079,6 +12145,8 @@
       document.getElementById('patBookAge').value = '';
       document.getElementById('patBookPhone').value = '';
       document.getElementById('patientTokenPassBox')?.classList.add('hidden');
+      document.getElementById('patientClinicHeaderBlock')?.classList.remove('hidden');
+      document.getElementById('patientViewLiveStatusCard')?.classList.remove('hidden');
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.remove('hidden');
       setPatientBookingStep(1);
       renderPatientBookingPage();
@@ -13123,6 +13191,34 @@
       if (urlProfile) urlProfile.value = dataUrl;
 
       saveLocalClinic();
+
+      // Immediately sync with Firebase Firestore and local server
+      if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
+        try {
+          window.ParchiFirebase.saveClinic({
+            ...clinicProfile,
+            id: clinicProfile.id,
+            doctorPhoto: dataUrl,
+            doctors: clinicProfile.doctors
+          });
+        } catch (e) {}
+      }
+
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          fetch('/api/clinic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...clinicProfile,
+              id: clinicProfile.id,
+              doctorPhoto: dataUrl,
+              doctors: clinicProfile.doctors
+            })
+          });
+        } catch (e) {}
+      }
+
       showToast('📸 Doctor photo uploaded successfully!');
     }
 
@@ -13148,12 +13244,28 @@
       }
       saveLocalClinic();
 
+      if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
+        try {
+          await window.ParchiFirebase.saveClinic({
+            ...clinicProfile,
+            id: clinicProfile.id,
+            doctorPhoto: val,
+            doctors: clinicProfile.doctors
+          });
+        } catch (e) {}
+      }
+
       if (window.location.protocol.startsWith('http')) {
         try {
           await fetch('/api/clinic', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ doctorPhoto: val })
+            body: JSON.stringify({
+              ...clinicProfile,
+              id: clinicProfile.id,
+              doctorPhoto: val,
+              doctors: clinicProfile.doctors
+            })
           });
         } catch (e) {}
       }
@@ -13250,31 +13362,36 @@
             console.warn('Admin fetch error:', e);
           }
         }
-        if (!list.length && window.ParchiFirebase && typeof (window.ParchiFirebase.getAllClinicsFromFirestore || window.ParchiFirebase.getAllClinics) === 'function') {
+        if (window.ParchiFirebase && typeof (window.ParchiFirebase.getAllClinicsFromFirestore || window.ParchiFirebase.getAllClinics) === 'function') {
           try {
             const getClinicsFn = window.ParchiFirebase.getAllClinicsFromFirestore || window.ParchiFirebase.getAllClinics;
             const fireClinics = await getClinicsFn();
             if (Array.isArray(fireClinics) && fireClinics.length > 0) {
-              list = fireClinics.map(c => ({
-                id: c.id,
-                doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
-                doctorDegree: c.doctorDegree || 'MBBS',
-                doctorRegNo: c.doctorRegNo || 'MCI-REG',
-                experienceYears: c.experienceYears || 10,
-                clinicName: c.name || `${c.doctorName || 'Doctor'}'s Clinic`,
-                category: c.category || 'General Medicine',
-                specialty: c.specialty || 'General Physician',
-                city: c.city || 'India',
-                address: c.address || '',
-                phone: c.phone || '',
-                whatsapp: c.whatsapp || c.phone || '',
-                ownerEmail: c.ownerEmail || `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@parchisetu.com`,
-                doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
-                fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-                subscription: c.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
-                stats: { totalBookings: (c.todayQueue || []).length || 1, todayBookings: (c.todayQueue || []).length || 1 },
-                createdAt: c.createdAt || new Date().toISOString()
-              }));
+              fireClinics.forEach(c => {
+                if (!list.some(existing => existing.id === c.id)) {
+                  list.push({
+                    id: c.id,
+                    doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
+                    doctorDegree: c.doctorDegree || 'MBBS',
+                    doctorRegNo: c.doctorRegNo || 'MCI-REG',
+                    experienceYears: c.experienceYears || 10,
+                    clinicName: c.name || `${c.doctorName || 'Doctor'}'s Clinic`,
+                    category: c.category || 'General Medicine',
+                    specialty: c.specialty || 'General Physician',
+                    city: c.city || 'India',
+                    address: c.address || '',
+                    phone: c.phone || '',
+                    whatsapp: c.whatsapp || c.phone || '',
+                    ownerEmail: c.ownerEmail || `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@parchisetu.com`,
+                    doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
+                    fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+                    subscription: c.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
+                    stats: { totalBookings: (c.todayQueue || []).length || 1, todayBookings: (c.todayQueue || []).length || 1 },
+                    isLive: !!(c.isLive || (c.todayQueue && c.todayQueue.length > 0) || (c.liveStatus && !c.liveStatus.isDoctorLate)),
+                    createdAt: c.createdAt || new Date().toISOString()
+                  });
+                }
+              });
             }
           } catch (e) {
             console.warn('Admin Firestore fetch error:', e);
@@ -13446,6 +13563,11 @@
             ? '<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full">💎 Monthly Pro (₹399/mo)</span>'
             : '<span class="bg-slate-100 text-slate-700 border border-slate-300 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free Trial</span>');
 
+        const isLive = d.isLive !== false;
+        const liveBadge = isLive
+          ? '<span class="bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">🟢 Live</span>'
+          : '<span class="bg-slate-100 text-slate-600 border border-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">⚪ Offline</span>';
+
         const cleanClinicName = isDummyClinicName(d.clinicName) ? `${d.doctorName}'s Clinic` : (d.clinicName || `${d.doctorName}'s Clinic`);
         const dateFormatted = d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Active';
 
@@ -13461,6 +13583,7 @@
                     <h4 class="font-black text-sm text-slate-900">${escapeHtml(d.doctorName)}</h4>
                     <span class="bg-emerald-100 text-[#075E54] text-[10px] font-black px-2 py-0.2 rounded-full">${escapeHtml(d.specialty || 'Doctor')}</span>
                     ${planBadge}
+                    ${liveBadge}
                   </div>
                   <p class="text-xs text-slate-500 font-semibold mt-0.5">
                     <i class="fa-solid fa-hospital text-emerald-600 mr-1"></i>${escapeHtml(cleanClinicName)} • <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${escapeHtml(d.city || 'India')}
@@ -13469,13 +13592,35 @@
                     ${d.phone ? `<span><i class="fa-solid fa-phone text-emerald-600 mr-1"></i><strong>${escapeHtml(d.phone)}</strong></span>` : ''}
                     ${d.ownerEmail ? `<span><i class="fa-solid fa-envelope text-blue-600 mr-1"></i>${escapeHtml(d.ownerEmail)}</span>` : ''}
                     <span><i class="fa-solid fa-calendar text-slate-400 mr-1"></i>Joined: ${dateFormatted}</span>
-                    <span><i class="fa-solid fa-users text-indigo-600 mr-1"></i>Tokens: <strong>${d.stats?.totalBookings ?? 0}</strong></span>
+                    <span><i class="fa-solid fa-users text-indigo-600 mr-1"></i>Total Appts: <strong>${d.stats?.totalBookings ?? 0}</strong></span>
                   </div>
                 </div>
               </div>
               
               <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0 self-end sm:self-center">
-                <!-- Plan Switcher Dropdown -->
+                <!-- 1-Tap Fast Plan Change Buttons -->
+                <div class="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200">
+                  <button 
+                    type="button" 
+                    onclick="updateDoctorSubscription('${escapeHtml(d.id)}', 'free')" 
+                    class="btn-tactile px-2 py-1 rounded-lg text-[10px] font-black transition ${plan === 'free' ? 'bg-slate-800 text-white shadow-2xs' : 'bg-white text-slate-700 hover:bg-slate-200'}"
+                    title="1-Tap Free"
+                  >Free</button>
+                  <button 
+                    type="button" 
+                    onclick="updateDoctorSubscription('${escapeHtml(d.id)}', 'monthly_pro')" 
+                    class="btn-tactile px-2 py-1 rounded-lg text-[10px] font-black transition ${plan === 'monthly_pro' ? 'bg-[#075E54] text-white shadow-2xs' : 'bg-amber-100 text-amber-950 hover:bg-amber-200'}"
+                    title="1-Tap Pro ₹399/mo"
+                  >Pro ₹399</button>
+                  <button 
+                    type="button" 
+                    onclick="updateDoctorSubscription('${escapeHtml(d.id)}', 'annual_pro')" 
+                    class="btn-tactile px-2 py-1 rounded-lg text-[10px] font-black transition ${plan === 'annual_pro' ? 'bg-purple-800 text-white shadow-2xs' : 'bg-purple-100 text-purple-950 hover:bg-purple-200'}"
+                    title="1-Tap Pro ₹4,000/yr"
+                  >Pro ₹4k</button>
+                </div>
+
+                <!-- Plan Switcher Dropdown (Preserved for compatibility) -->
                 <div class="relative">
                   <select 
                     onchange="updateDoctorSubscription('${escapeHtml(d.id)}', this.value)"
@@ -13563,6 +13708,20 @@
             showToast(`✅ Plan updated to ${newPlan === 'annual_pro' ? 'Annual Pro (₹4,000)' : (newPlan === 'monthly_pro' ? 'Monthly Pro (₹399)' : 'Free Trial')}!`);
           }
         }
+        // Sync to Firebase Firestore if available
+        if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
+          try {
+            window.ParchiFirebase.saveClinic({
+              id: clinicId,
+              subscription: {
+                plan: newPlan,
+                status: 'active',
+                billingCycle: newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial'),
+                amount: newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0)
+              }
+            });
+          } catch (e) {}
+        }
         // Update locally
         const target = adminDoctorsData.find(d => d.id === clinicId);
         if (target) {
@@ -13570,6 +13729,15 @@
           target.subscription.plan = newPlan;
           target.subscription.amount = newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0);
           target.subscription.billingCycle = newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial');
+        }
+        if (clinicProfile && clinicProfile.id === clinicId) {
+          clinicProfile.subscription = {
+            plan: newPlan,
+            status: 'active',
+            billingCycle: newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial'),
+            amount: newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0)
+          };
+          saveLocalClinic();
         }
         renderAdminDashboard();
       } catch (err) {
@@ -14135,7 +14303,7 @@
         try {
           window.ParchiFirebase.init();
           if (window.ParchiFirebase.onAuthStateChanged) {
-            window.ParchiFirebase.onAuthStateChanged(user => {
+            window.ParchiFirebase.onAuthStateChanged(async user => {
               if (user) {
                 currentAuthUser = {
                   uid: user.uid,
@@ -14146,6 +14314,24 @@
                   localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
                   localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
                 } catch (e) {}
+
+                if (window.ParchiFirebase.getClinicForUser) {
+                  try {
+                    const userClinic = await window.ParchiFirebase.getClinicForUser(user);
+                    if (userClinic && userClinic.name && !isDummyClinicName(userClinic.name)) {
+                      clinicProfile = {
+                        ...clinicProfile,
+                        ...userClinic,
+                        visitingHours: {
+                          ...(clinicProfile.visitingHours || {}),
+                          ...(userClinic.visitingHours || {})
+                        }
+                      };
+                      saveLocalClinic();
+                      renderProfileTab();
+                    }
+                  } catch (e) {}
+                }
               }
               updateHeaderAuthUI(currentAuthUser);
             });
@@ -14209,12 +14395,12 @@
             const clinicRes = await fetch(`/api/clinic?clinic=${encodeURIComponent(clinicParam)}`);
             if (clinicRes.ok) {
               const remoteClinic = await clinicRes.json();
-              if (remoteClinic && remoteClinic.name) loaded = remoteClinic;
+              if (remoteClinic && remoteClinic.name && (!clinicParam || remoteClinic.id === clinicParam)) loaded = remoteClinic;
             }
           } catch (e) {}
         }
 
-        if (!loaded && window.ParchiFirebase) {
+        if (!loaded && window.ParchiFirebase && window.ParchiFirebase.getClinic) {
           try {
             loaded = await window.ParchiFirebase.getClinic(clinicParam);
           } catch (e) {}
@@ -14237,12 +14423,65 @@
           }
           saveLocalClinic();
         }
+      } else if (clinicProfile && clinicProfile.id && !clinicProfile.id.startsWith('dummy_')) {
+        let loaded = null;
+        if (window.location.protocol.startsWith('http')) {
+          try {
+            const clinicRes = await fetch(`/api/clinic?clinic=${encodeURIComponent(clinicProfile.id)}`);
+            if (clinicRes.ok) {
+              const remoteClinic = await clinicRes.json();
+              if (remoteClinic && remoteClinic.id === clinicProfile.id && remoteClinic.name && !isDummyClinicName(remoteClinic.name)) {
+                loaded = remoteClinic;
+              }
+            }
+          } catch (e) {}
+        }
+        if (!loaded && window.ParchiFirebase && window.ParchiFirebase.getClinic) {
+          try {
+            const fbClinic = await window.ParchiFirebase.getClinic(clinicProfile.id);
+            if (fbClinic && fbClinic.name && !isDummyClinicName(fbClinic.name)) {
+              loaded = fbClinic;
+            }
+          } catch (e) {}
+        }
+        if (loaded) {
+          const keepPhoto = (clinicProfile.doctorPhoto && (clinicProfile.doctorPhoto.startsWith('data:') || !clinicProfile.doctorPhoto.includes('unsplash')))
+            ? clinicProfile.doctorPhoto
+            : (loaded.doctorPhoto || clinicProfile.doctorPhoto);
+          clinicProfile = {
+            ...clinicProfile,
+            ...loaded,
+            doctorPhoto: keepPhoto,
+            visitingHours: {
+              ...(clinicProfile.visitingHours || {}),
+              ...(loaded.visitingHours || {})
+            }
+          };
+          if (clinicProfile.liveStatus) {
+            isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+            doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+            expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+            isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+          }
+          saveLocalClinic();
+        } else {
+          // If server didn't have this clinic record, ensure our authentic clinic is synced to server
+          if (clinicProfile.name && !isDummyClinicName(clinicProfile.name) && window.location.protocol.startsWith('http')) {
+            try {
+              fetch('/api/clinic', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(clinicProfile)
+              });
+            } catch (e) {}
+          }
+        }
       } else if (window.location.protocol.startsWith('http')) {
         try {
           const clinicRes = await fetch('/api/clinic');
           if (clinicRes.ok) {
             const remoteClinic = await clinicRes.json();
-            if (remoteClinic && remoteClinic.name) {
+            if (remoteClinic && remoteClinic.name && (!clinicProfile || !clinicProfile.name || isDummyClinicName(clinicProfile.name))) {
               clinicProfile = {
                 ...clinicProfile,
                 ...remoteClinic,

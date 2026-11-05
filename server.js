@@ -380,7 +380,15 @@ function loadData() {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object') {
-        if (parsed.clinic) appData.clinic = parsed.clinic;
+        if (parsed.clinic) {
+          appData.clinic = {
+            ...DEFAULT_CLINIC,
+            ...parsed.clinic,
+            visitingHours: parsed.clinic.visitingHours || DEFAULT_CLINIC.visitingHours,
+            fees: parsed.clinic.fees || DEFAULT_CLINIC.fees,
+            doctors: parsed.clinic.doctors || DEFAULT_CLINIC.doctors
+          };
+        }
         if (parsed.clinics) appData.clinics = { ...INITIAL_CLINICS, ...parsed.clinics };
         if (Array.isArray(parsed.queue)) appData.queue = parsed.queue;
       }
@@ -591,6 +599,7 @@ const requestHandler = async (req, res) => {
           totalBookings: q.length,
           todayBookings: q.filter(b => b.date === getISTDateString()).length
         },
+        isLive: !!(c.onboarded || c.isGoogleAuth || c.ownerUid || (c.liveStatus && !c.liveStatus.isQRBookingPaused)),
         createdAt: c.createdAt || new Date().toISOString()
       };
     });
@@ -672,10 +681,30 @@ const requestHandler = async (req, res) => {
     }
 
     const clinicId = parsedUrl.searchParams.get('id') || parsedUrl.searchParams.get('clinic');
-    const targetClinic = (clinicId && appData.clinics && appData.clinics[clinicId]) ? appData.clinics[clinicId] : appData.clinic;
+    if (clinicId) {
+      const match = (appData.clinics && appData.clinics[clinicId]) || 
+                    (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null) || 
+                    INITIAL_CLINICS[clinicId];
+      if (!match) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Clinic not found', clinicId }));
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        ...match,
+        network: {
+          port: PORT,
+          localIps: ips,
+          lanUrl: ips.length > 0 ? `http://${ips[0]}:${PORT}` : `http://localhost:${PORT}`
+        }
+      }));
+      return;
+    }
+
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
-      ...targetClinic,
+      ...appData.clinic,
       network: {
         port: PORT,
         localIps: ips,
@@ -689,20 +718,30 @@ const requestHandler = async (req, res) => {
   if (pathname === '/api/clinic' && method === 'POST') {
     try {
       const body = await parseBody(req);
-      appData.clinic = {
-        ...appData.clinic,
+      appData.clinics = appData.clinics || {};
+      const targetId = body.id || (appData.clinic && appData.clinic.id) || ('clinic_' + Date.now());
+      const existing = (targetId && appData.clinics[targetId]) || 
+                       (appData.clinic && appData.clinic.id === targetId ? appData.clinic : {}) ||
+                       (INITIAL_CLINICS[targetId] || {});
+      const updatedClinic = {
+        ...DEFAULT_CLINIC,
+        ...existing,
         ...body,
+        id: targetId,
         onboarded: true,
+        visitingHours: body.visitingHours || existing.visitingHours || DEFAULT_CLINIC.visitingHours,
+        fees: body.fees || existing.fees || DEFAULT_CLINIC.fees,
+        doctors: body.doctors || existing.doctors || DEFAULT_CLINIC.doctors,
         updatedAt: new Date().toISOString()
       };
-      appData.clinics = appData.clinics || {};
-      if (appData.clinic.id) {
-        appData.clinics[appData.clinic.id] = appData.clinic;
+      appData.clinics[updatedClinic.id] = updatedClinic;
+      if (!appData.clinic || appData.clinic.id === updatedClinic.id || (isDummyClinicName(appData.clinic.name) && !isDummyClinicName(updatedClinic.name))) {
+        appData.clinic = updatedClinic;
       }
       saveData();
-      broadcastEvent('CLINIC_UPDATED', appData.clinic);
+      broadcastEvent('CLINIC_UPDATED', updatedClinic);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, clinic: appData.clinic }));
+      res.end(JSON.stringify({ success: true, clinic: updatedClinic }));
     } catch (err) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
