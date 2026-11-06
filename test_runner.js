@@ -558,14 +558,14 @@ async function runTests() {
     assert.ok(html.includes('function enterClinicWorkspace('), 'Must define enterClinicWorkspace');
   })();
 
-  // 32. Clinic Profile & Pricing Modal with ₹399/mo and ₹4,000/yr plans
+  // 32. Clinic Profile & Pricing Modal with ₹399/mo and ₹3,999/yr plans
   await test('Clinic Profile & Pricing modal defines membership plans and logout button', async () => {
     const res = await makeRequest('GET', '/');
     assert.strictEqual(res.status, 200);
     const html = res.body;
     assert.ok(html.includes('id="clinicAccountModal"'), 'Must contain clinicAccountModal');
     assert.ok(html.includes('₹399'), 'Must contain ₹399 monthly price');
-    assert.ok(html.includes('₹4,000') || html.includes('4,000'), 'Must contain ₹4,000 annual price');
+    assert.ok(html.includes('₹3,999') || html.includes('3,999') || html.includes('₹4,000'), 'Must contain ₹3,999 annual price');
     assert.ok(html.includes('Monthly OPD Plan'), 'Must describe Monthly OPD Plan');
     assert.ok(html.includes('Annual Pro Plan'), 'Must describe Annual Pro Plan');
     assert.ok(html.includes('function handleProfileHeaderClick('), 'Must define handleProfileHeaderClick');

@@ -1392,7 +1392,7 @@
               </div>
               <div>
                 <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">ParchiSetu Membership & Pricing Plans</h3>
-                <p class="text-xs text-slate-600 font-semibold mt-0.5">Monthly Pro: ₹399/mo • Annual Pro: ₹4,000/yr (Save ₹788)</p>
+                <p class="text-xs text-slate-600 font-semibold mt-0.5">Monthly Pro: ₹399/mo • Annual Pro: ₹3,999/yr (Save ₹789) • 🔄 Autopay Enabled</p>
               </div>
             </div>
             <button 
@@ -2994,10 +2994,13 @@
 
           <!-- Plan 1: Monthly -->
           <div class="p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-[#128C7E] transition relative cursor-pointer" onclick="selectPricingPlan('monthly')">
+            <span class="absolute -top-2.5 right-4 bg-emerald-100 text-[#075E54] text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-300">
+              🔄 AUTOPAY
+            </span>
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-black text-slate-900 block">Monthly OPD Plan</span>
-                <span class="text-[11px] text-slate-500">Chhote wa naye clinics ke liye best</span>
+                <span class="text-xs font-black text-slate-900 block">Monthly OPD Plan (Autopay)</span>
+                <span class="text-[11px] text-slate-500">Chhote wa naye clinics ke liye best • Monthly Recurring</span>
               </div>
               <div class="text-right">
                 <span class="text-lg font-black text-slate-900">₹399</span>
@@ -3008,29 +3011,30 @@
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Unlimited Digital Parchis & QR Tokens</li>
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Live Compounder Desk & Cabin Calling</li>
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Daily Galla / Cash & UPI Checkbook</li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-rotate text-[#128C7E]"></i> Seamless UPI / Card Autopay Renewal</li>
             </ul>
             <button 
               type="button" 
               onclick="event.stopPropagation(); initiateRazorpayPayment('monthly_pro')" 
               class="mt-3 w-full py-2 px-3 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm transition"
             >
-              <i class="fa-solid fa-credit-card"></i>
-              <span>Pay ₹399 via Razorpay</span>
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span>Pay ₹399 via Razorpay Autopay</span>
             </button>
           </div>
 
           <!-- Plan 2: Annual Plan (Best Value) -->
           <div class="p-3.5 rounded-2xl border-2 border-[#25D366] bg-emerald-50/50 hover:bg-emerald-50 transition relative cursor-pointer" onclick="selectPricingPlan('annual')">
             <span class="absolute -top-2.5 right-4 bg-[#25D366] text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow-xs">
-              ⭐ BEST VALUE (SAVE ₹788)
+              ⭐ BEST VALUE (SAVE ₹789) • 🔄 AUTOPAY
             </span>
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-black text-[#075E54] block">Annual Pro Plan (1 Year)</span>
+                <span class="text-xs font-black text-[#075E54] block">Annual Pro Plan (1 Year Autopay)</span>
                 <span class="text-[11px] text-emerald-800">Pure 1 saal ka tension-free subscription</span>
               </div>
               <div class="text-right">
-                <span class="text-lg font-black text-[#075E54]">₹4,000</span>
+                <span class="text-lg font-black text-[#075E54]">₹3,999</span>
                 <span class="text-[10px] text-emerald-700 block">/ saal (~₹333/mo)</span>
               </div>
             </div>
@@ -3038,6 +3042,7 @@
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Sabhi Monthly features shamil</li>
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Free Laminated QR Acrylic Standee Assistance</li>
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Dedicated Phone & WhatsApp Priority Support</li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-rotate text-[#128C7E]"></i> Yearly Autopay • Lowest Effective Price ₹333/mo</li>
             </ul>
             <button 
               type="button" 
@@ -3045,7 +3050,7 @@
               class="mt-3 w-full py-2 px-3 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition"
             >
               <i class="fa-solid fa-bolt"></i>
-              <span>Pay ₹4,000 via Razorpay (Best Value)</span>
+              <span>Pay ₹3,999 via Razorpay Autopay (Best Value)</span>
             </button>
           </div>
         </div>
@@ -3111,11 +3116,14 @@
 
         <div class="space-y-3">
           <!-- Option 1: Monthly Pro -->
-          <div class="p-4 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-white transition space-y-3">
+          <div class="p-4 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-white transition space-y-3 relative">
+            <span class="absolute -top-2.5 right-4 bg-emerald-100 text-[#075E54] text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-300">
+              🔄 AUTOPAY
+            </span>
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-sm font-black text-slate-900 block">Monthly OPD Plan</span>
-                <span class="text-xs text-slate-500">Flexible 30-Day Complete Clinic Access</span>
+                <span class="text-sm font-black text-slate-900 block">Monthly OPD Plan (Autopay)</span>
+                <span class="text-xs text-slate-500">Flexible 30-Day Complete Clinic Access • Auto-renews monthly</span>
               </div>
               <div class="text-right">
                 <span class="text-xl font-black text-slate-900">₹399</span>
@@ -3126,6 +3134,7 @@
               <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Unlimited Digital Parchis & Live Token Display</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Live Compounder Cabin Calling & Ding-Dong Bell</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Daily Cash & UPI Galla Checkbook</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-[#128C7E]"></i> Hassle-Free Recurring UPI / Card Autopay</li>
             </ul>
             <button 
               type="button" 
@@ -3133,23 +3142,23 @@
               id="btnPayMonthlyModal"
               class="btn-tactile w-full py-3 px-4 bg-[#075E54] hover:bg-[#128C7E] text-white font-extrabold rounded-xl shadow-md text-xs sm:text-sm flex items-center justify-center gap-2 transition"
             >
-              <i class="fa-solid fa-credit-card"></i>
-              <span>Pay ₹399 via Razorpay (Monthly)</span>
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span>Pay ₹399 via Razorpay Autopay</span>
             </button>
           </div>
 
           <!-- Option 2: Annual Pro (Best Value) -->
           <div class="p-4 rounded-2xl border-2 border-[#25D366] bg-emerald-50/50 hover:bg-emerald-50 transition space-y-3 relative">
             <span class="absolute -top-2.5 right-4 bg-[#25D366] text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
-              ⭐ BEST VALUE (SAVE ₹788)
+              ⭐ BEST VALUE (SAVE ₹789) • 🔄 AUTOPAY
             </span>
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-sm font-black text-[#075E54] block">Annual Pro Plan (1 Year)</span>
+                <span class="text-sm font-black text-[#075E54] block">Annual Pro Plan (1 Year Autopay)</span>
                 <span class="text-xs text-emerald-800">Pure 1 Saal Ka Tension-Free Subscription</span>
               </div>
               <div class="text-right">
-                <span class="text-xl font-black text-[#075E54]">₹4,000</span>
+                <span class="text-xl font-black text-[#075E54]">₹3,999</span>
                 <span class="text-[10px] text-emerald-700 block">/ saal (~₹333/mo)</span>
               </div>
             </div>
@@ -3157,6 +3166,7 @@
               <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Sabhi Monthly features shamil</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Free Laminated Acrylic QR Standee Assistance</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Dedicated 24/7 Phone & WhatsApp Priority Support</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-[#128C7E]"></i> Yearly Autopay • Lowest Effective Price ₹333/mo</li>
             </ul>
             <button 
               type="button" 
@@ -3165,7 +3175,7 @@
               class="btn-tactile w-full py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black rounded-xl shadow-lg text-xs sm:text-sm flex items-center justify-center gap-2 transition"
             >
               <i class="fa-solid fa-bolt"></i>
-              <span>Pay ₹4,000 via Razorpay (Annual Pro)</span>
+              <span>Pay ₹3,999 via Razorpay Autopay (Annual Pro)</span>
             </button>
           </div>
         </div>
@@ -7340,7 +7350,7 @@
             status: 'active',
             plan: sub.plan,
             planName: sub.plan === 'annual_pro' ? 'Annual Pro Plan' : 'Monthly Pro Plan',
-            amount: sub.plan === 'annual_pro' ? 4000 : 399,
+            amount: sub.plan === 'annual_pro' ? 3999 : 399,
             daysLeft: daysLeft,
             renewalDate: sub.renewalDate
           };
@@ -7459,15 +7469,15 @@
 
     async function initiateRazorpayPayment(plan) {
       plan = (plan === 'annual_pro' || plan === 'annual') ? 'annual_pro' : 'monthly_pro';
-      const amount = plan === 'annual_pro' ? 4000 : 399;
-      const planTitle = plan === 'annual_pro' ? 'Annual Pro Plan (₹4,000)' : 'Monthly OPD Plan (₹399)';
+      const amount = plan === 'annual_pro' ? 3999 : 399;
+      const planTitle = plan === 'annual_pro' ? 'Annual Pro Plan (₹3,999/yr Autopay)' : 'Monthly OPD Plan (₹399/mo Autopay)';
 
       showToast(`⏳ Razorpay Checkout shuru ho raha hai (${planTitle})...`);
 
-      // 1. Create order on backend API
+      // 1. Create order / subscription on backend API
       let orderData = null;
       try {
-        const res = await fetch('/api/payment/create-order', {
+        const res = await fetch('/api/payment/create-subscription', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -7480,7 +7490,27 @@
           orderData = await res.json();
         }
       } catch (err) {
-        console.warn('Backend payment create-order failed, using fallback:', err);
+        console.warn('Backend payment create-subscription failed, trying create-order fallback:', err);
+      }
+
+      // Fallback endpoint if create-subscription fails
+      if (!orderData) {
+        try {
+          const res = await fetch('/api/payment/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
+              plan: plan,
+              amount: amount
+            })
+          });
+          if (res.ok) {
+            orderData = await res.json();
+          }
+        } catch (err) {
+          console.warn('Backend payment create-order failed, using simulated fallback:', err);
+        }
       }
 
       if (!orderData) {
@@ -7491,28 +7521,32 @@
           currency: 'INR',
           keyId: 'rzp_test_parchisetu',
           plan: plan,
+          autopay: true,
           isSimulated: true
         };
       }
 
       // 2. Open Official Razorpay Checkout if window.Razorpay available
       if (typeof window.Razorpay === 'function') {
+        const isSub = Boolean(orderData.isSubscription && orderData.subscriptionId);
         const options = {
           key: orderData.keyId,
-          amount: orderData.amount,
+          subscription_id: isSub ? orderData.subscriptionId : undefined,
+          amount: isSub ? undefined : orderData.amount,
           currency: orderData.currency || 'INR',
           name: 'ParchiSetu Clinic Platform',
-          description: plan === 'annual_pro' ? 'Annual Pro Subscription (1 Year)' : 'Monthly OPD Subscription (30 Days)',
+          description: plan === 'annual_pro' ? 'Annual Pro Autopay Subscription (₹3,999/yr)' : 'Monthly OPD Autopay Subscription (₹399/mo)',
           image: '/favicon.svg',
-          order_id: (orderData.orderId && !orderData.orderId.startsWith('order_test_') && !orderData.orderId.startsWith('order_sim_')) ? orderData.orderId : undefined,
+          order_id: (!isSub && orderData.orderId && !orderData.orderId.startsWith('order_test_') && !orderData.orderId.startsWith('order_sim_')) ? orderData.orderId : undefined,
           prefill: {
             name: (clinicProfile && clinicProfile.doctorName) || 'Doctor',
-            email: (currentAuthUser && currentAuthUser.email) || (clinicProfile && clinicProfile.ownerEmail) || 'razorpay.test@parchisetu.in',
+            email: (currentAuthUser && currentAuthUser.email) || (clinicProfile && clinicProfile.ownerEmail) || 'razorpay.live@parchisetu.in',
             contact: (clinicProfile && clinicProfile.phone) || '9835012345'
           },
           notes: {
             clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
-            plan: plan
+            plan: plan,
+            autopay: 'true'
           },
           theme: {
             color: '#075E54'
@@ -7523,8 +7557,10 @@
               plan: plan,
               amount: amount,
               billingCycle: plan === 'annual_pro' ? 'annual' : 'monthly',
+              autopay: true,
               razorpay_payment_id: response.razorpay_payment_id || `pay_verified_${Date.now()}`,
-              razorpay_order_id: response.razorpay_order_id || orderData.orderId,
+              razorpay_order_id: response.razorpay_order_id || (!isSub ? orderData.orderId : null),
+              razorpay_subscription_id: response.razorpay_subscription_id || (isSub ? orderData.subscriptionId : null),
               razorpay_signature: response.razorpay_signature || 'test_signature'
             });
           },
@@ -7578,9 +7614,11 @@
         plan: isAnnual ? 'annual_pro' : 'monthly_pro',
         status: 'active',
         billingCycle: isAnnual ? 'annual' : 'monthly',
-        amount: verifyPayload.amount || (isAnnual ? 4000 : 399),
+        amount: verifyPayload.amount || (isAnnual ? 3999 : 399),
+        autopay: true,
+        subscriptionId: verifyPayload.razorpay_subscription_id || null,
         paymentId: verifyPayload.razorpay_payment_id,
-        orderId: verifyPayload.razorpay_order_id,
+        orderId: verifyPayload.razorpay_order_id || null,
         paidAt: new Date().toISOString(),
         renewalDate: new Date(Date.now() + days * 86400000).toISOString(),
         updatedAt: new Date().toISOString()
@@ -7592,7 +7630,7 @@
       checkClinicTrialAndLock();
       refreshAllViews();
 
-      showToast(`🎉 Payment Verified! ParchiSetu ${isAnnual ? 'Annual Pro' : 'Monthly Pro'} Platform Unlock Ho Gaya Hai!`);
+      showToast(`🎉 Payment Verified! ParchiSetu ${isAnnual ? 'Annual Pro (Autopay)' : 'Monthly Pro (Autopay)'} Platform Unlock Ho Gaya Hai!`);
     }
 
     async function simulateTestPaymentUnlock(plan = 'monthly_pro') {
@@ -7600,8 +7638,9 @@
       await verifyAndActivateSubscription({
         clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
         plan: isAnnual ? 'annual_pro' : 'monthly_pro',
-        amount: isAnnual ? 4000 : 399,
+        amount: isAnnual ? 3999 : 399,
         billingCycle: isAnnual ? 'annual' : 'monthly',
+        autopay: true,
         razorpay_payment_id: `pay_test_${Date.now()}`,
         razorpay_order_id: `order_test_${Date.now()}`,
         razorpay_signature: 'test_verified_signature'
@@ -14332,7 +14371,7 @@
           mrr += 399;
         } else if (p === 'annual_pro') {
           proCount++;
-          mrr += Math.round(4000 / 12); // ~333/month
+          mrr += Math.round(3999 / 12); // ~333/month
         } else {
           freeCount++;
         }
@@ -14397,7 +14436,7 @@
       container.innerHTML = filtered.map(d => {
         const plan = d.subscription?.plan || 'free';
         const planBadge = plan === 'annual_pro'
-          ? '<span class="bg-purple-100 text-purple-900 border border-purple-300 text-[10px] font-black px-2 py-0.5 rounded-full">👑 Annual Pro (₹4,000/yr)</span>'
+          ? '<span class="bg-purple-100 text-purple-900 border border-purple-300 text-[10px] font-black px-2 py-0.5 rounded-full">👑 Annual Pro (₹3,999/yr)</span>'
           : (plan === 'monthly_pro'
             ? '<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full">💎 Monthly Pro (₹399/mo)</span>'
             : '<span class="bg-slate-100 text-slate-700 border border-slate-300 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free Trial</span>');
@@ -14455,8 +14494,8 @@
                     type="button" 
                     onclick="updateDoctorSubscription('${escapeHtml(d.id)}', 'annual_pro')" 
                     class="btn-tactile px-2 py-1 rounded-lg text-[10px] font-black transition ${plan === 'annual_pro' ? 'bg-purple-800 text-white shadow-2xs' : 'bg-purple-100 text-purple-950 hover:bg-purple-200'}"
-                    title="1-Tap Pro ₹4,000/yr"
-                  >Pro ₹4k</button>
+                    title="1-Tap Pro ₹3,999/yr"
+                  >Pro ₹3.9k</button>
                 </div>
 
                 <!-- Plan Switcher Dropdown (Preserved for compatibility) -->
@@ -14468,7 +14507,7 @@
                   >
                     <option value="free" ${plan === 'free' ? 'selected' : ''}>🆓 Free / Trial</option>
                     <option value="monthly_pro" ${plan === 'monthly_pro' ? 'selected' : ''}>💎 Monthly Pro (₹399)</option>
-                    <option value="annual_pro" ${plan === 'annual_pro' ? 'selected' : ''}>👑 Annual Pro (₹4,000)</option>
+                    <option value="annual_pro" ${plan === 'annual_pro' ? 'selected' : ''}>👑 Annual Pro (₹3,999)</option>
                   </select>
                 </div>
 
@@ -14544,7 +14583,7 @@
             body: JSON.stringify({ clinicId, plan: newPlan })
           });
           if (res.ok) {
-            showToast(`✅ Plan updated to ${newPlan === 'annual_pro' ? 'Annual Pro (₹4,000)' : (newPlan === 'monthly_pro' ? 'Monthly Pro (₹399)' : 'Free Trial')}!`);
+            showToast(`✅ Plan updated to ${newPlan === 'annual_pro' ? 'Annual Pro (₹3,999)' : (newPlan === 'monthly_pro' ? 'Monthly Pro (₹399)' : 'Free Trial')}!`);
           }
         }
         // Sync to Firebase Firestore if available
@@ -14556,7 +14595,7 @@
                 plan: newPlan,
                 status: 'active',
                 billingCycle: newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial'),
-                amount: newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0)
+                amount: newPlan === 'annual_pro' ? 3999 : (newPlan === 'monthly_pro' ? 399 : 0)
               }
             });
           } catch (e) {}
@@ -14566,7 +14605,7 @@
         if (target) {
           target.subscription = target.subscription || {};
           target.subscription.plan = newPlan;
-          target.subscription.amount = newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0);
+          target.subscription.amount = newPlan === 'annual_pro' ? 3999 : (newPlan === 'monthly_pro' ? 399 : 0);
           target.subscription.billingCycle = newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial');
         }
         if (clinicProfile && clinicProfile.id === clinicId) {
@@ -14574,7 +14613,7 @@
             plan: newPlan,
             status: 'active',
             billingCycle: newPlan === 'annual_pro' ? 'annual' : (newPlan === 'monthly_pro' ? 'monthly' : 'trial'),
-            amount: newPlan === 'annual_pro' ? 4000 : (newPlan === 'monthly_pro' ? 399 : 0)
+            amount: newPlan === 'annual_pro' ? 3999 : (newPlan === 'monthly_pro' ? 399 : 0)
           };
           saveLocalClinic();
         }
@@ -14661,7 +14700,7 @@
                 </div>
                 <div>
                   <span class="text-amber-800 block text-[10px] uppercase font-bold">Billing Rate</span>
-                  <strong class="text-emerald-700">${plan === 'annual_pro' ? '₹4,000 / year' : (plan === 'monthly_pro' ? '₹399 / month' : '₹0 (Free)')}</strong>
+                  <strong class="text-emerald-700">${plan === 'annual_pro' ? '₹3,999 / year' : (plan === 'monthly_pro' ? '₹399 / month' : '₹0 (Free)')}</strong>
                 </div>
                 <div>
                   <span class="text-amber-800 block text-[10px] uppercase font-bold">Status</span>

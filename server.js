@@ -589,34 +589,100 @@ const requestHandler = async (req, res) => {
     const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
 
     if (method === 'GET' && (action === 'config' || action === '')) {
+      const monthlyPlanId = process.env.RAZORPAY_PLAN_ID_MONTHLY || '';
+      const yearlyPlanId = process.env.RAZORPAY_PLAN_ID_YEARLY || '';
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
         success: true,
         keyId,
         plans: {
-          monthly_pro: { id: 'monthly_pro', amount: 399, currency: 'INR', name: 'Monthly OPD Pro Plan', durationDays: 30 },
-          annual_pro: { id: 'annual_pro', amount: 4000, currency: 'INR', name: 'Annual Pro Plan (1 Year)', durationDays: 365, savings: 788 }
+          monthly_pro: { id: 'monthly_pro', amount: 399, currency: 'INR', name: 'Monthly OPD Pro Plan (Autopay)', durationDays: 30, autopay: true, planId: monthlyPlanId || null },
+          annual_pro: { id: 'annual_pro', amount: 3999, currency: 'INR', name: 'Annual Pro Plan (Autopay 1 Year)', durationDays: 365, savings: 789, autopay: true, planId: yearlyPlanId || null }
         }
       }));
       return;
     }
 
-    if (method === 'POST' && (action === 'create-order' || action === 'order')) {
+    if (method === 'POST' && (action === 'create-order' || action === 'order' || action === 'create-subscription' || action === 'subscription')) {
       try {
         const body = await parseBody(req);
         const plan = (body.plan === 'annual_pro' || body.plan === 'annual') ? 'annual_pro' : 'monthly_pro';
-        const amount = plan === 'annual_pro' ? 4000 : 399;
+        const isAnnual = plan === 'annual_pro';
+        const amount = isAnnual ? 3999 : 399;
         const amountInPaise = Math.round(amount * 100);
         const clinicId = body.clinicId || 'clinic_razorpay_verification';
+        const isLiveKey = keySecret && keyId && !keyId.includes('placeholder') && !keyId.includes('YourRazorpay') && !keyId.includes('parchisetu');
+        const monthlyPlanId = process.env.RAZORPAY_PLAN_ID_MONTHLY || '';
+        const yearlyPlanId = process.env.RAZORPAY_PLAN_ID_YEARLY || '';
+        const targetPlanId = isAnnual ? yearlyPlanId : monthlyPlanId;
 
-        if (keySecret && keyId && !keyId.includes('placeholder') && !keyId.includes('YourRazorpay') && !keyId.includes('parchisetu')) {
+        // Try Razorpay Subscriptions (Autopay) if live keys and plan id configured
+        if (isLiveKey && targetPlanId) {
+          try {
+            const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+            const subData = JSON.stringify({
+              plan_id: targetPlanId,
+              total_count: isAnnual ? 10 : 120,
+              quantity: 1,
+              customer_notify: 1,
+              notes: { clinicId, plan, autopay: 'true', platform: 'ParchiSetu' }
+            });
+
+            const subResponse = await new Promise((resolve, reject) => {
+              const rzpReq = https.request({
+                hostname: 'api.razorpay.com',
+                port: 443,
+                path: '/v1/subscriptions',
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Basic ${auth}`,
+                  'Content-Length': Buffer.byteLength(subData)
+                }
+              }, (r) => {
+                let chunk = '';
+                r.on('data', d => { chunk += d; });
+                r.on('end', () => {
+                  try {
+                    resolve({ statusCode: r.statusCode, data: JSON.parse(chunk) });
+                  } catch (e) {
+                    resolve({ statusCode: r.statusCode, data: null });
+                  }
+                });
+              });
+              rzpReq.on('error', reject);
+              rzpReq.write(subData);
+              rzpReq.end();
+            });
+
+            if (subResponse.statusCode >= 200 && subResponse.statusCode < 300 && subResponse.data && subResponse.data.id) {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                success: true,
+                isSubscription: true,
+                subscriptionId: subResponse.data.id,
+                amount: amountInPaise,
+                currency: 'INR',
+                keyId,
+                plan,
+                autopay: true
+              }));
+              return;
+            }
+          } catch (subErr) {
+            console.warn('Live subscription creation notice in server.js:', subErr.message);
+          }
+        }
+
+        // Try Standard Razorpay Order
+        if (isLiveKey) {
           try {
             const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
             const postData = JSON.stringify({
               amount: amountInPaise,
               currency: 'INR',
               receipt: `rcpt_${clinicId.slice(0, 8)}_${Date.now().toString().slice(-6)}`,
-              notes: { clinicId, plan, platform: 'ParchiSetu' }
+              notes: { clinicId, plan, autopay: 'true', platform: 'ParchiSetu' }
             });
 
             const rzpResponse = await new Promise((resolve, reject) => {
@@ -646,15 +712,17 @@ const requestHandler = async (req, res) => {
               rzpReq.end();
             });
 
-            if (rzpResponse.statusCode >= 200 && rzpResponse.statusCode < 300 && rzpResponse.data) {
+            if (rzpResponse.statusCode >= 200 && rzpResponse.statusCode < 300 && rzpResponse.data && rzpResponse.data.id) {
               res.writeHead(200, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({
                 success: true,
+                isSubscription: false,
                 orderId: rzpResponse.data.id,
                 amount: rzpResponse.data.amount,
                 currency: rzpResponse.data.currency || 'INR',
                 keyId,
-                plan
+                plan,
+                autopay: true
               }));
               return;
             }
@@ -667,11 +735,13 @@ const requestHandler = async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
+          isSubscription: false,
           orderId: simulatedOrderId,
           amount: amountInPaise,
           currency: 'INR',
           keyId,
           plan,
+          autopay: true,
           isSimulated: true
         }));
         return;
@@ -685,7 +755,14 @@ const requestHandler = async (req, res) => {
     if (method === 'POST' && (action === 'verify')) {
       try {
         const body = await parseBody(req);
-        const { clinicId, plan = 'monthly_pro', razorpay_payment_id, razorpay_order_id, razorpay_signature } = body;
+        const {
+          clinicId,
+          plan = 'monthly_pro',
+          razorpay_payment_id,
+          razorpay_order_id,
+          razorpay_subscription_id,
+          razorpay_signature
+        } = body;
         if (!clinicId) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Missing clinicId' }));
@@ -693,12 +770,20 @@ const requestHandler = async (req, res) => {
         }
 
         let isValid = true;
-        if (keySecret && razorpay_order_id && razorpay_payment_id && razorpay_signature) {
-          const generated_signature = crypto
-            .createHmac('sha256', keySecret)
-            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-            .digest('hex');
-          isValid = (generated_signature === razorpay_signature);
+        if (keySecret && razorpay_signature) {
+          if (razorpay_subscription_id && razorpay_payment_id) {
+            const generated_signature = crypto
+              .createHmac('sha256', keySecret)
+              .update(`${razorpay_payment_id}|${razorpay_subscription_id}`)
+              .digest('hex');
+            isValid = (generated_signature === razorpay_signature);
+          } else if (razorpay_order_id && razorpay_payment_id) {
+            const generated_signature = crypto
+              .createHmac('sha256', keySecret)
+              .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+              .digest('hex');
+            isValid = (generated_signature === razorpay_signature);
+          }
         }
 
         if (!isValid) {
@@ -708,7 +793,7 @@ const requestHandler = async (req, res) => {
         }
 
         const isAnnual = plan === 'annual_pro' || plan === 'annual';
-        const amount = isAnnual ? 4000 : 399;
+        const amount = isAnnual ? 3999 : 399;
         const renewalDays = isAnnual ? 365 : 30;
         const renewalDate = new Date(Date.now() + renewalDays * 86400000).toISOString();
 
@@ -726,8 +811,10 @@ const requestHandler = async (req, res) => {
           status: 'active',
           billingCycle: isAnnual ? 'annual' : 'monthly',
           amount: amount,
+          autopay: true,
+          subscriptionId: razorpay_subscription_id || null,
           paymentId: razorpay_payment_id || `pay_verified_${Date.now()}`,
-          orderId: razorpay_order_id || `order_verified_${Date.now()}`,
+          orderId: razorpay_order_id || null,
           paidAt: new Date().toISOString(),
           renewalDate: renewalDate,
           updatedAt: new Date().toISOString()
@@ -895,7 +982,7 @@ const requestHandler = async (req, res) => {
         plan: body.plan || 'free', // 'free' | 'monthly_pro' | 'annual_pro'
         status: body.status || 'active', // 'active' | 'trial' | 'expired'
         billingCycle: body.billingCycle || (body.plan === 'annual_pro' ? 'annual' : (body.plan === 'monthly_pro' ? 'monthly' : 'trial')),
-        amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 4000 : (body.plan === 'monthly_pro' ? 399 : 0)),
+        amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 3999 : (body.plan === 'monthly_pro' ? 399 : 0)),
         renewalDate: body.renewalDate || new Date(Date.now() + 30 * 86400000).toISOString(),
         updatedAt: new Date().toISOString()
       };

@@ -86,8 +86,8 @@ async function runTests() {
   assert.ok(configRes.data.plans.monthly_pro, 'Must have monthly_pro plan');
   assert.strictEqual(configRes.data.plans.monthly_pro.amount, 399);
   assert.ok(configRes.data.plans.annual_pro, 'Must have annual_pro plan');
-  assert.strictEqual(configRes.data.plans.annual_pro.amount, 4000);
-  console.log('✅ PASS: GET /api/payment/config returns correct pricing (₹399 monthly, ₹4,000 annual)');
+  assert.strictEqual(configRes.data.plans.annual_pro.amount, 3999);
+  console.log('✅ PASS: GET /api/payment/config returns correct pricing (₹399 monthly, ₹3,999 annual Autopay)');
   passed++;
 
   // 4. POST /api/payment/create-order for Monthly
@@ -109,9 +109,9 @@ async function runTests() {
     plan: 'annual_pro'
   });
   assert.strictEqual(orderResAnnual.status, 200);
-  assert.strictEqual(orderResAnnual.data.amount, 400000); // 4000 INR = 400000 paise
+  assert.strictEqual(orderResAnnual.data.amount, 399900); // 3999 INR = 399900 paise
   assert.ok(orderResAnnual.data.orderId, 'Order ID must be generated');
-  console.log('✅ PASS: Order creation for Annual returns ₹4,000 in paise (400000) and orderId');
+  console.log('✅ PASS: Order creation for Annual returns ₹3,999 in paise (399900) and orderId');
   passed++;
 
   // 6. POST /api/payment/verify - Unlocks clinic and activates subscription
@@ -150,7 +150,8 @@ async function runTests() {
   assert.ok(html.includes('checkClinicTrialAndLock'), 'Must define checkClinicTrialAndLock');
   assert.ok(html.includes('isPlatformLocked'), 'Must define isPlatformLocked guard');
   assert.ok(html.includes('₹399'), 'Must display ₹399 monthly price');
-  assert.ok(html.includes('₹4,000'), 'Must display ₹4,000 annual price');
+  assert.ok(html.includes('₹3,999'), 'Must display ₹3,999 annual price');
+  assert.ok(html.includes('Autopay'), 'Must display Autopay badges');
   assert.ok(html.includes('7-Day Free Trial'), 'Must enforce 7-Day Free Trial');
   console.log('✅ PASS: HTML contains all required Razorpay verification UI, checkout scripts & lock guards');
   passed++;

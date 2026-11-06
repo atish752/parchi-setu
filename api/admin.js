@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
         plan: body.plan || 'free',
         status: body.status || 'active',
         billingCycle: body.billingCycle || (body.plan === 'annual_pro' ? 'annual' : (body.plan === 'monthly_pro' ? 'monthly' : 'trial')),
-        amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 4000 : (body.plan === 'monthly_pro' ? 399 : 0)),
+        amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 3999 : (body.plan === 'monthly_pro' ? 399 : 0)),
         renewalDate: body.renewalDate || new Date(Date.now() + 30 * 86400000).toISOString()
       });
       if (!updated) {

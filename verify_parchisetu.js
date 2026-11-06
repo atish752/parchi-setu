@@ -216,7 +216,7 @@ async function runVerification() {
     });
     assert.strictEqual(subRes.status, 200);
     assert.strictEqual(subRes.body.clinic.subscription.plan, 'annual_pro');
-    assert.strictEqual(subRes.body.clinic.subscription.amount, 4000);
+    assert.strictEqual(subRes.body.clinic.subscription.amount, 3999);
     pass('Master Admin Doctor accounts directory & Subscription upgrades function flawlessly');
 
     // 8. SUPABASE CLIENT INTERFACE INTEGRITY
