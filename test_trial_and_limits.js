@@ -41,14 +41,14 @@ async function runTests() {
   console.log('✅ PASS: Support details (9798482404, atish2k22@gmail.com) verified in Profile tab and Pricing modal');
   passed++;
 
-  // 3. Verify Master Admin PIN 7520 in HTML
-  console.log('3. Checking Master Admin PIN 7520...');
-  assert.ok(indexHtml.includes('7520'), 'HTML must support Master Admin PIN 7520');
+  // 3. Verify Master Admin Password UHI(*Y90Jjk0JKop:ki-0PIkj9OP0 in HTML
+  console.log('3. Checking Master Admin Password UHI(*Y90Jjk0JKop:ki-0PIkj9OP0...');
+  assert.ok(indexHtml.includes('UHI(*Y90Jjk0JKop:ki-0PIkj9OP0'), 'HTML must support Master Admin Password UHI(*Y90Jjk0JKop:ki-0PIkj9OP0');
   
   const adminSandbox = {
     document: {
       getElementById: (id) => {
-        if (id === 'adminPasscodeInput') return { value: '7520', classList: { add: () => {}, remove: () => {} } };
+        if (id === 'adminPasscodeInput') return { value: 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0', classList: { add: () => {}, remove: () => {} } };
         if (id === 'adminPasscodeError') return { classList: { add: () => {}, remove: () => {} } };
         if (id === 'adminPasscodeModal') return { classList: { add: () => {}, remove: () => {} } };
         return null;
@@ -67,8 +67,8 @@ async function runTests() {
   assert.ok(scriptMatch, 'verifyAdminPasscode must exist in index.html');
   vm.runInNewContext(scriptMatch[0] + '\nfunction closeAdminPasscodeModal() {}', adminSandbox);
   adminSandbox.verifyAdminPasscode();
-  assert.strictEqual(adminSandbox.sessionStorage.getItem('parchisetu_admin_auth'), '1', 'PIN 7520 must unlock admin portal');
-  console.log('✅ PASS: Master Admin PIN 7520 successfully authenticates and unlocks admin portal');
+  assert.strictEqual(adminSandbox.sessionStorage.getItem('parchisetu_admin_auth'), '1', 'Master Password UHI(*Y90Jjk0JKop:ki-0PIkj9OP0 must unlock admin portal');
+  console.log('✅ PASS: Master Admin Password UHI(*Y90Jjk0JKop:ki-0PIkj9OP0 successfully authenticates and unlocks admin portal');
   passed++;
 
   // 4. Verify 7-Day Countdown Timer & No Hard Lockout in HTML VM Sandbox

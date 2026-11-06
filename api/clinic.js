@@ -74,7 +74,7 @@ module.exports = async (req, res) => {
 
   if (method === 'POST') {
     const body = await parseBody(req);
-    const updated = store.setClinic(body);
+    const updated = await store.setClinicAsync(body);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ success: true, clinic: updated }));

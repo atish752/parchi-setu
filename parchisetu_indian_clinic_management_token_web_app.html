@@ -168,7 +168,7 @@
             type="button" 
             onclick="openAdminPanel()" 
             id="headerAdminBtn"
-            class="btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2 sm:px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition shrink-0"
+            class="hidden"
             title="Owner Admin Panel (Signed up Doctors & Subscriptions)"
           >
             <span class="text-xs">👑</span>
@@ -2557,14 +2557,19 @@
           <p class="text-xs text-slate-500 mt-1">Owner Portal • Enter Master Admin PIN to view registered clinics, track appointments & manage subscriptions.</p>
         </div>
         <div class="space-y-2">
-          <input 
-            type="password" 
-            id="adminPagePasscodeInput" 
-            placeholder="Admin PIN (e.g. 7520)" 
-            class="w-full text-center px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-base font-black tracking-widest focus:outline-none focus:border-[#075E54]"
-            onkeydown="if(event.key==='Enter') verifyAdminPasscode(true);"
-          />
-          <div id="adminPagePasscodeError" class="hidden text-xs font-bold text-rose-600">⚠️ Galat PIN! Kripya sahi passcode dalein.</div>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="adminPagePasscodeInput" 
+              placeholder="Enter Master Password" 
+              class="w-full text-center px-10 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-base font-black tracking-wider focus:outline-none focus:border-[#075E54]"
+              onkeydown="if(event.key==='Enter') verifyAdminPasscode(true);"
+            />
+            <button type="button" onclick="toggleAdminPassVisibility('adminPagePasscodeInput', 'adminPagePassIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-1 hover:text-slate-700" title="Show / Hide Password">
+              <i id="adminPagePassIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div id="adminPagePasscodeError" class="hidden text-xs font-bold text-rose-600">⚠️ Galat Password! Kripya sahi master password dalein.</div>
         </div>
         <div class="flex items-center gap-2 pt-1">
           <button type="button" onclick="verifyAdminPasscode(true)" class="btn-tactile w-full py-3 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black shadow-md transition flex items-center justify-center gap-2">
@@ -3568,14 +3573,19 @@
         <p class="text-xs text-slate-500 mt-1">Enter Master Admin PIN to view and track all registered doctors & subscriptions.</p>
       </div>
       <div class="space-y-2">
-        <input 
-          type="password" 
-          id="adminPasscodeInput" 
-          placeholder="Admin PIN (e.g. 7520)" 
-          class="w-full text-center px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-sm font-black tracking-widest focus:outline-none focus:border-[#075E54]"
-          onkeydown="if(event.key==='Enter') verifyAdminPasscode();"
-        />
-        <div id="adminPasscodeError" class="hidden text-xs font-bold text-rose-600">⚠️ Galat PIN! Kripya sahi passcode dalein.</div>
+        <div class="relative">
+          <input 
+            type="password" 
+            id="adminPasscodeInput" 
+            placeholder="Enter Master Password" 
+            class="w-full text-center px-10 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-sm font-black tracking-wider focus:outline-none focus:border-[#075E54]"
+            onkeydown="if(event.key==='Enter') verifyAdminPasscode();"
+          />
+          <button type="button" onclick="toggleAdminPassVisibility('adminPasscodeInput', 'adminModalPassIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-1 hover:text-slate-700" title="Show / Hide Password">
+            <i id="adminModalPassIcon" class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="adminPasscodeError" class="hidden text-xs font-bold text-rose-600">⚠️ Galat Password! Kripya sahi master password dalein.</div>
       </div>
       <div class="flex items-center gap-2 pt-1">
         <button type="button" onclick="closeAdminPasscodeModal();" class="w-1/2 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
@@ -5326,287 +5336,7 @@
     let selectedCalendarDateStr = getLocalDateString();
 
     // Zomato/Swiggy-style Patient Discovery Directory Seed
-    const DEFAULT_CLINICS_DIRECTORY = [
-      {
-        id: 'clinic_sanjeevani_01',
-        name: 'Sanjeevani Family Clinic',
-        tagline: 'General Physician & Family Healthcare',
-        category: 'General Medicine',
-        specialty: 'General Physician',
-        address: 'Near Main Market Chowk, Station Road',
-        city: 'Patna, Bihar',
-        phone: '9835012345',
-        whatsapp: '9835012345',
-        upiId: 'sanjeevaniclinic@upi',
-        doctorName: 'Dr. Rajesh Sharma',
-        doctorDegree: 'MBBS, MD (General Physician)',
-        doctorRegNo: 'MCI-48291',
-        experienceYears: 14,
-        rating: 4.9,
-        reviewCount: 148,
-        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
-        visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up', '📋 Report Check', '🤕 Dard / Injury'],
-        visitingHours: {
-          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
-          evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 10
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Rajesh Sharma', degree: 'MBBS, MD (General Physician)', specialty: 'General Physician', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_patna_central_99',
-        name: 'Patna Central Hospital Clinic',
-        tagline: 'Complete Heart & Diabetes Care',
-        category: 'Cardiology',
-        specialty: 'Heart / Cardiology',
-        address: 'Kankarbagh Main Road, Opposite Pillar 42',
-        city: 'Patna, Bihar',
-        phone: '9800011122',
-        whatsapp: '9835123456',
-        upiId: 'aarogyaclinic@upi',
-        doctorName: 'Dr. Alok Nath',
-        doctorDegree: 'MBBS, MD (Medicine), PG Diab.',
-        doctorRegNo: 'BRMC-52194',
-        experienceYears: 16,
-        rating: 4.8,
-        reviewCount: 210,
-        doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
-        visitingReasons: ['❤️ Seene Mein Dard', '🩸 High BP / Sugar', '💨 Saans Phoolna', '🔄 Heart Checkup', '📋 ECG / Echo Check'],
-        visitingHours: {
-          morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
-          evening: { enabled: true, start: '05:30 PM', end: '09:30 PM', slotDurationMins: 15, maxTokens: 30 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 10
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Alok Nath', degree: 'MBBS, MD (Medicine)', specialty: 'Heart / Cardiology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_delhi_bone_02',
-        name: 'Apex Orthopedic & Joint Care',
-        tagline: 'Bone, Joint & Spine Specialist',
-        category: 'Orthopedics',
-        specialty: 'Bone / Orthopedic',
-        address: 'Ring Road, Lajpat Nagar IV',
-        city: 'Delhi',
-        phone: '9811098765',
-        whatsapp: '9811098765',
-        upiId: 'apexortho@upi',
-        doctorName: 'Dr. Arvind Kumar',
-        doctorDegree: 'MS (Ortho), DNB (Orthopedics)',
-        doctorRegNo: 'DMC-39182',
-        experienceYears: 18,
-        rating: 4.9,
-        reviewCount: 320,
-        doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 500, followup: 300, emergency: 700, report: 0 },
-        visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard / Sciatica', '🔄 X-Ray Check'],
-        visitingHours: {
-          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
-          evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 12
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Arvind Kumar', degree: 'MS (Ortho)', specialty: 'Bone / Orthopedic', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_lucknow_derma_03',
-        name: 'Kaya Skin, Hair & Laser Clinic',
-        tagline: 'Advanced Dermatology & Cosmetic Care',
-        category: 'Dermatology',
-        specialty: 'Skin / Dermatology',
-        address: 'Hazratganj Market, Near Cathedral',
-        city: 'Lucknow',
-        phone: '9415012345',
-        whatsapp: '9415012345',
-        upiId: 'kayaskin@upi',
-        doctorName: 'Dr. Sunita Mehra',
-        doctorDegree: 'MBBS, MD (Dermatology & VD)',
-        doctorRegNo: 'UPMC-28491',
-        experienceYears: 11,
-        rating: 4.7,
-        reviewCount: 95,
-        doctorPhoto: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
-        visitingReasons: ['🌸 Daad / Khujli', '🧴 Muhase / Acne', '🔴 Allergy / Rash', '💇 Baal Jhadna'],
-        visitingHours: {
-          morning: { enabled: true, start: '10:30 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
-          evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 10
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:30 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Sunita Mehra', degree: 'MBBS, MD (Derma)', specialty: 'Skin / Dermatology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_varanasi_child_04',
-        name: 'Shishu Bal Chikitsalaya',
-        tagline: 'Newborn, Infant & Child Specialist',
-        category: 'Pediatrics',
-        specialty: 'Child / Pediatric',
-        address: 'Godowlia Chowk, Near Dashashwamedh',
-        city: 'Varanasi',
-        phone: '9450098765',
-        whatsapp: '9450098765',
-        upiId: 'shishubal@upi',
-        doctorName: 'Dr. R. K. Mishra',
-        doctorDegree: 'MBBS, DCH, MD (Pediatrics)',
-        doctorRegNo: 'UPMC-31849',
-        experienceYears: 15,
-        rating: 4.9,
-        reviewCount: 180,
-        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
-        visitingReasons: ['👶 Bacche Ka Bukhar', '🤧 Sardi / Khansi', '🤢 Vomiting / Dast', '💉 Vaccination / Teeka'],
-        visitingHours: {
-          morning: { enabled: true, start: '09:00 AM', end: '01:00 PM', slotDurationMins: 15, maxTokens: 30 },
-          evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 30 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 10
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:00 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. R. K. Mishra', degree: 'MBBS, MD (Pediatrics)', specialty: 'Child / Pediatric', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_mumbai_gynae_05',
-        name: 'Matrutva Women & Maternity Clinic',
-        tagline: 'Complete Women Health & Maternity Care',
-        category: 'Gynecology',
-        specialty: 'Gynecologist',
-        address: 'SV Road, Andheri West',
-        city: 'Mumbai',
-        phone: '9820012345',
-        whatsapp: '9820012345',
-        upiId: 'matrutvacare@upi',
-        doctorName: 'Dr. Priya Kishore',
-        doctorDegree: 'MBBS, MS, DGO (Gynecologist)',
-        doctorRegNo: 'MMC-49102',
-        experienceYears: 13,
-        rating: 4.9,
-        reviewCount: 260,
-        doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 500, followup: 300, emergency: 800, report: 0 },
-        visitingReasons: ['🌸 Mahila Swasthya Checkup', '🤰 Pregnancy / Delivery', '🔄 Ultrasound Check', '📋 Hormone / PCOD'],
-        visitingHours: {
-          morning: { enabled: true, start: '10:00 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 20 },
-          evening: { enabled: true, start: '05:30 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 25 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 12
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Priya Kishore', degree: 'MBBS, MS (Gynae)', specialty: 'Gynecologist', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_jaipur_dental_06',
-        name: 'Muskan Dental & Implant Center',
-        tagline: 'Painless Root Canal & Dental Implants',
-        category: 'Dental',
-        specialty: 'Dental',
-        address: 'MI Road, Near Panch Batti',
-        city: 'Jaipur',
-        phone: '9829012345',
-        whatsapp: '9829012345',
-        upiId: 'muskandental@upi',
-        doctorName: 'Dr. Amit Patel',
-        doctorDegree: 'BDS, MDS (Dental Surgeon)',
-        doctorRegNo: 'RDC-18293',
-        experienceYears: 10,
-        rating: 4.8,
-        reviewCount: 112,
-        doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
-        visitingReasons: ['🦷 Daant Dard / Cavity', '✨ Daant Safai / Scaling', '🦷 RCT / Root Canal', '🔄 Braces / Alignment'],
-        visitingHours: {
-          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
-          evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 20 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 15
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Amit Patel', degree: 'BDS, MDS', specialty: 'Dental', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_ranchi_general_07',
-        name: 'Aarogya Family Clinic',
-        tagline: 'General Medicine & Diabetes Care',
-        category: 'General Medicine',
-        specialty: 'General Physician',
-        address: 'Main Road, Near Overbridge',
-        city: 'Ranchi',
-        phone: '9431098765',
-        whatsapp: '9431098765',
-        upiId: 'aarogyaranchi@upi',
-        doctorName: 'Dr. Anand Kishore',
-        doctorDegree: 'MBBS, MD (Medicine)',
-        doctorRegNo: 'JMC-19284',
-        experienceYears: 16,
-        rating: 4.9,
-        reviewCount: 175,
-        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
-        visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up'],
-        visitingHours: {
-          morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
-          evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 10
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Anand Kishore', degree: 'MBBS, MD', specialty: 'General Physician', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
-        ]
-      },
-      {
-        id: 'clinic_muzaffarpur_bone_08',
-        name: 'Tirhut Bone & Trauma Clinic',
-        tagline: 'Fracture, Arthritis & Trauma Care',
-        category: 'Orthopedics',
-        specialty: 'Bone / Orthopedic',
-        address: 'Juran Chhapra Road No. 2',
-        city: 'Muzaffarpur',
-        phone: '9430012345',
-        whatsapp: '9430012345',
-        upiId: 'tirhutbone@upi',
-        doctorName: 'Dr. Sanjay Gupta',
-        doctorDegree: 'MS (Orthopedics)',
-        doctorRegNo: 'BRMC-40192',
-        experienceYears: 12,
-        rating: 4.8,
-        reviewCount: 88,
-        doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
-        fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
-        visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard', '🔄 Follow-up'],
-        visitingHours: {
-          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
-          evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
-          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-          avgConsultationMins: 10
-        },
-        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-        doctors: [
-          { id: 'doc_1', name: 'Dr. Sanjay Gupta', degree: 'MS (Orthopedics)', specialty: 'Bone / Orthopedic', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
-        ]
-      }
-    ];
+    const DEFAULT_CLINICS_DIRECTORY = [];
 
     let clinicsDirectory = [];
     let selectedDiscoveryCity = 'ALL';
@@ -8581,17 +8311,93 @@
         try { refreshAllViews(); } catch (e) {}
         showToast('✅ Apka Clinic account aur live queue load ho gaya!');
       } else {
-        // New clinic owner -> prefill doctor name and open onboarding
+        // Automatically create and register authentic clinic record for this Google user
+        const cleanDocName = user.displayName ? (user.displayName.startsWith('Dr.') ? user.displayName : `Dr. ${user.displayName}`) : 'Doctor';
+        const cleanClinicName = `${cleanDocName}'s Clinic`;
+        const newClinicId = 'clinic_' + String(user.uid || Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
+        const nowIso = new Date().toISOString();
+
+        const autoClinic = {
+          id: newClinicId,
+          name: cleanClinicName,
+          tagline: 'General Physician & Family Healthcare',
+          category: 'General Medicine',
+          specialty: 'General Physician',
+          address: '',
+          city: 'India',
+          phone: '',
+          whatsapp: '',
+          upiId: '',
+          doctorName: cleanDocName,
+          doctorDegree: 'MBBS',
+          doctorRegNo: '',
+          experienceYears: 10,
+          ownerUid: user.uid,
+          ownerEmail: user.email || '',
+          isGoogleAuth: true,
+          googleRegistered: true,
+          createdViaClinicPanel: true,
+          createdAt: nowIso,
+          updatedAt: nowIso,
+          subscription: {
+            plan: 'free',
+            status: 'trial',
+            trialDays: 7,
+            trialStartDate: nowIso,
+            billingCycle: 'trial',
+            amount: 0
+          },
+          visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up', '📋 Report Check', '🤕 Dard / Injury'],
+          visitingHours: {
+            morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+            evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+            daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            avgConsultationMins: 10
+          },
+          liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+          fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+          doctors: [
+            { id: 'doc_1', name: cleanDocName, degree: 'MBBS', specialty: 'General Physician', fee: 300, isMain: true }
+          ],
+          leaves: {},
+          onboarded: true
+        };
+
+        clinicProfile = autoClinic;
+        saveLocalClinic();
+        try { localStorage.setItem('parchisetu_owner_clinic', JSON.stringify(clinicProfile)); } catch(e){}
+
+        if (window.location.protocol.startsWith('http')) {
+          try {
+            await fetch('/api/clinic', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(clinicProfile)
+            });
+          } catch(e){}
+        }
+
+        if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
+          try {
+            await window.ParchiFirebase.saveClinic(clinicProfile);
+            if (window.ParchiFirebase.saveUserClinicMapping) {
+              await window.ParchiFirebase.saveUserClinicMapping(user.uid, clinicProfile.id, user.email || '', clinicProfile.name);
+            }
+          } catch(e){}
+        }
+
         closeClinicAuthModal();
         enterClinicWorkspace();
-        if (user.displayName) {
-          const docNameInput = document.getElementById('onboardDoctorName');
-          if (docNameInput && !docNameInput.value) {
-            docNameInput.value = user.displayName.startsWith('Dr.') ? user.displayName : `Dr. ${user.displayName}`;
-          }
-        }
+        try { updateClinicBranding(); } catch (e) {}
+        try { refreshAllViews(); } catch (e) {}
+
+        const docNameInput = document.getElementById('onboardDoctorName');
+        if (docNameInput) docNameInput.value = cleanDocName;
+        const clinicNameInput = document.getElementById('onboardClinicName');
+        if (clinicNameInput) clinicNameInput.value = cleanClinicName;
+
         openClinicOnboardingModal();
-        showToast('🎉 Google Sign-in Safal! Kripya apne clinic ki details set karein.');
+        showToast('🎉 Google Sign-in Safal! Apka clinic register ho gaya hai. Yahan details update karein.');
       }
     };
 
@@ -14874,6 +14680,19 @@
       }
     }
 
+    function toggleAdminPassVisibility(inputId, iconId) {
+      const inp = document.getElementById(inputId);
+      const ico = document.getElementById(iconId);
+      if (!inp) return;
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        if (ico) ico.className = 'fa-solid fa-eye-slash text-slate-600';
+      } else {
+        inp.type = 'password';
+        if (ico) ico.className = 'fa-solid fa-eye text-slate-400';
+      }
+    }
+
     function verifyAdminPasscode() {
       const modalInput = document.getElementById('adminPasscodeInput');
       const pageInput = document.getElementById('adminPagePasscodeInput');
@@ -14881,7 +14700,9 @@
       const pageErr = document.getElementById('adminPagePasscodeError');
       const code = ((modalInput && modalInput.value) ? modalInput.value : (pageInput?.value || '')).trim();
 
-      if (code === '7520' || code === 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0' || code === 'admin123' || code === '1234' || code === 'admin' || code === 'parchisetu2026' || code === 'klinicq2026') {
+      const MASTER_ADMIN_PASS = 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0';
+
+      if (code === 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0') {
         if (typeof sessionStorage !== 'undefined') {
           sessionStorage.setItem('parchisetu_admin_auth', '1');
           sessionStorage.setItem('klinicq_admin_auth', '1');
@@ -14994,62 +14815,32 @@
           }
         }
         if (!list.length) {
-          // Robust Fallback: Build unified doctor accounts list from local clinicProfile and directory
+          // If no clinics returned from server, check if current clinicProfile is authentic
           const seen = new Set();
           const all = [];
-          if (clinicProfile && clinicProfile.id) {
+          if (clinicProfile && clinicProfile.id && !isDummyClinicName(clinicProfile.name) && (clinicProfile.ownerUid || clinicProfile.isGoogleAuth || clinicProfile.googleRegistered || clinicProfile.createdViaClinicPanel || clinicProfile.ownerEmail)) {
             seen.add(clinicProfile.id);
             all.push({
               id: clinicProfile.id,
-              doctorName: clinicProfile.doctorName || 'Dr. Rajesh Sharma',
-              doctorDegree: clinicProfile.doctorDegree || 'MBBS, MD',
-              doctorRegNo: clinicProfile.doctorRegNo || 'MCI-48291',
-              experienceYears: clinicProfile.experienceYears || 14,
-              clinicName: clinicProfile.name || 'ParchiSetu Family Clinic',
+              doctorName: clinicProfile.doctorName || 'Doctor',
+              doctorDegree: clinicProfile.doctorDegree || 'MBBS',
+              doctorRegNo: clinicProfile.doctorRegNo || 'MCI-REG',
+              experienceYears: clinicProfile.experienceYears || 10,
+              clinicName: clinicProfile.name || 'My Clinic',
               category: clinicProfile.category || 'General Medicine',
               specialty: clinicProfile.specialty || 'General Physician',
-              city: clinicProfile.city || 'Patna, Bihar',
-              address: clinicProfile.address || 'Station Road',
-              phone: clinicProfile.phone || '9835012345',
-              whatsapp: clinicProfile.whatsapp || '9835012345',
-              ownerEmail: clinicProfile.ownerEmail || 'doctor.rajesh@parchisetu.com',
+              city: clinicProfile.city || 'India',
+              address: clinicProfile.address || '',
+              phone: clinicProfile.phone || '',
+              whatsapp: clinicProfile.whatsapp || clinicProfile.phone || '',
+              ownerEmail: clinicProfile.ownerEmail || '',
               doctorPhoto: clinicProfile.doctorPhoto || '',
               fees: clinicProfile.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-              subscription: clinicProfile.subscription || { plan: 'free', status: 'trial', billingCycle: 'trial', amount: 0 },
+              subscription: clinicProfile.subscription || { plan: 'free', status: 'trial', trialDays: 7, trialStartDate: clinicProfile.createdAt || new Date().toISOString(), billingCycle: 'trial', amount: 0 },
               stats: { totalBookings: (todayQueue || []).length, todayBookings: (todayQueue || []).length },
-              createdAt: clinicProfile.createdAt || '2026-10-01T00:00:00.000Z'
+              createdAt: clinicProfile.createdAt || new Date().toISOString()
             });
           }
-          (clinicsDirectory || []).forEach(c => {
-            if (!seen.has(c.id)) {
-              seen.add(c.id);
-              all.push({
-                id: c.id,
-                doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
-                doctorDegree: c.doctorDegree || 'MBBS',
-                doctorRegNo: c.doctorRegNo || 'MCI-REG',
-                experienceYears: c.experienceYears || 10,
-                clinicName: c.name || 'ParchiSetu Clinic',
-                category: c.category || 'General Medicine',
-                specialty: c.specialty || 'General Physician',
-                city: c.city || 'Patna, Bihar',
-                address: c.address || '',
-                phone: c.phone || '',
-                whatsapp: c.whatsapp || c.phone || '',
-                ownerEmail: c.ownerEmail || `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@parchisetu.com`,
-                doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
-                fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-                subscription: c.subscription || {
-                  plan: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free',
-                  status: 'active',
-                  billingCycle: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly' : 'trial',
-                  amount: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 399 : 0
-                },
-                stats: { totalBookings: Math.floor(Math.random() * 20) + 5, todayBookings: Math.floor(Math.random() * 8) + 1 },
-                createdAt: c.createdAt || '2026-10-15T00:00:00.000Z'
-              });
-            }
-          });
           list = all;
         }
         adminDoctorsData = list;

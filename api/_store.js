@@ -87,333 +87,11 @@ const DEFAULT_CLINIC = {
   createdAt: new Date().toISOString()
 };
 
-const INITIAL_CLINICS = {
-  [DEFAULT_CLINIC.id]: { ...DEFAULT_CLINIC },
-  clinic_patna_central_99: {
-    id: 'clinic_patna_central_99',
-    name: 'Patna Central Hospital Clinic',
-    tagline: 'Complete Heart & Diabetes Care',
-    category: 'Cardiology',
-    specialty: 'Heart / Cardiology',
-    address: 'Kankarbagh Main Road, Opposite Pillar 42',
-    city: 'Patna, Bihar',
-    phone: '9800011122',
-    whatsapp: '9835123456',
-    upiId: 'aarogyaclinic@upi',
-    doctorName: 'Dr. Alok Nath',
-    doctorDegree: 'MBBS, MD (Medicine), PG Diab.',
-    doctorRegNo: 'BRMC-52194',
-    experienceYears: 16,
-    rating: 4.8,
-    reviewCount: 210,
-    doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
-    visitingReasons: ['❤️ Seene Mein Dard', '🩸 High BP / Sugar', '💨 Saans Phoolna', '🔄 Heart Checkup', '📋 ECG / Echo Check'],
-    visitingHours: {
-      morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
-      evening: { enabled: true, start: '05:30 PM', end: '09:30 PM', slotDurationMins: 15, maxTokens: 30 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 10
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Alok Nath', degree: 'MBBS, MD (Medicine)', specialty: 'Heart / Cardiology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_delhi_bone_02: {
-    id: 'clinic_delhi_bone_02',
-    name: 'Apex Orthopedic & Joint Care',
-    tagline: 'Bone, Joint & Spine Specialist',
-    category: 'Orthopedics',
-    specialty: 'Bone / Orthopedic',
-    address: 'Ring Road, Lajpat Nagar IV',
-    city: 'Delhi',
-    phone: '9811098765',
-    whatsapp: '9811098765',
-    upiId: 'apexortho@upi',
-    doctorName: 'Dr. Arvind Kumar',
-    doctorDegree: 'MS (Ortho), DNB (Orthopedics)',
-    doctorRegNo: 'DMC-39182',
-    experienceYears: 18,
-    rating: 4.9,
-    reviewCount: 320,
-    doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 500, followup: 300, emergency: 700, report: 0 },
-    visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard / Sciatica', '🔄 X-Ray Check'],
-    visitingHours: {
-      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
-      evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 12
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Arvind Kumar', degree: 'MS (Ortho)', specialty: 'Bone / Orthopedic', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_lucknow_derma_03: {
-    id: 'clinic_lucknow_derma_03',
-    name: 'Kaya Skin, Hair & Laser Clinic',
-    tagline: 'Advanced Dermatology & Cosmetic Care',
-    category: 'Dermatology',
-    specialty: 'Skin / Dermatology',
-    address: 'Hazratganj Market, Near Cathedral',
-    city: 'Lucknow',
-    phone: '9415012345',
-    whatsapp: '9415012345',
-    upiId: 'kayaskin@upi',
-    doctorName: 'Dr. Sunita Mehra',
-    doctorDegree: 'MBBS, MD (Dermatology & VD)',
-    doctorRegNo: 'UPMC-28491',
-    experienceYears: 11,
-    rating: 4.7,
-    reviewCount: 95,
-    doctorPhoto: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 400, followup: 250, emergency: 600, report: 0 },
-    visitingReasons: ['🌸 Daad / Khujli', '🧴 Muhase / Acne', '🔴 Allergy / Rash', '💇 Baal Jhadna'],
-    visitingHours: {
-      morning: { enabled: true, start: '10:30 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
-      evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 10
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:30 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Sunita Mehra', degree: 'MBBS, MD (Derma)', specialty: 'Skin / Dermatology', fee: 400, isMain: true, photo: 'https://images.unsplash.com/photo-1594824813576-0eb0385fc85d?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_varanasi_child_04: {
-    id: 'clinic_varanasi_child_04',
-    name: 'Shishu Bal Chikitsalaya',
-    tagline: 'Newborn, Infant & Child Specialist',
-    category: 'Pediatrics',
-    specialty: 'Child / Pediatric',
-    address: 'Godowlia Chowk, Near Dashashwamedh',
-    city: 'Varanasi',
-    phone: '9450098765',
-    whatsapp: '9450098765',
-    upiId: 'shishubal@upi',
-    doctorName: 'Dr. R. K. Mishra',
-    doctorDegree: 'MBBS, DCH, MD (Pediatrics)',
-    doctorRegNo: 'UPMC-31849',
-    experienceYears: 15,
-    rating: 4.9,
-    reviewCount: 180,
-    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
-    visitingReasons: ['👶 Bacche Ka Bukhar', '🤧 Sardi / Khansi', '🤢 Vomiting / Dast', '💉 Vaccination / Teeka'],
-    visitingHours: {
-      morning: { enabled: true, start: '09:00 AM', end: '01:00 PM', slotDurationMins: 15, maxTokens: 30 },
-      evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 30 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 10
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:00 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. R. K. Mishra', degree: 'MBBS, MD (Pediatrics)', specialty: 'Child / Pediatric', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_mumbai_gynae_05: {
-    id: 'clinic_mumbai_gynae_05',
-    name: 'Matrutva Women & Maternity Clinic',
-    tagline: 'Complete Women Health & Maternity Care',
-    category: 'Gynecology',
-    specialty: 'Gynecologist',
-    address: 'SV Road, Andheri West',
-    city: 'Mumbai',
-    phone: '9820012345',
-    whatsapp: '9820012345',
-    upiId: 'matrutvacare@upi',
-    doctorName: 'Dr. Priya Kishore',
-    doctorDegree: 'MBBS, MS, DGO (Gynecologist)',
-    doctorRegNo: 'MMC-49102',
-    experienceYears: 13,
-    rating: 4.9,
-    reviewCount: 260,
-    doctorPhoto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 500, followup: 300, emergency: 800, report: 0 },
-    visitingReasons: ['🌸 Mahila Swasthya Checkup', '🤰 Pregnancy / Delivery', '🔄 Ultrasound Check', '📋 Hormone / PCOD'],
-    visitingHours: {
-      morning: { enabled: true, start: '10:00 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 20 },
-      evening: { enabled: true, start: '05:30 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 25 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 12
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Priya Kishore', degree: 'MBBS, MS (Gynae)', specialty: 'Gynecologist', fee: 500, isMain: true, photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_jaipur_dental_06: {
-    id: 'clinic_jaipur_dental_06',
-    name: 'Muskan Dental & Implant Center',
-    tagline: 'Painless Root Canal & Dental Implants',
-    category: 'Dental',
-    specialty: 'Dental',
-    address: 'MI Road, Near Panch Batti',
-    city: 'Jaipur',
-    phone: '9829012345',
-    whatsapp: '9829012345',
-    upiId: 'muskandental@upi',
-    doctorName: 'Dr. Amit Patel',
-    doctorDegree: 'BDS, MDS (Dental Surgeon)',
-    doctorRegNo: 'RDC-18293',
-    experienceYears: 10,
-    rating: 4.8,
-    reviewCount: 112,
-    doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
-    visitingReasons: ['🦷 Daant Dard / Cavity', '✨ Daant Safai / Scaling', '🦷 RCT / Root Canal', '🔄 Braces / Alignment'],
-    visitingHours: {
-      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 20 },
-      evening: { enabled: true, start: '04:30 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 20 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 15
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Amit Patel', degree: 'BDS, MDS', specialty: 'Dental', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_ranchi_general_07: {
-    id: 'clinic_ranchi_general_07',
-    name: 'Aarogya Family Clinic',
-    tagline: 'General Medicine & Diabetes Care',
-    category: 'General Medicine',
-    specialty: 'General Physician',
-    address: 'Main Road, Near Overbridge',
-    city: 'Ranchi',
-    phone: '9431098765',
-    whatsapp: '9431098765',
-    upiId: 'aarogyaranchi@upi',
-    doctorName: 'Dr. Anand Kishore',
-    doctorDegree: 'MBBS, MD (Medicine)',
-    doctorRegNo: 'JMC-19284',
-    experienceYears: 16,
-    rating: 4.9,
-    reviewCount: 175,
-    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
-    visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🤢 Pet / Gas', '🔄 Follow-up'],
-    visitingHours: {
-      morning: { enabled: true, start: '09:30 AM', end: '01:30 PM', slotDurationMins: 15, maxTokens: 25 },
-      evening: { enabled: true, start: '05:00 PM', end: '08:30 PM', slotDurationMins: 15, maxTokens: 25 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 10
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:30 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Anand Kishore', degree: 'MBBS, MD', specialty: 'General Physician', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_muzaffarpur_bone_08: {
-    id: 'clinic_muzaffarpur_bone_08',
-    name: 'Tirhut Bone & Trauma Clinic',
-    tagline: 'Fracture, Arthritis & Trauma Care',
-    category: 'Orthopedics',
-    specialty: 'Bone / Orthopedic',
-    address: 'Juran Chhapra Road No. 2',
-    city: 'Muzaffarpur',
-    phone: '9430012345',
-    whatsapp: '9430012345',
-    upiId: 'tirhutbone@upi',
-    doctorName: 'Dr. Sanjay Gupta',
-    doctorDegree: 'MS (Orthopedics)',
-    doctorRegNo: 'BRMC-40192',
-    experienceYears: 12,
-    rating: 4.8,
-    reviewCount: 88,
-    doctorPhoto: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 350, followup: 200, emergency: 500, report: 0 },
-    visitingReasons: ['🦴 Jod / Ghutne Ka Dard', '🤕 Fracture / Chot', '🚶 Kamar Dard', '🔄 Follow-up'],
-    visitingHours: {
-      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
-      evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 10
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Sanjay Gupta', degree: 'MS (Ortho)', specialty: 'Bone / Orthopedic', fee: 350, isMain: true, photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300&auto=format&fit=crop&q=80' }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: new Date().toISOString()
-  },
-  clinic_razorpay_verification: {
-    id: 'clinic_razorpay_verification',
-    name: 'ParchiSetu Healthcare Clinic (Razorpay Test)',
-    tagline: 'General Medicine & Live OPD Counter',
-    category: 'General Medicine',
-    specialty: 'General Physician',
-    address: 'Plot 14, Ring Road, Sector 5',
-    city: 'Patna, Bihar',
-    phone: '9835012345',
-    whatsapp: '9835012345',
-    upiId: 'parchisetu@upi',
-    doctorName: 'Dr. Rajesh Sharma',
-    doctorDegree: 'MBBS, MD (General Medicine)',
-    doctorRegNo: 'MCI-48291',
-    experienceYears: 14,
-    rating: 4.9,
-    reviewCount: 148,
-    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
-    fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
-    visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🔄 Follow-up', '📋 Report Check'],
-    visitingHours: {
-      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
-      evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
-      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      avgConsultationMins: 10
-    },
-    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
-    doctors: [
-      { id: 'doc_1', name: 'Dr. Rajesh Sharma', degree: 'MBBS, MD', specialty: 'General Physician', fee: 300, isMain: true }
-    ],
-    leaves: {},
-    onboarded: true,
-    createdAt: '2026-10-28T00:00:00.000Z',
-    ownerUid: 'usr_razorpay_verification',
-    ownerEmail: 'razorpay.test@parchisetu.in',
-    password: 'Razorpay@2026',
-    isGoogleAuth: false,
-    createdViaClinicPanel: true,
-    subscription: {
-      plan: 'free',
-      status: 'expired',
-      trialDays: 7,
-      trialStartDate: '2026-10-28T00:00:00.000Z',
-      billingCycle: 'trial',
-      amount: 0,
-      updatedAt: '2026-11-06T00:00:00.000Z'
-    }
-  }
-};
+const INITIAL_CLINICS = {};
 
 let store = {
-  clinic: { ...DEFAULT_CLINIC },
-  clinics: { ...INITIAL_CLINICS },
+  clinic: null,
+  clinics: {},
   queue: []
 };
 
@@ -546,24 +224,77 @@ function isDummyClinicName(name) {
   return DUMMY_CLINIC_NAMES.some(d => lower === d || lower.includes(d));
 }
 
+function getRazorpayVerificationClinic() {
+  return {
+    id: 'clinic_razorpay_verification',
+    name: 'ParchiSetu Healthcare Clinic (Razorpay Test)',
+    tagline: 'Dedicated Test Clinic Profile for Razorpay Onboarding & Verification',
+    category: 'General Medicine',
+    specialty: 'General Physician',
+    address: 'Near Gandhi Maidan, Exhibition Road',
+    city: 'Patna, Bihar',
+    phone: '9798482404',
+    whatsapp: '9798482404',
+    upiId: 'parchisetu@upi',
+    doctorName: 'Dr. Atish Kumar (Verification Officer)',
+    doctorDegree: 'MBBS, MD (Family Medicine)',
+    doctorRegNo: 'MCI-TEST-2026',
+    experienceYears: 12,
+    rating: 5.0,
+    reviewCount: 99,
+    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+    visitingReasons: ['🤒 Fever & General Checkup', '🩸 Routine Blood Pressure', '🔄 Prescription Renewal', '📋 Health Audit'],
+    visitingHours: {
+      morning: { enabled: true, start: '09:00 AM', end: '01:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '04:00 PM', end: '08:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '09:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Atish Kumar', degree: 'MBBS, MD', specialty: 'General Physician', fee: 300, isMain: true, photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80' }
+    ],
+    leaves: {},
+    onboarded: true,
+    ownerEmail: 'razorpay.test@parchisetu.in',
+    ownerUid: 'usr_razorpay_verification',
+    password: 'Razorpay@2026',
+    isGoogleAuth: false,
+    googleRegistered: false,
+    createdViaClinicPanel: true,
+    createdAt: '2026-11-06T00:00:00.000Z',
+    subscription: {
+      plan: 'free',
+      status: 'expired',
+      trialDays: 7,
+      trialStartDate: '2026-10-28T00:00:00.000Z',
+      billingCycle: 'trial',
+      amount: 0,
+      updatedAt: '2026-11-06T00:00:00.000Z'
+    }
+  };
+}
+
 module.exports = {
   isDummyClinicName,
+  getRazorpayVerificationClinic,
 
   getClinic: (id) => {
     loadStore();
     if (id === 'razorpay_test' || id === 'clinic_razorpay_verification' || id === 'razorpay.test@parchisetu.in') {
-      return (store.clinics && store.clinics['clinic_razorpay_verification']) || INITIAL_CLINICS['clinic_razorpay_verification'];
+      return (store.clinics && store.clinics['clinic_razorpay_verification']) || getRazorpayVerificationClinic();
     }
     if (id && store.clinics && store.clinics[id]) {
       return store.clinics[id];
     }
-    return store.clinic;
+    return store.clinic || DEFAULT_CLINIC;
   },
 
   getClinicAsync: async (id) => {
     loadStore();
     if (id === 'razorpay_test' || id === 'clinic_razorpay_verification' || id === 'razorpay.test@parchisetu.in') {
-      return (store.clinics && store.clinics['clinic_razorpay_verification']) || INITIAL_CLINICS['clinic_razorpay_verification'];
+      return (store.clinics && store.clinics['clinic_razorpay_verification']) || getRazorpayVerificationClinic();
     }
     if (id && store.clinics && store.clinics[id]) {
       return store.clinics[id];
@@ -579,7 +310,7 @@ module.exports = {
         }
       } catch (e) {}
     }
-    return store.clinic;
+    return store.clinic || DEFAULT_CLINIC;
   },
 
   getClinicByOwner: (uid, email = '') => {
@@ -808,8 +539,26 @@ module.exports = {
     persistStore();
     if (supabase && typeof supabase.saveClinic === 'function') {
       supabase.saveClinic(updatedClinic).catch(() => {});
+      if (updatedClinic.ownerUid) {
+        supabase.saveUserMapping(updatedClinic.ownerUid, updatedClinic.id, updatedClinic.ownerEmail || '', updatedClinic.name, 'doctor').catch(() => {});
+      }
     }
     return updatedClinic;
+  },
+
+  setClinicAsync: async (clinicData) => {
+    const updated = module.exports.setClinic(clinicData);
+    if (supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        await supabase.saveClinic(updated);
+        if (updated.ownerUid) {
+          await supabase.saveUserMapping(updated.ownerUid, updated.id, updated.ownerEmail || '', updated.name, 'doctor');
+        }
+      } catch (e) {
+        console.warn('Supabase saveClinicAsync error:', e);
+      }
+    }
+    return updated;
   },
 
   getQueue: (phone, clinicId) => {
@@ -959,7 +708,7 @@ module.exports = {
     loadStore();
     if (!clinicId) return null;
     store.clinics = store.clinics || {};
-    const target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null) || INITIAL_CLINICS[clinicId];
+    const target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null) || (clinicId === 'clinic_razorpay_verification' ? getRazorpayVerificationClinic() : null) || INITIAL_CLINICS[clinicId];
     if (!target) return null;
     const subObj = typeof subscriptionData === 'string'
       ? {
@@ -989,7 +738,7 @@ module.exports = {
     loadStore();
     if (!clinicId) return null;
     store.clinics = store.clinics || {};
-    let target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null) || INITIAL_CLINICS[clinicId];
+    let target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null) || (clinicId === 'clinic_razorpay_verification' ? getRazorpayVerificationClinic() : null) || INITIAL_CLINICS[clinicId];
 
     if (!target && supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
       try {
@@ -1033,18 +782,18 @@ module.exports = {
   getAdminDoctors: () => {
     loadStore();
     const map = { ...INITIAL_CLINICS, ...(store.clinics || {}) };
-    if (store.clinic && store.clinic.id) {
+    if (store.clinic && store.clinic.id && !isDummyClinicName(store.clinic.name)) {
       map[store.clinic.id] = { ...map[store.clinic.id], ...store.clinic };
     }
     const currentMonth = getISTMonthString();
-    return Object.values(map).map(c => {
+    return Object.values(map).filter(c => c && c.id && !isDummyClinicName(c.name)).map(c => {
       const q = (store.queue || []).filter(b => b.clinicId === c.id);
       const monthBookings = q.filter(b => b.status !== 'CANCELLED' && ((b.date && b.date.startsWith(currentMonth)) || (b.createdAt && b.createdAt.startsWith(currentMonth)))).length;
-      const trialStart = (c.subscription && c.subscription.trialStartDate) || c.createdAt || '2026-11-01T00:00:00.000Z';
+      const trialStart = (c.subscription && c.subscription.trialStartDate) || c.createdAt || new Date().toISOString();
       const daysElapsed = trialStart ? (Date.now() - new Date(trialStart).getTime()) / 86400000 : 0;
       const isTrialActive = daysElapsed <= 7;
       const trialDaysLeft = Math.max(0, Math.ceil(7 - daysElapsed));
-      const plan = (c.subscription && c.subscription.plan) || ((c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free');
+      const plan = (c.subscription && c.subscription.plan) || 'free';
       const trialStatus = (plan === 'monthly_pro' || plan === 'annual_pro') ? 'pro_active' : (isTrialActive ? 'trial_active' : 'trial_expired');
 
       return {
@@ -1070,7 +819,7 @@ module.exports = {
           status: 'active',
           billingCycle: (plan === 'annual_pro') ? 'annual' : ((plan === 'monthly_pro') ? 'monthly' : 'trial'),
           amount: (plan === 'annual_pro') ? 3999 : ((plan === 'monthly_pro') ? 399 : 0),
-          startDate: c.createdAt || '2026-10-01T00:00:00.000Z',
+          startDate: c.createdAt || new Date().toISOString(),
           renewalDate: new Date(Date.now() + 25 * 86400000).toISOString()
         },
         trialStatus,
@@ -1093,11 +842,11 @@ module.exports = {
     if (supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
       try {
         const sbDoctors = await supabase.getAdminDoctors();
-        if (Array.isArray(sbDoctors) && sbDoctors.length > 0) {
+        if (Array.isArray(sbDoctors)) {
           const map = {};
           doctors.forEach(d => { if (d && d.id) map[d.id] = d; });
           sbDoctors.forEach(d => {
-            if (d && d.id) {
+            if (d && d.id && !isDummyClinicName(d.clinicName || d.name)) {
               map[d.id] = { ...(map[d.id] || {}), ...d };
               store.clinics = store.clinics || {};
               store.clinics[d.id] = { ...(store.clinics[d.id] || {}), ...d };
@@ -1106,8 +855,10 @@ module.exports = {
           persistStore();
           doctors = Object.values(map);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Supabase getAdminDoctorsAsync error:', e);
+      }
     }
-    return doctors;
+    return doctors.filter(d => d && d.id && !isDummyClinicName(d.clinicName || d.name));
   }
 };
