@@ -7,6 +7,8 @@
     { "source": "/login", "destination": "/index.html" },
     { "source": "/onboard", "destination": "/index.html" },
     { "source": "/admin", "destination": "/index.html" },
+    { "source": "/api/payment", "destination": "/api/payment.js" },
+    { "source": "/api/payment/(.*)", "destination": "/api/payment.js" },
     { "source": "/api/admin", "destination": "/api/admin.js" },
     { "source": "/api/admin/(.*)", "destination": "/api/admin.js" },
     { "source": "/api/clinics", "destination": "/api/clinics.js" },

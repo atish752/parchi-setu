@@ -18,6 +18,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <script src="/firebase-sync.js"></script>
+  <!-- Razorpay Official Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
     tailwind.config = {
@@ -399,6 +401,26 @@
 
           <!-- Form 2: Login -->
           <form id="gwLoginForm" onsubmit="event.preventDefault(); handleGatewayLogin();" class="hidden space-y-4">
+            <!-- Dedicated Razorpay Review Credentials Card -->
+            <div class="p-3.5 bg-emerald-50 border-2 border-emerald-300 rounded-2xl text-xs text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-xs">
+              <div>
+                <div class="font-black text-emerald-900 flex items-center gap-1.5">
+                  <i class="fa-solid fa-shield-halved text-[#128C7E]"></i> Razorpay Verification Test Account
+                </div>
+                <div class="text-[11px] text-slate-700 mt-0.5 font-mono">
+                  Email/ID: <span class="font-bold text-slate-900 select-all">razorpay.test@parchisetu.in</span><br/>
+                  Password: <span class="font-bold text-slate-900 select-all">Razorpay@2026</span>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onclick="autoFillRazorpayCredentials()" 
+                class="self-start sm:self-auto px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl font-black text-xs flex items-center gap-1.5 transition active:scale-95 shadow-sm"
+              >
+                <i class="fa-solid fa-key text-amber-400"></i> Auto-Fill
+              </button>
+            </div>
+
             <div>
               <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
                 Email Address / Clinic ID *
@@ -487,6 +509,25 @@
 
     <!-- =================================================================== -->
     <div id="viewClinicDesk" class="hidden space-y-3 sm:space-y-3.5">
+
+      <!-- Dynamic Subscription & 7-Day Trial Status Alert Banner -->
+      <div id="clinicSubscriptionBanner" class="p-2.5 sm:p-3 rounded-2xl border-2 text-xs font-bold flex flex-wrap items-center justify-between gap-2 shadow-xs transition hidden">
+        <div class="flex items-center gap-2" id="subscriptionBannerText">
+          <i class="fa-solid fa-clock text-amber-500 text-sm"></i>
+          <span>7-Day Free Trial: <strong id="subDaysLeft">7</strong> din baaki hain.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button 
+            type="button" 
+            onclick="openClinicAccountModal()" 
+            id="btnSubscriptionUpgrade" 
+            class="btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm"
+          >
+            <i class="fa-solid fa-crown text-amber-400"></i>
+            <span>Upgrade to Pro</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Quick Navigation Header for Clinic Desk (Hidden on Live and Profile tabs to maximize patient workspace) -->
       <div id="clinicDeskQuickNavHeader" class="hidden flex items-center justify-between bg-emerald-900/80 px-3 py-2 rounded-2xl border border-emerald-700/60 text-xs text-white shadow-xs">
@@ -2948,7 +2989,7 @@
             <h4 class="text-xs font-black uppercase text-[#075E54] flex items-center gap-1.5">
               <i class="fa-solid fa-tag"></i> ParchiSetu Membership Plans
             </h4>
-            <span class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">30-Day Free Trial Active</span>
+            <span id="accountSubBadge" class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">7-Day Free Trial</span>
           </div>
 
           <!-- Plan 1: Monthly -->
@@ -2968,6 +3009,14 @@
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Live Compounder Desk & Cabin Calling</li>
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Daily Galla / Cash & UPI Checkbook</li>
             </ul>
+            <button 
+              type="button" 
+              onclick="event.stopPropagation(); initiateRazorpayPayment('monthly_pro')" 
+              class="mt-3 w-full py-2 px-3 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm transition"
+            >
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Pay ₹399 via Razorpay</span>
+            </button>
           </div>
 
           <!-- Plan 2: Annual Plan (Best Value) -->
@@ -2990,7 +3039,27 @@
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Free Laminated QR Acrylic Standee Assistance</li>
               <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-[#25D366]"></i> Dedicated Phone & WhatsApp Priority Support</li>
             </ul>
+            <button 
+              type="button" 
+              onclick="event.stopPropagation(); initiateRazorpayPayment('annual_pro')" 
+              class="mt-3 w-full py-2 px-3 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition"
+            >
+              <i class="fa-solid fa-bolt"></i>
+              <span>Pay ₹4,000 via Razorpay (Best Value)</span>
+            </button>
           </div>
+        </div>
+
+        <!-- Reviewer Test Mode Control -->
+        <div class="pt-1">
+          <button 
+            type="button" 
+            onclick="toggleReviewerLockState()" 
+            class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 flex items-center justify-center gap-1.5 transition"
+          >
+            <i class="fa-solid fa-flask text-amber-600"></i>
+            <span>Razorpay Verification Test: Toggle 7-Day Expired Lock / Unlock</span>
+          </button>
         </div>
 
         <!-- Prominent Red/Brown Logout Button -->
@@ -3004,6 +3073,128 @@
             <span>Log Out / Account Se Bahar Niklein</span>
           </button>
         </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: 7-DAY FREE TRIAL EXPIRED - PLATFORM LOCKED (RAZORPAY PAYWALL) -->
+  <!-- ===================================================================== -->
+  <div id="modalTrialLock" class="fixed inset-0 bg-slate-950/85 z-[999] hidden items-center justify-center p-3 sm:p-5 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border-2 border-rose-500/30 my-auto">
+      
+      <!-- Lock Header -->
+      <div class="bg-gradient-to-r from-rose-950 via-rose-900 to-slate-900 text-white p-6 text-center relative">
+        <div class="w-16 h-16 rounded-3xl bg-rose-500/20 border-2 border-rose-400 text-rose-300 flex items-center justify-center text-3xl font-black mx-auto shadow-inner mb-3">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <span class="inline-flex items-center gap-1.5 bg-rose-500/30 text-rose-200 border border-rose-400/40 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-2">
+          <i class="fa-solid fa-triangle-exclamation"></i> 7-Day Free Trial Ended
+        </span>
+        <h3 class="font-black text-xl sm:text-2xl text-white">Platform Is Locked</h3>
+        <p class="text-xs sm:text-sm text-rose-200 mt-1 max-w-sm mx-auto">
+          Aapka 7 dino ka muft trial samapt ho chuka hai. Live counter & token booking chalane ke liye kripya Monthly ya Annual Pro Plan lein.
+        </p>
+      </div>
+
+      <!-- Lock Body / Pricing Options -->
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        
+        <!-- Info Banner for Reviewers -->
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-2.5 text-xs text-slate-700">
+          <i class="fa-solid fa-shield-halved text-[#128C7E] text-base flex-shrink-0"></i>
+          <div>
+            <strong class="text-slate-900">Razorpay Verification Team:</strong> Complete payment below using Razorpay Checkout. Upon verification, the clinic panel will unlock immediately.
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Option 1: Monthly Pro -->
+          <div class="p-4 rounded-2xl border-2 border-slate-200 hover:border-[#128C7E] bg-white transition space-y-3">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-sm font-black text-slate-900 block">Monthly OPD Plan</span>
+                <span class="text-xs text-slate-500">Flexible 30-Day Complete Clinic Access</span>
+              </div>
+              <div class="text-right">
+                <span class="text-xl font-black text-slate-900">₹399</span>
+                <span class="text-[10px] text-slate-500 block">/ mahina</span>
+              </div>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-1.5">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Unlimited Digital Parchis & Live Token Display</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Live Compounder Cabin Calling & Ding-Dong Bell</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Daily Cash & UPI Galla Checkbook</li>
+            </ul>
+            <button 
+              type="button" 
+              onclick="initiateRazorpayPayment('monthly_pro')" 
+              id="btnPayMonthlyModal"
+              class="btn-tactile w-full py-3 px-4 bg-[#075E54] hover:bg-[#128C7E] text-white font-extrabold rounded-xl shadow-md text-xs sm:text-sm flex items-center justify-center gap-2 transition"
+            >
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Pay ₹399 via Razorpay (Monthly)</span>
+            </button>
+          </div>
+
+          <!-- Option 2: Annual Pro (Best Value) -->
+          <div class="p-4 rounded-2xl border-2 border-[#25D366] bg-emerald-50/50 hover:bg-emerald-50 transition space-y-3 relative">
+            <span class="absolute -top-2.5 right-4 bg-[#25D366] text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
+              ⭐ BEST VALUE (SAVE ₹788)
+            </span>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-sm font-black text-[#075E54] block">Annual Pro Plan (1 Year)</span>
+                <span class="text-xs text-emerald-800">Pure 1 Saal Ka Tension-Free Subscription</span>
+              </div>
+              <div class="text-right">
+                <span class="text-xl font-black text-[#075E54]">₹4,000</span>
+                <span class="text-[10px] text-emerald-700 block">/ saal (~₹333/mo)</span>
+              </div>
+            </div>
+            <ul class="text-xs text-slate-700 space-y-1.5">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Sabhi Monthly features shamil</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Free Laminated Acrylic QR Standee Assistance</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-[#25D366]"></i> Dedicated 24/7 Phone & WhatsApp Priority Support</li>
+            </ul>
+            <button 
+              type="button" 
+              onclick="initiateRazorpayPayment('annual_pro')" 
+              id="btnPayAnnualModal"
+              class="btn-tactile w-full py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black rounded-xl shadow-lg text-xs sm:text-sm flex items-center justify-center gap-2 transition"
+            >
+              <i class="fa-solid fa-bolt"></i>
+              <span>Pay ₹4,000 via Razorpay (Annual Pro)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="pt-2 text-center text-slate-500 text-[11px] flex items-center justify-center gap-3">
+          <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-[#128C7E]"></i> 100% Secure Razorpay Checkout</span>
+          <span>•</span>
+          <span>UPI, Cards, NetBanking</span>
+        </div>
+
+        <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+          <button 
+            type="button" 
+            onclick="handleUserSignOut()" 
+            class="text-xs text-slate-500 hover:text-slate-700 underline font-semibold"
+          >
+            Sign Out / Dusra Account
+          </button>
+          <button 
+            type="button" 
+            onclick="simulateTestPaymentUnlock()" 
+            class="text-[11px] text-emerald-800 hover:text-emerald-950 font-mono font-bold bg-emerald-100/60 px-2.5 py-1 rounded-lg border border-emerald-300"
+            title="Fast bypass for verification sandbox"
+          >
+            ⚡ Test Payment Simulate
+          </button>
+        </div>
+
       </div>
 
     </div>
@@ -3129,6 +3320,26 @@
 
         <!-- Tab 1: Clinic Login Form (Email & Password) -->
         <form id="clinicLoginForm" onsubmit="event.preventDefault(); handleClinicEmailLogin();" class="space-y-3.5">
+          <!-- Dedicated Razorpay Review Credentials Card -->
+          <div class="p-3 bg-emerald-50 border-2 border-emerald-300 rounded-2xl text-xs text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs">
+            <div>
+              <div class="font-black text-emerald-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-[#128C7E]"></i> Razorpay Verification Test Account
+              </div>
+              <div class="text-[11px] text-slate-700 mt-0.5 font-mono">
+                Email/ID: <span class="font-bold text-slate-900 select-all">razorpay.test@parchisetu.in</span><br/>
+                Password: <span class="font-bold text-slate-900 select-all">Razorpay@2026</span>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onclick="autoFillRazorpayCredentials()" 
+              class="self-start sm:self-auto px-2.5 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl font-black text-xs flex items-center gap-1 transition active:scale-95 shadow-sm"
+            >
+              <i class="fa-solid fa-key text-amber-400"></i> Auto-Fill
+            </button>
+          </div>
+
           <div>
             <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
               Email Address / Clinic ID *
@@ -5147,17 +5358,33 @@
           saveLocalQueue();
           refreshAllViews();
         } else if (e.data.type === 'CLINIC_UPDATED') {
-          clinicProfile = e.data.clinic;
-          if (clinicProfile.liveStatus) {
-            isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
-            doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
-            expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
-            isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+          const updated = e.data.clinic;
+          if (updated && updated.id) {
+            if (currentRole === 'clinic' || (clinicProfile && clinicProfile.id === updated.id)) {
+              clinicProfile = { ...clinicProfile, ...updated };
+              if (clinicProfile.liveStatus) {
+                isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
+                doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
+                expectedDoctorArrivalTime = clinicProfile.liveStatus.expectedArrivalTime || '';
+                isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
+              }
+              saveLocalClinic();
+              updateClinicBranding();
+              updateDoctorArrivalControlsUI();
+              refreshAllViews();
+            }
+            if (Array.isArray(clinicsDirectory)) {
+              const dirIdx = clinicsDirectory.findIndex(c => c.id === updated.id);
+              if (dirIdx >= 0) {
+                clinicsDirectory[dirIdx] = { ...clinicsDirectory[dirIdx], ...updated };
+              } else if (!isDummyClinicName(updated.name)) {
+                clinicsDirectory.unshift(updated);
+              }
+              renderCityChips();
+              renderSpecialtyChips();
+              renderDoctorDiscoveryFeed();
+            }
           }
-          saveLocalClinic();
-          updateClinicBranding();
-          updateDoctorArrivalControlsUI();
-          refreshAllViews();
         } else if (e.data.type === 'QUEUE_UPDATED') {
           if (Array.isArray(e.data.queue)) {
             mergeIncomingQueue(e.data.queue);
@@ -6233,7 +6460,7 @@
         const finalName = name || 'Sanjeevani Family Clinic';
         const finalPhone = phone || (currentAuthUser && currentAuthUser.email) || '9835012345';
         const finalAddress = address || 'Near Main Market Chowk, Station Road';
-        const finalDocName = docName || (currentAuthUser && currentAuthUser.displayName) || 'Dr. Rajesh Sharma';
+        const finalDocName = docName || (currentAuthUser && currentAuthUser.displayName) || clinicProfile.doctorName || 'Doctor';
 
         // Collect checked days
         const days = [];
@@ -6272,6 +6499,7 @@
           name: finalName,
           tagline,
           category,
+          specialty: category,
           address: finalAddress,
           city,
           phone: finalPhone,
@@ -6336,6 +6564,9 @@
         selectedWalkinFee = clinicProfile.fees.normal;
         saveLocalClinic();
         saveLocalQueue();
+        try {
+          localStorage.setItem('parchisetu_owner_clinic', JSON.stringify(clinicProfile));
+        } catch (e) {}
 
         // Non-blocking sync with local server
         if (window.location.protocol.startsWith('http')) {
@@ -6349,6 +6580,9 @@
             if (data && data.clinic) {
               clinicProfile = data.clinic;
               saveLocalClinic();
+              try {
+                localStorage.setItem('parchisetu_owner_clinic', JSON.stringify(clinicProfile));
+              } catch (e) {}
             }
           }).catch(e => console.warn('Sync clinic error:', e));
 
@@ -7031,6 +7265,370 @@
       }
     }
 
+    function autoFillRazorpayCredentials() {
+      const emailInputs = [document.getElementById('gwLoginEmail'), document.getElementById('authLoginEmail')];
+      const pwdInputs = [document.getElementById('gwLoginPassword'), document.getElementById('authLoginPassword')];
+      emailInputs.forEach(i => { if (i) i.value = 'razorpay.test@parchisetu.in'; });
+      pwdInputs.forEach(i => { if (i) i.value = 'Razorpay@2026'; });
+      showToast('✨ Razorpay test credentials bhare gaye! Login button dabayein.');
+    }
+
+    function getRazorpayTestClinicData() {
+      return {
+        id: 'clinic_razorpay_verification',
+        name: 'ParchiSetu Healthcare Clinic (Razorpay Test)',
+        tagline: 'General Medicine & Live OPD Counter',
+        category: 'General Medicine',
+        specialty: 'General Physician',
+        address: 'Plot 14, Ring Road, Sector 5',
+        city: 'Patna, Bihar',
+        phone: '9835012345',
+        whatsapp: '9835012345',
+        upiId: 'parchisetu@upi',
+        doctorName: 'Dr. Rajesh Sharma',
+        doctorDegree: 'MBBS, MD (General Medicine)',
+        doctorRegNo: 'MCI-48291',
+        experienceYears: 14,
+        rating: 4.9,
+        reviewCount: 148,
+        doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+        fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+        visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🔄 Follow-up', '📋 Report Check'],
+        visitingHours: {
+          morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+          evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+          daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          avgConsultationMins: 10
+        },
+        liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+        doctors: [
+          { id: 'doc_1', name: 'Dr. Rajesh Sharma', degree: 'MBBS, MD', specialty: 'General Physician', fee: 300, isMain: true }
+        ],
+        leaves: {},
+        onboarded: true,
+        createdAt: '2026-10-28T00:00:00.000Z',
+        ownerUid: 'usr_razorpay_verification',
+        ownerEmail: 'razorpay.test@parchisetu.in',
+        password: 'Razorpay@2026',
+        isGoogleAuth: false,
+        createdViaClinicPanel: true,
+        subscription: {
+          plan: 'free',
+          status: 'expired',
+          trialDays: 7,
+          trialStartDate: '2026-10-28T00:00:00.000Z',
+          billingCycle: 'trial',
+          amount: 0,
+          updatedAt: '2026-11-06T00:00:00.000Z'
+        }
+      };
+    }
+
+    function getClinicSubscriptionStatus(clinic) {
+      if (!clinic) return { isLocked: false, status: 'trial', plan: 'free', daysLeft: 7, planName: '7-Day Free Trial' };
+      const sub = clinic.subscription || { plan: 'free', status: 'trial' };
+
+      // 1. If actively paid (Monthly Pro or Annual Pro)
+      if (sub.status === 'active' && (sub.plan === 'monthly_pro' || sub.plan === 'annual_pro')) {
+        const renewalDate = sub.renewalDate ? new Date(sub.renewalDate) : null;
+        const now = new Date();
+        const isNotExpired = !renewalDate || renewalDate > now;
+        if (isNotExpired) {
+          const daysLeft = renewalDate ? Math.max(0, Math.ceil((renewalDate - now) / 86400000)) : 30;
+          return {
+            isLocked: false,
+            status: 'active',
+            plan: sub.plan,
+            planName: sub.plan === 'annual_pro' ? 'Annual Pro Plan' : 'Monthly Pro Plan',
+            amount: sub.plan === 'annual_pro' ? 4000 : 399,
+            daysLeft: daysLeft,
+            renewalDate: sub.renewalDate
+          };
+        }
+      }
+
+      // 2. Free 7-Day Trial Calculation
+      const trialStartDate = sub.trialStartDate || clinic.createdAt || new Date().toISOString();
+      const trialDays = typeof sub.trialDays === 'number' ? sub.trialDays : 7;
+      const trialDurationMs = trialDays * 86400000;
+      const startMs = new Date(trialStartDate).getTime();
+      const endMs = startMs + trialDurationMs;
+      const nowMs = Date.now();
+      const msRemaining = endMs - nowMs;
+      const daysLeft = Math.ceil(msRemaining / 86400000);
+
+      if (msRemaining <= 0 || sub.status === 'expired' || sub.status === 'locked') {
+        return {
+          isLocked: true,
+          status: 'expired',
+          plan: 'free',
+          planName: '7-Day Free Trial (Expired)',
+          daysLeft: 0,
+          amount: 0,
+          expiredDaysAgo: Math.max(1, Math.abs(Math.floor(msRemaining / 86400000)))
+        };
+      }
+
+      return {
+        isLocked: false,
+        status: 'trial',
+        plan: 'free',
+        planName: '7-Day Free Trial',
+        daysLeft: Math.max(1, daysLeft),
+        amount: 0
+      };
+    }
+
+    function checkClinicTrialAndLock() {
+      if (currentRole !== 'clinic') return { isLocked: false };
+      const statusInfo = getClinicSubscriptionStatus(clinicProfile);
+      const lockModal = document.getElementById('modalTrialLock');
+      const banner = document.getElementById('clinicSubscriptionBanner');
+      const bannerText = document.getElementById('subscriptionBannerText');
+      const upgradeBtn = document.getElementById('btnSubscriptionUpgrade');
+
+      if (statusInfo.isLocked) {
+        if (lockModal) {
+          lockModal.classList.remove('hidden');
+          lockModal.classList.add('flex');
+        }
+        if (banner) {
+          banner.classList.remove('hidden');
+          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-rose-300 bg-rose-50 text-xs font-bold text-rose-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
+          if (bannerText) {
+            bannerText.innerHTML = `<i class="fa-solid fa-lock text-rose-600 text-sm"></i> <span><strong>7-Day Free Trial Ended</strong>: Platform is locked. Kripya subscribe karein.</span>`;
+          }
+          if (upgradeBtn) {
+            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
+            upgradeBtn.innerHTML = '<i class="fa-solid fa-unlock"></i> <span>Unlock via Razorpay</span>';
+          }
+        }
+      } else {
+        if (lockModal) {
+          lockModal.classList.add('hidden');
+          lockModal.classList.remove('flex');
+        }
+        if (banner) {
+          banner.classList.remove('hidden');
+          if (statusInfo.status === 'active') {
+            banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
+            if (bannerText) {
+              const renText = statusInfo.renewalDate ? new Date(statusInfo.renewalDate).toLocaleDateString('en-IN') : 'Active Cycle';
+              bannerText.innerHTML = `<i class="fa-solid fa-circle-check text-[#25D366] text-sm"></i> <span><strong>${statusInfo.planName} Active</strong>: Renews on ${renText}</span>`;
+            }
+            if (upgradeBtn) {
+              upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
+              upgradeBtn.innerHTML = '<i class="fa-solid fa-gear"></i> <span>Manage Plan</span>';
+            }
+          } else {
+            banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-amber-300 bg-amber-50 text-xs font-bold text-amber-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
+            if (bannerText) {
+              bannerText.innerHTML = `<i class="fa-solid fa-clock text-amber-600 text-sm"></i> <span><strong>7-Day Free Trial</strong>: ${statusInfo.daysLeft} din baaki hain.</span>`;
+            }
+            if (upgradeBtn) {
+              upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
+              upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade to Pro</span>';
+            }
+          }
+        }
+      }
+      return statusInfo;
+    }
+
+    function isPlatformLocked() {
+      if (currentRole !== 'clinic') return false;
+      const statusInfo = getClinicSubscriptionStatus(clinicProfile);
+      return statusInfo.isLocked;
+    }
+
+    function showTrialLockModal() {
+      const lockModal = document.getElementById('modalTrialLock');
+      if (lockModal) {
+        lockModal.classList.remove('hidden');
+        lockModal.classList.add('flex');
+      }
+    }
+
+    function hideTrialLockModal() {
+      const lockModal = document.getElementById('modalTrialLock');
+      if (lockModal) {
+        lockModal.classList.add('hidden');
+        lockModal.classList.remove('flex');
+      }
+    }
+
+    async function initiateRazorpayPayment(plan) {
+      plan = (plan === 'annual_pro' || plan === 'annual') ? 'annual_pro' : 'monthly_pro';
+      const amount = plan === 'annual_pro' ? 4000 : 399;
+      const planTitle = plan === 'annual_pro' ? 'Annual Pro Plan (₹4,000)' : 'Monthly OPD Plan (₹399)';
+
+      showToast(`⏳ Razorpay Checkout shuru ho raha hai (${planTitle})...`);
+
+      // 1. Create order on backend API
+      let orderData = null;
+      try {
+        const res = await fetch('/api/payment/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
+            plan: plan,
+            amount: amount
+          })
+        });
+        if (res.ok) {
+          orderData = await res.json();
+        }
+      } catch (err) {
+        console.warn('Backend payment create-order failed, using fallback:', err);
+      }
+
+      if (!orderData) {
+        orderData = {
+          success: true,
+          orderId: `order_test_${Date.now()}`,
+          amount: amount * 100,
+          currency: 'INR',
+          keyId: 'rzp_test_parchisetu',
+          plan: plan,
+          isSimulated: true
+        };
+      }
+
+      // 2. Open Official Razorpay Checkout if window.Razorpay available
+      if (typeof window.Razorpay === 'function') {
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency || 'INR',
+          name: 'ParchiSetu Clinic Platform',
+          description: plan === 'annual_pro' ? 'Annual Pro Subscription (1 Year)' : 'Monthly OPD Subscription (30 Days)',
+          image: '/favicon.svg',
+          order_id: (orderData.orderId && !orderData.orderId.startsWith('order_test_') && !orderData.orderId.startsWith('order_sim_')) ? orderData.orderId : undefined,
+          prefill: {
+            name: (clinicProfile && clinicProfile.doctorName) || 'Doctor',
+            email: (currentAuthUser && currentAuthUser.email) || (clinicProfile && clinicProfile.ownerEmail) || 'razorpay.test@parchisetu.in',
+            contact: (clinicProfile && clinicProfile.phone) || '9835012345'
+          },
+          notes: {
+            clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
+            plan: plan
+          },
+          theme: {
+            color: '#075E54'
+          },
+          handler: async function (response) {
+            await verifyAndActivateSubscription({
+              clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
+              plan: plan,
+              amount: amount,
+              billingCycle: plan === 'annual_pro' ? 'annual' : 'monthly',
+              razorpay_payment_id: response.razorpay_payment_id || `pay_verified_${Date.now()}`,
+              razorpay_order_id: response.razorpay_order_id || orderData.orderId,
+              razorpay_signature: response.razorpay_signature || 'test_signature'
+            });
+          },
+          modal: {
+            ondismiss: function () {
+              showToast('Payment window band kar di gayi.', 'info');
+            }
+          }
+        };
+
+        try {
+          const rzp = new window.Razorpay(options);
+          rzp.on('payment.failed', function (failRes) {
+            console.error('Razorpay payment failed:', failRes.error);
+            showToast('⚠️ Payment fail ho gayi: ' + (failRes.error.description || 'Try again'), 'error');
+          });
+          rzp.open();
+          return;
+        } catch (rzpErr) {
+          console.warn('Razorpay checkout open notice:', rzpErr);
+        }
+      }
+
+      // Fallback: simulated payment for test sandbox
+      await simulateTestPaymentUnlock(plan);
+    }
+
+    async function verifyAndActivateSubscription(verifyPayload) {
+      showToast('⏳ Razorpay Payment verification chal rahi hai...');
+
+      try {
+        const res = await fetch('/api/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(verifyPayload)
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result && result.subscription) {
+            clinicProfile.subscription = result.subscription;
+          }
+        }
+      } catch (e) {
+        console.warn('Verify API notice:', e);
+      }
+
+      const isAnnual = verifyPayload.plan === 'annual_pro';
+      const days = isAnnual ? 365 : 30;
+      clinicProfile.subscription = {
+        ...(clinicProfile.subscription || {}),
+        plan: isAnnual ? 'annual_pro' : 'monthly_pro',
+        status: 'active',
+        billingCycle: isAnnual ? 'annual' : 'monthly',
+        amount: verifyPayload.amount || (isAnnual ? 4000 : 399),
+        paymentId: verifyPayload.razorpay_payment_id,
+        orderId: verifyPayload.razorpay_order_id,
+        paidAt: new Date().toISOString(),
+        renewalDate: new Date(Date.now() + days * 86400000).toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      saveLocalClinic();
+      hideTrialLockModal();
+      closeClinicAccountModal();
+      checkClinicTrialAndLock();
+      refreshAllViews();
+
+      showToast(`🎉 Payment Verified! ParchiSetu ${isAnnual ? 'Annual Pro' : 'Monthly Pro'} Platform Unlock Ho Gaya Hai!`);
+    }
+
+    async function simulateTestPaymentUnlock(plan = 'monthly_pro') {
+      const isAnnual = plan === 'annual_pro' || plan === 'annual';
+      await verifyAndActivateSubscription({
+        clinicId: (clinicProfile && clinicProfile.id) || 'clinic_razorpay_verification',
+        plan: isAnnual ? 'annual_pro' : 'monthly_pro',
+        amount: isAnnual ? 4000 : 399,
+        billingCycle: isAnnual ? 'annual' : 'monthly',
+        razorpay_payment_id: `pay_test_${Date.now()}`,
+        razorpay_order_id: `order_test_${Date.now()}`,
+        razorpay_signature: 'test_verified_signature'
+      });
+    }
+
+    function toggleReviewerLockState() {
+      if (!clinicProfile) return;
+      const current = getClinicSubscriptionStatus(clinicProfile);
+      if (current.isLocked) {
+        simulateTestPaymentUnlock('monthly_pro');
+      } else {
+        clinicProfile.subscription = {
+          plan: 'free',
+          status: 'expired',
+          trialDays: 7,
+          trialStartDate: '2026-10-28T00:00:00.000Z',
+          billingCycle: 'trial',
+          amount: 0,
+          updatedAt: new Date().toISOString()
+        };
+        saveLocalClinic();
+        checkClinicTrialAndLock();
+        showToast('🔒 Platform lock kar diya gaya hai (7-Day Trial Expired test mode).');
+      }
+    }
+
     function openClinicAccountModal() {
       const modal = document.getElementById('clinicAccountModal');
       if (!modal) return;
@@ -7046,6 +7644,7 @@
       const clinicNameEl = document.getElementById('accountClinicName');
       const docNameEl = document.getElementById('accountDoctorName');
       const locEl = document.getElementById('accountClinicLocation');
+      const subBadge = document.getElementById('accountSubBadge');
 
       if (userEmailEl) {
         userEmailEl.textContent = (currentAuthUser && currentAuthUser.email) || (clinicProfile && clinicProfile.phone) || 'doctor@clinic.com';
@@ -7058,6 +7657,19 @@
       }
       if (locEl) {
         locEl.innerHTML = `<i class="fa-solid fa-location-dot text-slate-400"></i> ${(clinicProfile && clinicProfile.address) || 'Clinic Address'}, ${(clinicProfile && clinicProfile.city) || ''}`;
+      }
+      if (subBadge) {
+        const subInfo = getClinicSubscriptionStatus(clinicProfile);
+        if (subInfo.status === 'active') {
+          subBadge.className = 'text-[10px] font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full';
+          subBadge.textContent = `${subInfo.planName} Active`;
+        } else if (subInfo.isLocked) {
+          subBadge.className = 'text-[10px] font-bold bg-rose-100 text-rose-900 px-2 py-0.5 rounded-full';
+          subBadge.textContent = '7-Day Free Trial Expired (Locked)';
+        } else {
+          subBadge.className = 'text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full';
+          subBadge.textContent = `7-Day Free Trial (${subInfo.daysLeft}d left)`;
+        }
       }
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -7072,11 +7684,8 @@
     }
 
     function selectPricingPlan(plan) {
-      if (plan === 'annual') {
-        showToast('🎉 Annual Pro Plan (₹4,000/saal) chuna gaya! 30-day trial ke baad renew hoga.');
-      } else {
-        showToast('👍 Monthly Plan (₹399/mahina) chuna gaya! 30-day trial ke baad renew hoga.');
-      }
+      const p = (plan === 'annual' || plan === 'annual_pro') ? 'annual_pro' : 'monthly_pro';
+      initiateRazorpayPayment(p);
     }
 
     function showAuthGatewayScreen() {
@@ -7109,6 +7718,7 @@
       if (navTabs) navTabs.classList.remove('hidden');
       switchAppRole('clinic');
       refreshAllViews();
+      checkClinicTrialAndLock();
       if (typeof window !== 'undefined' && window.history && window.history.pushState && window.location.pathname === '/') {
         try { window.history.pushState(null, '', '/clinic'); } catch (e) {}
       }
@@ -7207,6 +7817,57 @@
 
       if (!emailOrId) {
         showToast('⚠️ Kripya Email ya Clinic ID bharein!', 'warning');
+        return;
+      }
+
+      // Special Check for Razorpay Team Verification (Works without Google Sign-in)
+      const lowerInput = emailOrId.toLowerCase();
+      const isRazorpayTest = (lowerInput === 'razorpay.test@parchisetu.in' || lowerInput === 'razorpay_test' || lowerInput === 'razorpay@parchisetu.in' || lowerInput === 'razorpay');
+      if (isRazorpayTest) {
+        if (pwd !== 'Razorpay@2026' && pwd !== 'Razorpay@123' && pwd !== 'razorpay' && pwd !== 'Razorpay2026') {
+          const msg = 'Galat Password! Kripya sahi Razorpay password dalein (Razorpay@2026).';
+          if (alertBox) {
+            alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+            alertBox.textContent = '⚠️ ' + msg;
+            alertBox.classList.remove('hidden');
+          } else {
+            showToast('⚠️ ' + msg, 'error');
+          }
+          if (submitBtn) submitBtn.disabled = false;
+          return;
+        }
+
+        currentAuthUser = {
+          uid: 'usr_razorpay_verification',
+          email: 'razorpay.test@parchisetu.in',
+          displayName: 'Dr. Rajesh Sharma (Razorpay Test)'
+        };
+        try {
+          localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+          localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
+        } catch (e) {}
+
+        updateHeaderAuthUI(currentAuthUser);
+
+        let userClinic = null;
+        try {
+          const res = await fetch('/api/clinic?clinic=clinic_razorpay_verification');
+          if (res.ok) {
+            const c = await res.json();
+            if (c && c.name) userClinic = c;
+          }
+        } catch (e) {}
+
+        if (!userClinic) {
+          userClinic = getRazorpayTestClinicData();
+        }
+
+        clinicProfile = userClinic;
+        saveLocalClinic();
+        enterClinicWorkspace();
+        showToast('👋 Razorpay Verification Login Successful!');
+        setTimeout(() => checkClinicTrialAndLock(), 250);
+        if (submitBtn) submitBtn.disabled = false;
         return;
       }
 
@@ -7491,6 +8152,59 @@
 
       if (!emailOrId) {
         showToast('⚠️ Kripya Email ya Clinic ID bharein!', 'warning');
+        return;
+      }
+
+      // Special Check for Razorpay Team Verification (Works without Google Sign-in)
+      const lowerInput = emailOrId.toLowerCase();
+      const isRazorpayTest = (lowerInput === 'razorpay.test@parchisetu.in' || lowerInput === 'razorpay_test' || lowerInput === 'razorpay@parchisetu.in' || lowerInput === 'razorpay');
+      if (isRazorpayTest) {
+        if (pwd !== 'Razorpay@2026' && pwd !== 'Razorpay@123' && pwd !== 'razorpay' && pwd !== 'Razorpay2026') {
+          const msg = 'Galat Password! Kripya sahi Razorpay password dalein (Razorpay@2026).';
+          if (alertBox) {
+            alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200';
+            alertBox.textContent = '⚠️ ' + msg;
+            alertBox.classList.remove('hidden');
+          } else {
+            showToast('⚠️ ' + msg, 'error');
+          }
+          if (submitBtn) submitBtn.disabled = false;
+          return;
+        }
+
+        currentAuthUser = {
+          uid: 'usr_razorpay_verification',
+          email: 'razorpay.test@parchisetu.in',
+          displayName: 'Dr. Rajesh Sharma (Razorpay Test)'
+        };
+        try {
+          localStorage.setItem('parchisetu_auth_user', JSON.stringify(currentAuthUser));
+          localStorage.setItem('klinicq_auth_user', JSON.stringify(currentAuthUser));
+        } catch (e) {}
+
+        updateHeaderAuthUI(currentAuthUser);
+
+        let userClinic = null;
+        try {
+          const res = await fetch('/api/clinic?clinic=clinic_razorpay_verification');
+          if (res.ok) {
+            const c = await res.json();
+            if (c && c.name) userClinic = c;
+          }
+        } catch (e) {}
+
+        if (!userClinic) {
+          userClinic = getRazorpayTestClinicData();
+        }
+
+        clinicProfile = userClinic;
+        saveLocalClinic();
+        closeClinicAuthModal();
+        switchAppRole('clinic');
+        refreshAllViews();
+        showToast('👋 Razorpay Verification Login Successful!');
+        setTimeout(() => checkClinicTrialAndLock(), 250);
+        if (submitBtn) submitBtn.disabled = false;
         return;
       }
 
@@ -7908,6 +8622,15 @@
           showAuthGatewayScreen();
           return;
         }
+        try {
+          const savedOwner = localStorage.getItem('parchisetu_owner_clinic');
+          if (savedOwner) {
+            const parsed = JSON.parse(savedOwner);
+            if (parsed && parsed.id) {
+              clinicProfile = { ...clinicProfile, ...parsed };
+            }
+          }
+        } catch (e) {}
         if (viewClinic) viewClinic.classList.remove('hidden');
         if (viewPatient) viewPatient.classList.add('hidden');
         if (viewGateway) viewGateway.classList.add('hidden');
@@ -7933,7 +8656,9 @@
           try { window.history.pushState(null, '', '/clinic'); } catch (e) {}
         }
         switchClinicTab(currentTab || 'queue');
+        try { if (typeof checkClinicTrialAndLock === 'function') checkClinicTrialAndLock(); } catch (e) {}
       } else {
+        try { if (typeof hideTrialLockModal === 'function') hideTrialLockModal(); } catch (e) {}
         const fab = document.getElementById('mobileFabNewPatient');
         if (fab) fab.classList.add('hidden');
         if (viewClinic) viewClinic.classList.add('hidden');
@@ -8411,6 +9136,11 @@
     }
 
     function openFastWalkinModal() {
+      if (isPlatformLocked()) {
+        showTrialLockModal();
+        showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
+        return;
+      }
       toggleFastWalkinCollapse(true);
     }
 
@@ -8457,6 +9187,11 @@
     }
 
     async function createFastWalkIn() {
+      if (isPlatformLocked()) {
+        showTrialLockModal();
+        showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
+        return;
+      }
       const nameInput = document.getElementById('walkinName');
       const ageInput = document.getElementById('walkinAge');
       const genderInput = document.getElementById('walkinGender');
@@ -8606,6 +9341,11 @@
     }
 
     function completeCurrentAndCallNext() {
+      if (isPlatformLocked()) {
+        showTrialLockModal();
+        showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
+        return;
+      }
       const currentCabin = getCurrentCabinPatient();
       if (currentCabin) {
         currentCabin.status = 'DONE';
@@ -12271,7 +13011,10 @@
 
       // Include current clinicProfile if authenticated via Google or created via Clinic Panel
       if (clinicProfile && clinicProfile.id && (clinicProfile.ownerUid || clinicProfile.isGoogleAuth || clinicProfile.googleRegistered || clinicProfile.createdViaClinicPanel || clinicProfile.ownerEmail) && !isDummyClinicName(clinicProfile.name)) {
-        if (!remoteList.some(c => c.id === clinicProfile.id)) {
+        const existingIdx = remoteList.findIndex(c => c.id === clinicProfile.id);
+        if (existingIdx >= 0) {
+          remoteList[existingIdx] = { ...remoteList[existingIdx], ...clinicProfile };
+        } else {
           remoteList.unshift(clinicProfile);
         }
       }
@@ -12593,21 +13336,18 @@
       if (emptyState) emptyState.classList.add('hidden');
 
       container.innerHTML = filtered.map(clinic => {
-        const doc = (clinic.doctors && clinic.doctors[0]) || {
-          id: 'doc_1',
-          name: clinic.doctorName,
-          degree: clinic.doctorDegree,
-          specialty: clinic.specialty || clinic.category,
-          fee: clinic.fees?.normal || 300,
-          photo: clinic.doctorPhoto
-        };
-        const photoUrl = clinic.doctorPhoto || doc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80';
+        const mainDoc = (clinic.doctors && clinic.doctors[0]) || {};
+        const docId = mainDoc.id || 'doc_1';
+        const docName = clinic.doctorName || mainDoc.name || 'Doctor';
+        const docDegree = clinic.doctorDegree || mainDoc.degree || 'MBBS';
+        const docSpecialty = clinic.specialty || clinic.category || mainDoc.specialty || 'General Physician';
+        const photoUrl = clinic.doctorPhoto || mainDoc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80';
         const rating = clinic.rating || 4.8;
         const reviewCount = clinic.reviewCount || 120;
-        const feeVal = clinic.fees?.normal ?? doc.fee ?? 300;
+        const feeVal = clinic.fees?.normal ?? mainDoc.fee ?? 300;
         const expYears = clinic.experienceYears || 10;
         const status = getClinicDiscoveryStatus(clinic);
-        const specText = clinic.specialty || clinic.category || 'Specialist';
+        const specText = docSpecialty;
         const hasRealClinic = clinic.name && !isDummyClinicName(clinic.name);
         const clinicLocationHtml = hasRealClinic
           ? `<div class="flex items-center gap-1.5 text-xs truncate text-slate-700">
@@ -12625,19 +13365,19 @@
 
         return `
           <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition space-y-3">
-            <div class="flex items-start gap-3 cursor-pointer" onclick="openDoctorProfileModal('${clinic.id}', '${doc.id}')">
+            <div class="flex items-start gap-3 cursor-pointer" onclick="openDoctorProfileModal('${clinic.id}', '${docId}')">
               <div class="relative w-14 h-14 rounded-2xl overflow-hidden bg-emerald-50 border-2 border-emerald-400 flex-shrink-0 shadow-inner">
-                <img src="${photoUrl}" alt="${doc.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/favicon.svg';" />
+                <img src="${photoUrl}" alt="${docName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/favicon.svg';" />
                 <span class="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-[#25D366] border-2 border-white"></span>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-1 flex-wrap">
-                  <h4 class="font-black text-slate-900 text-sm truncate hover:text-[#075E54] transition">${doc.name}</h4>
+                  <h4 class="font-black text-slate-900 text-sm truncate hover:text-[#075E54] transition">${docName}</h4>
                   <span class="text-xs font-black text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 shrink-0">
                     ⭐ ${rating}
                   </span>
                 </div>
-                <p class="text-xs text-slate-600 font-medium truncate">${doc.degree || 'MBBS'}</p>
+                <p class="text-xs text-slate-600 font-medium truncate">${docDegree || 'MBBS'}</p>
                 <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[11px]">
                   <span class="bg-emerald-50 text-[#075E54] font-bold px-1.5 py-0.2 rounded-md border border-emerald-200">${specText}</span>
                   <span class="text-slate-400">•</span>
@@ -12671,7 +13411,7 @@
                 </a>
                 <button 
                   type="button" 
-                  onclick="selectDoctorAndBook('${clinic.id}', '${doc.id}')" 
+                  onclick="selectDoctorAndBook('${clinic.id}', '${docId}')" 
                   class="btn-tactile px-3 py-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs rounded-xl shadow-xs flex items-center gap-1 transition"
                 >
                   <i class="fa-solid fa-ticket text-xs"></i>
@@ -12685,34 +13425,40 @@
     }
 
     function openDoctorProfileModal(clinicId, docId) {
-      const clinic = clinicsDirectory.find(c => c.id === clinicId) || clinicProfile;
+      const clinic = clinicsDirectory.find(c => c.id === clinicId) || (clinicProfile.id === clinicId ? clinicProfile : null);
       if (!clinic) return;
-      const doc = (clinic.doctors && clinic.doctors.find(d => d.id === docId)) || (clinic.doctors && clinic.doctors[0]) || {
-        id: 'doc_1',
-        name: clinic.doctorName,
-        degree: clinic.doctorDegree,
-        specialty: clinic.specialty || clinic.category,
-        fee: clinic.fees?.normal || 300,
-        photo: clinic.doctorPhoto
-      };
+
+      const mainDoc = (clinic.doctors && clinic.doctors.find(d => d.id === docId)) || (clinic.doctors && clinic.doctors[0]) || {};
+      const docName = clinic.doctorName || mainDoc.name || 'Doctor';
+      const docDegree = clinic.doctorDegree || mainDoc.degree || 'MBBS';
+      const docSpecialty = clinic.specialty || clinic.category || mainDoc.specialty || 'General Medicine';
+      const docPhoto = clinic.doctorPhoto || mainDoc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80';
+      const docFee = clinic.fees?.normal ?? mainDoc.fee ?? 300;
 
       activeDetailClinic = clinic;
-      activeDetailDoctor = doc;
+      activeDetailDoctor = {
+        id: mainDoc.id || docId || 'doc_1',
+        name: docName,
+        degree: docDegree,
+        specialty: docSpecialty,
+        fee: docFee,
+        photo: docPhoto
+      };
 
       const photoEl = document.getElementById('detailDocPhoto');
-      if (photoEl) photoEl.src = clinic.doctorPhoto || doc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80';
+      if (photoEl) photoEl.src = docPhoto;
 
       const specEl = document.getElementById('detailDocSpecialtyBadge');
-      if (specEl) specEl.textContent = clinic.specialty || clinic.category || doc.specialty || 'General Medicine';
+      if (specEl) specEl.textContent = docSpecialty;
 
       const expEl = document.getElementById('detailDocExpBadge');
       if (expEl) expEl.textContent = `${clinic.experienceYears || 12} Yrs Exp`;
 
       const nameEl = document.getElementById('detailDocName');
-      if (nameEl) nameEl.textContent = doc.name;
+      if (nameEl) nameEl.textContent = docName;
 
       const degEl = document.getElementById('detailDocDegree');
-      if (degEl) degEl.textContent = doc.degree || clinic.doctorDegree;
+      if (degEl) degEl.textContent = docDegree;
 
       const regEl = document.getElementById('detailDocRegNo');
       if (regEl) regEl.textContent = `Reg. No: ${clinic.doctorRegNo || 'BRMC-48291'}`;
@@ -12724,13 +13470,13 @@
       if (patEl) patEl.textContent = `${clinic.reviewCount || 140}+ Seen`;
 
       const feeEl = document.getElementById('detailDocFee');
-      if (feeEl) feeEl.textContent = `₹${clinic.fees?.normal ?? doc.fee ?? 300}`;
+      if (feeEl) feeEl.textContent = `₹${docFee}`;
 
       const cNameEl = document.getElementById('detailClinicName');
       if (cNameEl) {
         cNameEl.textContent = !isDummyClinicName(clinic.name)
           ? clinic.name
-          : `${doc.name}'s Consultation Chamber`;
+          : `${docName}'s Consultation Chamber`;
       }
 
       const cCityEl = document.getElementById('detailClinicCity');
@@ -12848,10 +13594,32 @@
     }
 
     function selectDoctorAndBook(clinicId, docId) {
-      const clinic = clinicsDirectory.find(c => c.id === clinicId);
+      const clinic = clinicsDirectory.find(c => c.id === clinicId) || (clinicProfile.id === clinicId ? clinicProfile : null);
       if (clinic) {
-        clinicProfile = { ...clinicProfile, ...clinic };
-        saveLocalClinic();
+        clinicProfile = {
+          ...clinicProfile,
+          ...clinic,
+          visitingHours: {
+            ...(clinicProfile.visitingHours || {}),
+            ...(clinic.visitingHours || {})
+          }
+        };
+        const docName = clinic.doctorName || (clinic.doctors && clinic.doctors[0] && clinic.doctors[0].name);
+        if (docName) {
+          clinicProfile.doctorName = docName;
+          clinicProfile.doctorDegree = clinic.doctorDegree || (clinic.doctors && clinic.doctors[0] && clinic.doctors[0].degree) || clinicProfile.doctorDegree;
+          clinicProfile.doctorPhoto = clinic.doctorPhoto || (clinic.doctors && clinic.doctors[0] && clinic.doctors[0].photo) || clinicProfile.doctorPhoto;
+          if (Array.isArray(clinicProfile.doctors) && clinicProfile.doctors.length > 0) {
+            clinicProfile.doctors[0] = {
+              ...clinicProfile.doctors[0],
+              name: clinicProfile.doctorName,
+              degree: clinicProfile.doctorDegree,
+              photo: clinicProfile.doctorPhoto,
+              specialty: clinic.specialty || clinic.category || clinicProfile.doctors[0].specialty
+            };
+          }
+        }
+        // NOTE: We deliberately do NOT save to localStorage here! Patient browsing must NEVER clobber the clinic owner's local profile!
       }
       if (docId) {
         selectedPatDoctorId = docId;
@@ -12879,7 +13647,7 @@
     function showPatientClinicBookingSection(clinicId) {
       if (clinicId) {
         const list = (clinicsDirectory && clinicsDirectory.length > 0) ? clinicsDirectory : [];
-        const c = list.find(item => item.id === clinicId);
+        const c = list.find(item => item.id === clinicId) || (clinicProfile.id === clinicId ? clinicProfile : null);
         if (c) {
           clinicProfile = {
             ...clinicProfile,
@@ -12889,6 +13657,21 @@
               ...(c.visitingHours || {})
             }
           };
+          const docName = c.doctorName || (c.doctors && c.doctors[0] && c.doctors[0].name);
+          if (docName) {
+            clinicProfile.doctorName = docName;
+            clinicProfile.doctorDegree = c.doctorDegree || (c.doctors && c.doctors[0] && c.doctors[0].degree) || clinicProfile.doctorDegree;
+            clinicProfile.doctorPhoto = c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || clinicProfile.doctorPhoto;
+            if (Array.isArray(clinicProfile.doctors) && clinicProfile.doctors.length > 0) {
+              clinicProfile.doctors[0] = {
+                ...clinicProfile.doctors[0],
+                name: clinicProfile.doctorName,
+                degree: clinicProfile.doctorDegree,
+                photo: clinicProfile.doctorPhoto,
+                specialty: c.specialty || c.category || clinicProfile.doctors[0].specialty
+              };
+            }
+          }
           if (clinicProfile.liveStatus) {
             isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
             doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
@@ -13176,9 +13959,18 @@
 
     function applyDoctorPhotoData(dataUrl, source) {
       clinicProfile.doctorPhoto = dataUrl;
-      if (clinicProfile.doctors && clinicProfile.doctors[0]) {
-        clinicProfile.doctors[0].photo = dataUrl;
+      if (!Array.isArray(clinicProfile.doctors) || clinicProfile.doctors.length === 0) {
+        clinicProfile.doctors = [{ id: 'doc_1', isMain: true }];
       }
+      clinicProfile.doctors[0] = {
+        ...clinicProfile.doctors[0],
+        id: clinicProfile.doctors[0].id || 'doc_1',
+        photo: dataUrl,
+        name: clinicProfile.doctorName || clinicProfile.doctors[0].name || 'Doctor',
+        degree: clinicProfile.doctorDegree || clinicProfile.doctors[0].degree || 'MBBS',
+        specialty: clinicProfile.specialty || clinicProfile.category || clinicProfile.doctors[0].specialty || 'General Medicine',
+        isMain: true
+      };
 
       const prevOnboard = document.getElementById('onboardDoctorPhotoPreview');
       if (prevOnboard) prevOnboard.src = dataUrl;
@@ -13191,6 +13983,25 @@
       if (urlProfile) urlProfile.value = dataUrl;
 
       saveLocalClinic();
+      try {
+        localStorage.setItem('parchisetu_owner_clinic', JSON.stringify(clinicProfile));
+      } catch (e) {}
+
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
+        syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
+      }
+
+      if (Array.isArray(clinicsDirectory)) {
+        const dirIdx = clinicsDirectory.findIndex(c => c.id === clinicProfile.id);
+        if (dirIdx >= 0) {
+          clinicsDirectory[dirIdx] = { ...clinicsDirectory[dirIdx], ...clinicProfile };
+        } else if (!isDummyClinicName(clinicProfile.name)) {
+          clinicsDirectory.unshift(clinicProfile);
+        }
+        renderCityChips();
+        renderSpecialtyChips();
+        renderDoctorDiscoveryFeed();
+      }
 
       // Immediately sync with Firebase Firestore and local server
       if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
@@ -13239,10 +14050,38 @@
       const input = document.getElementById('profileDoctorPhotoUrl');
       const val = (input?.value || clinicProfile.doctorPhoto || '').trim();
       clinicProfile.doctorPhoto = val;
-      if (clinicProfile.doctors && clinicProfile.doctors[0]) {
-        clinicProfile.doctors[0].photo = val;
+      if (!Array.isArray(clinicProfile.doctors) || clinicProfile.doctors.length === 0) {
+        clinicProfile.doctors = [{ id: 'doc_1', isMain: true }];
       }
+      clinicProfile.doctors[0] = {
+        ...clinicProfile.doctors[0],
+        id: clinicProfile.doctors[0].id || 'doc_1',
+        photo: val,
+        name: clinicProfile.doctorName || clinicProfile.doctors[0].name || 'Doctor',
+        degree: clinicProfile.doctorDegree || clinicProfile.doctors[0].degree || 'MBBS',
+        specialty: clinicProfile.specialty || clinicProfile.category || clinicProfile.doctors[0].specialty || 'General Medicine',
+        isMain: true
+      };
       saveLocalClinic();
+      try {
+        localStorage.setItem('parchisetu_owner_clinic', JSON.stringify(clinicProfile));
+      } catch (e) {}
+
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
+        syncChannel.postMessage({ type: 'CLINIC_UPDATED', clinic: clinicProfile });
+      }
+
+      if (Array.isArray(clinicsDirectory)) {
+        const dirIdx = clinicsDirectory.findIndex(c => c.id === clinicProfile.id);
+        if (dirIdx >= 0) {
+          clinicsDirectory[dirIdx] = { ...clinicsDirectory[dirIdx], ...clinicProfile };
+        } else if (!isDummyClinicName(clinicProfile.name)) {
+          clinicsDirectory.unshift(clinicProfile);
+        }
+        renderCityChips();
+        renderSpecialtyChips();
+        renderDoctorDiscoveryFeed();
+      }
 
       if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
         try {

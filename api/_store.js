@@ -360,6 +360,54 @@ const INITIAL_CLINICS = {
     leaves: {},
     onboarded: true,
     createdAt: new Date().toISOString()
+  },
+  clinic_razorpay_verification: {
+    id: 'clinic_razorpay_verification',
+    name: 'ParchiSetu Healthcare Clinic (Razorpay Test)',
+    tagline: 'General Medicine & Live OPD Counter',
+    category: 'General Medicine',
+    specialty: 'General Physician',
+    address: 'Plot 14, Ring Road, Sector 5',
+    city: 'Patna, Bihar',
+    phone: '9835012345',
+    whatsapp: '9835012345',
+    upiId: 'parchisetu@upi',
+    doctorName: 'Dr. Rajesh Sharma',
+    doctorDegree: 'MBBS, MD (General Medicine)',
+    doctorRegNo: 'MCI-48291',
+    experienceYears: 14,
+    rating: 4.9,
+    reviewCount: 148,
+    doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
+    fees: { normal: 300, followup: 200, emergency: 500, report: 0 },
+    visitingReasons: ['🤒 Bukhar / Cold', '🩸 BP / Sugar', '🔄 Follow-up', '📋 Report Check'],
+    visitingHours: {
+      morning: { enabled: true, start: '10:00 AM', end: '02:00 PM', slotDurationMins: 15, maxTokens: 25 },
+      evening: { enabled: true, start: '05:00 PM', end: '09:00 PM', slotDurationMins: 15, maxTokens: 30 },
+      daysOpen: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      avgConsultationMins: 10
+    },
+    liveStatus: { isDoctorLate: false, doctorDelayMinutes: 0, expectedArrivalTime: '10:00 AM', isQRBookingPaused: false },
+    doctors: [
+      { id: 'doc_1', name: 'Dr. Rajesh Sharma', degree: 'MBBS, MD', specialty: 'General Physician', fee: 300, isMain: true }
+    ],
+    leaves: {},
+    onboarded: true,
+    createdAt: '2026-10-28T00:00:00.000Z',
+    ownerUid: 'usr_razorpay_verification',
+    ownerEmail: 'razorpay.test@parchisetu.in',
+    password: 'Razorpay@2026',
+    isGoogleAuth: false,
+    createdViaClinicPanel: true,
+    subscription: {
+      plan: 'free',
+      status: 'expired',
+      trialDays: 7,
+      trialStartDate: '2026-10-28T00:00:00.000Z',
+      billingCycle: 'trial',
+      amount: 0,
+      updatedAt: '2026-11-06T00:00:00.000Z'
+    }
   }
 };
 
@@ -452,6 +500,9 @@ module.exports = {
 
   getClinic: (id) => {
     loadStore();
+    if (id === 'razorpay_test' || id === 'clinic_razorpay_verification' || id === 'razorpay.test@parchisetu.in') {
+      return (store.clinics && store.clinics['clinic_razorpay_verification']) || INITIAL_CLINICS['clinic_razorpay_verification'];
+    }
     if (id && store.clinics && store.clinics[id]) {
       return store.clinics[id];
     }
@@ -460,6 +511,9 @@ module.exports = {
 
   getClinicAsync: async (id) => {
     loadStore();
+    if (id === 'razorpay_test' || id === 'clinic_razorpay_verification' || id === 'razorpay.test@parchisetu.in') {
+      return (store.clinics && store.clinics['clinic_razorpay_verification']) || INITIAL_CLINICS['clinic_razorpay_verification'];
+    }
     if (id && store.clinics && store.clinics[id]) {
       return store.clinics[id];
     }
@@ -518,12 +572,49 @@ module.exports = {
     }
     const all = Object.values(map).map(c => {
       const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
+      const docName = c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : init.doctorName);
+      const docDegree = c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : init.doctorDegree);
+      const docSpecialty = c.specialty || c.category || (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || init.specialty || 'General Physician';
+      const docCategory = c.category || c.specialty || (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || init.category || 'General Medicine';
+      const docPhoto = c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto;
+
+      const doctors = (Array.isArray(c.doctors) && c.doctors.length > 0)
+        ? c.doctors.map((d, i) => {
+            if (i === 0) {
+              return {
+                ...d,
+                id: d.id || 'doc_1',
+                name: docName,
+                degree: docDegree,
+                specialty: docSpecialty,
+                photo: docPhoto,
+                fee: (c.fees && c.fees.normal) || d.fee || 300,
+                isMain: true
+              };
+            }
+            return d;
+          })
+        : [
+            {
+              id: 'doc_1',
+              name: docName,
+              degree: docDegree,
+              specialty: docSpecialty,
+              photo: docPhoto,
+              fee: (c.fees && c.fees.normal) || 300,
+              isMain: true
+            }
+          ];
+
       return {
         ...init,
         ...c,
-        specialty: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || c.specialty || init.specialty || 'General Physician',
-        category: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || c.category || init.category || 'General Medicine',
-        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto,
+        doctorName: docName,
+        doctorDegree: docDegree,
+        doctorPhoto: docPhoto,
+        specialty: docSpecialty,
+        category: docCategory,
+        doctors,
         rating: c.rating || init.rating || 4.8,
         reviewCount: c.reviewCount || init.reviewCount || 120
       };
@@ -556,12 +647,49 @@ module.exports = {
 
     const all = Object.values(map).map(c => {
       const init = INITIAL_CLINICS[c.id] || DEFAULT_CLINIC;
+      const docName = c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : init.doctorName);
+      const docDegree = c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : init.doctorDegree);
+      const docSpecialty = c.specialty || c.category || (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || init.specialty || 'General Physician';
+      const docCategory = c.category || c.specialty || (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || init.category || 'General Medicine';
+      const docPhoto = c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto;
+
+      const doctors = (Array.isArray(c.doctors) && c.doctors.length > 0)
+        ? c.doctors.map((d, i) => {
+            if (i === 0) {
+              return {
+                ...d,
+                id: d.id || 'doc_1',
+                name: docName,
+                degree: docDegree,
+                specialty: docSpecialty,
+                photo: docPhoto,
+                fee: (c.fees && c.fees.normal) || d.fee || 300,
+                isMain: true
+              };
+            }
+            return d;
+          })
+        : [
+            {
+              id: 'doc_1',
+              name: docName,
+              degree: docDegree,
+              specialty: docSpecialty,
+              photo: docPhoto,
+              fee: (c.fees && c.fees.normal) || 300,
+              isMain: true
+            }
+          ];
+
       return {
         ...init,
         ...c,
-        specialty: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].specialty) || c.specialty || init.specialty || 'General Physician',
-        category: (INITIAL_CLINICS[c.id] && INITIAL_CLINICS[c.id].category) || c.category || init.category || 'General Medicine',
-        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] && c.doctors[0].photo) || init.doctorPhoto || DEFAULT_CLINIC.doctorPhoto,
+        doctorName: docName,
+        doctorDegree: docDegree,
+        doctorPhoto: docPhoto,
+        specialty: docSpecialty,
+        category: docCategory,
+        doctors,
         rating: c.rating || init.rating || 4.8,
         reviewCount: c.reviewCount || init.reviewCount || 120
       };
@@ -575,9 +703,42 @@ module.exports = {
 
   setClinic: (clinicData) => {
     loadStore();
+    const existing = store.clinic || {};
+    const docName = clinicData.doctorName || existing.doctorName || DEFAULT_CLINIC.doctorName;
+    const docDegree = clinicData.doctorDegree || existing.doctorDegree || DEFAULT_CLINIC.doctorDegree;
+    const docSpecialty = clinicData.specialty || clinicData.category || existing.specialty || existing.category || 'General Medicine';
+    const docPhoto = clinicData.doctorPhoto || (clinicData.doctors && clinicData.doctors[0] && clinicData.doctors[0].photo) || existing.doctorPhoto || DEFAULT_CLINIC.doctorPhoto;
+
+    let doctorsList = clinicData.doctors || existing.doctors || DEFAULT_CLINIC.doctors;
+    if (!Array.isArray(doctorsList) || doctorsList.length === 0) {
+      doctorsList = [{ id: 'doc_1', isMain: true }];
+    }
+    if (docName) {
+      doctorsList = doctorsList.map((d, i) => {
+        if (i === 0) {
+          return {
+            ...d,
+            id: d.id || 'doc_1',
+            name: docName,
+            degree: docDegree,
+            specialty: docSpecialty,
+            photo: docPhoto || d.photo || '',
+            fee: (clinicData.fees && clinicData.fees.normal) || (existing.fees && existing.fees.normal) || d.fee || 300,
+            isMain: true
+          };
+        }
+        return d;
+      });
+    }
+
     store.clinic = {
       ...store.clinic,
       ...clinicData,
+      doctorName: docName,
+      doctorDegree: docDegree,
+      doctorPhoto: docPhoto,
+      specialty: docSpecialty,
+      doctors: doctorsList,
       onboarded: true,
       updatedAt: new Date().toISOString()
     };

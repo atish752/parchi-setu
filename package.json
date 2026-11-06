@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node test_runner.js"
+    "test": "node test_runner.js && node test_razorpay_verification.js"
   },
   "keywords": [
     "parchi-setu",

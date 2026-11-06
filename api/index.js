@@ -4,6 +4,10 @@
  */
 
 const store = require('./_store');
+let paymentHandler = null;
+try {
+  paymentHandler = require('./payment');
+} catch (e) {}
 
 async function parseReqBody(req) {
   if (req.body && typeof req.body === 'object') {
@@ -56,6 +60,11 @@ module.exports = async (req, res) => {
   // /api/health
   if (pathname === '/api/health') {
     return res.status(200).json({ status: 'healthy', uptime: process.uptime() });
+  }
+
+  // /api/payment
+  if (pathname.startsWith('/api/payment') && paymentHandler) {
+    return paymentHandler(req, res);
   }
 
   // /api/clinics
