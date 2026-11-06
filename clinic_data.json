@@ -106,7 +106,7 @@
     "googleRegistered": true,
     "ownerUid": "google_uid_anand_kishore",
     "ownerEmail": "dr.anand.kishore@gmail.com",
-    "updatedAt": "2026-11-06T05:50:17.753Z"
+    "updatedAt": "2026-11-06T06:05:42.625Z"
   },
   "clinics": {
     "clinic_sanjeevani_01": {
@@ -190,7 +190,7 @@
       "googleRegistered": true,
       "ownerUid": "google_uid_test_1793812125439",
       "ownerEmail": "doctor.verma@example.com",
-      "updatedAt": "2026-11-06T05:50:20.163Z",
+      "updatedAt": "2026-11-06T06:05:44.485Z",
       "network": {
         "port": 3000,
         "localIps": [
@@ -203,8 +203,8 @@
         "plan": "annual_pro",
         "amount": 3999,
         "status": "active",
-        "updatedAt": "2026-11-06T05:50:18.994Z",
-        "renewalDate": "2026-12-06T05:50:18.985Z",
+        "updatedAt": "2026-11-06T06:05:43.366Z",
+        "renewalDate": "2026-12-06T06:05:43.358Z",
         "billingCycle": "annual",
         "trialStartDate": "2026-11-06T04:58:05.062Z"
       },
@@ -322,7 +322,7 @@
       },
       "onboarded": true,
       "createdAt": "2026-10-26T06:00:00.000Z",
-      "updatedAt": "2026-11-06T05:50:17.284Z",
+      "updatedAt": "2026-11-06T06:05:42.174Z",
       "network": {
         "port": 3000,
         "localIps": [
@@ -1074,7 +1074,7 @@
       "googleRegistered": true,
       "ownerUid": "google_uid_anand_kishore",
       "ownerEmail": "dr.anand.kishore@gmail.com",
-      "updatedAt": "2026-11-06T05:50:17.753Z"
+      "updatedAt": "2026-11-06T06:05:42.625Z"
     },
     "clinic_verma_eye_1793931516063": {
       "id": "clinic_verma_eye_1793931516063",
@@ -1432,7 +1432,7 @@
       "specialty": "General Medicine",
       "isGoogleAuth": true,
       "ownerUid": "uid_anand_kishore_123",
-      "updatedAt": "2026-11-06T05:50:23.481Z"
+      "updatedAt": "2026-11-06T06:05:48.395Z"
     },
     "clinic_new_doctor_1793938599189": {
       "id": "clinic_new_doctor_1793938599189",
@@ -1595,7 +1595,7 @@
       "onboarded": true,
       "createdAt": "2026-11-06T04:16:47.064Z",
       "specialty": "General Medicine",
-      "updatedAt": "2026-11-06T05:50:23.300Z"
+      "updatedAt": "2026-11-06T06:05:48.266Z"
     },
     "clinic_new_doctor_1793939587190": {
       "id": "clinic_new_doctor_1793939587190",
@@ -3338,11 +3338,183 @@
       "ownerEmail": "verma@clinic.com",
       "createdViaClinicPanel": true,
       "updatedAt": "2026-11-06T05:50:24.348Z"
+    },
+    "clinic_limit_test_1793945135417": {
+      "id": "clinic_limit_test_1793945135417",
+      "name": "Limit Test Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Rajesh Sharma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-10-22T06:05:35.417Z",
+      "subscription": {
+        "plan": "free",
+        "status": "active",
+        "trialStartDate": "2026-10-22T06:05:35.417Z",
+        "billingCycle": "trial",
+        "amount": 0,
+        "updatedAt": "2026-11-06T06:05:40.872Z",
+        "renewalDate": "2026-12-06T06:05:40.863Z"
+      },
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-06T06:05:35.425Z"
+    },
+    "clinic_new_doctor_1793945149263": {
+      "id": "clinic_new_doctor_1793945149263",
+      "name": "Dr. R. K. Verma Child Care Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. R. K. Verma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. R. K. Verma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "Child / Pediatric",
+          "regNo": "MCI-48291",
+          "fee": 400,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-06T06:05:49.199Z",
+      "specialty": "Child / Pediatric",
+      "ownerUid": "uid_dr_verma_123",
+      "ownerEmail": "verma@clinic.com",
+      "createdViaClinicPanel": true,
+      "updatedAt": "2026-11-06T06:05:49.264Z"
     }
   },
   "queue": [
     {
-      "id": "q_1793944223207_208",
+      "id": "q_1793945148172_166",
       "clinicId": "clinic_test_deep",
       "clinicName": "Sanjeevani Family Clinic",
       "clinicAddress": "Near Main Market Chowk, Station Road",
@@ -3374,11 +3546,11 @@
       "followUpDate": "",
       "hasParchiPhoto": false,
       "notes": "",
-      "createdAt": "2026-11-06T05:50:23.240Z"
+      "createdAt": "2026-11-06T06:05:48.207Z"
     },
     {
-      "id": "q_1793944224386_466",
-      "clinicId": "clinic_new_doctor_1793944224347",
+      "id": "q_1793945149299_644",
+      "clinicId": "clinic_new_doctor_1793945149263",
       "clinicName": "Dr. R. K. Verma Child Care Clinic",
       "clinicAddress": "Near Main Market Chowk, Station Road",
       "clinicPhone": "9835012345",
@@ -3409,7 +3581,7 @@
       "followUpDate": "",
       "hasParchiPhoto": false,
       "notes": "",
-      "createdAt": "2026-11-06T05:50:24.411Z"
+      "createdAt": "2026-11-06T06:05:49.319Z"
     }
   ]
 }
