@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- Google Fonts: Inter & Caveat for authentic prescription handwriting -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+  <!-- Supabase Official Client SDK (Auth, PostgreSQL REST & Realtime) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Firebase SDKs (Compat for Browser & Vercel deployment) -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -166,7 +168,7 @@
             type="button" 
             onclick="openAdminPanel()" 
             id="headerAdminBtn"
-            class="hidden btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition"
+            class="btn-tactile bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2 sm:px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition shrink-0"
             title="Owner Admin Panel (Signed up Doctors & Subscriptions)"
           >
             <span class="text-xs">👑</span>
@@ -1407,6 +1409,156 @@
           </div>
         </div>
 
+        <!-- 7-Day Trial Countdown Timer & Membership Card -->
+        <div id="profileTrialTimerCard" class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-500/30 space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5">
+              <div id="profileTrialBadgeIcon" class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-lg shadow-xs">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+              <div>
+                <h3 id="profileTrialCardTitle" class="font-black text-sm sm:text-base text-slate-900 leading-tight">7-Day Free Trial Timer</h3>
+                <p id="profileTrialCardSubtitle" class="text-xs text-slate-500 font-semibold mt-0.5">Trial period mein unlimited appointments le sakte hain.</p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onclick="openClinicAccountModal()" 
+              id="profileTrialUpgradeBtn"
+              class="btn-tactile px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-xs transition"
+            >
+              <i class="fa-solid fa-crown"></i>
+              <span>Upgrade to Pro</span>
+            </button>
+          </div>
+
+          <!-- Countdown Timer Numbers Box -->
+          <div id="profileTrialCountdownContainer" class="grid grid-cols-4 gap-2 text-center py-2 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-inner">
+            <div class="p-1.5">
+              <span id="trialTimerDays" class="block font-black text-xl sm:text-2xl text-amber-300">07</span>
+              <span class="block text-[10px] font-bold text-slate-300 uppercase">Days</span>
+            </div>
+            <div class="p-1.5 border-l border-slate-700">
+              <span id="trialTimerHours" class="block font-black text-xl sm:text-2xl text-amber-300">00</span>
+              <span class="block text-[10px] font-bold text-slate-300 uppercase">Hours</span>
+            </div>
+            <div class="p-1.5 border-l border-slate-700">
+              <span id="trialTimerMinutes" class="block font-black text-xl sm:text-2xl text-amber-300">00</span>
+              <span class="block text-[10px] font-bold text-slate-300 uppercase">Mins</span>
+            </div>
+            <div class="p-1.5 border-l border-slate-700">
+              <span id="trialTimerSeconds" class="block font-black text-xl sm:text-2xl text-emerald-400">00</span>
+              <span class="block text-[10px] font-bold text-slate-300 uppercase">Secs</span>
+            </div>
+          </div>
+
+          <!-- Pro Active Status Box (Toggled when Pro is active) -->
+          <div id="profileProStatusBox" class="hidden p-3 bg-gradient-to-br from-emerald-900 to-teal-900 text-white rounded-xl text-center shadow-inner">
+            <div class="text-emerald-200 text-xs font-black uppercase tracking-wider">Plan Status</div>
+            <div id="profileProPlanTitle" class="text-xl font-black text-white mt-0.5">👑 Pro Plan Active</div>
+            <div class="text-[11px] text-emerald-300 mt-1">Unlimited Appointments • Autopay Active</div>
+          </div>
+
+          <div id="profileTrialStatusNotice" class="text-xs font-bold text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-blue-600"></i>
+            <span id="profileTrialStatusNoticeText">7-Day Trial Active: 100 appointments/month limit applies only after 7 days.</span>
+          </div>
+        </div>
+
+        <!-- Monthly Appointment Usage & Metrics Card -->
+        <div id="profileMonthlyUsageCard" class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-lg shadow-xs">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+              <div>
+                <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">Monthly Appointments Usage</h3>
+                <p id="profileMonthlyPeriodText" class="text-xs text-slate-500 font-semibold mt-0.5">Current Month Metrics</p>
+              </div>
+            </div>
+            <span id="profilePlanTypeBadge" class="bg-slate-100 text-slate-700 text-xs font-black px-2.5 py-1 rounded-full border border-slate-300">
+              Free Plan (100 Limit)
+            </span>
+          </div>
+
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+              <span>Appointments This Month:</span>
+              <span class="font-black text-slate-900 text-sm">
+                <span id="profileMonthlyUsageCount">0</span> / <span id="profileMonthlyUsageMax">100</span> used
+              </span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="profileMonthlyProgressBar" class="h-full bg-[#075E54] rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            <p id="profileMonthlyLimitDescription" class="text-[11px] text-slate-500 font-medium pt-1">
+              * Compounder manual walk-ins aur patient self QR bookings dono count hote hain. 100 ke baad agle mahine tak naye appointments ruk jate hain. Pro plan me unlimited appointments hain.
+            </p>
+          </div>
+        </div>
+
+        <!-- Official Support & Help Card -->
+        <div id="profileSupportCard" class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/60 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-400 space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-[#075E54] text-white flex items-center justify-center font-black text-lg shadow-xs">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <div>
+                <h3 class="font-black text-sm sm:text-base text-[#075E54] leading-tight">ParchiSetu Official Help & Support</h3>
+                <p class="text-xs text-slate-600 font-semibold mt-0.5">Direct 24/7 Support for Clinics & Doctors</p>
+              </div>
+            </div>
+            <span class="bg-[#25D366] text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-full shadow-xs">
+              Direct Helpline ✓
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+            <a 
+              href="tel:9798482404" 
+              class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition"
+            >
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div class="overflow-hidden">
+                <span class="block text-[10px] text-slate-500 font-semibold">Phone Helpline</span>
+                <span class="block font-black text-slate-900 text-sm">9798482404</span>
+              </div>
+            </a>
+
+            <a 
+              href="https://wa.me/919798482404?text=Namaste%20ParchiSetu%20Support!%20Mujhe%20apne%20clinic%20ke%20liye%20madad%20chahiye." 
+              target="_blank" 
+              class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition"
+            >
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-[#25D366] flex items-center justify-center flex-shrink-0">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+              </div>
+              <div class="overflow-hidden">
+                <span class="block text-[10px] text-slate-500 font-semibold">WhatsApp Support</span>
+                <span class="block font-black text-[#075E54] text-sm">9798482404</span>
+              </div>
+            </a>
+
+            <a 
+              href="mailto:atish2k22@gmail.com?subject=ParchiSetu%20Clinic%20Support%20Request" 
+              class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition sm:col-span-2"
+            >
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="overflow-hidden">
+                <span class="block text-[10px] text-slate-500 font-semibold">Official Email</span>
+                <span class="block font-black text-blue-900 text-sm">atish2k22@gmail.com</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
         <!-- Consultation & Follow-Up Fees Configuration Card -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
           <div>
@@ -2393,6 +2545,41 @@
     <!-- (View and track all signed up doctor accounts & subscription plans) -->
     <!-- =================================================================== -->
     <div id="viewAdminPanel" class="hidden space-y-4 py-2">
+
+      <!-- Admin In-Page Lock Screen (Displayed if not yet unlocked with Master PIN) -->
+      <div id="adminPageLockCard" class="hidden max-w-md mx-auto my-6 sm:my-10 bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-[#075E54] text-center space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-[#075E54] text-amber-300 flex items-center justify-center text-3xl mx-auto shadow-md">
+          👑
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-slate-900">ParchiSetu Master Admin</h3>
+          <p class="text-xs text-slate-500 mt-1">Owner Portal • Enter Master Admin PIN to view registered clinics, track appointments & manage subscriptions.</p>
+        </div>
+        <div class="space-y-2">
+          <input 
+            type="password" 
+            id="adminPagePasscodeInput" 
+            placeholder="Admin PIN (e.g. 7520)" 
+            class="w-full text-center px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-base font-black tracking-widest focus:outline-none focus:border-[#075E54]"
+            onkeydown="if(event.key==='Enter') verifyAdminPasscode(true);"
+          />
+          <div id="adminPagePasscodeError" class="hidden text-xs font-bold text-rose-600">⚠️ Galat PIN! Kripya sahi passcode dalein.</div>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <button type="button" onclick="verifyAdminPasscode(true)" class="btn-tactile w-full py-3 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black shadow-md transition flex items-center justify-center gap-2">
+            <span>Admin Dashboard Unlock Karein</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <button type="button" onclick="switchAppRole('clinic')" class="hover:text-emerald-700 font-bold">← Clinic Desk</button>
+          <button type="button" onclick="switchAppRole('patient'); showPatientDiscoverySection();" class="hover:text-emerald-700 font-bold">Patient Home →</button>
+        </div>
+        <p class="text-[10px] text-slate-400 font-semibold">Strictly for webapp owner only • Instant session unlock</p>
+      </div>
+
+      <!-- Admin Main Dashboard Content (Displayed once unlocked) -->
+      <div id="adminDashboardContent" class="space-y-4">
       <!-- Admin Top Hero -->
       <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-[#075E54] text-white rounded-3xl p-5 sm:p-6 shadow-xl border-2 border-emerald-500/30 relative overflow-hidden">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -2501,6 +2688,7 @@
         <i class="fa-solid fa-user-doctor text-3xl text-slate-300 mb-2"></i>
         <h4 class="text-sm font-black text-slate-700">Koi Doctor Account Nahi Mila</h4>
         <p class="text-xs text-slate-400 mt-1">Search term ya filters badal kar dobara koshish karein.</p>
+      </div>
       </div>
     </div>
 
@@ -2983,6 +3171,27 @@
           </div>
         </div>
 
+        <!-- OFFICIAL SUPPORT STRIP -->
+        <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/70 p-3 rounded-2xl border border-emerald-300 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-[#075E54] flex items-center gap-1.5">
+              <i class="fa-solid fa-headset text-emerald-600"></i> ParchiSetu Support Helpline
+            </span>
+            <span class="text-[10px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-full border border-emerald-200">24/7 Available</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-xs pt-0.5">
+            <a href="tel:9798482404" class="font-black text-slate-800 hover:text-emerald-700 flex items-center gap-1">
+              <i class="fa-solid fa-phone text-emerald-600"></i> 9798482404
+            </a>
+            <a href="https://wa.me/919798482404?text=Namaste%20ParchiSetu%20Support!%20Mujhe%20apne%20clinic%20plan%20ke%20liye%20madad%20chahiye." target="_blank" class="font-black text-[#25D366] hover:underline flex items-center gap-1">
+              <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp: 9798482404
+            </a>
+            <a href="mailto:atish2k22@gmail.com?subject=ParchiSetu%20Clinic%20Plan%20Query" class="font-black text-blue-700 hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-envelope text-blue-600"></i> atish2k22@gmail.com
+            </a>
+          </div>
+        </div>
+
         <!-- PRICING & MEMBERSHIP PLANS -->
         <div class="space-y-3">
           <div class="flex items-center justify-between">
@@ -3258,6 +3467,95 @@
   </div>
 
   <!-- ===================================================================== -->
+  <!-- MODAL: OFFICIAL CLINIC HELP & 24/7 SUPPORT CONTACT                    -->
+  <!-- ===================================================================== -->
+  <div id="helpSupportModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-xs items-center justify-center p-3 sm:p-4" onclick="if(event.target===this)closeHelpSupportModal();">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-500 space-y-4 my-auto relative">
+      <button type="button" onclick="closeHelpSupportModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-sm flex items-center justify-center transition">
+        ✕
+      </button>
+
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-[#075E54] flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <div>
+          <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight">ParchiSetu Support & Contact</h3>
+          <p class="text-xs text-slate-500 font-semibold mt-0.5">24/7 Helpline for Indian Clinics & Doctors</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Koi bhi takneeki sahayata, plan upgrade, subscription billing ya clinic onboarding ke liye humse seedhe jud sakte hain:
+      </p>
+
+      <div class="space-y-2.5 pt-1">
+        <!-- Phone Support -->
+        <a 
+          href="tel:9798482404" 
+          class="btn-tactile p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 flex items-center justify-between transition group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm flex-shrink-0">
+              <i class="fa-solid fa-phone"></i>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-500 font-bold uppercase tracking-wider">Phone Call Helpline</span>
+              <span class="block font-black text-slate-900 text-sm">9798482404</span>
+            </div>
+          </div>
+          <span class="text-xs font-black text-[#075E54] group-hover:translate-x-0.5 transition">Call Now ➔</span>
+        </a>
+
+        <!-- WhatsApp Support -->
+        <a 
+          href="https://wa.me/919798482404?text=Namaste%20ParchiSetu%20Support!%20Mujhe%20apne%20clinic%20ke%20liye%20madad%20chahiye." 
+          target="_blank" 
+          class="btn-tactile p-3 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/70 border border-emerald-300 hover:border-emerald-500 flex items-center justify-between transition group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-[#25D366] text-white flex items-center justify-center text-lg flex-shrink-0 shadow-2xs">
+              <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <div>
+              <span class="block text-[10px] text-emerald-800 font-bold uppercase tracking-wider">WhatsApp Instant Chat</span>
+              <span class="block font-black text-[#075E54] text-sm">9798482404</span>
+            </div>
+          </div>
+          <span class="text-xs font-black text-emerald-800 group-hover:translate-x-0.5 transition">Chat ➔</span>
+        </a>
+
+        <!-- Email Support -->
+        <a 
+          href="mailto:atish2k22@gmail.com?subject=ParchiSetu%20Clinic%20Support%20Request" 
+          class="btn-tactile p-3 rounded-2xl bg-blue-50/60 hover:bg-blue-100/60 border border-blue-200 hover:border-blue-400 flex items-center justify-between transition group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm flex-shrink-0">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div>
+              <span class="block text-[10px] text-blue-700 font-bold uppercase tracking-wider">Official Email</span>
+              <span class="block font-black text-slate-900 text-sm">atish2k22@gmail.com</span>
+            </div>
+          </div>
+          <span class="text-xs font-black text-blue-700 group-hover:translate-x-0.5 transition">Send Mail ➔</span>
+        </a>
+      </div>
+
+      <div class="pt-2 text-center">
+        <button 
+          type="button" 
+          onclick="closeHelpSupportModal()" 
+          class="btn-tactile w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
+        >
+          Band Karein (Close)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- MODAL: ADMIN ACCESS PASSCODE UNLOCK (OWNER USE ONLY)                  -->
   <!-- ===================================================================== -->
   <div id="adminPasscodeModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-xs items-center justify-center p-3 sm:p-4">
@@ -3273,7 +3571,7 @@
         <input 
           type="password" 
           id="adminPasscodeInput" 
-          placeholder="Admin PIN (Default: admin123)" 
+          placeholder="Admin PIN (e.g. 7520)" 
           class="w-full text-center px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-sm font-black tracking-widest focus:outline-none focus:border-[#075E54]"
           onkeydown="if(event.key==='Enter') verifyAdminPasscode();"
         />
@@ -6550,9 +6848,28 @@
         const finalOwnerUid = ownerUid;
         const isGoogle = Boolean((currentUser && (currentUser.isGoogleAuth || (currentUser.email && !currentUser.isEmailPassword))) || (clinicProfile && (clinicProfile.isGoogleAuth || clinicProfile.googleRegistered)));
 
+        const isNewClinic = !clinicProfile.id || clinicProfile.id === 'clinic_sanjeevani_01' || isDummyClinicName(clinicProfile.name) || !clinicProfile.ownerUid;
+        const newClinicId = isNewClinic ? ('clinic_' + Date.now()) : clinicProfile.id;
+        const newCreatedAt = isNewClinic ? new Date().toISOString() : (clinicProfile.createdAt || new Date().toISOString());
+        const newSub = isNewClinic ? {
+          plan: 'free',
+          status: 'trial',
+          trialDays: 7,
+          trialStartDate: newCreatedAt,
+          billingCycle: 'trial',
+          amount: 0
+        } : (clinicProfile.subscription || {
+          plan: 'free',
+          status: 'trial',
+          trialDays: 7,
+          trialStartDate: newCreatedAt,
+          billingCycle: 'trial',
+          amount: 0
+        });
+
         clinicProfile = {
           ...clinicProfile,
-          id: clinicProfile.id || ('clinic_' + Date.now()),
+          id: newClinicId,
           name: finalName,
           tagline,
           category,
@@ -6568,15 +6885,8 @@
           isGoogleAuth: isGoogle,
           googleRegistered: true,
           createdViaClinicPanel: true,
-          subscription: clinicProfile.subscription || {
-            plan: 'free',
-            status: 'trial',
-            trialDays: 7,
-            trialStartDate: new Date().toISOString(),
-            billingCycle: 'trial',
-            amount: 0
-          },
-          createdAt: clinicProfile.createdAt || new Date().toISOString(),
+          subscription: newSub,
+          createdAt: newCreatedAt,
           doctorName: finalDocName,
           doctorDegree: degree,
           doctorRegNo: regNo,
@@ -7391,7 +7701,7 @@
     }
 
     function getClinicSubscriptionStatus(clinic) {
-      if (!clinic) return { isLocked: false, status: 'trial', plan: 'free', daysLeft: 7, planName: '7-Day Free Trial' };
+      if (!clinic) return { isLocked: false, status: 'trial', isTrialActive: true, isTrialExpired: false, plan: 'free', daysLeft: 7, hoursLeft: 0, minutesLeft: 0, secondsLeft: 0, planName: '7-Day Free Trial', monthlyLimit: Infinity };
       const sub = clinic.subscription || { plan: 'free', status: 'trial' };
 
       // 1. If actively paid (Monthly Pro or Annual Pro)
@@ -7404,11 +7714,17 @@
           return {
             isLocked: false,
             status: 'active',
+            isTrialActive: false,
+            isTrialExpired: false,
             plan: sub.plan,
             planName: sub.plan === 'annual_pro' ? 'Annual Pro Plan' : 'Monthly Pro Plan',
             amount: sub.plan === 'annual_pro' ? 3999 : 399,
             daysLeft: daysLeft,
-            renewalDate: sub.renewalDate
+            hoursLeft: 0,
+            minutesLeft: 0,
+            secondsLeft: 0,
+            renewalDate: sub.renewalDate,
+            monthlyLimit: Infinity
           };
         }
       }
@@ -7421,28 +7737,86 @@
       const endMs = startMs + trialDurationMs;
       const nowMs = Date.now();
       const msRemaining = endMs - nowMs;
-      const daysLeft = Math.ceil(msRemaining / 86400000);
 
       if (msRemaining <= 0 || sub.status === 'expired' || sub.status === 'locked') {
         return {
-          isLocked: true,
-          status: 'expired',
+          isLocked: false,
+          status: 'free',
+          isTrialActive: false,
+          isTrialExpired: true,
           plan: 'free',
           planName: '7-Day Free Trial (Expired)',
           daysLeft: 0,
+          hoursLeft: 0,
+          minutesLeft: 0,
+          secondsLeft: 0,
           amount: 0,
+          monthlyLimit: 100,
           expiredDaysAgo: Math.max(1, Math.abs(Math.floor(msRemaining / 86400000)))
         };
       }
 
+      const totalSec = Math.floor(msRemaining / 1000);
+      const daysLeft = Math.floor(totalSec / 86400);
+      const hoursLeft = Math.floor((totalSec % 86400) / 3600);
+      const minutesLeft = Math.floor((totalSec % 3600) / 60);
+      const secondsLeft = totalSec % 60;
+
       return {
         isLocked: false,
         status: 'trial',
+        isTrialActive: true,
+        isTrialExpired: false,
         plan: 'free',
         planName: '7-Day Free Trial',
-        daysLeft: Math.max(1, daysLeft),
+        daysLeft: Math.max(0, daysLeft),
+        hoursLeft: Math.max(0, hoursLeft),
+        minutesLeft: Math.max(0, minutesLeft),
+        secondsLeft: Math.max(0, secondsLeft),
+        monthlyLimit: Infinity,
         amount: 0
       };
+    }
+
+    function getClinicMonthAppointmentsCount() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+      const currentMonthPrefix = `${currentYear}-${currentMonth}`;
+      let count = 0;
+      if (Array.isArray(todayQueue)) {
+        todayQueue.forEach(b => {
+          if (!b) return;
+          if (b.status === 'CANCELLED') return;
+          if (typeof b.date === 'string' && b.date.startsWith(currentMonthPrefix)) {
+            count++;
+          } else if (typeof b.createdAt === 'string' && b.createdAt.startsWith(currentMonthPrefix)) {
+            count++;
+          } else {
+            const bDate = b.date ? new Date(b.date) : (b.createdAt ? new Date(b.createdAt) : null);
+            if (bDate && !isNaN(bDate.getTime())) {
+              const bY = bDate.getFullYear();
+              const bM = String(bDate.getMonth() + 1).padStart(2, '0');
+              if (`${bY}-${bM}` === currentMonthPrefix) {
+                count++;
+              }
+            }
+          }
+        });
+      }
+      return count;
+    }
+
+    function isMonthlyAppointmentLimitReached() {
+      const statusInfo = getClinicSubscriptionStatus(clinicProfile);
+      if (statusInfo.status === 'active' || statusInfo.plan === 'monthly_pro' || statusInfo.plan === 'annual_pro') {
+        return false;
+      }
+      if (statusInfo.isTrialActive) {
+        return false;
+      }
+      const count = getClinicMonthAppointmentsCount();
+      return count >= 100;
     }
 
     function checkClinicTrialAndLock() {
@@ -7453,48 +7827,43 @@
       const bannerText = document.getElementById('subscriptionBannerText');
       const upgradeBtn = document.getElementById('btnSubscriptionUpgrade');
 
-      if (statusInfo.isLocked) {
-        if (lockModal) {
-          lockModal.classList.remove('hidden');
-          lockModal.classList.add('flex');
-        }
-        if (banner) {
-          banner.classList.remove('hidden');
-          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-rose-300 bg-rose-50 text-xs font-bold text-rose-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
+      // Do NOT lock the account of clinic or stop appointments with a modal
+      if (lockModal) {
+        lockModal.classList.add('hidden');
+        lockModal.classList.remove('flex');
+      }
+
+      if (banner) {
+        banner.classList.remove('hidden');
+        if (statusInfo.status === 'active') {
+          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
           if (bannerText) {
-            bannerText.innerHTML = `<i class="fa-solid fa-lock text-rose-600 text-sm"></i> <span><strong>7-Day Free Trial Ended</strong>: Platform is locked. Kripya subscribe karein.</span>`;
+            const renText = statusInfo.renewalDate ? new Date(statusInfo.renewalDate).toLocaleDateString('en-IN') : 'Active Cycle';
+            bannerText.innerHTML = `<i class="fa-solid fa-circle-check text-[#25D366] text-sm"></i> <span><strong>${statusInfo.planName} Active</strong>: Renews on ${renText} • Unlimited Appointments</span>`;
           }
           if (upgradeBtn) {
-            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
-            upgradeBtn.innerHTML = '<i class="fa-solid fa-unlock"></i> <span>Unlock via Razorpay</span>';
+            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
+            upgradeBtn.innerHTML = '<i class="fa-solid fa-gear"></i> <span>Manage Plan</span>';
           }
-        }
-      } else {
-        if (lockModal) {
-          lockModal.classList.add('hidden');
-          lockModal.classList.remove('flex');
-        }
-        if (banner) {
-          banner.classList.remove('hidden');
-          if (statusInfo.status === 'active') {
-            banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
-            if (bannerText) {
-              const renText = statusInfo.renewalDate ? new Date(statusInfo.renewalDate).toLocaleDateString('en-IN') : 'Active Cycle';
-              bannerText.innerHTML = `<i class="fa-solid fa-circle-check text-[#25D366] text-sm"></i> <span><strong>${statusInfo.planName} Active</strong>: Renews on ${renText}</span>`;
-            }
-            if (upgradeBtn) {
-              upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
-              upgradeBtn.innerHTML = '<i class="fa-solid fa-gear"></i> <span>Manage Plan</span>';
-            }
-          } else {
-            banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-amber-300 bg-amber-50 text-xs font-bold text-amber-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
-            if (bannerText) {
-              bannerText.innerHTML = `<i class="fa-solid fa-clock text-amber-600 text-sm"></i> <span><strong>7-Day Free Trial</strong>: ${statusInfo.daysLeft} din baaki hain.</span>`;
-            }
-            if (upgradeBtn) {
-              upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
-              upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade to Pro</span>';
-            }
+        } else if (statusInfo.isTrialActive) {
+          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-amber-300 bg-amber-50 text-xs font-bold text-amber-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
+          if (bannerText) {
+            bannerText.innerHTML = `<i class="fa-solid fa-clock text-amber-600 text-sm"></i> <span><strong>7-Day Free Trial</strong>: ${statusInfo.daysLeft} din ${statusInfo.hoursLeft} ghante baaki • Unlimited Appointments</span>`;
+          }
+          if (upgradeBtn) {
+            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
+            upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade to Pro</span>';
+          }
+        } else {
+          // Trial period completed -> Free Plan with 100 appointments/month soft limit
+          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-blue-300 bg-blue-50 text-xs font-bold text-blue-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
+          if (bannerText) {
+            const currentCount = getClinicMonthAppointmentsCount();
+            bannerText.innerHTML = `<i class="fa-solid fa-shield text-blue-600 text-sm"></i> <span><strong>Free Plan (100 Appointments/month)</strong>: ${currentCount} / 100 used this month</span>`;
+          }
+          if (upgradeBtn) {
+            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
+            upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade for Unlimited</span>';
           }
         }
       }
@@ -7502,9 +7871,8 @@
     }
 
     function isPlatformLocked() {
-      if (currentRole !== 'clinic') return false;
-      const statusInfo = getClinicSubscriptionStatus(clinicProfile);
-      return statusInfo.isLocked;
+      // Free trial does NOT hard-lock platform; soft cap of 100 appointments/month is enforced at booking creation
+      return false;
     }
 
     function showTrialLockModal() {
@@ -7653,14 +8021,22 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(verifyPayload)
         });
-        if (res.ok) {
-          const result = await res.json();
-          if (result && result.subscription) {
-            clinicProfile.subscription = result.subscription;
-          }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          const errMsg = errData.error || errData.message || 'Signature verification failed';
+          showToast(`❌ Payment verification fail ho gayi: ${errMsg}`, 'error');
+          return;
+        }
+        const result = await res.json();
+        if (result && result.subscription) {
+          clinicProfile.subscription = result.subscription;
         }
       } catch (e) {
         console.warn('Verify API notice:', e);
+        if (window.location.protocol.startsWith('http')) {
+          showToast('❌ Payment verification connection error. Contact support.', 'error');
+          return;
+        }
       }
 
       const isAnnual = verifyPayload.plan === 'annual_pro';
@@ -7778,9 +8154,9 @@
         if (subInfo.status === 'active') {
           subBadge.className = 'text-[10px] font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full';
           subBadge.textContent = `${subInfo.planName} Active`;
-        } else if (subInfo.isLocked) {
-          subBadge.className = 'text-[10px] font-bold bg-rose-100 text-rose-900 px-2 py-0.5 rounded-full';
-          subBadge.textContent = '7-Day Free Trial Expired (Locked)';
+        } else if (subInfo.isTrialExpired) {
+          subBadge.className = 'text-[10px] font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded-full';
+          subBadge.textContent = 'Free Plan (100 appts/mo limit)';
         } else {
           subBadge.className = 'text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full';
           subBadge.textContent = `7-Day Free Trial (${subInfo.daysLeft}d left)`;
@@ -7792,6 +8168,22 @@
 
     function closeClinicAccountModal() {
       const modal = document.getElementById('clinicAccountModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function openHelpSupportModal() {
+      const modal = document.getElementById('helpSupportModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeHelpSupportModal() {
+      const modal = document.getElementById('helpSupportModal');
       if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
@@ -8132,18 +8524,9 @@
       showToast(`👋 Swagatam, ${user.displayName || user.email}!`);
       updateHeaderAuthUI(currentAuthUser);
 
-      // Check if clinic mapping exists for this user (Firebase check)
+      // Check if clinic mapping exists for this user (Supabase primary check first)
       let userClinic = null;
-      try {
-        if (window.ParchiFirebase && window.ParchiFirebase.getClinicForUser) {
-          userClinic = await window.ParchiFirebase.getClinicForUser(user);
-        }
-      } catch (e) {
-        console.warn('getClinicForUser warning:', e);
-      }
-
-      // If not in Firebase, query backend API / Supabase by ownerUid & email for multi-device sync
-      if ((!userClinic || !userClinic.name) && window.location.protocol.startsWith('http')) {
+      if (window.location.protocol.startsWith('http')) {
         try {
           const res = await fetch(`/api/clinic?ownerUid=${encodeURIComponent(user.uid)}&email=${encodeURIComponent(user.email || '')}`);
           if (res.ok) {
@@ -8154,6 +8537,17 @@
           }
         } catch (e) {
           console.warn('API getClinicByOwner notice:', e);
+        }
+      }
+
+      // Fallback check in Firebase if not found in Supabase
+      if (!userClinic || !userClinic.name) {
+        try {
+          if (window.ParchiFirebase && window.ParchiFirebase.getClinicForUser) {
+            userClinic = await window.ParchiFirebase.getClinicForUser(user);
+          }
+        } catch (e) {
+          console.warn('getClinicForUser warning:', e);
         }
       }
 
@@ -8432,6 +8826,26 @@
 
         if (user) {
           updateHeaderAuthUI(user);
+          const newClinicId = 'clinic_' + Date.now();
+          const signupTime = new Date().toISOString();
+          clinicProfile = {
+            ...clinicProfile,
+            id: newClinicId,
+            name: `${docName}'s Clinic`,
+            doctorName: docName,
+            ownerUid: user.uid,
+            ownerEmail: email,
+            createdAt: signupTime,
+            subscription: {
+              plan: 'free',
+              status: 'trial',
+              trialDays: 7,
+              trialStartDate: signupTime,
+              billingCycle: 'trial',
+              amount: 0
+            }
+          };
+          saveLocalClinic();
         }
 
         const docNameInput = document.getElementById('onboardDoctorName');
@@ -8462,6 +8876,7 @@
       }
 
       const newId = 'clinic_' + Date.now();
+      const signupTime = new Date().toISOString();
       clinicProfile = {
         ...clinicProfile,
         id: newId,
@@ -8472,6 +8887,15 @@
         whatsapp: phone,
         password: pwd || '',
         city: city || 'Patna, Bihar',
+        createdAt: signupTime,
+        subscription: {
+          plan: 'free',
+          status: 'trial',
+          trialDays: 7,
+          trialStartDate: signupTime,
+          billingCycle: 'trial',
+          amount: 0
+        },
         doctors: [
           {
             id: 'doc_1',
@@ -8802,6 +9226,137 @@
       }
     }
 
+    let profileTrialTimerInterval = null;
+
+    function updateProfileTrialTimerUI() {
+      const statusInfo = getClinicSubscriptionStatus(clinicProfile);
+      const daysEl = document.getElementById('trialTimerDays');
+      const hoursEl = document.getElementById('trialTimerHours');
+      const minsEl = document.getElementById('trialTimerMinutes');
+      const secsEl = document.getElementById('trialTimerSeconds');
+      const cardTitleEl = document.getElementById('profileTrialCardTitle');
+      const cardSubtitleEl = document.getElementById('profileTrialCardSubtitle');
+      const noticeTextEl = document.getElementById('profileTrialStatusNoticeText');
+      const upgradeBtn = document.getElementById('profileTrialUpgradeBtn');
+      const countdownBox = document.getElementById('profileTrialCountdownContainer');
+      const proBox = document.getElementById('profileProStatusBox');
+      const badgeIcon = document.getElementById('profileTrialBadgeIcon');
+
+      if (statusInfo.status === 'active') {
+        if (cardTitleEl) cardTitleEl.textContent = `${statusInfo.planName} Active`;
+        if (cardSubtitleEl) cardSubtitleEl.textContent = 'Unlimited digital appointments active';
+        if (badgeIcon) {
+          badgeIcon.className = 'w-10 h-10 rounded-2xl bg-emerald-100 text-[#075E54] flex items-center justify-center font-black text-lg shadow-xs';
+          badgeIcon.innerHTML = '<i class="fa-solid fa-crown text-amber-500"></i>';
+        }
+        if (countdownBox) countdownBox.classList.add('hidden');
+        if (proBox) {
+          proBox.classList.remove('hidden');
+          const proTitleEl = document.getElementById('profileProPlanTitle');
+          if (proTitleEl) proTitleEl.textContent = `👑 ${statusInfo.planName}`;
+        }
+        if (noticeTextEl) {
+          const renDate = statusInfo.renewalDate ? new Date(statusInfo.renewalDate).toLocaleDateString('en-IN') : 'Active cycle';
+          noticeTextEl.innerHTML = `<strong>Active Pro Plan</strong>: Renews on ${renDate}. Unlimited appointments enabled.`;
+        }
+        if (upgradeBtn) {
+          upgradeBtn.className = 'btn-tactile px-3.5 py-1.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs flex items-center gap-1.5 shadow-xs transition';
+          upgradeBtn.innerHTML = '<i class="fa-solid fa-gear"></i><span>Manage Plan</span>';
+        }
+      } else if (statusInfo.isTrialActive) {
+        if (cardTitleEl) cardTitleEl.textContent = '7-Day Free Trial Countdown';
+        if (cardSubtitleEl) cardSubtitleEl.textContent = 'Trial active • Unlimited appointments during trial';
+        if (badgeIcon) {
+          badgeIcon.className = 'w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-lg shadow-xs';
+          badgeIcon.innerHTML = '<i class="fa-solid fa-hourglass-half"></i>';
+        }
+        if (proBox) proBox.classList.add('hidden');
+        if (countdownBox) {
+          countdownBox.classList.remove('hidden');
+          countdownBox.className = 'grid grid-cols-4 gap-2 text-center py-2 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-inner';
+        }
+        if (daysEl) daysEl.textContent = String(statusInfo.daysLeft).padStart(2, '0');
+        if (hoursEl) hoursEl.textContent = String(statusInfo.hoursLeft).padStart(2, '0');
+        if (minsEl) minsEl.textContent = String(statusInfo.minutesLeft).padStart(2, '0');
+        if (secsEl) secsEl.textContent = String(statusInfo.secondsLeft).padStart(2, '0');
+        if (noticeTextEl) {
+          noticeTextEl.innerHTML = `<strong>Trial Active (${statusInfo.daysLeft}d ${statusInfo.hoursLeft}h left)</strong>: Unlimited appointments available now. After 7 days, 100 appts/month limit applies on Free plan.`;
+        }
+        if (upgradeBtn) {
+          upgradeBtn.className = 'btn-tactile px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-xs transition';
+          upgradeBtn.innerHTML = '<i class="fa-solid fa-crown"></i><span>Upgrade to Pro</span>';
+        }
+      } else {
+        if (cardTitleEl) cardTitleEl.textContent = 'Free Plan (Trial Completed)';
+        if (cardSubtitleEl) cardSubtitleEl.textContent = '100 Appointments / Month Soft Limit';
+        if (badgeIcon) {
+          badgeIcon.className = 'w-10 h-10 rounded-2xl bg-blue-100 text-blue-800 flex items-center justify-center font-black text-lg shadow-xs';
+          badgeIcon.innerHTML = '<i class="fa-solid fa-shield"></i>';
+        }
+        if (proBox) proBox.classList.add('hidden');
+        if (countdownBox) {
+          countdownBox.classList.remove('hidden');
+          countdownBox.className = 'grid grid-cols-4 gap-2 text-center py-2 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-inner';
+        }
+        if (daysEl) daysEl.textContent = '00';
+        if (hoursEl) hoursEl.textContent = '00';
+        if (minsEl) minsEl.textContent = '00';
+        if (secsEl) secsEl.textContent = '00';
+        if (noticeTextEl) {
+          const used = getClinicMonthAppointmentsCount();
+          noticeTextEl.innerHTML = `<strong>Trial Period Completed</strong>: Free plan active (${used} / 100 appointments used this month). Upgrade to Pro for unlimited appointments.`;
+        }
+        if (upgradeBtn) {
+          upgradeBtn.className = 'btn-tactile px-3.5 py-1.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs flex items-center gap-1.5 shadow-xs transition';
+          upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i><span>Upgrade for Unlimited</span>';
+        }
+      }
+
+      // Update Monthly Appointment Usage Metrics
+      const usedCount = getClinicMonthAppointmentsCount();
+      const countEl = document.getElementById('profileMonthlyUsageCount');
+      const maxEl = document.getElementById('profileMonthlyUsageMax');
+      const barEl = document.getElementById('profileMonthlyProgressBar');
+      const periodEl = document.getElementById('profileMonthlyPeriodText');
+      const planBadgeEl = document.getElementById('profilePlanTypeBadge');
+
+      const now = new Date();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      if (periodEl) periodEl.textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()} OPD Metrics`;
+
+      if (statusInfo.status === 'active') {
+        if (countEl) countEl.textContent = usedCount;
+        if (maxEl) maxEl.textContent = '∞';
+        if (barEl) {
+          barEl.style.width = '100%';
+          barEl.className = 'h-full bg-emerald-500 rounded-full transition-all duration-300';
+        }
+        if (planBadgeEl) {
+          planBadgeEl.className = 'bg-emerald-100 text-[#075E54] text-xs font-black px-2.5 py-1 rounded-full border border-emerald-300';
+          planBadgeEl.textContent = 'Pro Active (Unlimited)';
+        }
+      } else {
+        const pct = Math.min(100, Math.round((usedCount / 100) * 100));
+        if (countEl) countEl.textContent = usedCount;
+        if (maxEl) maxEl.textContent = '100';
+        if (barEl) {
+          barEl.style.width = `${pct}%`;
+          barEl.className = pct >= 90 
+            ? 'h-full bg-rose-500 rounded-full transition-all duration-300' 
+            : (pct >= 70 ? 'h-full bg-amber-500 rounded-full transition-all duration-300' : 'h-full bg-[#075E54] rounded-full transition-all duration-300');
+        }
+        if (planBadgeEl) {
+          if (statusInfo.isTrialActive) {
+            planBadgeEl.className = 'bg-amber-100 text-amber-900 text-xs font-black px-2.5 py-1 rounded-full border border-amber-300';
+            planBadgeEl.textContent = `Trial Active (${statusInfo.daysLeft}d left)`;
+          } else {
+            planBadgeEl.className = 'bg-slate-100 text-slate-800 text-xs font-black px-2.5 py-1 rounded-full border border-slate-300';
+            planBadgeEl.textContent = 'Free Plan (100 Cap)';
+          }
+        }
+      }
+    }
+
     function renderProfileTab() {
       const docNameEl = document.getElementById('profileDocNameText');
       if (docNameEl) docNameEl.textContent = clinicProfile.doctorName || 'Dr. Rajesh Sharma';
@@ -8838,6 +9393,15 @@
 
       const linkInput = document.getElementById('profilePatientLinkInput');
       if (linkInput) linkInput.value = getShareablePatientLink();
+
+      updateProfileTrialTimerUI();
+      if (!profileTrialTimerInterval && typeof setInterval !== 'undefined') {
+        profileTrialTimerInterval = setInterval(() => {
+          if (currentRole === 'clinic' && currentTab === 'profile') {
+            updateProfileTrialTimerUI();
+          }
+        }, 1000);
+      }
     }
 
     function setReasonPreset(presetName) {
@@ -9307,6 +9871,11 @@
         showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
         return;
       }
+      if (isMonthlyAppointmentLimitReached()) {
+        showToast('⚠️ Clinic plan limit reached: 100 monthly appointments limit exceeded on Free plan. Upgrade to Pro for unlimited appointments!', 'warning');
+        openClinicAccountModal();
+        return;
+      }
       const nameInput = document.getElementById('walkinName');
       const ageInput = document.getElementById('walkinAge');
       const genderInput = document.getElementById('walkinGender');
@@ -9363,6 +9932,12 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newEntry)
           });
+          if (res.status === 403) {
+            const errData = await res.json().catch(() => ({}));
+            showToast(errData.message || '⚠️ Clinic plan limit reached: 100 monthly appointments limit exceeded on Free plan.', 'warning');
+            openClinicAccountModal();
+            return;
+          }
           if (res.ok) {
             const data = await res.json();
             savedBooking = data.booking;
@@ -11471,6 +12046,11 @@
     }
 
     function reAddPatientByKey(key) {
+      if (isMonthlyAppointmentLimitReached()) {
+        showToast('⚠️ Clinic plan limit reached: 100 monthly appointments limit exceeded on Free plan. Upgrade to Pro for unlimited appointments!', 'warning');
+        openClinicAccountModal();
+        return;
+      }
       const allUnique = getUniquePatientsList();
       const p = allUnique.find(item => item.key === key);
       if (!p) return;
@@ -12501,6 +13081,11 @@
     }
 
     async function submitPatientOnlineBooking() {
+      if (isMonthlyAppointmentLimitReached()) {
+        showToast('⚠️ Clinic plan limit reached: 100 monthly appointments limit exceeded. Please contact clinic directly.', 'warning');
+        alert('Clinic Plan Limit Exceeded:\nThis clinic has reached its 100 monthly appointment limit on the Free plan. Please contact the clinic directly at ' + (clinicProfile.phone || '9798482404') + ' to book an appointment.');
+        return;
+      }
       const nameInput = document.getElementById('patBookName');
       const ageInput = document.getElementById('patBookAge');
       const genderSelect = document.getElementById('patBookGender');
@@ -12589,6 +13174,12 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newBooking)
           });
+          if (res.status === 403) {
+            const errData = await res.json().catch(() => ({}));
+            showToast(errData.message || '⚠️ Clinic plan limit reached: 100 monthly appointments limit exceeded. Contact clinic.', 'warning');
+            alert('Clinic Plan Limit Exceeded:\nThis clinic has reached its 100 monthly appointment limit on the Free plan. Please contact the clinic directly at ' + (clinicProfile.phone || '9798482404') + ' to book an appointment.');
+            return;
+          }
           if (res.ok) {
             const data = await res.json();
             savedBooking = data.booking;
@@ -14247,44 +14838,71 @@
       if (typeof window !== 'undefined' && window.history && window.history.pushState && !window.location.pathname.startsWith('/admin')) {
         try { window.history.pushState(null, '', '/admin'); } catch (e) {}
       }
+      switchAppRole('admin');
       const isAuth = (typeof sessionStorage !== 'undefined') && (sessionStorage.getItem('parchisetu_admin_auth') === '1' || sessionStorage.getItem('klinicq_admin_auth') === '1');
+      const lockCard = document.getElementById('adminPageLockCard');
+      const dashContent = document.getElementById('adminDashboardContent');
+      const modal = document.getElementById('adminPasscodeModal');
+
       if (isAuth) {
-        switchAppRole('admin');
+        if (lockCard) lockCard.classList.add('hidden');
+        if (dashContent) dashContent.classList.remove('hidden');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
         loadAdminDoctors();
       } else {
-        const modal = document.getElementById('adminPasscodeModal');
+        if (lockCard) lockCard.classList.remove('hidden');
+        if (dashContent) dashContent.classList.add('hidden');
         if (modal) {
           modal.classList.remove('hidden');
           modal.classList.add('flex');
         }
         const input = document.getElementById('adminPasscodeInput');
-        if (input) {
-          input.value = '';
-          setTimeout(() => input.focus(), 100);
-        }
+        const pageInput = document.getElementById('adminPagePasscodeInput');
+        if (input) input.value = '';
+        if (pageInput) pageInput.value = '';
+        setTimeout(() => {
+          if (input && modal && !modal.classList.contains('hidden')) input.focus();
+          else if (pageInput) pageInput.focus();
+        }, 100);
         const err = document.getElementById('adminPasscodeError');
         if (err) err.classList.add('hidden');
+        const pageErr = document.getElementById('adminPagePasscodeError');
+        if (pageErr) pageErr.classList.add('hidden');
       }
     }
 
     function verifyAdminPasscode() {
-      const input = document.getElementById('adminPasscodeInput');
-      const err = document.getElementById('adminPasscodeError');
-      const code = (input?.value || '').trim();
-      if (code === 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0' || code === 'admin123' || code === '1234' || code === 'admin' || code === 'parchisetu2026' || code === 'klinicq2026') {
+      const modalInput = document.getElementById('adminPasscodeInput');
+      const pageInput = document.getElementById('adminPagePasscodeInput');
+      const modalErr = document.getElementById('adminPasscodeError');
+      const pageErr = document.getElementById('adminPagePasscodeError');
+      const code = ((modalInput && modalInput.value) ? modalInput.value : (pageInput?.value || '')).trim();
+
+      if (code === '7520' || code === 'UHI(*Y90Jjk0JKop:ki-0PIkj9OP0' || code === 'admin123' || code === '1234' || code === 'admin' || code === 'parchisetu2026' || code === 'klinicq2026') {
         if (typeof sessionStorage !== 'undefined') {
           sessionStorage.setItem('parchisetu_admin_auth', '1');
           sessionStorage.setItem('klinicq_admin_auth', '1');
         }
         closeAdminPasscodeModal();
+        const lockCard = document.getElementById('adminPageLockCard');
+        const dashContent = document.getElementById('adminDashboardContent');
+        if (lockCard) lockCard.classList.add('hidden');
+        if (dashContent) dashContent.classList.remove('hidden');
         switchAppRole('admin');
         loadAdminDoctors();
         showToast('👑 Master Admin unlocked!');
       } else {
-        if (err) err.classList.remove('hidden');
-        if (input) {
-          input.classList.add('border-rose-500');
-          input.focus();
+        if (modalErr) modalErr.classList.remove('hidden');
+        if (pageErr) pageErr.classList.remove('hidden');
+        if (modalInput) {
+          modalInput.classList.add('border-rose-500');
+          modalInput.focus();
+        }
+        if (pageInput) {
+          pageInput.classList.add('border-rose-500');
         }
       }
     }
@@ -14295,6 +14913,16 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
       }
+      const isAuth = (typeof sessionStorage !== 'undefined') && (sessionStorage.getItem('parchisetu_admin_auth') === '1' || sessionStorage.getItem('klinicq_admin_auth') === '1');
+      const lockCard = document.getElementById('adminPageLockCard');
+      const dashContent = document.getElementById('adminDashboardContent');
+      if (isAuth) {
+        if (lockCard) lockCard.classList.add('hidden');
+        if (dashContent) dashContent.classList.remove('hidden');
+      } else {
+        if (lockCard) lockCard.classList.remove('hidden');
+        if (dashContent) dashContent.classList.add('hidden');
+      }
     }
 
     function adminLogout() {
@@ -14303,6 +14931,10 @@
         sessionStorage.removeItem('klinicq_admin_auth');
       }
       showToast('🔒 Master Admin locked!');
+      const lockCard = document.getElementById('adminPageLockCard');
+      const dashContent = document.getElementById('adminDashboardContent');
+      if (lockCard) lockCard.classList.remove('hidden');
+      if (dashContent) dashContent.classList.add('hidden');
       switchAppRole('patient');
       showPatientDiscoverySection();
       if (typeof window !== 'undefined' && window.history && window.history.pushState) {
@@ -14525,7 +15157,17 @@
           ? '<span class="bg-purple-100 text-purple-900 border border-purple-300 text-[10px] font-black px-2 py-0.5 rounded-full">👑 Annual Pro (₹3,999/yr)</span>'
           : (plan === 'monthly_pro'
             ? '<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full">💎 Monthly Pro (₹399/mo)</span>'
-            : '<span class="bg-slate-100 text-slate-700 border border-slate-300 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free Trial</span>');
+            : '<span class="bg-slate-100 text-slate-700 border border-slate-300 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free Plan</span>');
+
+        const tStatus = d.trialStatus || d.stats?.trialStatus;
+        const isTrialEnded = tStatus === 'trial_expired' || tStatus === 'expired';
+        const dLeft = typeof d.trialDaysLeft === 'number' ? d.trialDaysLeft : (typeof d.stats?.trialDaysLeft === 'number' ? d.stats.trialDaysLeft : 7);
+
+        const trialBadge = (plan === 'free')
+          ? (isTrialEnded
+            ? '<span class="bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-black px-2 py-0.5 rounded-full">⏳ Trial Ended (100 cap)</span>'
+            : `<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full">⏰ Trial Active (${dLeft}d left)</span>`)
+          : '<span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full">♾️ Unlimited</span>';
 
         const isLive = d.isLive !== false;
         const liveBadge = isLive
@@ -14547,6 +15189,7 @@
                     <h4 class="font-black text-sm text-slate-900">${escapeHtml(d.doctorName)}</h4>
                     <span class="bg-emerald-100 text-[#075E54] text-[10px] font-black px-2 py-0.2 rounded-full">${escapeHtml(d.specialty || 'Doctor')}</span>
                     ${planBadge}
+                    ${trialBadge}
                     ${liveBadge}
                   </div>
                   <p class="text-xs text-slate-500 font-semibold mt-0.5">
@@ -14556,6 +15199,7 @@
                     ${d.phone ? `<span><i class="fa-solid fa-phone text-emerald-600 mr-1"></i><strong>${escapeHtml(d.phone)}</strong></span>` : ''}
                     ${d.ownerEmail ? `<span><i class="fa-solid fa-envelope text-blue-600 mr-1"></i>${escapeHtml(d.ownerEmail)}</span>` : ''}
                     <span><i class="fa-solid fa-calendar text-slate-400 mr-1"></i>Joined: ${dateFormatted}</span>
+                    <span><i class="fa-solid fa-chart-simple text-purple-600 mr-1"></i>This Month: <strong>${d.stats?.monthBookings ?? 0} / ${plan === 'free' ? '100' : '∞'}</strong></span>
                     <span><i class="fa-solid fa-users text-indigo-600 mr-1"></i>Total Appts: <strong>${d.stats?.totalBookings ?? 0}</strong></span>
                   </div>
                 </div>
@@ -14791,6 +15435,10 @@
                 <div>
                   <span class="text-amber-800 block text-[10px] uppercase font-bold">Status</span>
                   <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-black text-[10px]">Active</span>
+                </div>
+                <div>
+                  <span class="text-amber-800 block text-[10px] uppercase font-bold">This Month Bookings</span>
+                  <strong class="text-purple-700">${doc.stats?.monthBookings ?? 0} / ${plan === 'free' ? '100 limit' : 'Unlimited'}</strong>
                 </div>
                 <div>
                   <span class="text-amber-800 block text-[10px] uppercase font-bold">Total Patient Tokens</span>

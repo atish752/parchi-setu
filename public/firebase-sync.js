@@ -113,43 +113,52 @@ async function getAllClinicsFromFirestore() {
 
 /**
  * Start listening in real-time to all registered clinics for patient discovery feed
+ * Firebase Firestore snapshot listener is safely disconnected to prevent stale data from overwriting Supabase / local clinic data
  */
 function listenToClinicsRealtime(onClinicsChange) {
-  ensureFirebaseInitialized();
-  if (!isFirebaseAvailable || !fbDb) return () => {};
-  try {
-    if (allClinicsUnsubscribe) {
-      try { allClinicsUnsubscribe(); } catch (e) {}
-    }
-    allClinicsUnsubscribe = fbDb.collection('clinics').onSnapshot(snapshot => {
-      const clinics = [];
-      if (snapshot) {
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (data) {
-            clinics.push({ id: doc.id, ...data });
-          }
-        });
-      }
-      if (typeof onClinicsChange === 'function') {
-        onClinicsChange(clinics);
-      }
-    }, err => {
-      console.warn('Firebase all clinics realtime listener warning:', err.message);
-    });
-    return allClinicsUnsubscribe;
-  } catch (err) {
-    console.warn('Error starting all clinics listener:', err.message);
-    return () => {};
+  if (allClinicsUnsubscribe) {
+    try { allClinicsUnsubscribe(); } catch (e) {}
+    allClinicsUnsubscribe = null;
   }
+  return () => {
+    if (allClinicsUnsubscribe) { try { allClinicsUnsubscribe(); } catch (e) {} }
+  };
 }
 
 /**
  * Fetch clinic by clinic ID once from Firestore
  */
 async function getClinicFromFirestore(clinicId) {
+  if (!clinicId) return null;
+  const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+  if (sb) {
+    try {
+      const { data, error } = await withTimeout(sb.from('clinics').select('*').eq('id', clinicId).limit(1), 1500, { data: null });
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const row = data[0];
+        return {
+          id: row.id,
+          name: row.name,
+          doctorName: row.doctor_name || row.doctorName,
+          doctorDegree: row.doctor_degree || row.doctorDegree || 'MBBS',
+          doctorPhoto: row.doctor_photo || row.doctorPhoto || '',
+          specialty: row.specialty || row.category || 'General Physician',
+          phone: row.phone || '',
+          whatsapp: row.whatsapp || row.phone || '',
+          address: row.address || '',
+          city: row.city || '',
+          visitingHours: row.visiting_hours || row.visitingHours || {},
+          liveStatus: row.live_status || row.liveStatus || {},
+          fees: row.fees || {},
+          subscription: row.subscription || { plan: 'free', status: 'trial' },
+          createdAt: row.created_at || row.createdAt || new Date().toISOString()
+        };
+      }
+    } catch (e) {}
+  }
+
   ensureFirebaseInitialized();
-  if (!isFirebaseAvailable || !fbDb || !clinicId) return null;
+  if (!isFirebaseAvailable || !fbDb) return null;
   try {
     const doc = await withTimeout(fbDb.collection('clinics').doc(clinicId).get(), 6000, null);
     if (doc && doc.exists) {
@@ -207,81 +216,60 @@ async function getQueueFromFirestore(clinicId) {
 
 /**
  * Start listening in real-time to clinic data and bookings
+ * Firebase Firestore snapshot listeners are safely disconnected to prevent stale data from overwriting Supabase / local clinic data
  */
 function listenToClinicRealtime(clinicId, onClinicChange, onQueueChange) {
-  ensureFirebaseInitialized();
-  if (!isFirebaseAvailable || !fbDb || !clinicId) return () => {};
-
-  try {
-    // 1. Listen to Clinic Profile & Live Status
-    if (clinicUnsubscribe) {
-      try { clinicUnsubscribe(); } catch (e) {}
-    }
-    clinicUnsubscribe = fbDb.collection('clinics').doc(clinicId).onSnapshot(doc => {
-      if (doc && doc.exists) {
-        const data = doc.data();
-        if (typeof onClinicChange === 'function') {
-          onClinicChange({ id: doc.id, ...data });
-        }
-      }
-    }, err => {
-      console.warn('Firebase clinic snapshot warning:', err.message);
-    });
-
-    // 2. Listen to Bookings Subcollection (with fallback if orderBy encounters error or missing index)
-    if (queueUnsubscribe) {
-      try { queueUnsubscribe(); } catch (e) {}
-    }
-
-    const bookingsRef = fbDb.collection('clinics').doc(clinicId).collection('bookings');
-
-    function handleBookingsSnapshot(snapshot) {
-      const bookings = [];
-      if (snapshot) {
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (data) bookings.push({ id: doc.id, ...data });
-        });
-      }
-      bookings.sort((a, b) => (a.token || 0) - (b.token || 0));
-      if (typeof onQueueChange === 'function') {
-        onQueueChange(bookings);
-      }
-    }
-
-    try {
-      queueUnsubscribe = bookingsRef.orderBy('token', 'asc').onSnapshot(handleBookingsSnapshot, err => {
-        console.warn('Firebase bookings ordered snapshot warning (falling back to unordered listener):', err.message);
-        try {
-          queueUnsubscribe = bookingsRef.onSnapshot(handleBookingsSnapshot, err2 => {
-            console.warn('Firebase bookings fallback snapshot warning:', err2.message);
-          });
-        } catch (e2) {}
-      });
-    } catch (e) {
-      queueUnsubscribe = bookingsRef.onSnapshot(handleBookingsSnapshot, err => {
-        console.warn('Firebase bookings snapshot warning:', err.message);
-      });
-    }
-
-    return () => {
-      if (clinicUnsubscribe) { try { clinicUnsubscribe(); } catch (e) {} }
-      if (queueUnsubscribe) { try { queueUnsubscribe(); } catch (e) {} }
-    };
-  } catch (err) {
-    console.warn('Error starting Firebase listeners:', err.message);
-    return () => {};
+  if (clinicUnsubscribe) {
+    try { clinicUnsubscribe(); } catch (e) {}
+    clinicUnsubscribe = null;
   }
+  if (queueUnsubscribe) {
+    try { queueUnsubscribe(); } catch (e) {}
+    queueUnsubscribe = null;
+  }
+  return () => {
+    if (clinicUnsubscribe) { try { clinicUnsubscribe(); } catch (e) {} }
+    if (queueUnsubscribe) { try { queueUnsubscribe(); } catch (e) {} }
+  };
 }
 
 /**
  * Save / Update Clinic Profile in Firestore
  */
 async function syncClinicToFirestore(clinicOrId, optionalClinic = null) {
-  ensureFirebaseInitialized();
   const clinic = (optionalClinic && typeof optionalClinic === 'object') ? optionalClinic : clinicOrId;
   const clinicId = (clinic && clinic.id) || (typeof clinicOrId === 'string' ? clinicOrId : null);
-  if (!isFirebaseAvailable || !fbDb || !clinic || !clinicId) return false;
+  if (!clinic || !clinicId) return false;
+
+  const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+  if (sb) {
+    try {
+      await withTimeout(sb.from('clinics').upsert({
+        id: clinicId,
+        name: clinic.name || null,
+        owner_uid: clinic.ownerUid || null,
+        owner_email: clinic.ownerEmail || null,
+        doctor_name: clinic.doctorName || null,
+        doctor_degree: clinic.doctorDegree || 'MBBS',
+        doctor_photo: clinic.doctorPhoto || null,
+        specialty: clinic.specialty || clinic.category || 'General Physician',
+        phone: clinic.phone || null,
+        whatsapp: clinic.whatsapp || clinic.phone || null,
+        address: clinic.address || null,
+        city: clinic.city || null,
+        fees: clinic.fees || {},
+        visiting_hours: clinic.visitingHours || {},
+        live_status: clinic.liveStatus || {},
+        doctors: clinic.doctors || [],
+        leaves: clinic.leaves || {},
+        subscription: clinic.subscription || { plan: 'free', status: 'trial' },
+        onboarded: clinic.onboarded !== false
+      }), 2000, null);
+    } catch (e) {}
+  }
+
+  ensureFirebaseInitialized();
+  if (!isFirebaseAvailable || !fbDb) return true;
   try {
     const cleanData = sanitizeForFirestore({ ...clinic, id: clinicId });
     const payload = { ...cleanData };
@@ -397,11 +385,42 @@ async function updateLiveStatusInFirestore(clinicId, statusData) {
 }
 
 /**
- * Sign in with Google Popup (Firebase Auth)
+ * Supabase & Firebase Configuration
+ */
+const SUPABASE_CONFIG = {
+  url: "https://ceffurkydnvhwtmniffy.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNlZmZ1cmt5ZG52aHd0bW5pZmZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5Mjc5MDYsImV4cCI6MjEwOTUwMzkwNn0.qSai_DMkH_4GiWsx4B9GfK7TGpwXJGzihOUARD256fs"
+};
+
+let supabaseClient = null;
+
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
+    supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    window.supabaseClient = supabaseClient;
+  }
+  return supabaseClient;
+}
+
+/**
+ * Sign in with Google (Supabase OAuth with Firebase fallback)
  */
 async function signInWithGoogle() {
+  const sb = getSupabaseClient();
+  if (sb && sb.auth) {
+    const origin = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin : 'https://parchi-setu.vercel.app';
+    const { data, error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: origin + '/clinic'
+      }
+    });
+    if (error) throw error;
+    return data;
+  }
   if (!initFirebase() || !fbAuth) {
-    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+    throw new Error('Auth service is not available. Check your internet connection.');
   }
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
@@ -422,16 +441,34 @@ async function signInWithGoogle() {
  * Sign up with Email and Password
  */
 async function signUpWithEmail(email, password, displayName = '') {
+  const sb = getSupabaseClient();
+  if (sb && sb.auth) {
+    const { data, error } = await sb.auth.signUp({
+      email: email.trim(),
+      password: password,
+      options: {
+        data: {
+          full_name: displayName.trim() || undefined
+        }
+      }
+    });
+    if (error) throw error;
+    if (data && data.user) {
+      return {
+        uid: data.user.id,
+        email: data.user.email,
+        displayName: displayName || (data.user.email ? data.user.email.split('@')[0] : 'Doctor')
+      };
+    }
+  }
   if (!initFirebase() || !fbAuth) {
-    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+    throw new Error('Auth service is not available.');
   }
   const result = await fbAuth.createUserWithEmailAndPassword(email.trim(), password);
   if (result.user && displayName && displayName.trim()) {
     try {
       await result.user.updateProfile({ displayName: displayName.trim() });
-    } catch (e) {
-      console.warn('Failed to update displayName on user profile:', e.message);
-    }
+    } catch (e) {}
   }
   return result.user;
 }
@@ -440,8 +477,23 @@ async function signUpWithEmail(email, password, displayName = '') {
  * Sign in with Email and Password
  */
 async function signInWithEmail(email, password) {
+  const sb = getSupabaseClient();
+  if (sb && sb.auth) {
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: email.trim(),
+      password: password
+    });
+    if (error) throw error;
+    if (data && data.user) {
+      return {
+        uid: data.user.id,
+        email: data.user.email,
+        displayName: data.user.user_metadata?.full_name || (data.user.email ? data.user.email.split('@')[0] : 'Doctor')
+      };
+    }
+  }
   if (!initFirebase() || !fbAuth) {
-    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+    throw new Error('Auth service is not available.');
   }
   const result = await fbAuth.signInWithEmailAndPassword(email.trim(), password);
   return result.user;
@@ -451,8 +503,17 @@ async function signInWithEmail(email, password) {
  * Send Password Reset Email
  */
 async function sendPasswordReset(email) {
+  const sb = getSupabaseClient();
+  if (sb && sb.auth) {
+    const origin = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin : 'https://parchi-setu.vercel.app';
+    const { error } = await sb.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: origin + '/login'
+    });
+    if (error) throw error;
+    return true;
+  }
   if (!initFirebase() || !fbAuth) {
-    throw new Error('Firebase Auth is not available. Check your internet connection or Firebase setup.');
+    throw new Error('Auth service is not available.');
   }
   await fbAuth.sendPasswordResetEmail(email.trim());
 }
@@ -461,8 +522,12 @@ async function sendPasswordReset(email) {
  * Sign out current user
  */
 async function signOutUser() {
+  const sb = getSupabaseClient();
+  if (sb && sb.auth) {
+    try { await sb.auth.signOut(); } catch (e) {}
+  }
   if (fbAuth) {
-    await fbAuth.signOut();
+    try { await fbAuth.signOut(); } catch (e) {}
   }
 }
 
@@ -486,10 +551,47 @@ function getCurrentUser() {
  * Fast non-blocking lookup with strict 1200ms overall timeout
  */
 async function getClinicForUser(user) {
+  const uid = typeof user === 'string' ? user : (user && (user.uid || user.id) ? (user.uid || user.id) : '');
+  const email = (user && typeof user === 'object' && user.email) ? user.email : '';
+  if (!uid && !email) return null;
+
+  const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+  if (sb) {
+    try {
+      let query = sb.from('clinics').select('*');
+      if (uid && email) {
+        query = query.or(`owner_uid.eq.${uid},owner_email.eq.${email}`);
+      } else if (uid) {
+        query = query.eq('owner_uid', uid);
+      } else {
+        query = query.eq('owner_email', email);
+      }
+      const { data, error } = await withTimeout(query.order('created_at', { ascending: false }).limit(1), 1200, { data: null });
+      if (!error && Array.isArray(data) && data.length > 0 && data[0].name) {
+        const row = data[0];
+        return {
+          id: row.id,
+          name: row.name,
+          doctorName: row.doctor_name || row.doctorName,
+          doctorDegree: row.doctor_degree || row.doctorDegree || 'MBBS',
+          doctorPhoto: row.doctor_photo || row.doctorPhoto || '',
+          specialty: row.specialty || row.category || 'General Physician',
+          phone: row.phone || '',
+          whatsapp: row.whatsapp || row.phone || '',
+          address: row.address || '',
+          city: row.city || '',
+          visitingHours: row.visiting_hours || row.visitingHours || {},
+          liveStatus: row.live_status || row.liveStatus || {},
+          fees: row.fees || {},
+          subscription: row.subscription || { plan: 'free', status: 'trial' },
+          createdAt: row.created_at || row.createdAt || new Date().toISOString()
+        };
+      }
+    } catch (e) {}
+  }
+
   ensureFirebaseInitialized();
-  if (!isFirebaseAvailable || !fbDb || !user) return null;
-  const uid = typeof user === 'string' ? user : (user && user.uid ? user.uid : '');
-  if (!uid) return null;
+  if (!isFirebaseAvailable || !fbDb) return null;
 
   return withTimeout(
     (async () => {
@@ -529,6 +631,19 @@ async function getClinicForUser(user) {
  * Save user to clinic mapping in Firestore
  */
 async function saveUserClinicMapping(uid, clinicId, email = '', clinicName = '') {
+  const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+  if (sb && uid && clinicId) {
+    try {
+      await withTimeout(sb.from('users').upsert({
+        uid,
+        clinic_id: clinicId,
+        email: email || null,
+        clinic_name: clinicName || null,
+        role: 'doctor'
+      }), 1200, null);
+    } catch (e) {}
+  }
+
   ensureFirebaseInitialized();
   if (!isFirebaseAvailable || !fbDb || !uid) return false;
   try {
@@ -582,8 +697,45 @@ if (typeof window !== 'undefined') {
     onAuthStateChanged: onAuthStateChanged,
     getCurrentUser: getCurrentUser,
     getClinicForUser: getClinicForUser,
-    saveUserClinicMapping: saveUserClinicMapping
+    saveUserClinicMapping: saveUserClinicMapping,
+    getSupabaseClient: getSupabaseClient
   };
+
+  window.ParchiSupabase = window.ParchiFirebase;
+
+  // Supabase Auth session & OAuth listener
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      const sb = getSupabaseClient();
+      if (sb && sb.auth) {
+        sb.auth.getSession().then(({ data: { session } }) => {
+          if (session && session.user) {
+            const user = {
+              uid: session.user.id,
+              email: session.user.email,
+              displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || (session.user.email ? session.user.email.split('@')[0] : 'Doctor')
+            };
+            if (typeof window.handleAuthSuccess === 'function') {
+              window.handleAuthSuccess(user);
+            }
+          }
+        }).catch(() => {});
+
+        sb.auth.onAuthStateChange((event, session) => {
+          if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session && session.user) {
+            const user = {
+              uid: session.user.id,
+              email: session.user.email,
+              displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || (session.user.email ? session.user.email.split('@')[0] : 'Doctor')
+            };
+            if (typeof window.handleAuthSuccess === 'function') {
+              window.handleAuthSuccess(user);
+            }
+          }
+        });
+      }
+    }, 150);
+  }
 
   try {
     initFirebase();

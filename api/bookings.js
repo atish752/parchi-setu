@@ -32,7 +32,16 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ error: 'Name and phone are required' }));
     }
 
-    const { isNew, booking } = store.addOrUpdateBooking(body);
+    const result = store.addOrUpdateBooking(body);
+    if (result.error === 'LIMIT_REACHED') {
+      res.statusCode = 403;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({
+        error: result.message || 'Clinic plan limit reached: 100 monthly appointments limit exceeded on the Free plan. Please upgrade to Pro for unlimited appointments or contact clinic.',
+        limitReached: true
+      }));
+    }
+    const { isNew, booking } = result;
     res.statusCode = isNew ? 201 : 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ success: true, booking }));

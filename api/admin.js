@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
         res.setHeader('Content-Type', 'application/json');
         return res.end(JSON.stringify({ error: 'Missing clinicId' }));
       }
-      const updated = store.updateSubscription(body.clinicId, {
+      const updated = await store.updateSubscriptionAsync(body.clinicId, {
         plan: body.plan || 'free',
         status: body.status || 'active',
         billingCycle: body.billingCycle || (body.plan === 'annual_pro' ? 'annual' : (body.plan === 'monthly_pro' ? 'monthly' : 'trial')),

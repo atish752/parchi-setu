@@ -425,6 +425,57 @@ function getISTDateString(d = new Date()) {
   return `${y}-${m}-${day}`;
 }
 
+function getISTMonthString(d = new Date()) {
+  const istDate = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const y = istDate.getFullYear();
+  const m = String(istDate.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+function getClinicMonthlyAppointmentsCount(clinicId, monthStr) {
+  loadStore();
+  const mStr = monthStr || getISTMonthString();
+  const list = store.queue || [];
+  return list.filter(p => {
+    if (p.clinicId && clinicId && p.clinicId !== clinicId) return false;
+    if (p.status === 'CANCELLED') return false;
+    const dateStr = p.date || p.appointmentDate || p.createdAt || '';
+    return dateStr.startsWith(mStr);
+  }).length;
+}
+
+function isClinicMonthlyLimitReached(clinicId) {
+  loadStore();
+  const targetClinic = (clinicId && store.clinics && store.clinics[clinicId])
+    ? store.clinics[clinicId]
+    : (INITIAL_CLINICS[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null));
+
+  if (!targetClinic) return false;
+
+  const sub = targetClinic.subscription || {};
+  const plan = sub.plan || 'free';
+  if (plan === 'monthly_pro' || plan === 'annual_pro') {
+    return false; // Pro users have unlimited appointments
+  }
+
+  // Check 7-Day Free Trial
+  const trialStart = sub.trialStartDate || targetClinic.createdAt || sub.startDate;
+  if (trialStart) {
+    const startMs = new Date(trialStart).getTime();
+    if (!isNaN(startMs)) {
+      const msElapsed = Date.now() - startMs;
+      const trialDays = typeof sub.trialDays === 'number' ? sub.trialDays : 7;
+      if (msElapsed <= trialDays * 86400000) {
+        return false; // Trial active: Unlimited appointments during 7-day trial!
+      }
+    }
+  }
+
+  // Trial expired on Free plan: enforce 100 appointments / month limit
+  const count = getClinicMonthlyAppointmentsCount(clinicId);
+  return count >= 100;
+}
+
 function loadStore() {
   try {
     const fileToRead = fs.existsSync(TMP_FILE) ? TMP_FILE : (fs.existsSync(LEGACY_TMP_FILE) ? LEGACY_TMP_FILE : null);
@@ -703,7 +754,12 @@ module.exports = {
 
   setClinic: (clinicData) => {
     loadStore();
-    const existing = store.clinic || {};
+    const targetId = (clinicData && clinicData.id) || (store.clinic && store.clinic.id) || DEFAULT_CLINIC.id;
+    store.clinics = store.clinics || {};
+    const existing = store.clinics[targetId] || 
+                     (store.clinic && store.clinic.id === targetId ? store.clinic : null) || 
+                     (INITIAL_CLINICS[targetId] || {});
+
     const docName = clinicData.doctorName || existing.doctorName || DEFAULT_CLINIC.doctorName;
     const docDegree = clinicData.doctorDegree || existing.doctorDegree || DEFAULT_CLINIC.doctorDegree;
     const docSpecialty = clinicData.specialty || clinicData.category || existing.specialty || existing.category || 'General Medicine';
@@ -731,9 +787,11 @@ module.exports = {
       });
     }
 
-    store.clinic = {
-      ...store.clinic,
+    const updatedClinic = {
+      ...DEFAULT_CLINIC,
+      ...existing,
       ...clinicData,
+      id: targetId,
       doctorName: docName,
       doctorDegree: docDegree,
       doctorPhoto: docPhoto,
@@ -742,15 +800,16 @@ module.exports = {
       onboarded: true,
       updatedAt: new Date().toISOString()
     };
-    if (store.clinic.id) {
-      store.clinics = store.clinics || {};
-      store.clinics[store.clinic.id] = store.clinic;
+
+    store.clinics[targetId] = updatedClinic;
+    if (!store.clinic || store.clinic.id === targetId) {
+      store.clinic = updatedClinic;
     }
     persistStore();
     if (supabase && typeof supabase.saveClinic === 'function') {
-      supabase.saveClinic(store.clinic).catch(() => {});
+      supabase.saveClinic(updatedClinic).catch(() => {});
     }
-    return store.clinic;
+    return updatedClinic;
   },
 
   getQueue: (phone, clinicId) => {
@@ -795,6 +854,10 @@ module.exports = {
     return store.queue;
   },
 
+  isClinicMonthlyLimitReached,
+  getClinicMonthlyAppointmentsCount,
+  getISTMonthString,
+
   addOrUpdateBooking: (booking) => {
     loadStore();
     const existingIdx = booking.id ? store.queue.findIndex(p => p.id === booking.id) : -1;
@@ -813,6 +876,16 @@ module.exports = {
       ? store.clinics[booking.clinicId]
       : (INITIAL_CLINICS[booking.clinicId] || store.clinic);
 
+    const clinicId = booking.clinicId || (targetClinic ? targetClinic.id : store.clinic.id);
+
+    // Enforce 100 appointments/month limit on Free plan after 7-day trial
+    if (isClinicMonthlyLimitReached(clinicId)) {
+      return {
+        error: 'LIMIT_REACHED',
+        message: 'Clinic plan limit reached: 100 monthly appointments limit exceeded on the Free plan. Please upgrade to Pro for unlimited appointments or contact clinic.'
+      };
+    }
+
     const clinicBookings = (booking.clinicId && store.queue)
       ? store.queue.filter(p => !p.clinicId || p.clinicId === booking.clinicId)
       : (store.queue || []);
@@ -822,7 +895,7 @@ module.exports = {
 
     const finalBooking = {
       id: bookingId,
-      clinicId: booking.clinicId || (targetClinic ? targetClinic.id : store.clinic.id),
+      clinicId: clinicId,
       clinicName: booking.clinicName || (targetClinic ? targetClinic.name : store.clinic.name),
       clinicAddress: booking.clinicAddress || (targetClinic ? targetClinic.address : store.clinic.address),
       clinicPhone: booking.clinicPhone || (targetClinic ? targetClinic.phone : store.clinic.phone),
@@ -886,11 +959,19 @@ module.exports = {
     loadStore();
     if (!clinicId) return null;
     store.clinics = store.clinics || {};
-    const target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null);
+    const target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null) || INITIAL_CLINICS[clinicId];
     if (!target) return null;
+    const subObj = typeof subscriptionData === 'string'
+      ? {
+          plan: subscriptionData,
+          status: (subscriptionData === 'monthly_pro' || subscriptionData === 'annual_pro') ? 'active' : 'trial',
+          billingCycle: subscriptionData === 'annual_pro' ? 'annual' : (subscriptionData === 'monthly_pro' ? 'monthly' : 'trial'),
+          amount: subscriptionData === 'annual_pro' ? 3999 : (subscriptionData === 'monthly_pro' ? 399 : 0)
+        }
+      : (subscriptionData || {});
     target.subscription = {
       ...(target.subscription || {}),
-      ...subscriptionData,
+      ...subObj,
       updatedAt: new Date().toISOString()
     };
     store.clinics[clinicId] = target;
@@ -904,14 +985,68 @@ module.exports = {
     return target;
   },
 
+  updateSubscriptionAsync: async (clinicId, subscriptionData) => {
+    loadStore();
+    if (!clinicId) return null;
+    store.clinics = store.clinics || {};
+    let target = store.clinics[clinicId] || (store.clinic && store.clinic.id === clinicId ? store.clinic : null) || INITIAL_CLINICS[clinicId];
+
+    if (!target && supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
+      try {
+        const sbClinic = await supabase.getClinic(clinicId);
+        if (sbClinic && sbClinic.id) {
+          target = sbClinic;
+          store.clinics[sbClinic.id] = sbClinic;
+        }
+      } catch (e) {}
+    }
+
+    if (!target) return null;
+
+    const subObj = typeof subscriptionData === 'string'
+      ? {
+          plan: subscriptionData,
+          status: (subscriptionData === 'monthly_pro' || subscriptionData === 'annual_pro') ? 'active' : 'trial',
+          billingCycle: subscriptionData === 'annual_pro' ? 'annual' : (subscriptionData === 'monthly_pro' ? 'monthly' : 'trial'),
+          amount: subscriptionData === 'annual_pro' ? 3999 : (subscriptionData === 'monthly_pro' ? 399 : 0)
+        }
+      : (subscriptionData || {});
+
+    target.subscription = {
+      ...(target.subscription || {}),
+      ...subObj,
+      updatedAt: new Date().toISOString()
+    };
+    store.clinics[clinicId] = target;
+    if (store.clinic && store.clinic.id === clinicId) {
+      store.clinic.subscription = target.subscription;
+    }
+    persistStore();
+    if (supabase && typeof supabase.updateSubscription === 'function') {
+      try {
+        await supabase.updateSubscription(clinicId, target.subscription);
+      } catch (e) {}
+    }
+    return target;
+  },
+
   getAdminDoctors: () => {
     loadStore();
     const map = { ...INITIAL_CLINICS, ...(store.clinics || {}) };
     if (store.clinic && store.clinic.id) {
       map[store.clinic.id] = { ...map[store.clinic.id], ...store.clinic };
     }
+    const currentMonth = getISTMonthString();
     return Object.values(map).map(c => {
       const q = (store.queue || []).filter(b => b.clinicId === c.id);
+      const monthBookings = q.filter(b => b.status !== 'CANCELLED' && ((b.date && b.date.startsWith(currentMonth)) || (b.createdAt && b.createdAt.startsWith(currentMonth)))).length;
+      const trialStart = (c.subscription && c.subscription.trialStartDate) || c.createdAt || '2026-11-01T00:00:00.000Z';
+      const daysElapsed = trialStart ? (Date.now() - new Date(trialStart).getTime()) / 86400000 : 0;
+      const isTrialActive = daysElapsed <= 7;
+      const trialDaysLeft = Math.max(0, Math.ceil(7 - daysElapsed));
+      const plan = (c.subscription && c.subscription.plan) || ((c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free');
+      const trialStatus = (plan === 'monthly_pro' || plan === 'annual_pro') ? 'pro_active' : (isTrialActive ? 'trial_active' : 'trial_expired');
+
       return {
         id: c.id,
         doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
@@ -931,16 +1066,21 @@ module.exports = {
         fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
         visitingHours: c.visitingHours || {},
         subscription: c.subscription || {
-          plan: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free',
+          plan: plan,
           status: 'active',
-          billingCycle: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly' : 'trial',
-          amount: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 399 : 0,
+          billingCycle: (plan === 'annual_pro') ? 'annual' : ((plan === 'monthly_pro') ? 'monthly' : 'trial'),
+          amount: (plan === 'annual_pro') ? 3999 : ((plan === 'monthly_pro') ? 399 : 0),
           startDate: c.createdAt || '2026-10-01T00:00:00.000Z',
           renewalDate: new Date(Date.now() + 25 * 86400000).toISOString()
         },
+        trialStatus,
+        trialDaysLeft,
         stats: {
           totalBookings: q.length,
-          todayBookings: q.filter(b => b.date === getISTDateString()).length
+          todayBookings: q.filter(b => b.date === getISTDateString()).length,
+          monthBookings,
+          trialStatus,
+          trialDaysLeft
         },
         createdAt: c.createdAt || new Date().toISOString()
       };
@@ -956,7 +1096,14 @@ module.exports = {
         if (Array.isArray(sbDoctors) && sbDoctors.length > 0) {
           const map = {};
           doctors.forEach(d => { if (d && d.id) map[d.id] = d; });
-          sbDoctors.forEach(d => { if (d && d.id) map[d.id] = { ...(map[d.id] || {}), ...d }; });
+          sbDoctors.forEach(d => {
+            if (d && d.id) {
+              map[d.id] = { ...(map[d.id] || {}), ...d };
+              store.clinics = store.clinics || {};
+              store.clinics[d.id] = { ...(store.clinics[d.id] || {}), ...d };
+            }
+          });
+          persistStore();
           doctors = Object.values(map);
         }
       } catch (e) {}

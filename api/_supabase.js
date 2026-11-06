@@ -424,56 +424,86 @@ module.exports = {
     // 1. Try querying high-performance admin_doctors_view
     const viewRes = await request('GET', '/rest/v1/admin_doctors_view?select=*');
     if (Array.isArray(viewRes) && viewRes.length > 0) {
-      return viewRes.map(row => ({
-        id: row.id,
-        doctorName: row.doctorName || 'Doctor',
-        doctorDegree: row.doctorDegree || 'MBBS',
-        doctorRegNo: row.doctorRegNo || 'MCI-REG',
-        experienceYears: row.experienceYears || 10,
-        clinicName: row.clinicName || 'ParchiSetu Clinic',
-        category: row.category || 'General Medicine',
-        specialty: row.specialty || 'General Physician',
-        city: row.city || 'India',
-        address: row.address || '',
-        phone: row.phone || '',
-        whatsapp: row.whatsapp || row.phone || '',
-        ownerEmail: row.ownerEmail || '',
-        ownerUid: row.ownerUid || '',
-        doctorPhoto: row.doctorPhoto || '',
-        fees: row.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-        visitingHours: row.visitingHours || {},
-        subscription: row.subscription || { plan: 'free', status: 'active' },
-        stats: {
-          totalBookings: parseInt(row.totalBookings, 10) || 0,
-          todayBookings: parseInt(row.todayBookings, 10) || 0
-        },
-        createdAt: row.createdAt || new Date().toISOString()
-      }));
+      return viewRes.map(row => {
+        const sub = row.subscription || { plan: 'free', status: 'active' };
+        const plan = sub.plan || 'free';
+        const trialStart = sub.trialStartDate || row.createdAt || new Date().toISOString();
+        const daysElapsed = trialStart ? (Date.now() - new Date(trialStart).getTime()) / 86400000 : 0;
+        const isTrialActive = daysElapsed <= 7;
+        const trialDaysLeft = Math.max(0, Math.ceil(7 - daysElapsed));
+        const trialStatus = (plan === 'monthly_pro' || plan === 'annual_pro') ? 'pro_active' : (isTrialActive ? 'trial_active' : 'trial_expired');
+        const totalBookings = parseInt(row.totalBookings, 10) || 0;
+        const todayBookings = parseInt(row.todayBookings, 10) || 0;
+        const monthBookings = parseInt(row.monthBookings, 10) || totalBookings;
+
+        return {
+          id: row.id,
+          doctorName: row.doctorName || 'Doctor',
+          doctorDegree: row.doctorDegree || 'MBBS',
+          doctorRegNo: row.doctorRegNo || 'MCI-REG',
+          experienceYears: row.experienceYears || 10,
+          clinicName: row.clinicName || 'ParchiSetu Clinic',
+          category: row.category || 'General Medicine',
+          specialty: row.specialty || 'General Physician',
+          city: row.city || 'India',
+          address: row.address || '',
+          phone: row.phone || '',
+          whatsapp: row.whatsapp || row.phone || '',
+          ownerEmail: row.ownerEmail || '',
+          ownerUid: row.ownerUid || '',
+          doctorPhoto: row.doctorPhoto || '',
+          fees: row.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+          visitingHours: row.visitingHours || {},
+          subscription: sub,
+          trialStatus,
+          trialDaysLeft,
+          stats: {
+            totalBookings,
+            todayBookings,
+            monthBookings,
+            trialStatus,
+            trialDaysLeft
+          },
+          createdAt: row.createdAt || new Date().toISOString()
+        };
+      });
     }
 
     // 2. Fallback to clinics table
     const clinics = await module.exports.getClinics(false);
-    return clinics.map(c => ({
-      id: c.id,
-      doctorName: c.doctorName || 'Doctor',
-      doctorDegree: c.doctorDegree || 'MBBS',
-      doctorRegNo: c.doctorRegNo || 'MCI-REG',
-      experienceYears: c.experienceYears || 10,
-      clinicName: c.name || 'ParchiSetu Clinic',
-      category: c.category || 'General Medicine',
-      specialty: c.specialty || 'General Physician',
-      city: c.city || 'India',
-      address: c.address || '',
-      phone: c.phone || '',
-      whatsapp: c.whatsapp || c.phone || '',
-      ownerEmail: c.ownerEmail || '',
-      ownerUid: c.ownerUid || '',
-      doctorPhoto: c.doctorPhoto || '',
-      fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-      visitingHours: c.visitingHours || {},
-      subscription: c.subscription || { plan: 'free', status: 'active' },
-      stats: { totalBookings: 0, todayBookings: 0 },
-      createdAt: c.createdAt || new Date().toISOString()
-    }));
+    return clinics.map(c => {
+      const sub = c.subscription || { plan: 'free', status: 'active' };
+      const plan = sub.plan || 'free';
+      const trialStart = sub.trialStartDate || c.createdAt || new Date().toISOString();
+      const daysElapsed = trialStart ? (Date.now() - new Date(trialStart).getTime()) / 86400000 : 0;
+      const isTrialActive = daysElapsed <= 7;
+      const trialDaysLeft = Math.max(0, Math.ceil(7 - daysElapsed));
+      const trialStatus = (plan === 'monthly_pro' || plan === 'annual_pro') ? 'pro_active' : (isTrialActive ? 'trial_active' : 'trial_expired');
+
+      return {
+        id: c.id,
+        doctorName: c.doctorName || 'Doctor',
+        doctorDegree: c.doctorDegree || 'MBBS',
+        doctorRegNo: c.doctorRegNo || 'MCI-REG',
+        experienceYears: c.experienceYears || 10,
+        clinicName: c.name || 'ParchiSetu Clinic',
+        category: c.category || 'General Medicine',
+        specialty: c.specialty || 'General Physician',
+        city: c.city || 'India',
+        address: c.address || '',
+        phone: c.phone || '',
+        whatsapp: c.whatsapp || c.phone || '',
+        ownerEmail: c.ownerEmail || '',
+        ownerUid: c.ownerUid || '',
+        doctorPhoto: c.doctorPhoto || '',
+        fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+        visitingHours: c.visitingHours || {},
+        subscription: sub,
+        trialStatus,
+        trialDaysLeft,
+        stats: { totalBookings: 0, todayBookings: 0, monthBookings: 0, trialStatus, trialDaysLeft },
+        createdAt: c.createdAt || new Date().toISOString()
+      };
+    });
   }
 };

@@ -17,6 +17,31 @@ const DATA_FILE = path.join(__dirname, 'clinic_data.json');
 const HTML_FILE = path.join(__dirname, 'index.html');
 const ALT_HTML_FILE = path.join(__dirname, 'parchisetu_indian_clinic_management_token_web_app.html');
 
+// Auto-load local .env file if running in Node.js without pre-loaded environment
+try {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx > 0) {
+        const key = trimmed.slice(0, eqIdx).trim();
+        const val = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+        if (!process.env[key] && val) {
+          process.env[key] = val;
+        }
+      }
+    }
+  }
+} catch (e) {}
+
+let store = null;
+try { store = require('./api/_store'); } catch (e) {}
+let supabase = null;
+try { supabase = require('./api/_supabase'); } catch (e) {}
+
 // Default Clinic Profile (Realistic Indian Clinic Scenario)
 const DEFAULT_CLINIC = {
   id: 'clinic_sanjeevani_01',
@@ -769,15 +794,17 @@ const requestHandler = async (req, res) => {
           return;
         }
 
-        let isValid = true;
-        if (keySecret && razorpay_signature && razorpay_signature !== 'test_verified_signature') {
-          if (razorpay_subscription_id && razorpay_payment_id) {
+        let isValid = false;
+        if (razorpay_signature === 'test_verified_signature') {
+          isValid = true;
+        } else if (keySecret && razorpay_signature && razorpay_payment_id) {
+          if (razorpay_subscription_id) {
             const generated_signature = crypto
               .createHmac('sha256', keySecret)
               .update(`${razorpay_payment_id}|${razorpay_subscription_id}`)
               .digest('hex');
             isValid = (generated_signature === razorpay_signature);
-          } else if (razorpay_order_id && razorpay_payment_id) {
+          } else if (razorpay_order_id) {
             const generated_signature = crypto
               .createHmac('sha256', keySecret)
               .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -825,6 +852,12 @@ const requestHandler = async (req, res) => {
           appData.clinic.subscription = target.subscription;
         }
         saveData();
+
+        if (store && typeof store.updateSubscriptionAsync === 'function') {
+          store.updateSubscriptionAsync(clinicId, target.subscription).catch(() => {});
+        } else if (supabase && typeof supabase.updateSubscription === 'function') {
+          supabase.updateSubscription(clinicId, target.subscription).catch(() => {});
+        }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
@@ -914,47 +947,69 @@ const requestHandler = async (req, res) => {
 
   // Admin: Get all signed up doctor accounts & tracking details
   if ((pathname === '/api/admin/doctors' || (pathname === '/api/admin' && (parsedUrl.searchParams.get('action') === 'doctors' || !parsedUrl.searchParams.get('action')))) && method === 'GET') {
-    const map = { ...INITIAL_CLINICS, ...(appData.clinics || {}) };
-    if (appData.clinic && appData.clinic.id) {
-      map[appData.clinic.id] = { ...map[appData.clinic.id], ...appData.clinic };
+    let doctors = [];
+    if (store && typeof store.getAdminDoctorsAsync === 'function') {
+      try {
+        doctors = await store.getAdminDoctorsAsync();
+      } catch (e) {}
     }
-    const rawList = Object.values(map);
-    const doctors = rawList.map(c => {
-      const q = (appData.queue || []).filter(b => b.clinicId === c.id);
-      return {
-        id: c.id,
-        doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
-        doctorDegree: c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : 'MBBS'),
-        doctorRegNo: c.doctorRegNo || 'MCI-REG',
-        experienceYears: c.experienceYears || 10,
-        clinicName: c.name || 'ParchiSetu Clinic',
-        category: c.category || c.specialty || 'General Medicine',
-        specialty: c.specialty || c.category || 'General Physician',
-        city: c.city || 'Patna, Bihar',
-        address: c.address || '',
-        phone: c.phone || '',
-        whatsapp: c.whatsapp || c.phone || '',
-        ownerEmail: c.ownerEmail || c.email || '',
-        ownerUid: c.ownerUid || '',
-        doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
-        fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-        visitingHours: c.visitingHours || {},
-        subscription: c.subscription || {
-          plan: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free',
-          status: 'active',
-          billingCycle: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly' : 'trial',
-          amount: (c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 399 : 0,
-          startDate: c.createdAt || '2026-10-01T00:00:00.000Z',
-          renewalDate: new Date(Date.now() + 25 * 86400000).toISOString()
-        },
-        stats: {
-          totalBookings: q.length,
-          todayBookings: q.filter(b => b.date === getISTDateString()).length
-        },
-        isLive: !!(c.onboarded || c.isGoogleAuth || c.ownerUid || (c.liveStatus && !c.liveStatus.isQRBookingPaused)),
-        createdAt: c.createdAt || new Date().toISOString()
-      };
-    });
+    if (!doctors || doctors.length === 0) {
+      const map = { ...INITIAL_CLINICS, ...(appData.clinics || {}) };
+      if (appData.clinic && appData.clinic.id) {
+        map[appData.clinic.id] = { ...map[appData.clinic.id], ...appData.clinic };
+      }
+      const rawList = Object.values(map);
+      const currentMonth = store ? store.getISTMonthString() : new Date().toISOString().slice(0, 7);
+      doctors = rawList.map(c => {
+        const q = (appData.queue || []).filter(b => b.clinicId === c.id);
+        const trialStart = (c.subscription && c.subscription.trialStartDate) || c.createdAt || '2026-11-01T00:00:00.000Z';
+        const daysElapsed = trialStart ? (Date.now() - new Date(trialStart).getTime()) / 86400000 : 0;
+        const isTrialActive = daysElapsed <= 7;
+        const trialDaysLeft = Math.max(0, Math.ceil(7 - daysElapsed));
+        const plan = (c.subscription && c.subscription.plan) || ((c.id === 'clinic_sanjeevani_01' || c.id === 'clinic_delhi_bone_02') ? 'monthly_pro' : 'free');
+        const trialStatus = (plan === 'monthly_pro' || plan === 'annual_pro') ? 'pro_active' : (isTrialActive ? 'trial_active' : 'trial_expired');
+        const monthBookings = q.filter(b => b.status !== 'CANCELLED' && ((b.date && b.date.startsWith(currentMonth)) || (b.createdAt && b.createdAt.startsWith(currentMonth)))).length;
+
+        return {
+          id: c.id,
+          doctorName: c.doctorName || (c.doctors && c.doctors[0] ? c.doctors[0].name : 'Doctor'),
+          doctorDegree: c.doctorDegree || (c.doctors && c.doctors[0] ? c.doctors[0].degree : 'MBBS'),
+          doctorRegNo: c.doctorRegNo || 'MCI-REG',
+          experienceYears: c.experienceYears || 10,
+          clinicName: c.name || 'ParchiSetu Clinic',
+          category: c.category || c.specialty || 'General Medicine',
+          specialty: c.specialty || c.category || 'General Physician',
+          city: c.city || 'Patna, Bihar',
+          address: c.address || '',
+          phone: c.phone || '',
+          whatsapp: c.whatsapp || c.phone || '',
+          ownerEmail: c.ownerEmail || c.email || '',
+          ownerUid: c.ownerUid || '',
+          doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
+          fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
+          visitingHours: c.visitingHours || {},
+          subscription: c.subscription || {
+            plan: plan,
+            status: 'active',
+            billingCycle: (plan === 'annual_pro') ? 'annual' : ((plan === 'monthly_pro') ? 'monthly' : 'trial'),
+            amount: (plan === 'annual_pro') ? 3999 : ((plan === 'monthly_pro') ? 399 : 0),
+            startDate: c.createdAt || '2026-10-01T00:00:00.000Z',
+            renewalDate: new Date(Date.now() + 25 * 86400000).toISOString()
+          },
+          trialStatus,
+          trialDaysLeft,
+          stats: {
+            totalBookings: q.length,
+            todayBookings: q.filter(b => b.date === getISTDateString()).length,
+            monthBookings,
+            trialStatus,
+            trialDaysLeft
+          },
+          isLive: !!(c.onboarded || c.isGoogleAuth || c.ownerUid || (c.liveStatus && !c.liveStatus.isQRBookingPaused)),
+          createdAt: c.createdAt || new Date().toISOString()
+        };
+      });
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: true, doctors }));
     return;
@@ -970,29 +1025,47 @@ const requestHandler = async (req, res) => {
         res.end(JSON.stringify({ error: 'Missing clinicId' }));
         return;
       }
-      appData.clinics = appData.clinics || {};
-      const target = appData.clinics[clinicId] || (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null);
-      if (!target) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Clinic not found' }));
-        return;
-      }
-      target.subscription = {
-        ...(target.subscription || {}),
-        plan: body.plan || 'free', // 'free' | 'monthly_pro' | 'annual_pro'
-        status: body.status || 'active', // 'active' | 'trial' | 'expired'
+
+      const subData = {
+        plan: body.plan || 'free',
+        status: body.status || 'active',
         billingCycle: body.billingCycle || (body.plan === 'annual_pro' ? 'annual' : (body.plan === 'monthly_pro' ? 'monthly' : 'trial')),
         amount: body.amount !== undefined ? body.amount : (body.plan === 'annual_pro' ? 3999 : (body.plan === 'monthly_pro' ? 399 : 0)),
         renewalDate: body.renewalDate || new Date(Date.now() + 30 * 86400000).toISOString(),
         updatedAt: new Date().toISOString()
       };
-      appData.clinics[clinicId] = target;
+
+      let updated = null;
+      if (store && typeof store.updateSubscriptionAsync === 'function') {
+        updated = await store.updateSubscriptionAsync(clinicId, subData);
+      } else {
+        appData.clinics = appData.clinics || {};
+        const target = appData.clinics[clinicId] || (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : (INITIAL_CLINICS[clinicId] ? { ...INITIAL_CLINICS[clinicId] } : null));
+        if (target) {
+          target.subscription = { ...(target.subscription || {}), ...subData };
+          appData.clinics[clinicId] = target;
+          if (appData.clinic && appData.clinic.id === clinicId) {
+            appData.clinic.subscription = target.subscription;
+          }
+          updated = target;
+        }
+      }
+
+      if (!updated) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Clinic not found' }));
+        return;
+      }
+
+      appData.clinics = appData.clinics || {};
+      appData.clinics[clinicId] = updated;
       if (appData.clinic && appData.clinic.id === clinicId) {
-        appData.clinic.subscription = target.subscription;
+        appData.clinic.subscription = updated.subscription;
       }
       saveData();
+
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, clinicId, subscription: target.subscription, clinic: target }));
+      res.end(JSON.stringify({ success: true, clinicId, subscription: updated.subscription, clinic: updated }));
       return;
     } catch (e) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -1123,6 +1196,12 @@ const requestHandler = async (req, res) => {
         appData.clinic = updatedClinic;
       }
       saveData();
+      if (store && typeof store.setClinic === 'function') {
+        store.setClinic(updatedClinic);
+      }
+      if (supabase && typeof supabase.saveClinic === 'function') {
+        supabase.saveClinic(updatedClinic).catch(() => {});
+      }
       broadcastEvent('CLINIC_UPDATED', updatedClinic);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: true, clinic: updatedClinic }));
@@ -1227,9 +1306,48 @@ const requestHandler = async (req, res) => {
         ? appData.clinics[body.clinicId]
         : (INITIAL_CLINICS[body.clinicId] || appData.clinic);
 
+      const targetClinicId = body.clinicId || (targetClinic ? targetClinic.id : appData.clinic.id);
+
+      // Enforce 100 appointments/month limit on Free plan after 7-day trial
+      let limitReached = false;
+      if (store && typeof store.isClinicMonthlyLimitReached === 'function') {
+        limitReached = store.isClinicMonthlyLimitReached(targetClinicId);
+      }
+      if (!limitReached && targetClinic) {
+        const sub = targetClinic.subscription || {};
+        const plan = sub.plan || 'free';
+        if (plan !== 'monthly_pro' && plan !== 'annual_pro') {
+          const trialStart = sub.trialStartDate || targetClinic.createdAt || sub.startDate;
+          let isTrial = false;
+          if (trialStart) {
+            const startMs = new Date(trialStart).getTime();
+            if (!isNaN(startMs)) {
+              const trialDays = typeof sub.trialDays === 'number' ? sub.trialDays : 7;
+              if (Date.now() - startMs <= trialDays * 86400000) {
+                isTrial = true;
+              }
+            }
+          }
+          if (!isTrial) {
+            const currentMonth = store ? store.getISTMonthString() : new Date().toISOString().slice(0, 7);
+            const mCount = (appData.queue || []).filter(p => (!p.clinicId || p.clinicId === targetClinicId) && p.status !== 'CANCELLED' && (p.date || p.appointmentDate || p.createdAt || '').startsWith(currentMonth)).length;
+            if (mCount >= 100) limitReached = true;
+          }
+        }
+      }
+
+      if (limitReached) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          error: 'Clinic plan limit reached: 100 monthly appointments limit exceeded on the Free plan. Please upgrade to Pro for unlimited appointments or contact clinic.',
+          limitReached: true
+        }));
+        return;
+      }
+
       const newBooking = {
         id: bookingId,
-        clinicId: body.clinicId || (targetClinic ? targetClinic.id : appData.clinic.id),
+        clinicId: targetClinicId,
         clinicName: body.clinicName || (targetClinic ? targetClinic.name : appData.clinic.name),
         clinicAddress: body.clinicAddress || (targetClinic ? targetClinic.address : appData.clinic.address),
         clinicPhone: body.clinicPhone || (targetClinic ? targetClinic.phone : appData.clinic.phone),
@@ -1265,6 +1383,12 @@ const requestHandler = async (req, res) => {
 
       appData.queue.push(newBooking);
       saveData();
+
+      if (store && typeof store.addOrUpdateBooking === 'function') {
+        store.addOrUpdateBooking(newBooking);
+      } else if (supabase && typeof supabase.saveBooking === 'function') {
+        supabase.saveBooking(newBooking).catch(() => {});
+      }
 
       // Real-time broadcast to all connected Compounder Desks and tickers!
       broadcastEvent('NEW_BOOKING', newBooking);
@@ -1310,6 +1434,11 @@ const requestHandler = async (req, res) => {
 
       Object.assign(item, body);
       saveData();
+      if (store && typeof store.updateBooking === 'function') {
+        store.updateBooking(id, body);
+      } else if (supabase && typeof supabase.saveBooking === 'function') {
+        supabase.saveBooking(item).catch(() => {});
+      }
       broadcastEvent('QUEUE_UPDATED', { id, updated: body, queue: appData.queue });
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
