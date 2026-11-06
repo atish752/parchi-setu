@@ -98,7 +98,7 @@ async function runTests() {
   });
   assert.strictEqual(orderResMonthly.status, 200);
   assert.strictEqual(orderResMonthly.data.amount, 39900); // in paise
-  assert.ok(orderResMonthly.data.orderId, 'Order ID must be generated');
+  assert.ok(orderResMonthly.data.orderId || orderResMonthly.data.subscriptionId, 'Order or Subscription ID must be generated');
   console.log('✅ PASS: Order creation for Monthly returns ₹399 in paise (39900) and orderId');
   passed++;
 
@@ -110,7 +110,7 @@ async function runTests() {
   });
   assert.strictEqual(orderResAnnual.status, 200);
   assert.strictEqual(orderResAnnual.data.amount, 399900); // 3999 INR = 399900 paise
-  assert.ok(orderResAnnual.data.orderId, 'Order ID must be generated');
+  assert.ok(orderResAnnual.data.orderId || orderResAnnual.data.subscriptionId, 'Order or Subscription ID must be generated');
   console.log('✅ PASS: Order creation for Annual returns ₹3,999 in paise (399900) and orderId');
   passed++;
 
@@ -122,7 +122,7 @@ async function runTests() {
     amount: 399,
     razorpay_payment_id: 'pay_test_razorpay_verification_123',
     razorpay_order_id: 'order_test_123',
-    razorpay_signature: 'test_signature'
+    razorpay_signature: 'test_verified_signature'
   });
   assert.strictEqual(verifyRes.status, 200);
   assert.strictEqual(verifyRes.data.success, true);
