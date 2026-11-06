@@ -3233,21 +3233,22 @@
           <span>UPI, Cards, NetBanking</span>
         </div>
 
-        <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+        <div class="pt-3 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-200">
           <button 
             type="button" 
             onclick="handleUserSignOut()" 
-            class="text-xs text-slate-500 hover:text-slate-700 underline font-semibold"
+            class="text-xs text-slate-500 hover:text-rose-700 underline font-semibold order-2 sm:order-1"
           >
             Sign Out / Dusra Account
           </button>
           <button 
             type="button" 
-            onclick="simulateTestPaymentUnlock()" 
-            class="text-[11px] text-emerald-800 hover:text-emerald-950 font-mono font-bold bg-emerald-100/60 px-2.5 py-1 rounded-lg border border-emerald-300"
-            title="Fast bypass for verification sandbox"
+            onclick="simulateTestPaymentUnlock('monthly_pro')" 
+            class="btn-tactile text-xs text-emerald-950 font-black bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-xl border border-emerald-300 flex items-center gap-1.5 transition shadow-xs order-1 sm:order-2"
+            title="Bina paise diye test unlock karein"
           >
-            ⚡ Test Payment Simulate
+            <i class="fa-solid fa-flask text-amber-600"></i>
+            <span>🧪 Simulate Payment & Unlock (Testing Sandbox)</span>
           </button>
         </div>
 
@@ -6567,6 +6568,15 @@
           isGoogleAuth: isGoogle,
           googleRegistered: true,
           createdViaClinicPanel: true,
+          subscription: clinicProfile.subscription || {
+            plan: 'free',
+            status: 'trial',
+            trialDays: 7,
+            trialStartDate: new Date().toISOString(),
+            billingCycle: 'trial',
+            amount: 0
+          },
+          createdAt: clinicProfile.createdAt || new Date().toISOString(),
           doctorName: finalDocName,
           doctorDegree: degree,
           doctorRegNo: regNo,
@@ -7709,8 +7719,28 @@
           updatedAt: new Date().toISOString()
         };
         saveLocalClinic();
+        if (window.location.protocol.startsWith('http') && clinicProfile.id) {
+          fetch('/api/admin/subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clinicId: clinicProfile.id,
+              plan: 'free',
+              status: 'expired'
+            })
+          }).catch(() => {});
+        }
+        if (window.ParchiFirebase && window.ParchiFirebase.saveClinic) {
+          try {
+            window.ParchiFirebase.saveClinic({
+              id: clinicProfile.id,
+              subscription: clinicProfile.subscription
+            });
+          } catch (e) {}
+        }
+        closeClinicAccountModal();
         checkClinicTrialAndLock();
-        showToast('🔒 Platform lock kar diya gaya hai (7-Day Trial Expired test mode).');
+        showToast('🔒 Platform lock kar diya gaya hai (7-Day Trial Expired test mode).', 'warning');
       }
     }
 
@@ -9474,6 +9504,11 @@
     }
 
     function sendPatientInsideCabin(patientId) {
+      if (isPlatformLocked()) {
+        showTrialLockModal();
+        showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
+        return;
+      }
       const target = todayQueue.find(p => p.id === patientId);
       if (!target) return;
 
@@ -9494,6 +9529,11 @@
     }
 
     function setPatientPaymentMode(patientId, mode) {
+      if (isPlatformLocked()) {
+        showTrialLockModal();
+        showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
+        return;
+      }
       const p = todayQueue.find(item => item.id === patientId);
       if (!p) return;
       p.payMode = mode;
@@ -14309,7 +14349,7 @@
                     ownerEmail: c.ownerEmail || `doctor.${(c.doctorName || 'clinic').toLowerCase().replace(/[^a-z0-9]/g, '')}@parchisetu.com`,
                     doctorPhoto: c.doctorPhoto || (c.doctors && c.doctors[0] ? c.doctors[0].photo : ''),
                     fees: c.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-                    subscription: c.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
+                    subscription: c.subscription || { plan: 'free', status: 'trial', billingCycle: 'trial', amount: 0 },
                     stats: { totalBookings: (c.todayQueue || []).length || 1, todayBookings: (c.todayQueue || []).length || 1 },
                     isLive: !!(c.isLive || (c.todayQueue && c.todayQueue.length > 0) || (c.liveStatus && !c.liveStatus.isDoctorLate)),
                     createdAt: c.createdAt || new Date().toISOString()
@@ -14343,7 +14383,7 @@
               ownerEmail: clinicProfile.ownerEmail || 'doctor.rajesh@parchisetu.com',
               doctorPhoto: clinicProfile.doctorPhoto || '',
               fees: clinicProfile.fees || { normal: 300, followup: 200, emergency: 500, report: 0 },
-              subscription: clinicProfile.subscription || { plan: 'monthly_pro', status: 'active', billingCycle: 'monthly', amount: 399 },
+              subscription: clinicProfile.subscription || { plan: 'free', status: 'trial', billingCycle: 'trial', amount: 0 },
               stats: { totalBookings: (todayQueue || []).length, todayBookings: (todayQueue || []).length },
               createdAt: clinicProfile.createdAt || '2026-10-01T00:00:00.000Z'
             });
