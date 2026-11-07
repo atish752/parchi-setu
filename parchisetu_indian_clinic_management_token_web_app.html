@@ -530,17 +530,17 @@
     <div id="viewClinicDesk" class="hidden space-y-3 sm:space-y-3.5">
 
       <!-- Dynamic Subscription & 7-Day Trial Status Alert Banner -->
-      <div id="clinicSubscriptionBanner" class="p-2.5 sm:p-3 rounded-2xl border-2 text-xs font-bold flex flex-wrap items-center justify-between gap-2 shadow-xs transition hidden">
+      <div id="clinicSubscriptionBanner" class="p-2 sm:p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-xs font-bold flex flex-wrap items-center justify-between gap-2 shadow-2xs transition hidden">
         <div class="flex items-center gap-2" id="subscriptionBannerText">
-          <i class="fa-solid fa-clock text-amber-500 text-sm"></i>
-          <span>7-Day Free Trial: <strong id="subDaysLeft">7</strong> din baaki hain.</span>
+          <i class="fa-solid fa-clock text-amber-600 text-sm"></i>
+          <span class="text-amber-950">7-Day Free Trial: <strong id="subDaysLeft">7</strong> din baaki hain.</span>
         </div>
         <div class="flex items-center gap-2">
           <button 
             type="button" 
             onclick="openClinicAccountModal()" 
             id="btnSubscriptionUpgrade" 
-            class="btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm"
+            class="btn-tactile px-3 py-1 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-lg text-xs font-black flex items-center gap-1.5 transition shadow-2xs"
           >
             <i class="fa-solid fa-crown text-amber-400"></i>
             <span>Upgrade to Pro</span>
@@ -580,7 +580,7 @@
       <section id="clinicTab-queue" class="space-y-3 sm:space-y-3.5">
 
         <!-- 1A. LIVE CABIN STATUS HERO CARD (CLEAN WHATSAPP ACTIVE CARD) -->
-        <div class="bg-[#075E54] rounded-2xl p-3 sm:p-4 text-white shadow-md border border-emerald-700/60 relative overflow-hidden">
+        <div class="bg-[#075E54] rounded-2xl p-3 sm:p-4 text-white shadow-sm border border-emerald-700/60 relative overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
             
             <!-- Current Patient Inside Cabin Info (Click opens Digital Vitals & Prescription) -->
@@ -601,49 +601,52 @@
                   Rameshwar Prasad <span class="text-emerald-200 font-semibold text-sm">(54 yrs, M)</span>
                 </h2>
 
-                <div class="flex items-center gap-2 mt-1 text-xs text-emerald-100 flex-wrap">
-                  <span id="cabinPatientReason" class="font-semibold text-emerald-200 truncate max-w-[140px] sm:max-w-none">
+                <div class="flex items-center gap-2 mt-0.5 text-xs text-emerald-100 flex-wrap">
+                  <span id="cabinPatientReason" class="font-semibold text-emerald-200 truncate max-w-[160px] sm:max-w-none">
                     🩸 BP / Sugar Check
                   </span>
                   <span>•</span>
                   <span id="cabinPatientFee" class="font-bold text-[#a7f3d0] whitespace-nowrap">
                     ₹300 (Cash Paid ✓)
                   </span>
-                  <span>•</span>
-                  <button 
-                    type="button" 
-                    onclick="event.stopPropagation(); openCurrentCabinParchi()" 
-                    class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-3.5 py-1.5 rounded-xl border border-emerald-300 shadow-md text-xs inline-flex items-center gap-1.5 transition active:scale-95"
-                    title="Open Prescription & Vitals Form"
-                  >
-                    <i class="fa-solid fa-file-prescription text-slate-950"></i> 
-                    <span data-i18n="openParchiBtn">Rx & Vitals (पर्ची / जांच)</span>
-                  </button>
-                  <button 
-                    type="button" 
-                    id="btnCabinCancelPatient"
-                    onclick="event.stopPropagation(); cancelCurrentCabinPatient()" 
-                    class="w-7 h-7 rounded-xl bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-sm transition ml-1"
-                    title="Cancel Current In-Cabin Appointment"
-                  >
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
                 </div>
               </div>
             </div>
 
             <!-- Giant 1-Tap Cabin Action Buttons (Thumb-friendly on mobile) -->
-            <div class="flex items-center gap-2 flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-700/50">
+            <div class="flex items-center gap-2 flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-700/50 flex-wrap sm:flex-nowrap">
+              <!-- Secondary: Rx & Vitals Button -->
+              <button 
+                type="button" 
+                onclick="event.stopPropagation(); openCurrentCabinParchi()" 
+                class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-3.5 py-2 rounded-xl border border-emerald-300 shadow-xs text-xs inline-flex items-center gap-1.5 transition active:scale-95"
+                title="Open Prescription & Vitals Form"
+              >
+                <i class="fa-solid fa-file-prescription text-slate-950"></i> 
+                <span data-i18n="openParchiBtn">Rx & Vitals (पर्ची / जांच)</span>
+              </button>
+
               <!-- Secondary: Ring Bell / Voice Call -->
               <button 
                 type="button"
                 onclick="announceCurrentToken()" 
                 id="btnAnnounceToken"
-                class="btn-tactile bg-white/15 hover:bg-white/25 active:bg-white/30 text-white border border-white/20 font-bold px-3 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap"
+                class="btn-tactile bg-white/15 hover:bg-white/25 active:bg-white/30 text-white border border-white/20 font-bold px-3 py-2 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap"
                 title="Rings Clinic Bell & Announces Token Number"
               >
                 <i class="fa-solid fa-volume-high text-amber-300 text-sm"></i>
                 <span id="ringBellBtnText">🔔 Awaz (#12)</span>
+              </button>
+
+              <!-- In-Cabin Red Cancel Button -->
+              <button 
+                type="button" 
+                id="btnCabinCancelPatient"
+                onclick="event.stopPropagation(); cancelCurrentCabinPatient()" 
+                class="w-8 h-8 rounded-xl bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
+                title="Cancel Current In-Cabin Appointment"
+              >
+                <i class="fa-solid fa-xmark"></i>
               </button>
 
               <!-- Primary Giant Button: Done & Call Next -->
@@ -10283,12 +10286,12 @@
         const agLabel = formatPatientAgeGender(p.age, p.gender);
 
         return `
-          <div class="p-2.5 sm:p-3.5 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-start sm:items-center justify-between gap-2 sm:gap-3 ${rowBgClass} border-b border-slate-100">
+          <div class="p-2.5 sm:p-3 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-center justify-between gap-2 sm:gap-3 ${rowBgClass} border-b border-slate-100">
             
             <!-- Left Info Cluster: Token Avatar on Left + Patient Info using all White Space -->
-            <div onclick="openParchiDrawer('${p.id}')" class="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer select-none">
+            <div onclick="openParchiDrawer('${p.id}')" class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer select-none">
               <!-- Token Badge (Compact & High Contrast) -->
-              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-sm sm:text-base shadow-xs mt-0.5 sm:mt-0">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-sm sm:text-base shadow-xs">
                 #${p.token}
               </div>
 
@@ -10346,7 +10349,7 @@
             </div>
 
             <!-- Very Right Side: Action Buttons (Stacked Vertically on Mobile, Horizontal on Desktop) -->
-            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 flex-shrink-0 self-start sm:self-center">
+            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 flex-shrink-0 self-center">
               ${
                 p.status === 'WAITING'
                   ? `
@@ -10366,7 +10369,7 @@
                       <button 
                         type="button" 
                         onclick="event.stopPropagation(); markPatientNoShow('${p.id}')" 
-                        class="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-[10px] sm:text-xs transition whitespace-nowrap"
+                        class="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-[10px] sm:text-xs transition whitespace-nowrap"
                         title="Mark as No-Show (Nahi Aaye)"
                       >
                         No-Show
@@ -10374,7 +10377,7 @@
                       <button 
                         type="button" 
                         onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
-                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-2xs transition"
+                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 active:scale-95 flex items-center justify-center text-xs font-black shadow-2xs transition"
                         title="Cancel Appointment"
                       >
                         <i class="fa-solid fa-xmark"></i>
@@ -10382,7 +10385,7 @@
                       <button 
                         type="button" 
                         onclick="event.stopPropagation(); openEditAppointmentModal('${p.id}')" 
-                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-black shadow-2xs transition"
+                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center text-xs font-black shadow-2xs transition"
                         title="Edit Details (Naam, Phone, Samay, Takleef)"
                       >
                         <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
