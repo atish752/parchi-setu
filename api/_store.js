@@ -276,9 +276,30 @@ function getRazorpayVerificationClinic() {
   };
 }
 
+function normalizeSlotString(slot) {
+  if (!slot) return '';
+  const clean = String(slot).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+  const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+  if (m) {
+    const h = parseInt(m[1], 10);
+    const min = m[2];
+    const ap = (m[3] || '').toLowerCase();
+    return ap ? `${h}:${min} ${ap}` : `${h}:${min}`;
+  }
+  return clean.replace(/\s+/g, ' ');
+}
+
 module.exports = {
   isDummyClinicName,
   getRazorpayVerificationClinic,
+  normalizeSlotString,
+  getStore: () => store,
+  loadStore,
+  persistStore,
+  getISTDateString,
+  isClinicMonthlyLimitReached,
+  getClinicMonthlyAppointmentsCount,
+  getISTMonthString,
 
   getClinic: (id) => {
     loadStore();
@@ -607,10 +628,6 @@ module.exports = {
     return store.queue;
   },
 
-  isClinicMonthlyLimitReached,
-  getClinicMonthlyAppointmentsCount,
-  getISTMonthString,
-
   addOrUpdateBooking: (booking) => {
     loadStore();
     const existingIdx = booking.id ? store.queue.findIndex(p => p.id === booking.id) : -1;
@@ -642,8 +659,29 @@ module.exports = {
     const clinicBookings = (booking.clinicId && store.queue)
       ? store.queue.filter(p => !p.clinicId || p.clinicId === booking.clinicId)
       : (store.queue || []);
+
+    // Double-booking prevention: check if another active patient already booked this exact slot on this date
+    const targetDate = booking.date || getISTDateString();
+    const normSlot = normalizeSlotString(booking.slotTime);
+    const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking'].includes(normSlot);
+
+    if (isScheduledSlot) {
+      const existingSlotBooking = clinicBookings.find(p => 
+        p.id !== booking.id &&
+        p.status !== 'CANCELLED' &&
+        (p.date || '').slice(0, 10) === targetDate.slice(0, 10) &&
+        normalizeSlotString(p.slotTime) === normSlot
+      );
+      if (existingSlotBooking) {
+        return {
+          error: 'SLOT_ALREADY_BOOKED',
+          message: `Time slot ${booking.slotTime} has already been booked for ${targetDate}. Please choose another slot.`
+        };
+      }
+    }
+
     const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
-    const nextToken = booking.token || (maxToken > 0 ? maxToken + 1 : 1);
+    const nextToken = (booking.token && booking.token > maxToken) ? booking.token : (maxToken + 1);
     const bookingId = booking.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 
     const finalBooking = {
@@ -706,6 +744,41 @@ module.exports = {
     store.queue = [];
     persistStore();
     return [];
+  },
+
+  deleteBooking: (id) => {
+    loadStore();
+    const idx = store.queue.findIndex(p => p.id === id);
+    if (idx < 0) return false;
+    store.queue.splice(idx, 1);
+    persistStore();
+    if (supabase && typeof supabase.deleteBooking === 'function') {
+      supabase.deleteBooking(id).catch(() => {});
+    }
+    return true;
+  },
+
+  deletePatientHistory: (phoneOrKey, clinicId) => {
+    loadStore();
+    const clean = String(phoneOrKey || '').replace(/[^0-9]/g, '');
+    const isNameKey = String(phoneOrKey || '').startsWith('name_');
+    const targetName = isNameKey ? String(phoneOrKey).replace(/^name_/, '').trim().toLowerCase() : '';
+
+    const initialLen = store.queue.length;
+    store.queue = store.queue.filter(p => {
+      if (clinicId && p.clinicId && p.clinicId !== clinicId) return true;
+      if (isNameKey) {
+        return (p.name || '').trim().toLowerCase() !== targetName;
+      }
+      const pPhone = String(p.phone || '').replace(/[^0-9]/g, '');
+      if (clean && clean.length >= 10 && pPhone.endsWith(clean.slice(-10))) {
+        return false;
+      }
+      if (phoneOrKey && p.phone === phoneOrKey) return false;
+      return true;
+    });
+    persistStore();
+    return store.queue.length < initialLen;
   },
 
   updateSubscription: (clinicId, subscriptionData) => {

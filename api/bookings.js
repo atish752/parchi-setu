@@ -41,6 +41,14 @@ module.exports = async (req, res) => {
         limitReached: true
       }));
     }
+    if (result.error === 'SLOT_ALREADY_BOOKED') {
+      res.statusCode = 409;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({
+        error: result.message || 'This time slot has already been booked for this date.',
+        slotAlreadyBooked: true
+      }));
+    }
     const { isNew, booking } = result;
     res.statusCode = isNew ? 201 : 200;
     res.setHeader('Content-Type', 'application/json');

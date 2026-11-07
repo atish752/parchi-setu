@@ -633,7 +633,7 @@ const requestHandler = async (req, res) => {
         doctors = await store.getAdminDoctorsAsync();
       } catch (e) {}
     }
-    if (!Array.isArray(doctors)) {
+    if (!Array.isArray(doctors) || doctors.length === 0) {
       const map = { ...INITIAL_CLINICS, ...(appData.clinics || {}) };
       if (appData.clinic && appData.clinic.id) {
         map[appData.clinic.id] = { ...map[appData.clinic.id], ...appData.clinic };
@@ -1002,7 +1002,7 @@ const requestHandler = async (req, res) => {
         ? appData.queue.filter(p => !p.clinicId || p.clinicId === body.clinicId)
         : (appData.queue || []);
       const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
-      const nextToken = body.token || (maxToken > 0 ? maxToken + 1 : 1);
+      const nextToken = (body.token && body.token > maxToken) ? body.token : (maxToken + 1);
       const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 
       const targetClinic = (body.clinicId && appData.clinics && appData.clinics[body.clinicId])
@@ -1036,6 +1036,39 @@ const requestHandler = async (req, res) => {
             const mCount = (appData.queue || []).filter(p => (!p.clinicId || p.clinicId === targetClinicId) && p.status !== 'CANCELLED' && (p.date || p.appointmentDate || p.createdAt || '').startsWith(currentMonth)).length;
             if (mCount >= 100) limitReached = true;
           }
+        }
+      }
+
+      // Check for slot double booking
+      const targetDate = body.date || (store && store.getISTDateString ? store.getISTDateString() : new Date().toISOString().slice(0, 10));
+      const normalizeSlot = s => {
+        if (!s) return '';
+        const clean = String(s).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+        const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+        if (m) {
+          const h = parseInt(m[1], 10);
+          const min = m[2];
+          const ap = (m[3] || '').toLowerCase();
+          return ap ? `${h}:${min} ${ap}` : `${h}:${min}`;
+        }
+        return clean.replace(/\s+/g, ' ');
+      };
+      const normSlot = normalizeSlot(body.slotTime);
+      const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking'].includes(normSlot);
+      if (isScheduledSlot) {
+        const existingSlot = clinicBookings.find(p =>
+          p.id !== body.id &&
+          p.status !== 'CANCELLED' &&
+          (p.date || '').slice(0, 10) === targetDate.slice(0, 10) &&
+          normalizeSlot(p.slotTime) === normSlot
+        );
+        if (existingSlot) {
+          res.writeHead(409, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            error: `Time slot ${body.slotTime} has already been booked for this date. Please choose another slot.`,
+            slotAlreadyBooked: true
+          }));
+          return;
         }
       }
 
@@ -1148,6 +1181,53 @@ const requestHandler = async (req, res) => {
       res.end(JSON.stringify({ success: true, item }));
     } catch (err) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // Delete queue item or patient history
+  if ((pathname.startsWith('/api/queue/') || pathname === '/api/queue') && method === 'DELETE') {
+    const id = pathname.startsWith('/api/queue/') ? pathname.replace('/api/queue/', '') : (parsedUrl.searchParams.get('id') || '');
+    const phone = parsedUrl.searchParams.get('phone') || '';
+    const key = parsedUrl.searchParams.get('key') || '';
+    const clinicId = parsedUrl.searchParams.get('clinic') || parsedUrl.searchParams.get('clinicId') || '';
+    try {
+      if (id) {
+        const idx = appData.queue.findIndex(p => p.id === id);
+        if (idx >= 0) {
+          appData.queue.splice(idx, 1);
+          saveData();
+          if (store && typeof store.deleteBooking === 'function') store.deleteBooking(id);
+          broadcastEvent('QUEUE_UPDATED', { queue: appData.queue });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true, message: 'Item deleted' }));
+          return;
+        }
+      }
+      if (phone || key) {
+        const clean = String(phone || '').replace(/[^0-9]/g, '');
+        const isNameKey = String(key || '').startsWith('name_');
+        const targetName = isNameKey ? String(key).replace(/^name_/, '').trim().toLowerCase() : '';
+        appData.queue = appData.queue.filter(p => {
+          if (clinicId && p.clinicId && p.clinicId !== clinicId) return true;
+          if (isNameKey) return (p.name || '').trim().toLowerCase() !== targetName;
+          const pPhone = String(p.phone || '').replace(/[^0-9]/g, '');
+          if (clean && clean.length >= 10 && pPhone.endsWith(clean.slice(-10))) return false;
+          if (phone && p.phone === phone) return false;
+          return true;
+        });
+        saveData();
+        if (store && typeof store.deletePatientHistory === 'function') store.deletePatientHistory(phone || key, clinicId);
+        broadcastEvent('QUEUE_UPDATED', { queue: appData.queue });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: 'Patient data deleted' }));
+        return;
+      }
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Item not found' }));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
     }
     return;

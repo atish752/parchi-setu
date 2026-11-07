@@ -104,7 +104,110 @@
     .btn-tactile:active {
       transform: translateY(2px);
     }
+
+    /* CLINIC DARK MODE HIGH-CONTRAST THEME */
+    body.clinic-dark-mode {
+      background-color: #0b141a !important;
+      background-image: radial-gradient(#1e293b 0.75px, transparent 0.75px), radial-gradient(#1e293b 0.75px, #0b141a 0.75px) !important;
+      color: #f1f5f9 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk {
+      color: #f1f5f9 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .bg-white,
+    body.clinic-dark-mode #viewClinicDesk .bg-slate-50,
+    body.clinic-dark-mode #clinicTab-register .bg-white,
+    body.clinic-dark-mode #clinicTab-galla .bg-white,
+    body.clinic-dark-mode #clinicTab-calendar .bg-white,
+    body.clinic-dark-mode #clinicTab-profile .bg-white,
+    body.clinic-dark-mode #walkinModal .bg-white,
+    body.clinic-dark-mode #patientProfileModal .bg-white,
+    body.clinic-dark-mode #modalClinicProfile .bg-white,
+    body.clinic-dark-mode #modalCabinPaymentRequired .bg-white,
+    body.clinic-dark-mode #gallaLedgerModal .bg-white,
+    body.clinic-dark-mode #editAppointmentModal .bg-white,
+    body.clinic-dark-mode #cancelConfirmModal .bg-white,
+    body.clinic-dark-mode #bookedAppointmentsModal .bg-white,
+    body.clinic-dark-mode #onlineBookingOverrideModal .bg-white,
+    body.clinic-dark-mode #clinicOnboardingModal .bg-white,
+    body.clinic-dark-mode #onboardingSuccessModal .bg-white,
+    body.clinic-dark-mode #clinicAccountModal .bg-white {
+      background-color: #111b21 !important;
+      border-color: #22323d !important;
+      color: #f1f5f9 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .bg-slate-100 {
+      background-color: #1a252d !important;
+      color: #cbd5e1 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .text-slate-900,
+    body.clinic-dark-mode #viewClinicDesk .text-slate-800,
+    body.clinic-dark-mode #viewClinicDesk .text-slate-700,
+    body.clinic-dark-mode #editAppointmentModal .text-slate-900,
+    body.clinic-dark-mode #editAppointmentModal .text-slate-800,
+    body.clinic-dark-mode #editAppointmentModal .text-slate-700,
+    body.clinic-dark-mode #patientProfileModal .text-slate-900,
+    body.clinic-dark-mode #patientProfileModal .text-slate-800,
+    body.clinic-dark-mode #patientProfileModal .text-slate-700 {
+      color: #f8fafc !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .text-slate-600,
+    body.clinic-dark-mode #viewClinicDesk .text-slate-500,
+    body.clinic-dark-mode #editAppointmentModal .text-slate-600,
+    body.clinic-dark-mode #editAppointmentModal .text-slate-500,
+    body.clinic-dark-mode #patientProfileModal .text-slate-600,
+    body.clinic-dark-mode #patientProfileModal .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .border-slate-200,
+    body.clinic-dark-mode #viewClinicDesk .border-slate-100,
+    body.clinic-dark-mode #editAppointmentModal .border-slate-200 {
+      border-color: #22323d !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk input,
+    body.clinic-dark-mode #viewClinicDesk select,
+    body.clinic-dark-mode #viewClinicDesk textarea,
+    body.clinic-dark-mode #patientProfileModal input,
+    body.clinic-dark-mode #modalClinicProfile input,
+    body.clinic-dark-mode #modalClinicProfile textarea,
+    body.clinic-dark-mode #editAppointmentModal input,
+    body.clinic-dark-mode #editAppointmentModal select,
+    body.clinic-dark-mode #walkinModal input,
+    body.clinic-dark-mode #walkinModal select {
+      background-color: #1a252d !important;
+      border-color: #2a3942 !important;
+      color: #ffffff !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-50\/90:hover,
+    body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-50:hover,
+    body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-100:hover {
+      background-color: #162229 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .bg-emerald-50 {
+      background-color: rgba(6, 78, 59, 0.25) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+      color: #a7f3d0 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .text-[#075E54] {
+      color: #34d399 !important;
+    }
+    body.clinic-dark-mode #viewClinicDesk .border-[#128C7E] {
+      border-color: #059669 !important;
+    }
+    body.clinic-dark-mode #parchiDrawerContent {
+      background-color: #111b21 !important;
+      color: #f1f5f9 !important;
+    }
+    body.clinic-dark-mode #parchiDrawerContent .bg-white {
+      background-color: #1a252d !important;
+      border-color: #2a3942 !important;
+      color: #f1f5f9 !important;
+    }
   </style>
+
+  <!-- Leaflet Map CSS & JS for Interactive Clinic Location Picker -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body class="text-slate-900 min-h-screen flex flex-col selection:bg-emerald-200 overflow-x-hidden">
 
@@ -152,13 +255,25 @@
         <button onclick="openClinicOnboardingModal()" id="clinicOnboardHeaderBtn" class="hidden" title="Setup Clinic"></button>
         <button onclick="openOnboardingSuccessModal()" id="headerShareLinkBtn" class="hidden" title="Share Link"></button>
 
-        <!-- 3-Language Selector Dropdown: Compressed on mobile to eliminate right sway -->
+        <!-- Dark Mode Toggle Button for Clinic Desk -->
+        <button 
+          type="button" 
+          onclick="toggleClinicDarkMode()" 
+          id="themeToggleBtn" 
+          class="btn-tactile bg-emerald-950/90 hover:bg-emerald-900 text-amber-300 border-2 border-emerald-600/70 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1 sm:gap-1.5 transition shadow-xs shrink-0"
+          title="Toggle Clinic Dark Mode / Light Mode"
+        >
+          <i id="themeToggleIcon" class="fa-solid fa-moon"></i>
+          <span id="themeToggleLabel" class="hidden sm:inline">Dark</span>
+        </button>
+
+        <!-- 3-Language Selector Dropdown: Clearly visible with full label -->
         <div class="relative inline-flex items-center shrink-0">
-          <i class="fa-solid fa-language text-[#25D366] absolute left-2 pointer-events-none text-xs"></i>
+          <i class="fa-solid fa-language text-[#25D366] absolute left-2.5 pointer-events-none text-xs"></i>
           <select 
             id="langSelectDropdown" 
             onchange="changeLanguage(this.value)" 
-            class="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-600/60 pl-4 sm:pl-7 pr-1 sm:pr-2.5 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition focus:outline-none focus:border-[#25D366] cursor-pointer max-w-[65px] sm:max-w-none"
+            class="bg-emerald-950/90 hover:bg-emerald-900 text-white border-2 border-emerald-500/70 pl-7 pr-3 py-1.5 rounded-xl text-xs font-black transition focus:outline-none focus:border-[#25D366] cursor-pointer shadow-xs min-w-[95px] sm:min-w-[105px]"
             title="Choose Language (English / Hinglish / हिंदी)"
           >
             <option value="english">English</option>
@@ -610,6 +725,8 @@
                     ₹300 (Cash Paid ✓)
                   </span>
                 </div>
+                <!-- 1-Click Payment Controls for Current Ongoing Patient -->
+                <div id="cabinPaymentControlsContainer" class="mt-1 flex items-center gap-1.5 flex-wrap"></div>
               </div>
             </div>
 
@@ -1574,6 +1691,30 @@
           </div>
         </div>
 
+        <!-- Display & Theme Settings (Dark Mode) -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-slate-900 text-amber-300 flex items-center justify-center font-black text-lg shadow-xs">
+                <i class="fa-solid fa-moon"></i>
+              </div>
+              <div>
+                <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">Clinic Dark Mode (आंखों को आराम)</h3>
+                <p class="text-xs text-slate-500 font-semibold mt-0.5">Din bhar continuous screen dekhne wale compounder/doctor ke liye dark theme.</p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onclick="toggleClinicDarkMode()" 
+              id="profileDarkModeBtn" 
+              class="btn-tactile px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-amber-300 font-black text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i class="fa-solid fa-circle-half-stroke"></i>
+              <span>Toggle Dark Mode</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Consultation & Follow-Up Fees Configuration Card -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
           <div>
@@ -2460,11 +2601,11 @@
                   </div>
                 </div>
 
-                <!-- Step 3: Estimated Wait Time -->
+                <!-- Step 3: Estimated Appointment Time -->
                 <div class="bg-white p-2 rounded-xl border border-emerald-200 shadow-2xs">
-                  <div class="text-base sm:text-lg">⏳</div>
-                  <div class="text-[10px] text-slate-500 font-bold uppercase mt-0.5">Wait Time</div>
-                  <div id="passEstTime" class="text-xs sm:text-sm font-black text-amber-700">~20 Mins</div>
+                  <div class="text-base sm:text-lg">⏰</div>
+                  <div class="text-[10px] text-slate-500 font-bold uppercase mt-0.5">Expected Time</div>
+                  <div id="passEstTime" class="text-xs sm:text-sm font-black text-amber-700">--:--</div>
                 </div>
               </div>
 
@@ -4078,6 +4219,63 @@
               Yeh link mareez ke digital token pass par 'Google Maps Directions' button provide karega.
             </p>
           </div>
+
+          <!-- Interactive Map Location Picker & Direct Search -->
+          <div class="bg-emerald-50/80 p-3.5 rounded-2xl border-2 border-emerald-300 space-y-2.5">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <label class="text-xs font-black text-[#075E54] uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-map-location-dot text-[#128C7E] text-sm"></i>
+                <span>Choose Exact Location on Map (नक्शे पर सही पता चुनें)</span>
+              </label>
+              <button 
+                type="button" 
+                onclick="useCurrentGpsLocation()" 
+                class="btn-tactile px-2.5 py-1 bg-[#128C7E] hover:bg-[#075E54] active:scale-95 text-white text-[11px] font-black rounded-lg flex items-center gap-1 shadow-2xs transition"
+                title="Device GPS se exact location lein"
+              >
+                <i class="fa-solid fa-location-crosshairs"></i>
+                <span>📍 Current GPS</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input 
+                  type="text" 
+                  id="mapLocationSearchInput" 
+                  placeholder="Clinic Name, Chowk, ya Area search karein..." 
+                  class="w-full pl-8 pr-3 py-2 bg-white border border-emerald-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault(); searchClinicMapLocation();}"
+                />
+              </div>
+              <button 
+                type="button" 
+                onclick="searchClinicMapLocation()" 
+                class="btn-tactile px-3 py-2 bg-[#075E54] hover:bg-[#128C7E] active:scale-95 text-white text-xs font-black rounded-xl transition shrink-0"
+              >
+                Search
+              </button>
+              <a 
+                id="btnDirectGoogleMapsSearch"
+                href="https://maps.google.com" 
+                target="_blank" 
+                class="btn-tactile px-3 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-black rounded-xl transition shrink-0 flex items-center gap-1"
+                title="Google Maps par khojein"
+              >
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span class="hidden sm:inline">Google Maps</span>
+              </a>
+            </div>
+
+            <!-- Leaflet Interactive Map Container -->
+            <div id="clinicLocationPickerMap" class="w-full h-48 sm:h-56 rounded-xl border border-emerald-400 bg-slate-100 overflow-hidden relative shadow-inner z-0"></div>
+
+            <div class="flex items-center justify-between text-[11px] text-slate-600 font-semibold flex-wrap gap-2">
+              <span id="mapSelectedCoordsText">📍 Map par click karke clinic pin karein ya search karein.</span>
+              <span class="text-emerald-700 font-bold">Auto-updates Google Maps Link ✓</span>
+            </div>
+          </div>
         </div>
 
         <!-- STEP 3: VISITING HOURS & TIMINGS -->
@@ -4780,6 +4978,75 @@
   </div>
 
   <!-- ===================================================================== -->
+  <!-- MODAL: PAYMENT REQUIRED BEFORE PATIENT COMPLETION                     -->
+  <!-- ===================================================================== -->
+  <div id="modalCabinPaymentRequired" onclick="if(event.target===this)closeCabinPaymentRequiredModal()" class="fixed inset-0 bg-slate-950/75 z-50 hidden items-center justify-center p-3 sm:p-5 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border-2 border-emerald-400 my-auto">
+      <div class="bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-5 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-white/20 text-[#25D366] font-black text-2xl flex items-center justify-center mx-auto mb-2 shadow-inner">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <h3 class="text-lg font-black leading-tight">Payment Pehle Record Karein!</h3>
+        <p class="text-xs text-emerald-100 mt-1">
+          Bina fees record kiye mareez complete nahi hoga taaki hisaab 100% sahi rahe.
+        </p>
+      </div>
+
+      <div class="p-5 space-y-3.5 text-center">
+        <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+          <div class="text-xs text-slate-500 font-semibold uppercase">Ongoing Patient (Andar)</div>
+          <div id="cabinPaymentReqInfo" class="text-base font-black text-slate-900 mt-0.5">
+            Token #--: Mareez
+          </div>
+          <div id="cabinPaymentReqAmount" class="text-2xl font-black text-[#075E54] mt-1">
+            ₹300 Fees Baaki
+          </div>
+        </div>
+        <p class="text-xs text-slate-600 font-bold">
+          Mareez ne kis madhyam se consultation fees di hai? (1-Click Record):
+        </p>
+        
+        <div class="grid grid-cols-2 gap-2.5">
+          <button 
+            type="button" 
+            onclick="confirmCabinPaymentAndProceed('Cash')" 
+            class="btn-tactile py-3 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-sm flex flex-col items-center justify-center gap-1 shadow-md transition"
+          >
+            <i class="fa-solid fa-money-bill-wave text-xl text-emerald-200"></i>
+            <span>💵 Cash Mila</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="confirmCabinPaymentAndProceed('UPI')" 
+            class="btn-tactile py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black text-sm flex flex-col items-center justify-center gap-1 shadow-md transition"
+          >
+            <i class="fa-solid fa-mobile-screen-button text-xl text-blue-200"></i>
+            <span>📱 UPI / QR Mila</span>
+          </button>
+        </div>
+
+        <button 
+          type="button" 
+          onclick="confirmCabinPaymentAndProceed('Free')" 
+          class="w-full py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-xs transition"
+        >
+          🆓 Free / Maaf (₹0 Fee)
+        </button>
+      </div>
+
+      <div class="p-3 bg-slate-50 border-t border-slate-200 text-center">
+        <button 
+          type="button" 
+          onclick="closeCabinPaymentRequiredModal()" 
+          class="text-xs font-bold text-slate-500 hover:text-slate-800"
+        >
+          ✕ Cancel / Ruko (Abhi Complete Mat Karo)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- MODAL: EDIT APPOINTMENT DETAILS (FAST APPOINTMENT EDITOR)             -->
   <!-- ===================================================================== -->
   <div id="editAppointmentModal" onclick="if(event.target===this)closeEditAppointmentModal()" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -5129,7 +5396,16 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-3 bg-white border-t border-slate-200 flex justify-end flex-shrink-0">
+      <div class="p-3 bg-white border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+        <button 
+          type="button" 
+          onclick="deletePatientWholeData(activeProfilePatientKey)" 
+          class="btn-tactile px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs flex items-center gap-1.5 transition active:scale-95"
+          title="Delete Entire Patient Record"
+        >
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Delete Patient Data (मरीज़ का पूरा डेटा हटाएं)</span>
+        </button>
         <button 
           type="button" 
           onclick="closePatientProfileModal()" 
@@ -6310,6 +6586,7 @@
           nextBtn.textContent = 'Next: Timings & Slots ➔';
         }
         if (submitBtn) submitBtn.classList.add('hidden');
+        setTimeout(initClinicMapPicker, 150);
       } else if (stepNum === 3) {
         if (prevBtn) prevBtn.classList.remove('hidden');
         if (nextBtn) {
@@ -6329,6 +6606,143 @@
       if (next >= 1 && next <= 4) {
         switchOnboardStep(next);
       }
+    }
+
+    // =========================================================================
+    // CLINIC LOCATION PICKER (LEAFLET INTERACTIVE MAP & NOMINATIM SEARCH)
+    // =========================================================================
+    let clinicPickerMap = null;
+    let clinicPickerMarker = null;
+
+    function initClinicMapPicker() {
+      const container = document.getElementById('clinicLocationPickerMap');
+      if (!container) return;
+      if (typeof L === 'undefined') return;
+
+      let initialLat = 25.5941;
+      let initialLng = 85.1376;
+
+      const existingLink = (document.getElementById('onboardClinicMapUrl')?.value || document.getElementById('onboardGoogleMapsLink')?.value || '').trim();
+      const match = existingLink.match(/([-+]?[0-9]*\.?[0-9]+)[,\s]+([-+]?[0-9]*\.?[0-9]+)/);
+      if (match) {
+        const lat = parseFloat(match[1]);
+        const lng = parseFloat(match[2]);
+        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+          initialLat = lat;
+          initialLng = lng;
+        }
+      }
+
+      if (!clinicPickerMap) {
+        try {
+          clinicPickerMap = L.map('clinicLocationPickerMap').setView([initialLat, initialLng], 14);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+          }).addTo(clinicPickerMap);
+
+          clinicPickerMarker = L.marker([initialLat, initialLng], { draggable: true }).addTo(clinicPickerMap);
+
+          clinicPickerMarker.on('dragend', function (e) {
+            const pos = e.target.getLatLng();
+            updateMapSelectedPosition(pos.lat, pos.lng);
+          });
+
+          clinicPickerMap.on('click', function (e) {
+            if (clinicPickerMarker) {
+              clinicPickerMarker.setLatLng(e.latlng);
+            }
+            updateMapSelectedPosition(e.latlng.lat, e.latlng.lng);
+          });
+        } catch (e) {
+          console.warn('Leaflet initialization warning:', e);
+        }
+      } else {
+        try {
+          clinicPickerMap.invalidateSize();
+          if (initialLat && initialLng) {
+            clinicPickerMap.setView([initialLat, initialLng], 15);
+            if (clinicPickerMarker) clinicPickerMarker.setLatLng([initialLat, initialLng]);
+          }
+        } catch (e) {}
+      }
+    }
+
+    function updateMapSelectedPosition(lat, lng) {
+      const fixedLat = Number(lat).toFixed(6);
+      const fixedLng = Number(lng).toFixed(6);
+      const gmapUrl = `https://www.google.com/maps?q=${fixedLat},${fixedLng}`;
+      const mapInput1 = document.getElementById('onboardClinicMapUrl');
+      if (mapInput1) mapInput1.value = gmapUrl;
+      const mapInput2 = document.getElementById('onboardGoogleMapsLink');
+      if (mapInput2) mapInput2.value = gmapUrl;
+      const textEl = document.getElementById('mapSelectedCoordsText');
+      if (textEl) {
+        textEl.innerHTML = `📍 Selected: <strong class="text-emerald-700 font-extrabold">${fixedLat}, ${fixedLng}</strong>`;
+      }
+      const directBtn = document.getElementById('btnDirectGoogleMapsSearch');
+      if (directBtn) {
+        directBtn.href = gmapUrl;
+      }
+    }
+
+    async function searchClinicMapLocation() {
+      const query = (document.getElementById('mapLocationSearchInput')?.value || '').trim();
+      if (!query) {
+        showToast('⚠️ Kripya clinic ka naam ya area search karein', 'warning');
+        return;
+      }
+      const directBtn = document.getElementById('btnDirectGoogleMapsSearch');
+      if (directBtn) {
+        directBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+      }
+
+      showToast(`🔍 Searching "${query}" on Map...`);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            const item = data[0];
+            const lat = parseFloat(item.lat);
+            const lon = parseFloat(item.lon);
+            if (clinicPickerMap && clinicPickerMarker) {
+              clinicPickerMap.setView([lat, lon], 16);
+              clinicPickerMarker.setLatLng([lat, lon]);
+              updateMapSelectedPosition(lat, lon);
+              showToast(`📍 Found: ${item.display_name.slice(0, 35)}...`);
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Map geocode search failed:', e);
+      }
+      showToast('⚠️ Map location not found via geocode. Map par click karke pin lagayein ya Google Maps open karein.', 'warning');
+    }
+
+    function useCurrentGpsLocation() {
+      if (!navigator.geolocation) {
+        showToast('⚠️ Device GPS available nahi hai', 'warning');
+        return;
+      }
+      showToast('📡 Fetching GPS location...');
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          if (clinicPickerMap && clinicPickerMarker) {
+            clinicPickerMap.setView([lat, lng], 17);
+            clinicPickerMarker.setLatLng([lat, lng]);
+            updateMapSelectedPosition(lat, lng);
+            showToast('📍 GPS Location pin ho gayi!');
+          }
+        },
+        err => {
+          showToast('⚠️ GPS access allow nahi kiya gaya ya error aaya.', 'warning');
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
     }
 
     function renderOnboardAdditionalDoctors() {
@@ -6428,8 +6842,10 @@
       document.getElementById('onboardClinicPhone').value = clinicProfile.phone || '';
       document.getElementById('onboardClinicUpi').value = clinicProfile.upiId || '';
 
-      const gmapInput = document.getElementById('onboardGoogleMapsLink');
+      const gmapInput = document.getElementById('onboardClinicMapUrl') || document.getElementById('onboardGoogleMapsLink');
       if (gmapInput) gmapInput.value = clinicProfile.mapUrl || '';
+      const directMapsBtn = document.getElementById('btnDirectGoogleMapsSearch');
+      if (directMapsBtn && clinicProfile.mapUrl) directMapsBtn.href = clinicProfile.mapUrl;
 
       document.getElementById('onboardDoctorName').value = clinicProfile.doctorName || '';
       document.getElementById('onboardDoctorDegree').value = clinicProfile.doctorDegree || '';
@@ -7596,36 +8012,40 @@
       }
 
       if (banner) {
-        banner.classList.remove('hidden');
-        if (statusInfo.status === 'active') {
-          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
-          if (bannerText) {
-            const renText = statusInfo.renewalDate ? new Date(statusInfo.renewalDate).toLocaleDateString('en-IN') : 'Active Cycle';
-            bannerText.innerHTML = `<i class="fa-solid fa-circle-check text-[#25D366] text-sm"></i> <span><strong>${statusInfo.planName} Active</strong>: Renews on ${renText} • Unlimited Appointments</span>`;
-          }
-          if (upgradeBtn) {
-            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
-            upgradeBtn.innerHTML = '<i class="fa-solid fa-gear"></i> <span>Manage Plan</span>';
-          }
-        } else if (statusInfo.isTrialActive) {
-          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-amber-300 bg-amber-50 text-xs font-bold text-amber-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
-          if (bannerText) {
-            bannerText.innerHTML = `<i class="fa-solid fa-clock text-amber-600 text-sm"></i> <span><strong>7-Day Free Trial</strong>: ${statusInfo.daysLeft} din ${statusInfo.hoursLeft} ghante baaki • Unlimited Appointments</span>`;
-          }
-          if (upgradeBtn) {
-            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
-            upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade to Pro</span>';
-          }
+        if (currentTab === 'queue') {
+          banner.classList.add('hidden');
         } else {
-          // Trial period completed -> Free Plan with 100 appointments/month soft limit
-          banner.className = 'p-2.5 sm:p-3 rounded-2xl border-2 border-blue-300 bg-blue-50 text-xs font-bold text-blue-950 flex flex-wrap items-center justify-between gap-2 shadow-xs';
-          if (bannerText) {
-            const currentCount = getClinicMonthAppointmentsCount();
-            bannerText.innerHTML = `<i class="fa-solid fa-shield text-blue-600 text-sm"></i> <span><strong>Free Plan (100 Appointments/month)</strong>: ${currentCount} / 100 used this month</span>`;
-          }
-          if (upgradeBtn) {
-            upgradeBtn.className = 'btn-tactile px-3 py-1.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm';
-            upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade for Unlimited</span>';
+          banner.classList.remove('hidden');
+          if (statusInfo.status === 'active') {
+            banner.className = 'py-1 px-3 rounded-xl border border-emerald-300 bg-emerald-50 text-[11px] sm:text-xs font-semibold text-emerald-950 flex items-center justify-between gap-2 shadow-2xs whitespace-nowrap overflow-x-auto';
+            if (bannerText) {
+              const renText = statusInfo.renewalDate ? new Date(statusInfo.renewalDate).toLocaleDateString('en-IN') : 'Active Cycle';
+              bannerText.innerHTML = `<i class="fa-solid fa-circle-check text-[#25D366] text-xs"></i> <span><strong>${statusInfo.planName} Active</strong>: Renews on ${renText} • Unlimited</span>`;
+            }
+            if (upgradeBtn) {
+              upgradeBtn.className = 'btn-tactile px-2.5 py-0.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-lg text-[10px] sm:text-xs font-black flex items-center gap-1 transition shadow-2xs shrink-0';
+              upgradeBtn.innerHTML = '<i class="fa-solid fa-gear"></i> <span>Manage</span>';
+            }
+          } else if (statusInfo.isTrialActive) {
+            banner.className = 'py-1 px-3 rounded-xl border border-amber-300 bg-amber-50 text-[11px] sm:text-xs font-semibold text-amber-950 flex items-center justify-between gap-2 shadow-2xs whitespace-nowrap overflow-x-auto';
+            if (bannerText) {
+              bannerText.innerHTML = `<i class="fa-solid fa-clock text-amber-600 text-xs"></i> <span><strong>7-Day Free Trial</strong>: ${statusInfo.daysLeft}d ${statusInfo.hoursLeft}h left • Unlimited</span>`;
+            }
+            if (upgradeBtn) {
+              upgradeBtn.className = 'btn-tactile px-2.5 py-0.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-lg text-[10px] sm:text-xs font-black flex items-center gap-1 transition shadow-2xs shrink-0';
+              upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade</span>';
+            }
+          } else {
+            // Trial period completed -> Free Plan with 100 appointments/month soft limit
+            banner.className = 'py-1 px-3 rounded-xl border border-blue-300 bg-blue-50 text-[11px] sm:text-xs font-semibold text-blue-950 flex items-center justify-between gap-2 shadow-2xs whitespace-nowrap overflow-x-auto';
+            if (bannerText) {
+              const currentCount = getClinicMonthAppointmentsCount();
+              bannerText.innerHTML = `<i class="fa-solid fa-shield text-blue-600 text-xs"></i> <span><strong>Free Plan</strong>: ${currentCount} / 100 used this month</span>`;
+            }
+            if (upgradeBtn) {
+              upgradeBtn.className = 'btn-tactile px-2.5 py-0.5 bg-[#075E54] hover:bg-[#128C7E] text-white rounded-lg text-[10px] sm:text-xs font-black flex items-center gap-1 transition shadow-2xs shrink-0';
+              upgradeBtn.innerHTML = '<i class="fa-solid fa-crown text-amber-400"></i> <span>Upgrade</span>';
+            }
           }
         }
       }
@@ -8904,6 +9324,18 @@
       });
       todayQueue = Array.from(queueMap.values());
       todayQueue.sort((a, b) => (a.token || 0) - (b.token || 0));
+
+      if (lastPatientBooking && lastPatientBooking.id) {
+        const updatedSelf = queueMap.get(lastPatientBooking.id);
+        if (updatedSelf) {
+          lastPatientBooking = { ...lastPatientBooking, ...updatedSelf };
+          try {
+            localStorage.setItem('parchi_last_booking_' + (clinicProfile ? clinicProfile.id : ''), JSON.stringify(lastPatientBooking));
+            localStorage.setItem('parchi_active_patient_booking', JSON.stringify(lastPatientBooking));
+          } catch (e) {}
+        }
+      }
+
       saveLocalQueue();
       refreshAllViews();
     }
@@ -8952,6 +9384,30 @@
       const sequence = ['english', 'hinglish', 'hindi'];
       const nextIdx = (sequence.indexOf(currentLang) + 1) % sequence.length;
       changeLanguage(sequence[nextIdx]);
+    }
+
+    function toggleClinicDarkMode() {
+      const isDark = document.body.classList.toggle('clinic-dark-mode');
+      try {
+        localStorage.setItem('parchi_dark_mode', isDark ? 'true' : 'false');
+      } catch (e) {}
+      updateDarkModeBtnUI(isDark);
+      showToast(isDark ? '🌙 Clinic Dark Mode On ho gaya' : '☀️ Light Mode wapas aa gaya');
+    }
+
+    function updateDarkModeBtnUI(isDark) {
+      const icon = document.getElementById('themeToggleIcon');
+      const label = document.getElementById('themeToggleLabel');
+      const profBtn = document.getElementById('profileDarkModeBtn');
+      if (isDark) {
+        if (icon) icon.className = 'fa-solid fa-sun';
+        if (label) label.textContent = 'Light';
+        if (profBtn) profBtn.innerHTML = '<i class="fa-solid fa-sun"></i> <span>☀️ Light Mode Karein</span>';
+      } else {
+        if (icon) icon.className = 'fa-solid fa-moon';
+        if (label) label.textContent = 'Dark';
+        if (profBtn) profBtn.innerHTML = '<i class="fa-solid fa-moon"></i> <span>🌙 Dark Mode Karein</span>';
+      }
     }
 
     function switchAppRole(role, isPreview = false) {
@@ -9335,6 +9791,7 @@
       const tabs = ['queue', 'calendar', 'register', 'galla', 'profile'];
       const targetTab = tabs.includes(tabName) ? tabName : 'queue';
       currentTab = targetTab;
+      try { checkClinicTrialAndLock(); } catch (e) {}
       tabs.forEach(t => {
         const section = document.getElementById(`clinicTab-${t}`);
         const btn = document.getElementById(`tabBtn-${t}`);
@@ -9454,6 +9911,51 @@
             ? `₹${inCabin.fee} (⏳ Fee Baaki)`
             : `₹${inCabin.fee} (${inCabin.payMode} ✓)`;
 
+        const payControls = document.getElementById('cabinPaymentControlsContainer');
+        if (payControls) {
+          if (inCabin.payMode === 'Baaki') {
+            payControls.innerHTML = `
+              <div class="flex items-center gap-1.5 bg-black/25 px-2.5 py-1.5 rounded-xl border border-amber-300/40">
+                <span class="text-xs font-black text-amber-200 flex items-center gap-1">
+                  <i class="fa-solid fa-clock"></i> <span>Fees Baaki (₹${inCabin.fee || 300}):</span>
+                </span>
+                <button 
+                  type="button" 
+                  onclick="event.stopPropagation(); setPatientPaymentMode('${inCabin.id}', 'Cash')" 
+                  class="btn-tactile px-3 py-1 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-xs rounded-lg flex items-center gap-1 shadow-sm transition"
+                  title="Mark Fee as Cash"
+                >
+                  <i class="fa-solid fa-money-bill-wave"></i> <span>💵 Cash</span>
+                </button>
+                <button 
+                  type="button" 
+                  onclick="event.stopPropagation(); setPatientPaymentMode('${inCabin.id}', 'UPI')" 
+                  class="btn-tactile px-3 py-1 bg-sky-400 hover:bg-sky-300 active:scale-95 text-slate-950 font-black text-xs rounded-lg flex items-center gap-1 shadow-sm transition"
+                  title="Mark Fee as UPI"
+                >
+                  <i class="fa-solid fa-mobile-screen-button"></i> <span>📱 UPI</span>
+                </button>
+              </div>
+            `;
+          } else {
+            payControls.innerHTML = `
+              <div class="flex items-center gap-2 bg-emerald-950/60 px-2.5 py-1 rounded-xl border border-emerald-400/40">
+                <span class="text-xs font-black text-[#25D366] flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check"></i> <span>₹${inCabin.fee || 300} Paid (${inCabin.payMode} ✓)</span>
+                </span>
+                <button 
+                  type="button" 
+                  onclick="event.stopPropagation(); setPatientPaymentMode('${inCabin.id}', 'Baaki')" 
+                  class="px-2 py-0.5 rounded-md bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 text-[10px] sm:text-[11px] font-bold flex items-center gap-1 transition active:scale-95 border border-amber-400/30"
+                  title="Galti se mark ho gaya? Wapas Baaki karein"
+                >
+                  <i class="fa-solid fa-rotate-left text-[9px]"></i> <span>Undo</span>
+                </button>
+              </div>
+            `;
+          }
+        }
+
         if (cabinCancelBtn) cabinCancelBtn.classList.remove('hidden');
 
         const ringBtn = document.getElementById('btnAnnounceToken');
@@ -9482,6 +9984,9 @@
             ? 'कोई मरीज़ केबिन में नहीं है'
             : (currentLang === 'hinglish' ? 'Koi mareez andar nahi hai' : 'No patient in cabin');
         document.getElementById('cabinPatientFee').textContent = '';
+
+        const payControls = document.getElementById('cabinPaymentControlsContainer');
+        if (payControls) payControls.innerHTML = '';
 
         if (cabinCancelBtn) cabinCancelBtn.classList.add('hidden');
 
@@ -9871,12 +10376,80 @@
       );
     }
 
+    let pendingCabinAction = null;
+
+    function showCabinPaymentRequiredModal(patient, nextAction) {
+      if (!patient) return;
+      pendingCabinAction = { patientId: patient.id, nextAction: nextAction };
+      const infoEl = document.getElementById('cabinPaymentReqInfo');
+      const amtEl = document.getElementById('cabinPaymentReqAmount');
+      if (infoEl) infoEl.textContent = `Token #${patient.token}: ${patient.name}`;
+      if (amtEl) amtEl.textContent = `₹${patient.fee != null ? patient.fee : 300} Fees Baaki`;
+      const modal = document.getElementById('modalCabinPaymentRequired');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeCabinPaymentRequiredModal() {
+      const modal = document.getElementById('modalCabinPaymentRequired');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      pendingCabinAction = null;
+    }
+
+    function confirmCabinPaymentAndProceed(mode) {
+      if (!pendingCabinAction) {
+        closeCabinPaymentRequiredModal();
+        return;
+      }
+      const p = todayQueue.find(item => item.id === pendingCabinAction.patientId);
+      const action = pendingCabinAction.nextAction;
+      closeCabinPaymentRequiredModal();
+
+      if (p) {
+        if (mode === 'Free') {
+          p.payMode = 'Free';
+          p.fee = 0;
+          showToast(`🆓 Token #${p.token} (${p.name}): Free Consultation mark ho gaya`);
+        } else {
+          p.payMode = mode;
+          showToast(`💵 Token #${p.token} (${p.name}): ₹${p.fee || 300} (${mode}) vasool ho gaya!`);
+        }
+        syncQueuePatchToServer(p.id, { payMode: p.payMode, fee: p.fee });
+        saveLocalQueue();
+        if (typeof syncChannel !== 'undefined' && syncChannel) {
+          syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
+        }
+      }
+
+      if (action === 'CALL_NEXT') {
+        executeCompleteCurrentAndCallNext();
+      } else if (typeof action === 'string') {
+        executeSendPatientInsideCabin(action);
+      } else {
+        refreshAllViews();
+      }
+    }
+
     function completeCurrentAndCallNext() {
       if (isPlatformLocked()) {
         showTrialLockModal();
         showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
         return;
       }
+      const currentCabin = getCurrentCabinPatient();
+      if (currentCabin && currentCabin.payMode === 'Baaki' && (currentCabin.fee || 0) > 0) {
+        showCabinPaymentRequiredModal(currentCabin, 'CALL_NEXT');
+        return;
+      }
+      executeCompleteCurrentAndCallNext();
+    }
+
+    function executeCompleteCurrentAndCallNext() {
       const currentCabin = getCurrentCabinPatient();
       if (currentCabin) {
         currentCabin.status = 'DONE';
@@ -9925,6 +10498,18 @@
         showToast('🔒 7-Day Free Trial Expired! Platform lock hai. Kripya subscribe karein.', 'warning');
         return;
       }
+      const target = todayQueue.find(p => p.id === patientId);
+      if (!target) return;
+
+      const currentCabin = getCurrentCabinPatient();
+      if (currentCabin && currentCabin.id !== target.id && currentCabin.payMode === 'Baaki' && (currentCabin.fee || 0) > 0) {
+        showCabinPaymentRequiredModal(currentCabin, target.id);
+        return;
+      }
+      executeSendPatientInsideCabin(patientId);
+    }
+
+    function executeSendPatientInsideCabin(patientId) {
       const target = todayQueue.find(p => p.id === patientId);
       if (!target) return;
 
@@ -11761,33 +12346,98 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-end gap-2 flex-shrink-0">
+            <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0">
               <button 
                 type="button" 
                 onclick="openPatientProfileModal('${p.key}')" 
-                class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+                class="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
                 title="View Full Profile & All Appointments Timeline"
               >
-                <i class="fa-solid fa-clock-rotate-left"></i> Timeline
+                <i class="fa-solid fa-clock-rotate-left"></i> <span class="hidden sm:inline">Timeline</span>
+              </button>
+              <button 
+                type="button" 
+                onclick="event.stopPropagation(); deletePatientWholeData('${p.key}')" 
+                class="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-600 border border-rose-200 font-bold text-xs flex items-center gap-1 transition"
+                title="Delete Patient Record & All Appointments (1-Click Delete)"
+              >
+                <i class="fa-solid fa-trash-can"></i>
+                <span class="hidden sm:inline">Delete</span>
               </button>
               ${
                 alreadyInLine
-                  ? `<span class="px-3 py-2 rounded-xl bg-emerald-50 text-[#075E54] font-bold text-xs border border-emerald-200">
-                      ✓ Aaj Ki Line Mein Hai
+                  ? `<span class="px-2.5 sm:px-3 py-2 rounded-xl bg-emerald-50 text-[#075E54] font-bold text-xs border border-emerald-200">
+                      ✓ Aaj Ki Line
                     </span>`
                   : `<button 
                       type="button"
                       onclick="reAddPatientByKey('${p.key}')" 
-                      class="btn-tactile bg-[#128C7E] hover:bg-[#075E54] text-white font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition"
+                      class="btn-tactile bg-[#128C7E] hover:bg-[#075E54] text-white font-black px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition"
                     >
                       <i class="fa-solid fa-bolt text-[#25D366]"></i>
-                      <span>+ Aaj Ki Line (₹${clinicProfile.fees ? clinicProfile.fees.followup : 200})</span>
+                      <span>+ Aaj Ki Line</span>
                     </button>`
               }
             </div>
           </div>
         `;
       }).join('');
+    }
+
+    async function deletePatientWholeData(key) {
+      if (!key) return;
+      const allUnique = getUniquePatientsList();
+      const patient = allUnique.find(item => item.key === key);
+      const name = patient ? patient.name : 'Mareez';
+      const phone = patient ? patient.phone : '';
+      if (!confirm(`Kya aap sach mein mareez "${name}" ka pura data aur appointments history hamesha ke liye delete karna chahte hain?`)) {
+        return;
+      }
+
+      const cleanPhone = (typeof normalizePhoneNumber === 'function') ? normalizePhoneNumber(phone) : (phone || '').replace(/[^0-9]/g, '');
+      const isNameKey = String(key).startsWith('name_');
+      const targetName = isNameKey ? String(key).replace(/^name_/, '').trim().toLowerCase() : '';
+
+      // 1. Remove from todayQueue
+      todayQueue = todayQueue.filter(p => {
+        if (isNameKey && (p.name || '').trim().toLowerCase() === targetName) return false;
+        const pPhone = (typeof normalizePhoneNumber === 'function') ? normalizePhoneNumber(p.phone) : (p.phone || '').replace(/[^0-9]/g, '');
+        if (cleanPhone && cleanPhone.length >= 10 && pPhone.endsWith(cleanPhone.slice(-10))) return false;
+        if (phone && p.phone === phone) return false;
+        return true;
+      });
+      saveLocalQueue();
+
+      // 2. Remove from patientRegister
+      patientRegister = patientRegister.filter(p => {
+        if (isNameKey && (p.name || '').trim().toLowerCase() === targetName) return false;
+        const pPhone = (typeof normalizePhoneNumber === 'function') ? normalizePhoneNumber(p.phone) : (p.phone || '').replace(/[^0-9]/g, '');
+        if (cleanPhone && cleanPhone.length >= 10 && pPhone.endsWith(cleanPhone.slice(-10))) return false;
+        if (phone && p.phone === phone) return false;
+        return true;
+      });
+      try {
+        localStorage.setItem('klinicq_register', JSON.stringify(patientRegister));
+      } catch (e) {}
+
+      // 3. Delete from backend via DELETE /api/queue
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          await fetch(`/api/queue?key=${encodeURIComponent(key)}&phone=${encodeURIComponent(phone || '')}&clinic=${encodeURIComponent(clinicProfile ? clinicProfile.id : '')}`, {
+            method: 'DELETE'
+          });
+        } catch (e) {}
+      }
+
+      // 4. Sync across browser tabs
+      if (typeof syncChannel !== 'undefined' && syncChannel) {
+        syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
+      }
+
+      closePatientProfileModal();
+      renderPatientRegister();
+      refreshAllViews();
+      showToast(`🗑️ Mareez (${name}) ka pura data delete ho gaya!`);
     }
 
     function openPatientProfileModal(key) {
@@ -12163,7 +12813,9 @@
     // 13. VIEW 2: PATIENT QR / SELF-BOOKING FLOW (DYNAMIC SLOTS)
     // =========================================================================
     function parseTimeString(tStr) {
-      const match = tStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (!tStr) return 600;
+      const clean = String(tStr).replace(/\s*\([^)]*\)/g, '').trim();
+      const match = clean.match(/(\d+):(\d+)\s*(AM|PM)/i);
       if (!match) return 600; // default 10:00 AM in minutes
       let hours = parseInt(match[1], 10);
       const minutes = parseInt(match[2], 10);
@@ -12181,6 +12833,136 @@
       if (h12 === 0) h12 = 12;
       const padM = String(minutes).padStart(2, '0');
       return `${String(h12).padStart(2, '0')}:${padM} ${ampm}`;
+    }
+
+    function normalizeSlotTimeForMatch(slot) {
+      if (!slot) return '';
+      const clean = String(slot).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+      const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+      if (m) {
+        const h = parseInt(m[1], 10);
+        const min = m[2];
+        const ap = (m[3] || '').toLowerCase();
+        return ap ? `${h}:${min} ${ap}` : `${h}:${min}`;
+      }
+      return clean.replace(/\s+/g, ' ');
+    }
+
+    function isSlotAlreadyBooked(slot, checkDate) {
+      if (!slot) return false;
+      const targetDate = checkDate || selectedPatCustomDate || getLocalDateString();
+      const normSlot = normalizeSlotTimeForMatch(slot);
+      return todayQueue.some(p => {
+        if (p.status === 'CANCELLED') return false;
+        const pDate = p.date || (p.createdAt ? p.createdAt.slice(0, 10) : targetDate);
+        if (pDate !== targetDate) return false;
+        return normalizeSlotTimeForMatch(p.slotTime) === normSlot;
+      });
+    }
+
+    function getAccurateExpectedAppointmentTime(booking) {
+      if (!booking) return { clockTime: '--', waitText: '--', isNow: false };
+      if (booking.status === 'DONE') {
+        return { clockTime: 'Visit Completed', waitText: 'Completed ✓', isNow: false, isDone: true };
+      }
+      if (booking.status === 'IN_CABIN') {
+        return { clockTime: 'Abhi Cabin Mein', waitText: 'Consultation On', isNow: true };
+      }
+      if (booking.status === 'CANCELLED') {
+        return { clockTime: 'Cancelled', waitText: 'Appointment Cancelled', isCancelled: true };
+      }
+      if (booking.status === 'NO_SHOW') {
+        return { clockTime: 'No-Show', waitText: 'Missed', isNoShow: true };
+      }
+
+      const slotMins = parseTimeString(booking.slotTime);
+      const delayMins = (typeof getDoctorDelayMinutes === 'function') ? getDoctorDelayMinutes() : 0;
+      const scheduledMins = slotMins + delayMins;
+
+      const todayStr = getLocalDateString();
+      const targetDate = booking.date || todayStr;
+      const isToday = targetDate === todayStr || (booking.day && String(booking.day).includes('Aaj'));
+
+      if (!isToday) {
+        const clockTime = formatTimeMinutes(scheduledMins);
+        const waitText = booking.day || booking.date || 'Scheduled';
+        return { clockTime, waitText, waitingAhead: 0 };
+      }
+
+      const now = new Date();
+      const nowMins = now.getHours() * 60 + now.getMinutes();
+
+      const patientShift = booking.shift || 'Morning';
+      const shiftCfg = patientShift === 'Morning' 
+        ? clinicProfile.visitingHours?.morning 
+        : clinicProfile.visitingHours?.evening;
+      const shiftStartMins = shiftCfg && shiftCfg.start 
+        ? parseTimeString(shiftCfg.start) 
+        : (patientShift === 'Morning' ? 600 : 1020);
+      const effectiveShiftStart = shiftStartMins + Math.max(0, delayMins);
+
+      const statusInfo = (typeof getClinicLiveStatusInfo === 'function') ? getClinicLiveStatusInfo() : { isOpen: true };
+
+      if (!statusInfo.isOpen || nowMins < effectiveShiftStart) {
+        // Clinic closed or shift has not started yet today
+        const expectedClockMins = Math.max(effectiveShiftStart, scheduledMins);
+        const remainingMins = Math.max(0, expectedClockMins - nowMins);
+        const clockTime = formatTimeMinutes(expectedClockMins);
+        let waitText = '';
+        if (remainingMins === 0) {
+          waitText = 'Starting Soon';
+        } else if (remainingMins < 60) {
+          waitText = `~${remainingMins} Mins Baaki`;
+        } else {
+          const h = Math.floor(remainingMins / 60);
+          const m = remainingMins % 60;
+          waitText = `~${h}h ${m}m Baaki`;
+        }
+        return { clockTime, waitText, remainingMins, waitingAhead: 0 };
+      }
+
+      // Shift is actively ongoing
+      const myToken = booking.token || 1;
+      const waitingAhead = todayQueue.filter(p => 
+        p.status === 'WAITING' && 
+        (p.token || 0) < myToken && 
+        (!p.shift || p.shift === patientShift)
+      ).length;
+      const inCabin = (typeof getCurrentCabinPatient === 'function') ? getCurrentCabinPatient() : null;
+      const avgMins = (clinicProfile.visitingHours && clinicProfile.visitingHours.avgConsultationMins) || 8;
+
+      if (waitingAhead === 0 && inCabin && inCabin.id === booking.id) {
+        return { clockTime: 'Abhi Cabin Mein', waitText: 'Consultation On', isNow: true, waitingAhead: 0 };
+      }
+
+      if (waitingAhead === 0) {
+        const remainingMins = inCabin ? Math.max(1, Math.round(avgMins / 2)) : 0;
+        const expectedMins = Math.max(nowMins, nowMins + remainingMins);
+        const clockTime = formatTimeMinutes(expectedMins);
+        return { 
+          clockTime, 
+          waitText: 'Agla Number (~0-5m)', 
+          isNow: true, 
+          waitingAhead: 0 
+        };
+      }
+
+      // Dynamically adjust expected time based on doctor pace and queue distance
+      const queueWaitMins = Math.round(waitingAhead * avgMins + (inCabin ? Math.round(avgMins / 2) : 0));
+      const liveEstClockMins = nowMins + queueWaitMins;
+      const expectedMins = Math.max(nowMins + 1, Math.round(liveEstClockMins));
+      const clockTime = formatTimeMinutes(expectedMins);
+      const remainingMins = Math.max(1, expectedMins - nowMins);
+
+      let waitText = '';
+      if (remainingMins < 60) {
+        waitText = `~${remainingMins} Mins Baaki`;
+      } else {
+        const h = Math.floor(remainingMins / 60);
+        const m = remainingMins % 60;
+        waitText = `~${h}h ${m}m Baaki`;
+      }
+      return { clockTime, waitText, waitDurationMins: remainingMins, waitingAhead };
     }
 
     function generateDynamicSlots(shift, forDate = selectedPatCustomDate) {
@@ -12708,8 +13490,20 @@
             liveTokenEl.className = 'text-lg sm:text-xl font-black text-white mt-0.5';
           }
           if (subTextEl) {
-            subTextEl.textContent = 'Doctor Sahab cabin mein mareez dekh rahe hain.';
-            subTextEl.className = 'text-xs text-white/80 font-medium mt-0.5';
+            if (lastPatientBooking && lastPatientBooking.token) {
+              const selfLive = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
+              if (selfLive.status === 'DONE') {
+                subTextEl.innerHTML = `Aapka Token #${selfLive.token}: <span class="text-emerald-300 font-black">Checkup Sampann (Visit Completed ✓)</span>`;
+              } else if (selfLive.status === 'IN_CABIN') {
+                subTextEl.innerHTML = `Aapka Token #${selfLive.token}: <span class="text-emerald-300 font-black">Abhi Doctor Cabin Mein Hain</span>`;
+              } else {
+                const est = getAccurateExpectedAppointmentTime(selfLive);
+                subTextEl.innerHTML = `Aapka Token: <strong>#${selfLive.token}</strong> • Expected Visit Time: <strong class="text-emerald-300 font-black">${est.clockTime}</strong> (${est.waitText})`;
+              }
+            } else {
+              subTextEl.textContent = 'Doctor Sahab cabin mein mareez dekh rahe hain.';
+            }
+            subTextEl.className = 'text-xs text-white/90 font-medium mt-0.5';
           }
           if (waitingCountEl) {
             waitingCountEl.textContent = `${waitingCount} Mareez`;
@@ -12727,9 +13521,15 @@
           if (numEl) numEl.textContent = `#${lastPatientBooking.token}`;
           const slotEl = document.getElementById('landingPassSlotText');
           if (slotEl) {
-            const revisedInfo = getRevisedSlotInfo(lastPatientBooking.slotTime);
-            const slotDisplay = (revisedInfo && revisedInfo.hasChange) ? revisedInfo.displayText : (lastPatientBooking.slotTime || 'Slot');
-            slotEl.textContent = `${lastPatientBooking.day || 'Aaj'} • ${slotDisplay}`;
+            const selfLive = todayQueue.find(p => p.id === lastPatientBooking.id) || lastPatientBooking;
+            if (selfLive.status === 'DONE') {
+              slotEl.innerHTML = `<span class="text-emerald-700 font-black">✅ Visit Completed (Session Done)</span>`;
+            } else if (selfLive.status === 'IN_CABIN') {
+              slotEl.innerHTML = `<span class="text-emerald-600 font-black">🟢 Abhi Cabin Mein (In Consultation)</span>`;
+            } else {
+              const est = getAccurateExpectedAppointmentTime(selfLive);
+              slotEl.textContent = `${selfLive.day || 'Aaj'} • Expected: ${est.clockTime} (${est.waitText})`;
+            }
           }
         } else {
           landingPass.classList.add('hidden');
@@ -12829,25 +13629,75 @@
           `;
           selectedPatSlot = '';
         } else {
-          if (!slots.includes(selectedPatSlot)) {
-            selectedPatSlot = slots[0];
+          const targetDate = selectedPatCustomDate || getLocalDateString();
+          const bookedSlotsSet = new Set();
+          todayQueue.forEach(p => {
+            if (p.status === 'CANCELLED') return;
+            const pDate = p.date || (p.createdAt ? p.createdAt.slice(0, 10) : targetDate);
+            if (pDate === targetDate && p.slotTime) {
+              bookedSlotsSet.add(normalizeSlotTimeForMatch(p.slotTime));
+            }
+          });
+
+          const currentLeave = clinicProfile.leaves && clinicProfile.leaves[targetDate];
+          const manualBlocked = (currentLeave && Array.isArray(currentLeave.blockedSlots)) 
+            ? currentLeave.blockedSlots.map(normalizeSlotTimeForMatch) 
+            : [];
+
+          const availableSlots = slots.filter(s => {
+            const norm = normalizeSlotTimeForMatch(s);
+            return !bookedSlotsSet.has(norm) && !manualBlocked.includes(norm);
+          });
+
+          if (!selectedPatSlot || bookedSlotsSet.has(normalizeSlotTimeForMatch(selectedPatSlot)) || manualBlocked.includes(normalizeSlotTimeForMatch(selectedPatSlot)) || !slots.includes(selectedPatSlot)) {
+            selectedPatSlot = availableSlots.length > 0 ? availableSlots[0] : '';
           }
-          slotsContainer.innerHTML = slots.map(slot => {
-            const active = selectedPatSlot === slot;
-            return `
-              <button 
-                type="button" 
-                onclick="selectedPatSlot='${slot}'; renderPatientBookingPage();" 
-                class="py-2 px-2 rounded-xl font-bold text-xs border transition ${
-                  active
-                    ? 'bg-[#075E54] text-white border-[#075E54] shadow-xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-emerald-50'
-                }"
-              >
-                ${slot}
-              </button>
+
+          if (availableSlots.length === 0) {
+            slotsContainer.innerHTML = `
+              <div class="col-span-full py-3 text-center bg-rose-50 rounded-xl border border-rose-200 text-xs font-bold text-rose-700">
+                🚫 Is shift ke sabhi slots (${slots.length}) book ho chuke hain. Kripya agli shift ya doosri tarikh chunein.
+              </div>
             `;
-          }).join('');
+          } else {
+            slotsContainer.innerHTML = slots.map(slot => {
+              const norm = normalizeSlotTimeForMatch(slot);
+              const isBooked = bookedSlotsSet.has(norm);
+              const isManualBlocked = manualBlocked.includes(norm);
+              const isDisabled = isBooked || isManualBlocked;
+              const active = selectedPatSlot === slot;
+
+              if (isDisabled) {
+                return `
+                  <button 
+                    type="button" 
+                    disabled 
+                    class="py-2 px-1.5 rounded-xl font-bold text-[11px] sm:text-xs border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed opacity-60 line-through flex items-center justify-center gap-1"
+                    title="${isBooked ? 'Yeh slot pehle se book ho chuka hai' : 'Slot blocked hai'}"
+                  >
+                    <span>${slot}</span>
+                    <span class="text-[9px] no-underline font-extrabold text-rose-500 bg-rose-50 px-1 py-0.2 rounded border border-rose-200">
+                      ${isBooked ? 'Booked' : 'Off'}
+                    </span>
+                  </button>
+                `;
+              }
+
+              return `
+                <button 
+                  type="button" 
+                  onclick="selectedPatSlot='${slot}'; renderPatientBookingPage();" 
+                  class="py-2 px-2 rounded-xl font-bold text-xs border transition ${
+                    active
+                      ? 'bg-[#075E54] text-white border-[#075E54] shadow-xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-emerald-50'
+                  }"
+                >
+                  ${slot}
+                </button>
+              `;
+            }).join('');
+          }
         }
       }
 
@@ -12960,6 +13810,13 @@
         return;
       }
 
+      if (isSlotAlreadyBooked(selectedPatSlot, selectedPatCustomDate)) {
+        showToast(`⚠️ Slot "${selectedPatSlot}" pehle se book ho chuka hai! Kripya doosra slot chunein.`, 'warning');
+        alert(`Slot "${selectedPatSlot}" pehle se kisi aur mareez dwara book kiya ja chuka hai.\nKripya doosra uplabdh slot chunein.`);
+        renderPatientBookingPage();
+        return;
+      }
+
       const docs = clinicProfile.doctors && clinicProfile.doctors.length > 0
         ? clinicProfile.doctors
         : [{ id: 'doc_1', name: clinicProfile.doctorName, fee: (clinicProfile.fees ? clinicProfile.fees.normal : 300) }];
@@ -13015,6 +13872,13 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newBooking)
           });
+          if (res.status === 409) {
+            const errData = await res.json().catch(() => ({}));
+            showToast(errData.message || '⚠️ Yeh slot pehle se book ho chuka hai. Kripya doosra slot chunein.', 'warning');
+            alert(errData.message || 'Yeh slot pehle se book ho chuka hai. Kripya doosra slot chunein.');
+            renderPatientBookingPage();
+            return;
+          }
           if (res.status === 403) {
             const errData = await res.json().catch(() => ({}));
             showToast(errData.message || '⚠️ Clinic plan limit reached: 100 monthly appointments limit exceeded. Contact clinic.', 'warning');
@@ -13148,9 +14012,10 @@
         const isTodayOrFuture = !b.date || b.date >= todayStr || (b.day && (b.day.includes('Aaj') || b.day.includes('Kal') || b.day.includes('Parson')));
         if (!isTodayOrFuture) return false;
 
-        lastPatientBooking = b;
+        const liveMatch = todayQueue.find(p => p.id === b.id);
+        lastPatientBooking = liveMatch ? { ...b, ...liveMatch } : b;
         patientPassViewMode = 'direct';
-        renderTokenPassDetails(b);
+        renderTokenPassDetails(lastPatientBooking);
         return true;
       } catch (e) {
         return false;
@@ -13324,40 +14189,64 @@
           inCabinNotice.innerHTML = '🔔 <strong>AAPKA NUMBER AA GAYA!</strong> Kripya Doctor Sahab ke cabin mein jayein (Currently Under Consultation).';
         }
       } else if (myBooking.status === 'DONE') {
-        if (distEl) distEl.textContent = '✅ CONSULTATION COMPLETE';
-        if (waitEstEl) waitEstEl.textContent = 'Parchi lekar counter par check karein';
+        card.className = 'p-3.5 sm:p-4 bg-emerald-100/90 border-2 border-emerald-500 rounded-2xl text-left space-y-2 shadow-sm';
+        if (headerEl) headerEl.className = 'text-[11px] font-black uppercase text-emerald-950 flex items-center gap-1.5';
+        if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-600';
+        if (distEl) {
+          distEl.textContent = '🎉 VISIT COMPLETED (मुलाकात पूर्ण हो गई)';
+          distEl.className = 'text-xs sm:text-sm font-black text-emerald-950';
+        }
+        if (waitEstEl) {
+          waitEstEl.textContent = 'Session Completed • Doctor Sahab ne checkup kar liya hai. Dhanyawad!';
+          waitEstEl.className = 'text-xs text-emerald-800 font-bold';
+        }
         if (passEstTimeEl) {
-          passEstTimeEl.textContent = 'Pura Ho Gaya (Done)';
-          passEstTimeEl.className = 'text-slate-600 font-bold';
+          passEstTimeEl.innerHTML = '<span class="text-xs sm:text-sm font-black text-emerald-800">Visit Done ✓</span>';
+          passEstTimeEl.className = 'text-emerald-800 font-bold';
         }
         if (visualAheadEl) visualAheadEl.textContent = 'Done ✓';
-        if (inCabinNotice) inCabinNotice.classList.add('hidden');
+        if (cabinTokenEl) cabinTokenEl.textContent = inCabin ? `Token #${inCabin.token}` : 'Completed';
+        const passTokenEl = document.getElementById('passTokenNumber');
+        if (passTokenEl && myBooking.token) {
+          passTokenEl.innerHTML = `#${myBooking.token} <span class="text-xs sm:text-sm font-extrabold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full inline-block align-middle ml-1">Done ✓</span>`;
+        }
+        if (inCabinNotice) {
+          inCabinNotice.classList.remove('hidden');
+          inCabinNotice.className = 'p-3 bg-emerald-700 text-white font-black text-xs sm:text-sm rounded-xl text-center shadow-md';
+          inCabinNotice.innerHTML = '✅ <strong>VISIT COMPLETED (चेकअप संपन्न)!</strong> Aapka consultation pura ho gaya hai. Session completed.';
+        }
+        return;
       } else {
+        const passTokenEl = document.getElementById('passTokenNumber');
+        if (passTokenEl && myBooking.token) {
+          passTokenEl.textContent = `#${myBooking.token}`;
+        }
         if (inCabinNotice) inCabinNotice.classList.add('hidden');
-        const myToken = myBooking.token || 1;
-        const aheadCount = todayQueue.filter(p => p.status === 'WAITING' && (p.token || 0) < myToken).length;
+        const est = getAccurateExpectedAppointmentTime(myBooking);
+        const aheadCount = est.waitingAhead !== undefined ? est.waitingAhead : 0;
 
         if (aheadCount === 0) {
           if (distEl) distEl.textContent = '🔔 AAP AGLE HAIN!';
           if (waitEstEl) waitEstEl.textContent = 'Cabin ke bahar taiyar rahein';
           if (passEstTimeEl) {
             passEstTimeEl.textContent = '~0-5 Mins (Agla Number)';
+            passEstTimeEl.innerHTML = `<span class="text-sm sm:text-base font-black text-emerald-800">${est.clockTime}</span><div class="text-[10px] text-[#075E54] font-bold">~0-5 Mins (Agla Number)</div>`;
             passEstTimeEl.className = 'text-[#075E54] font-bold';
           }
           if (visualAheadEl) visualAheadEl.textContent = 'Agla Number!';
         } else if (aheadCount === 1) {
           if (distEl) distEl.textContent = '1 Mareez Aage Hai';
-          if (waitEstEl) waitEstEl.textContent = `~${avgMins} Mins Baaki`;
+          if (waitEstEl) waitEstEl.textContent = `Expected: ${est.clockTime} (${est.waitText})`;
           if (passEstTimeEl) {
-            passEstTimeEl.textContent = `~${avgMins} Mins`;
+            passEstTimeEl.innerHTML = `<span class="text-sm sm:text-base font-black text-emerald-900">${est.clockTime}</span><div class="text-[10px] text-slate-500 font-bold">${est.waitText}</div>`;
             passEstTimeEl.className = 'text-[#075E54] font-bold';
           }
           if (visualAheadEl) visualAheadEl.textContent = '1 Log Aage';
         } else {
           if (distEl) distEl.textContent = `${aheadCount} Mareez Aage Hain`;
-          if (waitEstEl) waitEstEl.textContent = `~${aheadCount * avgMins} Mins Baaki`;
+          if (waitEstEl) waitEstEl.textContent = `Expected: ${est.clockTime} (${est.waitText})`;
           if (passEstTimeEl) {
-            passEstTimeEl.textContent = `~${aheadCount * avgMins} Mins`;
+            passEstTimeEl.innerHTML = `<span class="text-sm sm:text-base font-black text-emerald-900">${est.clockTime}</span><div class="text-[10px] text-slate-500 font-bold">${est.waitText}</div>`;
             passEstTimeEl.className = 'text-[#075E54] font-bold';
           }
           if (visualAheadEl) visualAheadEl.textContent = `${aheadCount} Log Aage`;
@@ -15441,6 +16330,9 @@
       renderPatientRegister();
       renderGallaTab();
       updatePatientTokenPassLiveStatus();
+      if (typeof renderPatientBookingPage === 'function' && currentRole === 'patient') {
+        renderPatientBookingPage();
+      }
       renderCityChips();
       renderSpecialtyChips();
       renderDoctorDiscoveryFeed();
@@ -16092,9 +16984,17 @@
         }
       }
 
+      try {
+        const savedDark = localStorage.getItem('parchi_dark_mode');
+        if (savedDark === 'true') {
+          document.body.classList.add('clinic-dark-mode');
+          if (typeof updateDarkModeBtnUI === 'function') updateDarkModeBtnUI(true);
+        }
+      } catch (e) {}
+
       refreshAllViews();
 
-      // Real-time periodic heartbeat (every 10s) to keep live clinic status & queue synced for waiting patients
+      // Real-time periodic heartbeat (every 3.5s) to keep live clinic status & queue synced for waiting patients
       setInterval(async () => {
         try {
           // Check temporary online booking override expiry
@@ -16161,7 +17061,7 @@
             renderQueueList();
           }
         } catch (e) {}
-      }, 10000);
+      }, 3500);
 
       // Auto-refresh when tab is focused / brought to foreground
       document.addEventListener('visibilitychange', () => {
@@ -16179,6 +17079,11 @@
       // Keyboard shortcut: Escape key closes topmost open modal or drawer
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' || e.key === 'Esc') {
+          const cabinPayModal = document.getElementById('modalCabinPaymentRequired');
+          if (cabinPayModal && !cabinPayModal.classList.contains('hidden')) {
+            closeCabinPaymentRequiredModal();
+            return;
+          }
           const bookedModal = document.getElementById('bookedAppointmentsModal');
           if (bookedModal && !bookedModal.classList.contains('hidden')) {
             closeBookedAppointmentsModal();

@@ -14,7 +14,7 @@ async function parseBody(req) {
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -83,6 +83,24 @@ module.exports = async (req, res) => {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ success: true, item: updated }));
+    }
+  }
+
+  if (method === 'DELETE') {
+    const phone = url.searchParams.get('phone');
+    const key = url.searchParams.get('key');
+    const clinicId = url.searchParams.get('clinic') || url.searchParams.get('clinicId');
+    if (itemId) {
+      const success = store.deleteBooking(itemId);
+      res.statusCode = success ? 200 : 404;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ success, message: success ? 'Booking deleted' : 'Booking not found' }));
+    }
+    if (phone || key) {
+      const success = store.deletePatientHistory(phone || key, clinicId);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ success: true, message: 'Patient history deleted' }));
     }
   }
 
