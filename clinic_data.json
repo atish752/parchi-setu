@@ -1,14 +1,368 @@
 {
-  "clinic": null,
-  "clinics": {},
-  "queue": [],
-  "patientRegister": [],
-  "prescriptions": [],
-  "bills": [],
-  "analytics": {
-    "totalRevenue": 0,
-    "completedCount": 0,
-    "cancelledCount": 0,
-    "peakHour": "11:00 AM"
-  }
+  "clinic": {
+    "id": "clinic_sanjeevani_01",
+    "name": "Sanjeevani Family Clinic",
+    "tagline": "General Physician & Family Healthcare",
+    "category": "General Medicine",
+    "address": "Near Main Market Chowk, Station Road",
+    "city": "Patna, Bihar",
+    "phone": "9835012345",
+    "whatsapp": "9835012345",
+    "upiId": "sanjeevaniclinic@upi",
+    "doctorName": "Dr. Rajesh Sharma",
+    "doctorDegree": "MBBS, MD (General Physician)",
+    "doctorRegNo": "MCI-48291",
+    "experienceYears": 14,
+    "rating": 4.9,
+    "reviewCount": 148,
+    "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+    "fees": {
+      "normal": 300,
+      "followup": 200,
+      "emergency": 500,
+      "report": 0
+    },
+    "visitingReasons": [
+      "🤒 Bukhar / Cold",
+      "🩸 BP / Sugar",
+      "🤢 Pet / Gas",
+      "🔄 Follow-up",
+      "📋 Report Check",
+      "🤕 Dard / Injury"
+    ],
+    "visitingHours": {
+      "morning": {
+        "enabled": true,
+        "start": "10:00 AM",
+        "end": "02:00 PM",
+        "slotDurationMins": 15,
+        "maxTokens": 25
+      },
+      "evening": {
+        "enabled": true,
+        "start": "05:00 PM",
+        "end": "09:00 PM",
+        "slotDurationMins": 15,
+        "maxTokens": 30
+      },
+      "daysOpen": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "avgConsultationMins": 10
+    },
+    "liveStatus": {
+      "isDoctorLate": false,
+      "doctorDelayMinutes": 0,
+      "expectedArrivalTime": "10:00 AM"
+    },
+    "doctors": [
+      {
+        "id": "doc_1",
+        "name": "Dr. Rajesh Sharma",
+        "degree": "MBBS, MD (General Physician)",
+        "specialty": "General Medicine",
+        "regNo": "MCI-48291",
+        "fee": 300,
+        "isMain": true,
+        "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80"
+      }
+    ],
+    "leaves": {},
+    "onboarded": true,
+    "createdAt": "2026-11-07T03:40:23.003Z",
+    "specialty": "General Medicine",
+    "updatedAt": "2026-11-07T03:40:27.903Z"
+  },
+  "clinics": {
+    "clinic_sanjeevani_01": {
+      "id": "clinic_sanjeevani_01",
+      "name": "Sanjeevani Family Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Rajesh Sharma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM"
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "isMain": true,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80"
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:40:23.003Z",
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:40:27.903Z"
+    },
+    "clinic_patna_central_99": {
+      "id": "clinic_patna_central_99",
+      "name": "Patna Central Hospital Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9800011122",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Alok Nath",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Alok Nath",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:40:23.003Z",
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:40:24.457Z"
+    },
+    "clinic_1794021247706": {
+      "id": "clinic_1794021247706",
+      "name": "Aarogya Multi-Specialty Clinic",
+      "tagline": "Complete Family Healthcare & Diabetes Care",
+      "category": "General Medicine",
+      "address": "Kankarbagh Main Road, Opposite Pillar 42",
+      "city": "Patna, Bihar",
+      "phone": "9835123456",
+      "whatsapp": "9835123456",
+      "upiId": "aarogyaclinic@upi",
+      "doctorName": "Dr. Anand Kishore",
+      "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
+      "doctorRegNo": "BRMC-52194",
+      "experienceYears": 16,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 400,
+        "report": 0,
+        "followup": 250,
+        "emergency": 600
+      },
+      "visitingReasons": [
+        "🌸 Daad / Khujli",
+        "🧴 Muhase / Acne",
+        "🔴 Allergy / Rash",
+        "💇 Baal Jhadna"
+      ],
+      "visitingHours": {
+        "evening": {
+          "end": "09:30 PM",
+          "start": "05:30 PM",
+          "enabled": true,
+          "maxTokens": 30,
+          "slotDurationMins": 15
+        },
+        "morning": {
+          "end": "01:30 PM",
+          "start": "09:30 AM",
+          "enabled": true,
+          "maxTokens": 25,
+          "slotDurationMins": 15
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": true,
+        "doctorDelayMinutes": 45,
+        "expectedArrivalTime": "10:45 AM"
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Anand Kishore",
+          "degree": "MBBS, MD (Medicine), PG Diab.",
+          "specialty": "General Medicine",
+          "fee": 400,
+          "isMain": true,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80"
+        },
+        {
+          "id": "doc_2",
+          "name": "Dr. Priya Kishore",
+          "degree": "MBBS, MS",
+          "specialty": "Gynecologist",
+          "fee": 450,
+          "isMain": false
+        },
+        {
+          "id": "doc_3",
+          "name": "Dr. Amit Patel",
+          "degree": "BDS, MDS",
+          "specialty": "Dental Surgeon",
+          "fee": 350,
+          "isMain": false
+        }
+      ],
+      "leaves": {
+        "2026-10-28": {
+          "fullDay": true,
+          "reason": "Doctor Conference"
+        },
+        "2026-10-29": {
+          "fullDay": false,
+          "morningOff": true,
+          "eveningOff": false,
+          "blockedSlots": [
+            "05:30 PM"
+          ]
+        }
+      },
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:14:08.480226+00:00",
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:39:04.254Z",
+      "clinicName": "Aarogya Multi-Specialty Clinic",
+      "ownerEmail": "",
+      "ownerUid": "",
+      "subscription": {
+        "plan": "annual_pro",
+        "amount": 3999,
+        "status": "active",
+        "updatedAt": "2026-11-07T03:40:26.904Z",
+        "renewalDate": "2026-12-07T03:40:26.902Z",
+        "billingCycle": "annual"
+      },
+      "trialStatus": "pro_active",
+      "trialDaysLeft": 7,
+      "stats": {
+        "totalBookings": 35,
+        "todayBookings": 30,
+        "monthBookings": 35,
+        "trialStatus": "pro_active",
+        "trialDaysLeft": 7
+      }
+    }
+  },
+  "queue": []
 }

@@ -6087,6 +6087,19 @@
         const feeVal = (clinicProfile.fees && clinicProfile.fees.normal != null) ? clinicProfile.fees.normal : 300;
         patAddr.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${(clinicProfile.address || 'Clinic Address')}, ${(clinicProfile.city || '')} • Fee: ₹${feeVal}`;
       }
+      const patAddrText = document.getElementById('patientViewAddressText');
+      if (patAddrText) {
+        patAddrText.textContent = [clinicProfile.address, clinicProfile.city].filter(Boolean).join(', ') || 'Clinic Address';
+      }
+      const patFeeText = document.getElementById('patientViewFeeText');
+      if (patFeeText) {
+        const feeVal = (clinicProfile.fees && clinicProfile.fees.normal != null) ? clinicProfile.fees.normal : 300;
+        patFeeText.textContent = `₹${feeVal}`;
+      }
+      const patSpecialtyBadge = document.getElementById('patientViewSpecialtyBadge');
+      if (patSpecialtyBadge) {
+        patSpecialtyBadge.textContent = clinicProfile.specialty || clinicProfile.category || 'General';
+      }
 
       // Patient Shift labels
       const morningHours = clinicProfile.visitingHours?.morning || { enabled: true, start: '10:00 AM', end: '02:00 PM' };
@@ -6748,12 +6761,16 @@
     // 6. ONBOARDING SUCCESS MODAL & SHARING
     // =========================================================================
     function getShareablePatientLink(preferLan = false) {
-      if (preferLan && clinicProfile.network && clinicProfile.network.lanUrl) {
-        return `${clinicProfile.network.lanUrl}/?role=patient&clinic=${clinicProfile.id}`;
-      }
+      const clinicId = (clinicProfile && clinicProfile.id) || 'clinic_sanjeevani_01';
       const isHttp = typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http');
-      const base = isHttp ? (window.location.origin + window.location.pathname) : 'https://parchi-setu.vercel.app/book';
-      return `${base}?role=patient&clinic=${clinicProfile.id}`;
+      const isLocalhost = isHttp && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+      if ((preferLan || isLocalhost) && clinicProfile.network && clinicProfile.network.lanUrl) {
+        return `${clinicProfile.network.lanUrl}/book?clinic=${encodeURIComponent(clinicId)}`;
+      }
+      const rawOrigin = (isHttp && window.location && window.location.origin) ? window.location.origin : 'https://parchi-setu.vercel.app/';
+      const cleanOrigin = (rawOrigin || 'https://parchi-setu.vercel.app/').replace(/\/+$/, '');
+      return `${cleanOrigin}/book?clinic=${encodeURIComponent(clinicId)}`;
     }
 
     function openOnboardingSuccessModal() {
@@ -6783,7 +6800,7 @@
       const lanDisplay = document.getElementById('lanUrlDisplay');
       if (clinicProfile.network && clinicProfile.network.lanUrl) {
         if (lanSection) lanSection.classList.remove('hidden');
-        if (lanDisplay) lanDisplay.textContent = `${clinicProfile.network.lanUrl}/?role=patient&clinic=${clinicProfile.id}`;
+        if (lanDisplay) lanDisplay.textContent = getShareablePatientLink(true);
       } else if (lanSection) {
         lanSection.classList.add('hidden');
       }
@@ -9025,8 +9042,11 @@
         if (authLabel) authLabel.textContent = 'Clinic Sign Up (Doctors Only)';
         if (authBtn) authBtn.title = 'Strictly for Clinic Owners / Doctors (Patients do not need to sign up)';
         document.title = `${clinicProfile.name || 'ParchiSetu'} • Online Token & Live Queue`;
-        if (!isPreview && typeof window !== 'undefined' && window.history && window.history.pushState && (window.location.pathname.startsWith('/clinic') || window.location.pathname.startsWith('/admin'))) {
-          try { window.history.pushState(null, '', '/'); } catch (e) {}
+        if (!isPreview && typeof window !== 'undefined' && window.history && window.history.pushState && (window.location.pathname.startsWith('/clinic') || window.location.pathname.startsWith('/onboard') || window.location.pathname.startsWith('/admin'))) {
+          try {
+            const currentCParam = (typeof urlParams !== 'undefined' && urlParams && urlParams.get('clinic')) || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('clinic'));
+            window.history.pushState(null, '', currentCParam ? `/book?clinic=${encodeURIComponent(currentCParam)}` : '/');
+          } catch (e) {}
         }
         renderPatientBookingPage();
       }
@@ -14205,7 +14225,29 @@
           if (window.location.protocol.startsWith('http')) {
             fetch(`/api/clinic?clinic=${encodeURIComponent(clinicId)}`).then(res => res.ok && res.json()).then(remoteClinic => {
               if (remoteClinic && remoteClinic.name) {
-                clinicProfile = { ...clinicProfile, ...remoteClinic };
+                const docName = remoteClinic.doctorName || (remoteClinic.doctors && remoteClinic.doctors[0] && remoteClinic.doctors[0].name);
+                clinicProfile = {
+                  ...clinicProfile,
+                  ...remoteClinic,
+                  visitingHours: {
+                    ...(clinicProfile.visitingHours || {}),
+                    ...(remoteClinic.visitingHours || {})
+                  }
+                };
+                if (docName) {
+                  clinicProfile.doctorName = docName;
+                  clinicProfile.doctorDegree = remoteClinic.doctorDegree || (remoteClinic.doctors && remoteClinic.doctors[0] && remoteClinic.doctors[0].degree) || clinicProfile.doctorDegree;
+                  clinicProfile.doctorPhoto = remoteClinic.doctorPhoto || (remoteClinic.doctors && remoteClinic.doctors[0] && remoteClinic.doctors[0].photo) || clinicProfile.doctorPhoto;
+                  if (Array.isArray(clinicProfile.doctors) && clinicProfile.doctors.length > 0) {
+                    clinicProfile.doctors[0] = {
+                      ...clinicProfile.doctors[0],
+                      name: clinicProfile.doctorName,
+                      degree: clinicProfile.doctorDegree,
+                      photo: clinicProfile.doctorPhoto,
+                      specialty: remoteClinic.specialty || remoteClinic.category || clinicProfile.doctors[0].specialty
+                    };
+                  }
+                }
                 if (clinicProfile.liveStatus) {
                   isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
                   doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
@@ -14220,7 +14262,29 @@
           if (window.ParchiFirebase && typeof window.ParchiFirebase.getClinic === 'function') {
             window.ParchiFirebase.getClinic(clinicId).then(fbClinic => {
               if (fbClinic && fbClinic.name) {
-                clinicProfile = { ...clinicProfile, ...fbClinic };
+                const docName = fbClinic.doctorName || (fbClinic.doctors && fbClinic.doctors[0] && fbClinic.doctors[0].name);
+                clinicProfile = {
+                  ...clinicProfile,
+                  ...fbClinic,
+                  visitingHours: {
+                    ...(clinicProfile.visitingHours || {}),
+                    ...(fbClinic.visitingHours || {})
+                  }
+                };
+                if (docName) {
+                  clinicProfile.doctorName = docName;
+                  clinicProfile.doctorDegree = fbClinic.doctorDegree || (fbClinic.doctors && fbClinic.doctors[0] && fbClinic.doctors[0].degree) || clinicProfile.doctorDegree;
+                  clinicProfile.doctorPhoto = fbClinic.doctorPhoto || (fbClinic.doctors && fbClinic.doctors[0] && fbClinic.doctors[0].photo) || clinicProfile.doctorPhoto;
+                  if (Array.isArray(clinicProfile.doctors) && clinicProfile.doctors.length > 0) {
+                    clinicProfile.doctors[0] = {
+                      ...clinicProfile.doctors[0],
+                      name: clinicProfile.doctorName,
+                      degree: clinicProfile.doctorDegree,
+                      photo: clinicProfile.doctorPhoto,
+                      specialty: fbClinic.specialty || fbClinic.category || clinicProfile.doctors[0].specialty
+                    };
+                  }
+                }
                 if (clinicProfile.liveStatus) {
                   isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
                   doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
@@ -15746,11 +15810,23 @@
 
       loadClinicsDirectory();
 
-      // Check URL query parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const roleParam = urlParams.get('role') || urlParams.get('view');
-      const clinicParam = urlParams.get('clinic');
-      const onboardParam = urlParams.get('onboard');
+      // Check URL query parameters (supports both query search and hash parameters)
+      let urlParams = new URLSearchParams(window.location.search);
+      let roleParam = urlParams.get('role') || urlParams.get('view');
+      let clinicParam = urlParams.get('clinic') || urlParams.get('clinicId') || urlParams.get('id');
+      let onboardParam = urlParams.get('onboard');
+
+      if (!clinicParam && window.location.hash && window.location.hash.includes('?')) {
+        try {
+          const hashQuery = window.location.hash.slice(window.location.hash.indexOf('?'));
+          const hashParams = new URLSearchParams(hashQuery);
+          if (hashParams.get('clinic') || hashParams.get('clinicId')) {
+            clinicParam = hashParams.get('clinic') || hashParams.get('clinicId');
+            if (!roleParam) roleParam = hashParams.get('role') || hashParams.get('view');
+            if (!onboardParam) onboardParam = hashParams.get('onboard');
+          }
+        } catch (e) {}
+      }
 
       // Check for saved clinic auth user session
       try {
@@ -15764,10 +15840,11 @@
       const currentPath = (window.location.pathname || '').toLowerCase();
       const currentHash = (window.location.hash || '').toLowerCase();
       const isPatientPath = currentPath.startsWith('/book');
-      const isAdminRoute = currentPath.startsWith('/admin') || currentHash === '#admin' || roleParam === 'admin';
-      const isSignInRoute = currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1';
-      const isClinicRoute = currentPath.startsWith('/clinic') || roleParam === 'clinic' || isSignInRoute;
-      const isOnboardRoute = currentPath.includes('/onboard') || onboardParam === '1';
+      const isExplicitPatientRoute = isPatientPath || roleParam === 'patient' || (Boolean(clinicParam) && roleParam !== 'clinic');
+      const isAdminRoute = !isExplicitPatientRoute && (currentPath.startsWith('/admin') || currentHash === '#admin' || roleParam === 'admin');
+      const isSignInRoute = !isExplicitPatientRoute && (currentPath.includes('/signin') || currentPath.includes('/login') || currentPath.includes('/auth') || roleParam === 'signin' || roleParam === 'login' || roleParam === 'auth' || urlParams.get('auth') === '1' || urlParams.get('signin') === '1');
+      const isClinicRoute = !isExplicitPatientRoute && (currentPath.startsWith('/clinic') || roleParam === 'clinic' || isSignInRoute);
+      const isOnboardRoute = !isExplicitPatientRoute && (currentPath.includes('/onboard') || onboardParam === '1');
 
       if (isAdminRoute) {
         openAdminPanel();
@@ -15810,6 +15887,7 @@
         }
 
         if (loaded) {
+          const docName = loaded.doctorName || (loaded.doctors && loaded.doctors[0] && loaded.doctors[0].name);
           clinicProfile = {
             ...clinicProfile,
             ...loaded,
@@ -15818,6 +15896,20 @@
               ...(loaded.visitingHours || {})
             }
           };
+          if (docName) {
+            clinicProfile.doctorName = docName;
+            clinicProfile.doctorDegree = loaded.doctorDegree || (loaded.doctors && loaded.doctors[0] && loaded.doctors[0].degree) || clinicProfile.doctorDegree;
+            clinicProfile.doctorPhoto = loaded.doctorPhoto || (loaded.doctors && loaded.doctors[0] && loaded.doctors[0].photo) || clinicProfile.doctorPhoto;
+            if (Array.isArray(clinicProfile.doctors) && clinicProfile.doctors.length > 0) {
+              clinicProfile.doctors[0] = {
+                ...clinicProfile.doctors[0],
+                name: clinicProfile.doctorName,
+                degree: clinicProfile.doctorDegree,
+                photo: clinicProfile.doctorPhoto,
+                specialty: loaded.specialty || loaded.category || clinicProfile.doctors[0].specialty
+              };
+            }
+          }
           if (clinicProfile.liveStatus) {
             isDoctorLate = !!clinicProfile.liveStatus.isDoctorLate;
             doctorDelayMinutes = typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number' ? clinicProfile.liveStatus.doctorDelayMinutes : (isDoctorLate ? 30 : 0);
@@ -15825,6 +15917,8 @@
             isQRBookingPaused = !!clinicProfile.liveStatus.isQRBookingPaused;
           }
           saveLocalClinic();
+          updateClinicBranding();
+          renderPatientBookingPage();
         }
       } else if (clinicProfile && clinicProfile.id && !clinicProfile.id.startsWith('dummy_')) {
         let loaded = null;

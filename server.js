@@ -121,7 +121,7 @@ const INITIAL_CLINICS = {};
 const DEFAULT_QUEUE = [];
 
 let appData = {
-  clinic: null,
+  clinic: { ...DEFAULT_CLINIC },
   clinics: {},
   queue: []
 };
@@ -141,6 +141,8 @@ function loadData() {
             fees: parsed.clinic.fees || DEFAULT_CLINIC.fees,
             doctors: parsed.clinic.doctors || DEFAULT_CLINIC.doctors
           };
+        } else {
+          appData.clinic = { ...DEFAULT_CLINIC };
         }
         if (parsed.clinics) appData.clinics = { ...INITIAL_CLINICS, ...parsed.clinics };
         if (Array.isArray(parsed.queue)) appData.queue = parsed.queue;
@@ -786,14 +788,24 @@ const requestHandler = async (req, res) => {
     let clinicId = parsedUrl.searchParams.get('id') || parsedUrl.searchParams.get('clinic');
     if (clinicId === 'razorpay_test') clinicId = 'clinic_razorpay_verification';
     if (clinicId) {
-      const match = (appData.clinics && appData.clinics[clinicId]) || 
-                    (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null) || 
-                    INITIAL_CLINICS[clinicId];
+      let match = (appData.clinics && appData.clinics[clinicId]) || 
+                  (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null) || 
+                  INITIAL_CLINICS[clinicId];
+      if (!match && store && typeof store.getClinicAsync === 'function') {
+        try { match = await store.getClinicAsync(clinicId); } catch (e) {}
+      }
+      if (!match && supabase && typeof supabase.getClinic === 'function') {
+        try { match = await supabase.getClinic(clinicId); } catch (e) {}
+      }
+      if (match && match.id && match.id !== clinicId && clinicId !== 'razorpay_test' && clinicId !== 'clinic_razorpay_verification') {
+        match = null;
+      }
       if (!match) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Clinic not found', clinicId }));
         return;
       }
+      if (appData.clinics) appData.clinics[clinicId] = match;
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
         ...match,

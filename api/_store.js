@@ -310,6 +310,10 @@ module.exports = {
         }
       } catch (e) {}
     }
+    if (id) {
+      if (store.clinic && store.clinic.id === id) return store.clinic;
+      return null;
+    }
     return store.clinic || DEFAULT_CLINIC;
   },
 

@@ -60,6 +60,11 @@ module.exports = async (req, res) => {
     // Clinic ID lookup
     const clinicId = url.searchParams.get('id') || url.searchParams.get('clinic');
     const targetClinic = clinicId ? await store.getClinicAsync(clinicId) : store.getClinic();
+    if (clinicId && !targetClinic) {
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ error: 'Clinic not found', clinicId }));
+    }
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({
