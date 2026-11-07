@@ -215,6 +215,13 @@ async function run() {
     if (originalClinicData) {
       fs.writeFileSync(clinicDataPath, originalClinicData, 'utf8');
     }
+    try {
+      const os = require('os');
+      const f1 = path.join(os.tmpdir(), 'parchisetu_shared_data.json');
+      const f2 = path.join(os.tmpdir(), 'klinicq_shared_data.json');
+      if (fs.existsSync(f1)) fs.unlinkSync(f1);
+      if (fs.existsSync(f2)) fs.unlinkSync(f2);
+    } catch (e) {}
   }
   process.exit(0);
 }

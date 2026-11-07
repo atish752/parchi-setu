@@ -178,7 +178,7 @@ function broadcastEvent(eventName, payload) {
 }
 
 // Keep SSE connections alive with periodic heartbeat
-setInterval(() => {
+const sseHeartbeatInterval = setInterval(() => {
   for (const res of sseClients) {
     try {
       res.write(': keep-alive\n\n');
@@ -187,6 +187,7 @@ setInterval(() => {
     }
   }
 }, 25000);
+if (sseHeartbeatInterval.unref) sseHeartbeatInterval.unref();
 
 process.on('uncaughtException', err => {
   console.error('Uncaught Exception:', err.message);
@@ -223,6 +224,81 @@ function getISTDateString(d = new Date()) {
   const m = String(istDate.getMonth() + 1).padStart(2, '0');
   const day = String(istDate.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
+}
+
+function normalizeSlotTime(s) {
+  if (!s) return '';
+  const clean = String(s).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+  const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+  if (m) {
+    const h = parseInt(m[1], 10);
+    const min = m[2];
+    const ap = (m[3] || '').toLowerCase();
+    return ap ? `${h}:${min} ${ap}` : `${h}:${min}`;
+  }
+  return clean.replace(/\s+/g, ' ');
+}
+
+function getSlotTimelineMinutes(slotTime, shift, createdAt) {
+  if (slotTime) {
+    const clean = String(slotTime).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+    const isWalkin = ['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(clean);
+    if (!isWalkin) {
+      const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+      if (m) {
+        let h = parseInt(m[1], 10);
+        const min = parseInt(m[2], 10);
+        const ap = (m[3] || '').toLowerCase();
+        if (ap === 'pm' && h < 12) h += 12;
+        if (ap === 'am' && h === 12) h = 0;
+        return h * 60 + min;
+      }
+    }
+  }
+  if (createdAt) {
+    try {
+      const d = new Date(createdAt);
+      if (!isNaN(d.getTime())) {
+        const totalUtcMins = d.getUTCHours() * 60 + d.getUTCMinutes();
+        const istMins = (totalUtcMins + 330) % 1440;
+        return istMins;
+      }
+    } catch (e) {}
+  }
+  const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
+  return isEvening ? 1020 : 600;
+}
+
+function reassignTimelineTokens(bookings) {
+  if (!Array.isArray(bookings)) return;
+  // Group active bookings by clinic and date
+  const groups = {};
+  bookings.forEach(p => {
+    if (!p || p.status === 'CANCELLED') return;
+    const cId = p.clinicId || 'default';
+    const dStr = (p.date || (p.createdAt ? p.createdAt.slice(0, 10) : getISTDateString())).slice(0, 10);
+    const key = `${cId}__${dStr}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(p);
+  });
+
+  Object.values(groups).forEach(group => {
+    group.sort((a, b) => {
+      const minsA = getSlotTimelineMinutes(a.slotTime, a.shift, a.createdAt);
+      const minsB = getSlotTimelineMinutes(b.slotTime, b.shift, b.createdAt);
+      if (minsA !== minsB) return minsA - minsB;
+      const timeA = new Date(a.createdAt || 0).getTime();
+      const timeB = new Date(b.createdAt || 0).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      return String(a.id || '').localeCompare(String(b.id || ''));
+    });
+
+    let tokenNum = 1;
+    group.forEach(p => {
+      if (p.token && p.token >= 100) return;
+      p.token = tokenNum++;
+    });
+  });
 }
 
 function getLocalIpAddresses() {
@@ -915,14 +991,20 @@ const requestHandler = async (req, res) => {
     return;
   }
 
-  // Get current queue (with optional phone lookup and clinic filter)
+  // Get current queue (with optional phone lookup, clinic filter, and date filter)
   if (pathname === '/api/queue' && method === 'GET') {
     const phone = parsedUrl.searchParams.get('phone');
     const clinicId = parsedUrl.searchParams.get('clinic') || parsedUrl.searchParams.get('clinicId');
+    const date = parsedUrl.searchParams.get('date');
     let list = appData.queue || [];
     if (clinicId) {
       list = list.filter(p => !p.clinicId || p.clinicId === clinicId);
     }
+    if (date) {
+      const d10 = date.slice(0, 10);
+      list = list.filter(p => (p.date || (p.createdAt ? p.createdAt.slice(0, 10) : getISTDateString())).slice(0, 10) === d10);
+    }
+    reassignTimelineTokens(list);
     if (phone) {
       const clean = phone.replace(/[^0-9]/g, '');
       list = list.filter(p => {
@@ -961,6 +1043,12 @@ const requestHandler = async (req, res) => {
     try {
       appData.queue = [];
       saveData();
+      if (store && typeof store.resetQueue === 'function') {
+        store.resetQueue();
+      }
+      if (supabase && typeof supabase.resetQueue === 'function') {
+        supabase.resetQueue().catch(() => {});
+      }
       broadcastEvent('QUEUE_UPDATED', { queue: [] });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: true, queue: [] }));
@@ -997,19 +1085,17 @@ const requestHandler = async (req, res) => {
         return;
       }
 
-      // Determine next token number
-      const clinicBookings = (body.clinicId && appData.queue)
-        ? appData.queue.filter(p => !p.clinicId || p.clinicId === body.clinicId)
-        : (appData.queue || []);
-      const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
-      const nextToken = (body.token && body.token > maxToken) ? body.token : (maxToken + 1);
-      const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
-
       const targetClinic = (body.clinicId && appData.clinics && appData.clinics[body.clinicId])
         ? appData.clinics[body.clinicId]
         : (INITIAL_CLINICS[body.clinicId] || appData.clinic);
 
-      const targetClinicId = body.clinicId || (targetClinic ? targetClinic.id : appData.clinic.id);
+      const targetClinicId = body.clinicId || (targetClinic ? targetClinic.id : (appData.clinic ? appData.clinic.id : 'clinic_sanjeevani_01'));
+
+      // Determine next token number
+      const clinicBookings = (appData.queue || []).filter(p => !p.clinicId || !targetClinicId || p.clinicId === targetClinicId);
+      const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
+      const nextToken = (body.token && body.token > maxToken) ? body.token : (maxToken + 1);
+      const bookingId = body.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 
       // Enforce 100 appointments/month limit on Free plan after 7-day trial
       let limitReached = false;
@@ -1039,29 +1125,30 @@ const requestHandler = async (req, res) => {
         }
       }
 
-      // Check for slot double booking
-      const targetDate = body.date || (store && store.getISTDateString ? store.getISTDateString() : new Date().toISOString().slice(0, 10));
-      const normalizeSlot = s => {
-        if (!s) return '';
-        const clean = String(s).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
-        const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
-        if (m) {
-          const h = parseInt(m[1], 10);
-          const min = m[2];
-          const ap = (m[3] || '').toLowerCase();
-          return ap ? `${h}:${min} ${ap}` : `${h}:${min}`;
-        }
-        return clean.replace(/\s+/g, ' ');
-      };
-      const normSlot = normalizeSlot(body.slotTime);
-      const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking'].includes(normSlot);
+      // Check for slot double booking against local appData.queue & Supabase
+      const targetDate = body.date || (store && store.getISTDateString ? store.getISTDateString() : getISTDateString());
+      const normSlot = normalizeSlotTime(body.slotTime);
+      const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(normSlot);
       if (isScheduledSlot) {
-        const existingSlot = clinicBookings.find(p =>
+        let existingSlot = clinicBookings.find(p =>
           p.id !== body.id &&
           p.status !== 'CANCELLED' &&
           (p.date || '').slice(0, 10) === targetDate.slice(0, 10) &&
-          normalizeSlot(p.slotTime) === normSlot
+          normalizeSlotTime(p.slotTime) === normSlot
         );
+        if (!existingSlot && supabase && typeof supabase.getQueue === 'function') {
+          try {
+            const sbList = await supabase.getQueue(targetClinicId, targetDate.slice(0, 10));
+            if (Array.isArray(sbList)) {
+              existingSlot = sbList.find(p =>
+                p.id !== body.id &&
+                p.status !== 'CANCELLED' &&
+                (p.date || '').slice(0, 10) === targetDate.slice(0, 10) &&
+                normalizeSlotTime(p.slotTime) === normSlot
+              );
+            }
+          } catch (e) {}
+        }
         if (existingSlot) {
           res.writeHead(409, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
@@ -1081,13 +1168,16 @@ const requestHandler = async (req, res) => {
         return;
       }
 
+      // Check if body has explicit test token >= 100
+      const explicitToken = (body.token && body.token >= 100) ? body.token : null;
+
       const newBooking = {
         id: bookingId,
         clinicId: targetClinicId,
         clinicName: body.clinicName || (targetClinic ? targetClinic.name : appData.clinic.name),
         clinicAddress: body.clinicAddress || (targetClinic ? targetClinic.address : appData.clinic.address),
         clinicPhone: body.clinicPhone || (targetClinic ? targetClinic.phone : appData.clinic.phone),
-        token: nextToken,
+        token: explicitToken || 1,
         name: body.name.trim(),
         age: parseInt(body.age, 10) || 30,
         gender: body.gender || 'M',
@@ -1103,7 +1193,7 @@ const requestHandler = async (req, res) => {
         shift: body.shift || 'Morning',
         slotTime: body.slotTime || 'Online Booking',
         day: body.day || 'Aaj (Today)',
-        date: body.date || getISTDateString(),
+        date: targetDate,
         bp: body.bp || '',
         weight: body.weight || '',
         temp: body.temp || '',
@@ -1118,12 +1208,28 @@ const requestHandler = async (req, res) => {
       };
 
       appData.queue.push(newBooking);
+
+      // Timeline-based chronological token numbering: Earliest slot = #1, next = #2, etc.
+      if (!explicitToken) {
+        const dateBookings = appData.queue.filter(p =>
+          (!p.clinicId || p.clinicId === targetClinicId) &&
+          (p.date || '').slice(0, 10) === targetDate.slice(0, 10)
+        );
+        reassignTimelineTokens(dateBookings);
+      }
       saveData();
 
       if (store && typeof store.addOrUpdateBooking === 'function') {
         store.addOrUpdateBooking(newBooking);
-      } else if (supabase && typeof supabase.saveBooking === 'function') {
-        supabase.saveBooking(newBooking).catch(() => {});
+      }
+      if (supabase && typeof supabase.saveBooking === 'function') {
+        const affected = appData.queue.filter(p =>
+          (!p.clinicId || !targetClinicId || p.clinicId === targetClinicId) &&
+          (p.date || '').slice(0, 10) === targetDate.slice(0, 10)
+        );
+        for (const b of affected) {
+          supabase.saveBooking(b).catch(() => {});
+        }
       }
 
       // Real-time broadcast to all connected Compounder Desks and tickers!
@@ -1336,3 +1442,5 @@ module.exports.server = server;
 module.exports.startServer = startServer;
 module.exports.appData = appData;
 module.exports.saveData = saveData;
+module.exports.normalizeSlotTime = normalizeSlotTime;
+module.exports.reassignTimelineTokens = reassignTimelineTokens;

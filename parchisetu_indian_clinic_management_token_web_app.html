@@ -2272,11 +2272,11 @@
         </div>
 
         <!-- Step-by-Step Patient Booking Pop-Up Modal -->
-        <div id="patientBookingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-end sm:items-center justify-center p-0 sm:p-4">
-          <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+        <div id="patientBookingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-end sm:items-center justify-center p-0 sm:p-4" style="height: 100dvh; height: 100vh;">
+          <div id="patientBookingModalContent" class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden h-[90dvh] h-[90vh] sm:h-[85vh] sm:max-h-[85vh] max-h-[92dvh] max-h-[92vh] flex flex-col" style="display: flex; flex-direction: column; height: 90vh; height: 90dvh; max-height: 92vh; max-height: 92dvh;">
             
             <!-- Modal Header -->
-            <div class="bg-[#075E54] text-white p-4 flex items-center justify-between flex-shrink-0">
+            <div class="bg-[#075E54] text-white p-4 flex items-center justify-between flex-shrink-0 shrink-0">
               <div>
                 <h3 class="font-black text-base" data-i18n="bookModalHeader">Book Clinic Appointment</h3>
                 <p class="text-xs text-emerald-100/90" id="modalClinicDocTitle">Doctor Clinic • Consultation</p>
@@ -2287,7 +2287,7 @@
             </div>
 
             <!-- Step Indicator Pills -->
-            <div class="flex items-center gap-2 p-3 bg-slate-50 border-b border-slate-200 flex-shrink-0">
+            <div class="flex items-center gap-2 p-3 bg-slate-50 border-b border-slate-200 flex-shrink-0 shrink-0">
               <button type="button" onclick="setPatientBookingStep(1)" id="bookingStepPill1" data-alias="patBookModalStepPill1" class="w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs">
                 <span data-i18n="step1Title">1. Visit & Slot</span>
               </button>
@@ -2297,10 +2297,10 @@
             </div>
 
             <!-- Scrollable Modal Body (Contains patientBookingFormContainer for compatibility) -->
-            <div id="patientBookingFormContainer" class="overflow-y-auto p-4 sm:p-5 flex-1 space-y-4">
+            <div id="patientBookingFormContainer" class="overflow-y-auto p-4 sm:p-5 flex-1 min-h-0 space-y-4" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: block;">
               
               <!-- Step 1: Visit Type & Slot Selection -->
-              <div id="patBookingModalStep1" class="space-y-4">
+              <div id="patBookingModalStep1" data-alias="patientBookingStep1" class="space-y-4">
                 
                 <!-- Visit Type Selector: Pahli Baar (New Visit) vs Dobara (Follow-up) -->
                 <div>
@@ -2448,7 +2448,7 @@
               </div>
 
               <!-- Step 2: Patient Info Form -->
-              <div id="patBookingModalStep2" class="hidden space-y-3.5">
+              <div id="patBookingModalStep2" data-alias="patientBookingStep2" class="hidden space-y-3.5">
                 <div class="flex items-center justify-between">
                   <button type="button" onclick="setPatientBookingStep(1)" class="text-xs font-bold text-[#075E54] hover:underline flex items-center gap-1">
                     <i class="fa-solid fa-arrow-left"></i>
@@ -9283,10 +9283,15 @@
         // Prevent wiping local bookings when serverless cold-start or empty array is received
         return;
       }
+      const activeClinicId = (typeof clinicProfile !== 'undefined' && clinicProfile) ? clinicProfile.id : null;
+      const filteredRemote = activeClinicId 
+        ? remoteQueue.filter(p => !p.clinicId || p.clinicId === activeClinicId)
+        : remoteQueue;
+
       const queueMap = new Map();
       todayQueue.forEach(p => { if (p && p.id) queueMap.set(p.id, p); });
       const todayStr = getLocalDateString();
-      remoteQueue.forEach(p => {
+      filteredRemote.forEach(p => {
         if (p && p.id) {
           const existing = queueMap.get(p.id);
           const wasCancelled = (existing && existing.status === 'CANCELLED') || (typeof cancelledPatientIds !== 'undefined' && cancelledPatientIds.has(p.id)) || p.status === 'CANCELLED';
@@ -9323,6 +9328,9 @@
         }
       });
       todayQueue = Array.from(queueMap.values());
+      if (typeof reassignTimelineTokens === 'function') {
+        reassignTimelineTokens(todayQueue);
+      }
       todayQueue.sort((a, b) => (a.token || 0) - (b.token || 0));
 
       if (lastPatientBooking && lastPatientBooking.id) {
@@ -10325,6 +10333,11 @@
       } else {
         todayQueue.push(savedBooking);
       }
+      if (typeof reassignTimelineTokens === 'function') {
+        reassignTimelineTokens(todayQueue);
+        const self = todayQueue.find(p => p.id === savedBooking.id);
+        if (self && self.token) savedBooking.token = self.token;
+      }
       saveLocalQueue();
 
       if (typeof syncChannel !== 'undefined' && syncChannel) {
@@ -10776,6 +10789,9 @@
     }
 
     function renderQueueList() {
+      if (typeof reassignTimelineTokens === 'function') {
+        reassignTimelineTokens(todayQueue);
+      }
       const searchQ = (document.getElementById('queueSearchInput')?.value || '').toLowerCase().trim();
       const container = document.getElementById('queueListContainer');
 
@@ -12573,6 +12589,9 @@
       };
 
       todayQueue.push(newBooking);
+      if (typeof reassignTimelineTokens === 'function') {
+        reassignTimelineTokens(todayQueue);
+      }
       saveLocalQueue();
       if (typeof syncChannel !== 'undefined' && syncChannel) {
         syncChannel.postMessage({ type: 'QUEUE_UPDATED', queue: todayQueue });
@@ -12848,15 +12867,95 @@
       return clean.replace(/\s+/g, ' ');
     }
 
-    function isSlotAlreadyBooked(slot, checkDate) {
+    function isSlotAlreadyBooked(slot, checkDate = null) {
       if (!slot) return false;
-      const targetDate = checkDate || selectedPatCustomDate || getLocalDateString();
+      const targetDate = (checkDate || selectedPatCustomDate || getLocalDateString()).slice(0, 10);
       const normSlot = normalizeSlotTimeForMatch(slot);
+      const activeClinicId = (typeof clinicProfile !== 'undefined' && clinicProfile) ? clinicProfile.id : null;
       return todayQueue.some(p => {
-        if (p.status === 'CANCELLED') return false;
-        const pDate = p.date || (p.createdAt ? p.createdAt.slice(0, 10) : targetDate);
+        if (!p || p.status === 'CANCELLED') return false;
+        if (activeClinicId && p.clinicId && p.clinicId !== activeClinicId) return false;
+        const pDate = (p.date || (p.createdAt ? p.createdAt.slice(0, 10) : targetDate)).slice(0, 10);
         if (pDate !== targetDate) return false;
         return normalizeSlotTimeForMatch(p.slotTime) === normSlot;
+      });
+    }
+
+    function getSlotTimelineMinutes(slotTime, shift, createdAt) {
+      if (slotTime) {
+        const clean = String(slotTime).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+        const isWalkin = ['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(clean);
+        if (!isWalkin) {
+          const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+          if (m) {
+            let h = parseInt(m[1], 10);
+            const min = parseInt(m[2], 10);
+            const ap = (m[3] || '').toLowerCase();
+            if (ap === 'pm' && h < 12) h += 12;
+            if (ap === 'am' && h === 12) h = 0;
+            return h * 60 + min;
+          }
+        }
+      }
+      if (createdAt) {
+        try {
+          const d = new Date(createdAt);
+          if (!isNaN(d.getTime())) {
+            const totalUtcMins = d.getUTCHours() * 60 + d.getUTCMinutes();
+            const istMins = (totalUtcMins + 330) % 1440;
+            return istMins;
+          }
+        } catch (e) {}
+      }
+      const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
+      return isEvening ? 1020 : 600;
+    }
+
+    function reassignTimelineTokens(bookings) {
+      if (!Array.isArray(bookings)) return;
+      // Group active bookings by clinic and date
+      const groups = {};
+      const activeClinicId = (typeof clinicProfile !== 'undefined' && clinicProfile && clinicProfile.id) ? clinicProfile.id : 'clinic_sanjeevani_01';
+      bookings.forEach(p => {
+        if (!p || p.status === 'CANCELLED') return;
+        const cId = p.clinicId || activeClinicId;
+        let dStr = p.date ? String(p.date).slice(0, 10) : '';
+        if (!dStr && p.day && String(p.day).includes('Aaj')) {
+          dStr = getLocalDateString();
+        }
+        if (!dStr && p.createdAt) {
+          try {
+            const d = new Date(p.createdAt);
+            if (!isNaN(d.getTime())) {
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              dStr = `${y}-${m}-${day}`;
+            }
+          } catch (e) {}
+        }
+        if (!dStr) dStr = getLocalDateString();
+        const key = `${cId}__${dStr}`;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(p);
+      });
+
+      Object.values(groups).forEach(group => {
+        group.sort((a, b) => {
+          const minsA = getSlotTimelineMinutes(a.slotTime, a.shift, a.createdAt);
+          const minsB = getSlotTimelineMinutes(b.slotTime, b.shift, b.createdAt);
+          if (minsA !== minsB) return minsA - minsB;
+          const timeA = new Date(a.createdAt || 0).getTime();
+          const timeB = new Date(b.createdAt || 0).getTime();
+          if (timeA !== timeB) return timeA - timeB;
+          return String(a.id || '').localeCompare(String(b.id || ''));
+        });
+
+        let tokenNum = 1;
+        group.forEach(p => {
+          if (p.token && p.token >= 100) return;
+          p.token = tokenNum++;
+        });
       });
     }
 
@@ -13108,6 +13207,9 @@
       if (dateInput) dateInput.value = selectedPatCustomDate;
       validatePatientBookingDate();
       renderPatientBookingPage();
+      if (typeof refreshPatientBookingSlotsFromServer === 'function') {
+        refreshPatientBookingSlotsFromServer();
+      }
     }
 
     function selectPatientCustomDate(dateVal) {
@@ -13145,6 +13247,9 @@
 
       validatePatientBookingDate();
       renderPatientBookingPage();
+      if (typeof refreshPatientBookingSlotsFromServer === 'function') {
+        refreshPatientBookingSlotsFromServer();
+      }
     }
 
     function getClinicLiveStatusInfo(checkDate = null) {
@@ -13318,19 +13423,97 @@
       };
     }
 
-    function openPatientBookingModal() {
+    async function refreshPatientBookingSlotsFromServer(forDate = null) {
+      if (!window.location.protocol.startsWith('http')) return;
+      const cId = (typeof clinicProfile !== 'undefined' && clinicProfile && clinicProfile.id) ? clinicProfile.id : '';
+      if (!cId) return;
+      const targetDate = (forDate || selectedPatCustomDate || getLocalDateString()).slice(0, 10);
+      try {
+        const res = await fetch(`/api/queue?clinic=${encodeURIComponent(cId)}&clinicId=${encodeURIComponent(cId)}&date=${encodeURIComponent(targetDate)}`);
+        if (res.ok) {
+          const remoteQueue = await res.json();
+          if (Array.isArray(remoteQueue)) {
+            mergeIncomingQueue(remoteQueue);
+            if (typeof renderSlotPills === 'function') renderSlotPills();
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to refresh slots from server:', e);
+      }
+    }
+
+    async function changePatientBookingDate(dateVal) {
+      if (!dateVal) return;
+      if (typeof selectPatientCustomDate === 'function') {
+        selectPatientCustomDate(dateVal);
+      } else {
+        selectedPatCustomDate = dateVal;
+      }
+      await refreshPatientBookingSlotsFromServer(dateVal);
+    }
+    window.changePatientBookingDate = changePatientBookingDate;
+    window.refreshPatientBookingSlotsFromServer = refreshPatientBookingSlotsFromServer;
+
+    async function openPatientBookingModal() {
       currentPatBookingStep = 1;
       isCustomPatReason = false;
       const customInput = document.getElementById('patBookCustomReason');
       if (customInput) customInput.value = '';
+
       const modal = document.getElementById('patientBookingModal');
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        modal.style.display = 'flex';
       }
+
+      const modalContent = document.getElementById('patientBookingModalContent');
+      if (modalContent) {
+        modalContent.classList.remove('hidden');
+        modalContent.style.display = 'flex';
+      }
+
+      // CRITICAL: Ensure form container is visible (viewMyActivePass and others hide it!)
+      const formContainer = document.getElementById('patientBookingFormContainer');
+      if (formContainer) {
+        formContainer.classList.remove('hidden');
+        formContainer.style.display = 'block';
+      }
+
+      // Explicitly show step 1, hide step 2
+      const step1 = document.getElementById('patBookingModalStep1') || document.getElementById('patientBookingStep1');
+      const step2 = document.getElementById('patBookingModalStep2') || document.getElementById('patientBookingStep2');
+      if (step1) {
+        step1.classList.remove('hidden');
+        step1.style.display = 'block';
+      }
+      if (step2) {
+        step2.classList.add('hidden');
+        step2.style.display = 'none';
+      }
+
       setPatientBookingStep(1);
       setPatientVisitType(selectedPatVisitType || 'new');
-      renderPatientBookingPage();
+      try {
+        if (typeof renderSlotPills === 'function') renderSlotPills();
+      } catch (e) {
+        console.warn('renderSlotPills error:', e);
+      }
+      try {
+        if (typeof renderVisitingReasons === 'function') renderVisitingReasons();
+      } catch (e) {
+        console.warn('renderVisitingReasons error:', e);
+      }
+      try {
+        renderPatientBookingPage();
+      } catch (e) {
+        console.warn('renderPatientBookingPage error:', e);
+      }
+
+      // Proactively refresh latest slots from server
+      try {
+        await refreshPatientBookingSlotsFromServer();
+      } catch (e) {}
     }
 
     function closePatientBookingModal() {
@@ -13402,6 +13585,14 @@
     function setPatientBookingStep(step) {
       const pill1 = document.getElementById('patBookModalStepPill1') || document.getElementById('bookingStepPill1');
       const pill2 = document.getElementById('patBookModalStepPill2') || document.getElementById('bookingStepPill2');
+      const formContainer = document.getElementById('patientBookingFormContainer');
+      if (formContainer) {
+        formContainer.classList.remove('hidden');
+        formContainer.style.display = 'block';
+      }
+
+      const step1 = document.getElementById('patBookingModalStep1') || document.getElementById('patientBookingStep1');
+      const step2 = document.getElementById('patBookingModalStep2') || document.getElementById('patientBookingStep2');
 
       if (step === 2) {
         if (!selectedPatSlot) {
@@ -13412,8 +13603,14 @@
         if (stepPreview) {
           stepPreview.textContent = `${selectedPatDay} • ${selectedPatSlot}`;
         }
-        document.getElementById('patBookingModalStep1')?.classList.add('hidden');
-        document.getElementById('patBookingModalStep2')?.classList.remove('hidden');
+        if (step1) {
+          step1.classList.add('hidden');
+          step1.style.display = 'none';
+        }
+        if (step2) {
+          step2.classList.remove('hidden');
+          step2.style.display = 'block';
+        }
         if (pill1) pill1.className = 'w-1/2 py-1.5 text-center font-bold text-xs rounded-xl bg-slate-100 text-slate-500';
         if (pill2) pill2.className = 'w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs';
         currentPatBookingStep = 2;
@@ -13421,8 +13618,14 @@
           document.getElementById('patBookName')?.focus();
         }, 150);
       } else {
-        document.getElementById('patBookingModalStep2')?.classList.add('hidden');
-        document.getElementById('patBookingModalStep1')?.classList.remove('hidden');
+        if (step2) {
+          step2.classList.add('hidden');
+          step2.style.display = 'none';
+        }
+        if (step1) {
+          step1.classList.remove('hidden');
+          step1.style.display = 'block';
+        }
         if (pill1) pill1.className = 'w-1/2 py-1.5 text-center font-black text-xs rounded-xl bg-[#075E54] text-white shadow-xs';
         if (pill2) pill2.className = 'w-1/2 py-1.5 text-center font-bold text-xs rounded-xl bg-slate-100 text-slate-500';
         currentPatBookingStep = 1;
@@ -13432,7 +13635,6 @@
     function viewMyActivePass() {
       if (lastPatientBooking) {
         (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
-        document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
         document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
         renderTokenPassDetails(lastPatientBooking);
       }
@@ -13617,114 +13819,8 @@
             : 'py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5');
       }
 
-      // Generate slots dynamically based on selected shift and date
-      const slots = generateDynamicSlots(selectedPatShift, selectedPatCustomDate);
-      const slotsContainer = document.getElementById('patientTimeSlotPills');
-      if (slotsContainer) {
-        if (slots.length === 0) {
-          slotsContainer.innerHTML = `
-            <div class="col-span-full py-3 text-center bg-amber-50 rounded-xl border border-amber-200 text-xs font-bold text-amber-800">
-              ⚠️ Is shift mein abhi koi slot uplabdh nahi hai ya shift band hai. Kripya doosra samay chunein.
-            </div>
-          `;
-          selectedPatSlot = '';
-        } else {
-          const targetDate = selectedPatCustomDate || getLocalDateString();
-          const bookedSlotsSet = new Set();
-          todayQueue.forEach(p => {
-            if (p.status === 'CANCELLED') return;
-            const pDate = p.date || (p.createdAt ? p.createdAt.slice(0, 10) : targetDate);
-            if (pDate === targetDate && p.slotTime) {
-              bookedSlotsSet.add(normalizeSlotTimeForMatch(p.slotTime));
-            }
-          });
-
-          const currentLeave = clinicProfile.leaves && clinicProfile.leaves[targetDate];
-          const manualBlocked = (currentLeave && Array.isArray(currentLeave.blockedSlots)) 
-            ? currentLeave.blockedSlots.map(normalizeSlotTimeForMatch) 
-            : [];
-
-          const availableSlots = slots.filter(s => {
-            const norm = normalizeSlotTimeForMatch(s);
-            return !bookedSlotsSet.has(norm) && !manualBlocked.includes(norm);
-          });
-
-          if (!selectedPatSlot || bookedSlotsSet.has(normalizeSlotTimeForMatch(selectedPatSlot)) || manualBlocked.includes(normalizeSlotTimeForMatch(selectedPatSlot)) || !slots.includes(selectedPatSlot)) {
-            selectedPatSlot = availableSlots.length > 0 ? availableSlots[0] : '';
-          }
-
-          if (availableSlots.length === 0) {
-            slotsContainer.innerHTML = `
-              <div class="col-span-full py-3 text-center bg-rose-50 rounded-xl border border-rose-200 text-xs font-bold text-rose-700">
-                🚫 Is shift ke sabhi slots (${slots.length}) book ho chuke hain. Kripya agli shift ya doosri tarikh chunein.
-              </div>
-            `;
-          } else {
-            slotsContainer.innerHTML = slots.map(slot => {
-              const norm = normalizeSlotTimeForMatch(slot);
-              const isBooked = bookedSlotsSet.has(norm);
-              const isManualBlocked = manualBlocked.includes(norm);
-              const isDisabled = isBooked || isManualBlocked;
-              const active = selectedPatSlot === slot;
-
-              if (isDisabled) {
-                return `
-                  <button 
-                    type="button" 
-                    disabled 
-                    class="py-2 px-1.5 rounded-xl font-bold text-[11px] sm:text-xs border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed opacity-60 line-through flex items-center justify-center gap-1"
-                    title="${isBooked ? 'Yeh slot pehle se book ho chuka hai' : 'Slot blocked hai'}"
-                  >
-                    <span>${slot}</span>
-                    <span class="text-[9px] no-underline font-extrabold text-rose-500 bg-rose-50 px-1 py-0.2 rounded border border-rose-200">
-                      ${isBooked ? 'Booked' : 'Off'}
-                    </span>
-                  </button>
-                `;
-              }
-
-              return `
-                <button 
-                  type="button" 
-                  onclick="selectedPatSlot='${slot}'; renderPatientBookingPage();" 
-                  class="py-2 px-2 rounded-xl font-bold text-xs border transition ${
-                    active
-                      ? 'bg-[#075E54] text-white border-[#075E54] shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-emerald-50'
-                  }"
-                >
-                  ${slot}
-                </button>
-              `;
-            }).join('');
-          }
-        }
-      }
-
-      // Problem reason chips populated from getVisitingReasons()
-      const reasonChipsBox = document.getElementById('patBookReasonChips');
-      if (reasonChipsBox) {
-        const rList = getVisitingReasons();
-        if (!selectedPatReason && rList.length > 0) {
-          selectedPatReason = rList[0] || 'General Consultation';
-        }
-        reasonChipsBox.innerHTML = rList.map(r => {
-          const active = selectedPatReason === r && !isCustomPatReason;
-          return `
-            <button 
-              type="button" 
-              onclick="selectPatientReasonChip('${escapeHtml(r)}')" 
-              class="px-3 py-1.5 rounded-xl font-bold text-xs border transition ${
-                active
-                  ? 'bg-[#128C7E] text-white border-[#128C7E]'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-              }"
-            >
-              ${r}
-            </button>
-          `;
-        }).join('');
-      }
+      renderSlotPills();
+      renderVisitingReasons();
 
       // Update booking fee note
       const feeNote = document.getElementById('patientBookingFeeNote');
@@ -13736,9 +13832,125 @@
       }
     }
 
+    function renderSlotPills() {
+      const slotsContainer = document.getElementById('patientTimeSlotPills');
+      if (!slotsContainer) return;
+      const slots = generateDynamicSlots(selectedPatShift, selectedPatCustomDate);
+      if (slots.length === 0) {
+        slotsContainer.innerHTML = `
+          <div class="col-span-full py-3 text-center bg-amber-50 rounded-xl border border-amber-200 text-xs font-bold text-amber-800">
+            ⚠️ Is shift mein abhi koi slot uplabdh nahi hai ya shift band hai. Kripya doosra samay chunein.
+          </div>
+        `;
+        selectedPatSlot = '';
+        return;
+      }
+
+      const targetDate = (selectedPatCustomDate || getLocalDateString()).slice(0, 10);
+      const activeClinicId = (typeof clinicProfile !== 'undefined' && clinicProfile) ? clinicProfile.id : null;
+      const bookedSlotsSet = new Set();
+      todayQueue.forEach(p => {
+        if (!p || p.status === 'CANCELLED') return;
+        if (activeClinicId && p.clinicId && p.clinicId !== activeClinicId) return;
+        const pDate = (p.date || (p.createdAt ? p.createdAt.slice(0, 10) : targetDate)).slice(0, 10);
+        if (pDate === targetDate && p.slotTime) {
+          bookedSlotsSet.add(normalizeSlotTimeForMatch(p.slotTime));
+        }
+      });
+
+      const currentLeave = clinicProfile.leaves && clinicProfile.leaves[targetDate];
+      const manualBlocked = (currentLeave && Array.isArray(currentLeave.blockedSlots)) 
+        ? currentLeave.blockedSlots.map(normalizeSlotTimeForMatch) 
+        : [];
+
+      const availableSlots = slots.filter(s => {
+        const norm = normalizeSlotTimeForMatch(s);
+        return !bookedSlotsSet.has(norm) && !manualBlocked.includes(norm);
+      });
+
+      if (!selectedPatSlot || bookedSlotsSet.has(normalizeSlotTimeForMatch(selectedPatSlot)) || manualBlocked.includes(normalizeSlotTimeForMatch(selectedPatSlot)) || !slots.includes(selectedPatSlot)) {
+        selectedPatSlot = availableSlots.length > 0 ? availableSlots[0] : '';
+      }
+
+      const allBookedBanner = availableSlots.length === 0
+        ? `<div class="col-span-full py-2 px-3 text-center bg-rose-50 rounded-xl border border-rose-200 text-xs font-bold text-rose-700 mb-1">
+             🚫 Is shift ke sabhi slots (${slots.length}) book ho chuke hain. Kripya agli shift ya doosri tarikh chunein.
+           </div>`
+        : '';
+
+      slotsContainer.innerHTML = allBookedBanner + slots.map(slot => {
+        const norm = normalizeSlotTimeForMatch(slot);
+        const isBooked = bookedSlotsSet.has(norm);
+        const isManualBlocked = manualBlocked.includes(norm);
+        const isDisabled = isBooked || isManualBlocked;
+        const active = selectedPatSlot === slot;
+
+        if (isDisabled) {
+          return `
+            <button 
+              type="button" 
+              disabled 
+              class="py-2 px-1.5 rounded-xl font-bold text-[11px] sm:text-xs border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed opacity-40 line-through select-none pointer-events-none flex items-center justify-center gap-1"
+              title="${isBooked ? 'Yeh slot pehle se book ho chuka hai' : 'Slot blocked hai'}"
+            >
+              <span>${slot}</span>
+              <span class="text-[9px] no-underline font-extrabold text-rose-500 bg-rose-50 px-1 py-0.2 rounded border border-rose-200">
+                ${isBooked ? 'Booked' : 'Off'}
+              </span>
+            </button>
+          `;
+        }
+
+        return `
+          <button 
+            type="button" 
+            onclick="selectedPatSlot='${slot}'; renderSlotPills();" 
+            class="py-2 px-2 rounded-xl font-bold text-xs border transition ${
+              active
+                ? 'bg-[#075E54] text-white border-[#075E54] shadow-xs'
+                : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-emerald-50'
+            }"
+          >
+            ${slot}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderVisitingReasons() {
+      const reasonChipsBox = document.getElementById('patBookReasonChips');
+      if (!reasonChipsBox) return;
+      const rList = getVisitingReasons();
+      if (!selectedPatReason && rList.length > 0) {
+        selectedPatReason = rList[0] || 'General Consultation';
+      }
+      reasonChipsBox.innerHTML = rList.map(r => {
+        const active = selectedPatReason === r && !isCustomPatReason;
+        return `
+          <button 
+            type="button" 
+            onclick="selectPatientReasonChip('${escapeHtml(r)}')" 
+            class="px-3 py-1.5 rounded-xl font-bold text-xs border transition ${
+              active
+                ? 'bg-[#128C7E] text-white border-[#128C7E]'
+                : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+            }"
+          >
+            ${r}
+          </button>
+        `;
+      }).join('');
+    }
+
+    window.renderSlotPills = renderSlotPills;
+    window.renderVisitingReasons = renderVisitingReasons;
+
     function selectPatientShift(shift) {
       selectedPatShift = shift;
       renderPatientBookingPage();
+      if (typeof refreshPatientBookingSlotsFromServer === 'function') {
+        refreshPatientBookingSlotsFromServer();
+      }
     }
 
     let isCustomPatReason = false;
@@ -13813,6 +14025,8 @@
       if (isSlotAlreadyBooked(selectedPatSlot, selectedPatCustomDate)) {
         showToast(`⚠️ Slot "${selectedPatSlot}" pehle se book ho chuka hai! Kripya doosra slot chunein.`, 'warning');
         alert(`Slot "${selectedPatSlot}" pehle se kisi aur mareez dwara book kiya ja chuka hai.\nKripya doosra uplabdh slot chunein.`);
+        setPatientBookingStep(1);
+        renderSlotPills();
         renderPatientBookingPage();
         return;
       }
@@ -13874,8 +14088,13 @@
           });
           if (res.status === 409) {
             const errData = await res.json().catch(() => ({}));
-            showToast(errData.message || '⚠️ Yeh slot pehle se book ho chuka hai. Kripya doosra slot chunein.', 'warning');
-            alert(errData.message || 'Yeh slot pehle se book ho chuka hai. Kripya doosra slot chunein.');
+            const msg = errData.message || errData.error || '⚠️ Yeh slot pehle se book ho chuka hai. Kripya doosra slot chunein.';
+            showToast(msg, 'warning');
+            alert(msg);
+            setPatientBookingStep(1);
+            if (typeof refreshPatientBookingSlotsFromServer === 'function') {
+              await refreshPatientBookingSlotsFromServer();
+            }
             renderPatientBookingPage();
             return;
           }
@@ -13912,6 +14131,12 @@
         } else {
           todayQueue.push(savedBooking);
         }
+        if (typeof reassignTimelineTokens === 'function') {
+          reassignTimelineTokens(todayQueue);
+          const selfItem = todayQueue.find(p => p.id === savedBooking.id);
+          if (selfItem && selfItem.token) savedBooking.token = selfItem.token;
+        }
+        todayQueue.sort((a, b) => (a.token || 0) - (b.token || 0));
         saveLocalQueue();
       }
 
@@ -13928,7 +14153,6 @@
 
       closePatientBookingModal();
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
-      document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
       document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
 
       renderTokenPassDetails(savedBooking);
@@ -13986,7 +14210,6 @@
       if (passFee) passFee.textContent = `₹${savedBooking.fee}`;
 
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
-      document.getElementById('patientBookingFormContainer')?.classList.add('hidden');
       document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
       document.getElementById('patientClinicHeaderBlock')?.classList.add('hidden');
       document.getElementById('patientViewLiveStatusCard')?.classList.add('hidden');
@@ -14339,6 +14562,11 @@
       document.getElementById('patientClinicHeaderBlock')?.classList.remove('hidden');
       document.getElementById('patientViewLiveStatusCard')?.classList.remove('hidden');
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.remove('hidden');
+      const formContainer = document.getElementById('patientBookingFormContainer');
+      if (formContainer) {
+        formContainer.classList.remove('hidden');
+        formContainer.style.display = 'block';
+      }
       setPatientBookingStep(1);
       renderPatientBookingPage();
     }
@@ -15214,6 +15442,9 @@
           }).then(q => {
             if (Array.isArray(q)) {
               todayQueue = q;
+              if (typeof reassignTimelineTokens === 'function') {
+                reassignTimelineTokens(todayQueue);
+              }
               saveLocalQueue();
               refreshAllViews();
             }

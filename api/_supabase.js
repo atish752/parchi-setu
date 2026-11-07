@@ -505,5 +505,27 @@ module.exports = {
         createdAt: c.createdAt || new Date().toISOString()
       };
     });
-  }
+  },
+
+  deleteBooking: async (id) => {
+    if (!id) return null;
+    return request('DELETE', `/rest/v1/bookings?id=eq.${encodeURIComponent(id)}`);
+  },
+
+  resetQueue: async (clinicId = null) => {
+    let pathStr = '/rest/v1/bookings';
+    if (clinicId) {
+      pathStr += `?clinic_id=eq.${encodeURIComponent(clinicId)}`;
+    } else {
+      pathStr += '?id=neq.__none__';
+    }
+    return request('DELETE', pathStr);
+  },
+
+  deleteClinic: async (clinicId) => {
+    if (!clinicId) return null;
+    return request('DELETE', `/rest/v1/clinics?id=eq.${encodeURIComponent(clinicId)}`);
+  },
+
+  request
 };

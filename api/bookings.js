@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ error: 'Name and phone are required' }));
     }
 
-    const result = store.addOrUpdateBooking(body);
+    const result = await (store.addOrUpdateBookingAsync ? store.addOrUpdateBookingAsync(body) : store.addOrUpdateBooking(body));
     if (result.error === 'LIMIT_REACHED') {
       res.statusCode = 403;
       res.setHeader('Content-Type', 'application/json');
@@ -61,7 +61,8 @@ module.exports = async (req, res) => {
     const clinicId = url.searchParams.get('clinic') || url.searchParams.get('clinicId');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify(store.getQueue(phone, clinicId)));
+    const queue = store.getQueueAsync ? await store.getQueueAsync(phone, clinicId) : store.getQueue(phone, clinicId);
+    return res.end(JSON.stringify(queue));
   }
 
   res.statusCode = 405;

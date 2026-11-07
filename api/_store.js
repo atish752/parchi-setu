@@ -289,10 +289,71 @@ function normalizeSlotString(slot) {
   return clean.replace(/\s+/g, ' ');
 }
 
+function getSlotTimelineMinutes(slotTime, shift, createdAt) {
+  if (slotTime) {
+    const clean = String(slotTime).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+    const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+    if (m) {
+      let h = parseInt(m[1], 10);
+      const min = parseInt(m[2], 10);
+      const ap = (m[3] || '').toLowerCase();
+      if (ap === 'pm' && h < 12) h += 12;
+      if (ap === 'am' && h === 12) h = 0;
+      return h * 60 + min;
+    }
+  }
+  if (createdAt) {
+    try {
+      const d = new Date(createdAt);
+      if (!isNaN(d.getTime())) {
+        const totalUtcMins = d.getUTCHours() * 60 + d.getUTCMinutes();
+        const istMins = (totalUtcMins + 330) % 1440;
+        return istMins;
+      }
+    } catch (e) {}
+  }
+  const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
+  return isEvening ? 1020 : 600;
+}
+
+function reassignTimelineTokens(bookings) {
+  if (!Array.isArray(bookings)) return;
+  // Group active bookings by clinic and date
+  const groups = {};
+  bookings.forEach(p => {
+    if (!p || p.status === 'CANCELLED') return;
+    const cId = p.clinicId || 'default';
+    const dStr = (p.date || (p.createdAt ? p.createdAt.slice(0, 10) : getISTDateString())).slice(0, 10);
+    const key = `${cId}__${dStr}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(p);
+  });
+
+  Object.values(groups).forEach(group => {
+    group.sort((a, b) => {
+      const minsA = getSlotTimelineMinutes(a.slotTime, a.shift, a.createdAt);
+      const minsB = getSlotTimelineMinutes(b.slotTime, b.shift, b.createdAt);
+      if (minsA !== minsB) return minsA - minsB;
+      const timeA = new Date(a.createdAt || 0).getTime();
+      const timeB = new Date(b.createdAt || 0).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      return String(a.id || '').localeCompare(String(b.id || ''));
+    });
+
+    let tokenNum = 1;
+    group.forEach(p => {
+      if (p.token && p.token >= 100) return;
+      p.token = tokenNum++;
+    });
+  });
+}
+
 module.exports = {
   isDummyClinicName,
   getRazorpayVerificationClinic,
   normalizeSlotString,
+  getSlotTimelineMinutes,
+  reassignTimelineTokens,
   getStore: () => store,
   loadStore,
   persistStore,
@@ -611,7 +672,9 @@ module.exports = {
           const map = {};
           store.queue.forEach(item => { if (item && item.id) map[item.id] = item; });
           sbQueue.forEach(item => { if (item && item.id) map[item.id] = { ...(map[item.id] || {}), ...item }; });
-          store.queue = Object.values(map).sort((a, b) => (a.token || 0) - (b.token || 0));
+          store.queue = Object.values(map);
+          reassignTimelineTokens(store.queue);
+          store.queue.sort((a, b) => (a.token || 0) - (b.token || 0));
           persistStore();
         }
       } catch (e) {}
@@ -626,6 +689,49 @@ module.exports = {
       persistStore();
     }
     return store.queue;
+  },
+
+  addOrUpdateBookingAsync: async (booking) => {
+    loadStore();
+    const targetClinic = (booking.clinicId && store.clinics && store.clinics[booking.clinicId])
+      ? store.clinics[booking.clinicId]
+      : (INITIAL_CLINICS[booking.clinicId] || store.clinic);
+    const clinicId = booking.clinicId || (targetClinic ? targetClinic.id : store.clinic.id);
+    const targetDate = booking.date || getISTDateString();
+    const normSlot = normalizeSlotString(booking.slotTime);
+    const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(normSlot);
+
+    if (isScheduledSlot) {
+      let clinicBookings = (clinicId && store.queue)
+        ? store.queue.filter(p => !p.clinicId || p.clinicId === clinicId)
+        : (store.queue || []);
+
+      if (supabase && typeof supabase.getQueue === 'function') {
+        try {
+          const sbQueue = await supabase.getQueue(clinicId, targetDate.slice(0, 10));
+          if (Array.isArray(sbQueue) && sbQueue.length > 0) {
+            const map = {};
+            clinicBookings.forEach(p => { if (p && p.id) map[p.id] = p; });
+            sbQueue.forEach(p => { if (p && p.id) map[p.id] = { ...(map[p.id] || {}), ...p }; });
+            clinicBookings = Object.values(map);
+          }
+        } catch (e) {}
+      }
+
+      const existingSlotBooking = clinicBookings.find(p => 
+        p.id !== booking.id &&
+        p.status !== 'CANCELLED' &&
+        (p.date || '').slice(0, 10) === targetDate.slice(0, 10) &&
+        normalizeSlotString(p.slotTime) === normSlot
+      );
+      if (existingSlotBooking) {
+        return {
+          error: 'SLOT_ALREADY_BOOKED',
+          message: `Time slot ${booking.slotTime} has already been booked for ${targetDate}. Please choose another slot.`
+        };
+      }
+    }
+    return module.exports.addOrUpdateBooking(booking);
   },
 
   addOrUpdateBooking: (booking) => {
@@ -663,7 +769,7 @@ module.exports = {
     // Double-booking prevention: check if another active patient already booked this exact slot on this date
     const targetDate = booking.date || getISTDateString();
     const normSlot = normalizeSlotString(booking.slotTime);
-    const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking'].includes(normSlot);
+    const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(normSlot);
 
     if (isScheduledSlot) {
       const existingSlotBooking = clinicBookings.find(p => 
@@ -680,8 +786,7 @@ module.exports = {
       }
     }
 
-    const maxToken = clinicBookings.reduce((max, p) => Math.max(max, p.token || 0), 0);
-    const nextToken = (booking.token && booking.token > maxToken) ? booking.token : (maxToken + 1);
+    const explicitToken = (booking.token && booking.token >= 100) ? booking.token : null;
     const bookingId = booking.id || ('q_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
 
     const finalBooking = {
@@ -690,7 +795,7 @@ module.exports = {
       clinicName: booking.clinicName || (targetClinic ? targetClinic.name : store.clinic.name),
       clinicAddress: booking.clinicAddress || (targetClinic ? targetClinic.address : store.clinic.address),
       clinicPhone: booking.clinicPhone || (targetClinic ? targetClinic.phone : store.clinic.phone),
-      token: nextToken,
+      token: explicitToken || 1,
       name: (booking.name || '').trim(),
       age: parseInt(booking.age, 10) || 30,
       gender: booking.gender || 'M',
@@ -706,7 +811,7 @@ module.exports = {
       shift: booking.shift || 'Morning',
       slotTime: booking.slotTime || 'Online Booking',
       day: booking.day || 'Aaj (Today)',
-      date: booking.date || getISTDateString(),
+      date: targetDate,
       bp: booking.bp || '',
       weight: booking.weight || '',
       temp: booking.temp || '',
@@ -721,9 +826,24 @@ module.exports = {
     };
 
     store.queue.push(finalBooking);
+
+    // Re-assign timeline tokens for this clinic and date: Earliest slot = #1, next = #2, etc.
+    if (!explicitToken) {
+      const dateBookings = store.queue.filter(p =>
+        (!p.clinicId || p.clinicId === clinicId) &&
+        (p.date || '').slice(0, 10) === targetDate.slice(0, 10)
+      );
+      reassignTimelineTokens(dateBookings);
+    }
     persistStore();
     if (supabase && typeof supabase.saveBooking === 'function') {
-      supabase.saveBooking(finalBooking).catch(() => {});
+      const affected = store.queue.filter(p =>
+        (!p.clinicId || p.clinicId === clinicId) &&
+        (p.date || '').slice(0, 10) === targetDate.slice(0, 10)
+      );
+      for (const b of affected) {
+        supabase.saveBooking(b).catch(() => {});
+      }
     }
     return { isNew: true, booking: finalBooking };
   },
@@ -743,6 +863,9 @@ module.exports = {
   resetQueue: () => {
     store.queue = [];
     persistStore();
+    if (supabase && typeof supabase.resetQueue === 'function') {
+      supabase.resetQueue().catch(() => {});
+    }
     return [];
   },
 
