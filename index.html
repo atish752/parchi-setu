@@ -882,16 +882,16 @@
       <section id="clinicTab-calendar" class="hidden space-y-4">
 
         <!-- Clinic Onboarding & Patient Booking Link Banner Card -->
-        <div class="bg-gradient-to-r from-[#075E54] to-[#128C7E] text-white rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-[#075E54] text-white rounded-2xl p-4 sm:p-5 shadow-sm border border-emerald-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <span class="bg-[#25D366] text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
               Online Patient Booking Link
             </span>
-            <h3 class="text-lg font-black mt-1.5 flex items-center gap-2">
+            <h3 class="text-base sm:text-lg font-black mt-1.5 flex items-center gap-2">
               <i class="fa-solid fa-qrcode text-[#25D366]"></i>
               <span id="calendarClinicTitle">Sanjeevani Family Clinic</span>
             </h3>
-            <p class="text-xs text-emerald-100 mt-0.5" id="calendarClinicSub">
+            <p class="text-xs text-emerald-100/90 mt-0.5" id="calendarClinicSub">
               Share your direct booking link with patients to book live tokens without standing in line.
             </p>
           </div>
@@ -899,37 +899,37 @@
           <div class="flex flex-wrap items-center gap-2">
             <button 
               onclick="copyPatientBookingLink()" 
-              class="btn-tactile bg-white text-[#075E54] hover:bg-emerald-50 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+              class="btn-tactile bg-white text-[#075E54] hover:bg-emerald-50 font-black px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition"
             >
               <i class="fa-solid fa-copy text-[#128C7E]"></i>
               <span>Copy Patient Link</span>
             </button>
             <button 
               onclick="shareClinicBookingOnWhatsApp()" 
-              class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+              class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition"
             >
               <i class="fa-brands fa-whatsapp text-sm"></i>
               <span>Share on WhatsApp</span>
             </button>
             <button 
               onclick="openClinicOnboardingModal()" 
-              class="btn-tactile bg-white/15 hover:bg-white/25 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 border border-white/20 transition"
+              class="btn-tactile bg-white/15 hover:bg-white/25 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-white/20 transition"
             >
               <i class="fa-solid fa-gear"></i>
               <span>Edit Timings</span>
             </button>
             <button 
               onclick="openInteractiveQRModal()" 
-              class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+              class="btn-tactile bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition"
             >
-              <i class="fa-solid fa-qrcode text-base"></i>
+              <i class="fa-solid fa-qrcode text-sm"></i>
               <span data-i18n="btnShowStandee">View Clinic QR Standee</span>
             </button>
           </div>
         </div>
 
         <!-- Real-World Clinic Reality Toggles (Doctor Expected Arrival & Pause QR) -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3.5">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/90 space-y-3.5">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2.5">
               <div class="w-9 h-9 rounded-xl bg-emerald-100 text-[#075E54] flex items-center justify-center flex-shrink-0 text-base">
@@ -950,7 +950,7 @@
               onclick="togglePauseQR()" 
               id="btnPauseQRToggle"
               type="button"
-              class="btn-tactile px-4 py-2.5 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs"
+              class="btn-tactile px-3.5 py-2 rounded-xl font-black text-xs border-2 flex items-center justify-center gap-2 transition bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs"
             >
               <i class="fa-solid fa-ban text-emerald-600"></i>
               <span data-i18n="btnPauseQR">Online Booking:</span>
@@ -1060,9 +1060,9 @@
 
           </div>
 
-        <!-- 7-Day Horizontal Date Strip -->
-        <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-200">
-          <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <!-- 7-Day Horizontal Date Strip & Vacation Controls -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/90 space-y-3">
+          <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
             <h3 class="font-extrabold text-sm sm:text-base text-slate-800" data-i18n="selectDateHeading">
               📅 Din Chunein (Schedule & Advance Bookings)
             </h3>
@@ -1085,55 +1085,50 @@
           <div id="calendarDateStrip" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
             <!-- Populated by JS -->
           </div>
-        </div>
 
-        <!-- Doctor Leave & Slot Management Controls for Selected Date -->
-        <div id="calendarDayControlCard" class="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-200 space-y-3">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
+          <!-- Doctor Leave & Slot Management Controls for Selected Date -->
+          <div id="calendarDayControlCard" class="bg-emerald-50/70 rounded-xl p-3 border border-emerald-200 space-y-2.5 mt-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <span class="text-xs font-black uppercase text-[#075E54] tracking-wide">Tareekh & Doctor Chhutti (Vacation Controls):</span>
                 <span id="calendarSelectedDateBadge" class="bg-[#075E54] text-white text-xs font-black px-2.5 py-0.5 rounded-full">Aaj (Today)</span>
               </div>
-              <p class="text-xs text-slate-600 mt-0.5">
-                Doctor chhutti par hain toh din chhutti mark karein ya kisi slot ko band karein. Mareez online book nahi kar payenge.
-              </p>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button 
+                  type="button" 
+                  id="btnToggleFullDayLeave" 
+                  onclick="toggleDoctorLeaveForSelectedDate()" 
+                  class="btn-tactile px-3.5 py-2 rounded-xl text-xs font-black border transition bg-white border-amber-400 text-amber-900 hover:bg-amber-50 flex items-center gap-1.5 shadow-xs"
+                >
+                  <i class="fa-solid fa-umbrella-beach text-amber-600"></i>
+                  <span id="btnFullDayLeaveText">🌴 Mark Day as Leave / Chhutti</span>
+                </button>
+              </div>
             </div>
-            <div class="flex items-center gap-2 flex-wrap">
+
+            <!-- Shift-level quick off buttons for selected date -->
+            <div class="flex items-center gap-2 pt-2 border-t border-emerald-100 flex-wrap">
+              <span class="text-[11px] font-bold text-slate-500 uppercase">Shift Status:</span>
               <button 
                 type="button" 
-                id="btnToggleFullDayLeave" 
-                onclick="toggleDoctorLeaveForSelectedDate()" 
-                class="btn-tactile px-3.5 py-2 rounded-xl text-xs font-black border transition bg-white border-amber-400 text-amber-900 hover:bg-amber-50 flex items-center gap-1.5 shadow-xs"
+                id="btnMorningShiftToggle" 
+                onclick="toggleShiftOffForSelectedDate('Morning')" 
+                class="px-2.5 py-1 rounded-lg text-xs font-bold border transition bg-emerald-100 border-emerald-400 text-[#075E54]"
               >
-                <i class="fa-solid fa-umbrella-beach text-amber-600"></i>
-                <span id="btnFullDayLeaveText">🌴 Mark Day as Leave / Chhutti</span>
+                ☀️ Subah Shift: <span id="morningShiftStatusText">Open</span>
               </button>
+              <button 
+                type="button" 
+                id="btnEveningShiftToggle" 
+                onclick="toggleShiftOffForSelectedDate('Evening')" 
+                class="px-2.5 py-1 rounded-lg text-xs font-bold border transition bg-indigo-100 border-indigo-400 text-indigo-900"
+              >
+                🌙 Shaam Shift: <span id="eveningShiftStatusText">Open</span>
+              </button>
+              <span class="text-[11px] text-slate-500 ml-auto italic">
+                💡 Niche slots par click karke kisi bhi slot ko Band (OFF) ya Chalu (ON) karein.
+              </span>
             </div>
-          </div>
-
-          <!-- Shift-level quick off buttons for selected date -->
-          <div class="flex items-center gap-2 pt-2 border-t border-emerald-100 flex-wrap">
-            <span class="text-[11px] font-bold text-slate-500 uppercase">Shift Status:</span>
-            <button 
-              type="button" 
-              id="btnMorningShiftToggle" 
-              onclick="toggleShiftOffForSelectedDate('Morning')" 
-              class="px-2.5 py-1 rounded-lg text-xs font-bold border transition bg-emerald-100 border-emerald-400 text-[#075E54]"
-            >
-              ☀️ Subah Shift: <span id="morningShiftStatusText">Open</span>
-            </button>
-            <button 
-              type="button" 
-              id="btnEveningShiftToggle" 
-              onclick="toggleShiftOffForSelectedDate('Evening')" 
-              class="px-2.5 py-1 rounded-lg text-xs font-bold border transition bg-indigo-100 border-indigo-400 text-indigo-900"
-            >
-              🌙 Shaam Shift: <span id="eveningShiftStatusText">Open</span>
-            </button>
-            <span class="text-[11px] text-slate-500 ml-auto italic">
-              💡 Niche slots par click karke kisi bhi slot ko Band (OFF) ya Chalu (ON) karein.
-            </span>
           </div>
         </div>
 
