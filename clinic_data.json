@@ -1,47 +1,45 @@
 {
   "clinic": {
-    "id": "clinic_sanjeevani_01",
-    "name": "Sanjeevani Family Clinic",
-    "tagline": "General Physician & Family Healthcare",
+    "id": "clinic_e2e_verified_1794023148329",
+    "name": "Aarogya Multi-Specialty Clinic",
+    "tagline": "Complete Family Healthcare & Diabetes Care",
     "category": "General Medicine",
-    "address": "Near Main Market Chowk, Station Road",
+    "address": "Kankarbagh Main Road, Opposite Pillar 42",
     "city": "Patna, Bihar",
-    "phone": "9835012345",
-    "whatsapp": "9835012345",
-    "upiId": "sanjeevaniclinic@upi",
-    "doctorName": "Dr. Rajesh Sharma",
-    "doctorDegree": "MBBS, MD (General Physician)",
-    "doctorRegNo": "MCI-48291",
-    "experienceYears": 14,
+    "phone": "9835123456",
+    "whatsapp": "9835123456",
+    "upiId": "aarogyaclinic@upi",
+    "doctorName": "Dr. Anand Kishore",
+    "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
+    "doctorRegNo": "BRMC-52194",
+    "experienceYears": 16,
     "rating": 4.9,
     "reviewCount": 148,
-    "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+    "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300",
     "fees": {
-      "normal": 300,
-      "followup": 200,
-      "emergency": 500,
+      "normal": 400,
+      "followup": 250,
+      "emergency": 600,
       "report": 0
     },
     "visitingReasons": [
-      "🤒 Bukhar / Cold",
-      "🩸 BP / Sugar",
-      "🤢 Pet / Gas",
-      "🔄 Follow-up",
-      "📋 Report Check",
-      "🤕 Dard / Injury"
+      "🌸 Daad / Khujli",
+      "🧴 Muhase / Acne",
+      "🔴 Allergy / Rash",
+      "💇 Baal Jhadna"
     ],
     "visitingHours": {
       "morning": {
         "enabled": true,
-        "start": "10:00 AM",
-        "end": "02:00 PM",
+        "start": "09:30 AM",
+        "end": "01:30 PM",
         "slotDurationMins": 15,
         "maxTokens": 25
       },
       "evening": {
         "enabled": true,
-        "start": "05:00 PM",
-        "end": "09:00 PM",
+        "start": "05:30 PM",
+        "end": "09:30 PM",
         "slotDurationMins": 15,
         "maxTokens": 30
       },
@@ -56,27 +54,55 @@
       "avgConsultationMins": 10
     },
     "liveStatus": {
-      "isDoctorLate": false,
-      "doctorDelayMinutes": 0,
-      "expectedArrivalTime": "10:00 AM"
+      "isDoctorLate": true,
+      "doctorDelayMinutes": 45,
+      "expectedArrivalTime": "10:45 AM"
     },
     "doctors": [
       {
         "id": "doc_1",
-        "name": "Dr. Rajesh Sharma",
-        "degree": "MBBS, MD (General Physician)",
+        "name": "Dr. Anand Kishore",
+        "degree": "MBBS, MD (Medicine), PG Diab.",
         "specialty": "General Medicine",
-        "regNo": "MCI-48291",
-        "fee": 300,
+        "fee": 400,
         "isMain": true,
-        "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80"
+        "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300"
+      },
+      {
+        "id": "doc_2",
+        "name": "Dr. Priya Kishore",
+        "degree": "MBBS, MS",
+        "specialty": "Gynecologist",
+        "fee": 450,
+        "isMain": false
+      },
+      {
+        "id": "doc_3",
+        "name": "Dr. Amit Patel",
+        "degree": "BDS, MDS",
+        "specialty": "Dental Surgeon",
+        "fee": 350,
+        "isMain": false
       }
     ],
-    "leaves": {},
+    "leaves": {
+      "2026-10-28": {
+        "fullDay": true,
+        "reason": "Doctor Conference"
+      },
+      "2026-10-29": {
+        "fullDay": false,
+        "morningOff": true,
+        "eveningOff": false,
+        "blockedSlots": [
+          "05:30 PM"
+        ]
+      }
+    },
     "onboarded": true,
-    "createdAt": "2026-11-07T03:40:23.003Z",
+    "createdAt": "2026-11-07T03:45:43.554Z",
     "specialty": "General Medicine",
-    "updatedAt": "2026-11-07T03:40:27.903Z"
+    "updatedAt": "2026-11-07T03:58:35.411Z"
   },
   "clinics": {
     "clinic_sanjeevani_01": {
@@ -156,7 +182,7 @@
       "onboarded": true,
       "createdAt": "2026-11-07T03:40:23.003Z",
       "specialty": "General Medicine",
-      "updatedAt": "2026-11-07T03:40:27.903Z"
+      "updatedAt": "2026-11-07T03:58:37.401Z"
     },
     "clinic_patna_central_99": {
       "id": "clinic_patna_central_99",
@@ -236,7 +262,7 @@
       "onboarded": true,
       "createdAt": "2026-11-07T03:40:23.003Z",
       "specialty": "General Medicine",
-      "updatedAt": "2026-11-07T03:40:24.457Z"
+      "updatedAt": "2026-11-07T03:58:34.478Z"
     },
     "clinic_1794021247706": {
       "id": "clinic_1794021247706",
@@ -349,8 +375,8 @@
         "plan": "annual_pro",
         "amount": 3999,
         "status": "active",
-        "updatedAt": "2026-11-07T03:40:26.904Z",
-        "renewalDate": "2026-12-07T03:40:26.902Z",
+        "updatedAt": "2026-11-07T03:58:36.374Z",
+        "renewalDate": "2026-12-07T03:58:36.370Z",
         "billingCycle": "annual"
       },
       "trialStatus": "pro_active",
@@ -362,7 +388,1008 @@
         "trialStatus": "pro_active",
         "trialDaysLeft": 7
       }
+    },
+    "clinic_e2e_verified_1794023148329": {
+      "id": "clinic_e2e_verified_1794023148329",
+      "name": "Aarogya Multi-Specialty Clinic",
+      "tagline": "Complete Family Healthcare & Diabetes Care",
+      "category": "General Medicine",
+      "address": "Kankarbagh Main Road, Opposite Pillar 42",
+      "city": "Patna, Bihar",
+      "phone": "9835123456",
+      "whatsapp": "9835123456",
+      "upiId": "aarogyaclinic@upi",
+      "doctorName": "Dr. Anand Kishore",
+      "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
+      "doctorRegNo": "BRMC-52194",
+      "experienceYears": 16,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300",
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🌸 Daad / Khujli",
+        "🧴 Muhase / Acne",
+        "🔴 Allergy / Rash",
+        "💇 Baal Jhadna"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "09:30 AM",
+          "end": "01:30 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:30 PM",
+          "end": "09:30 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": true,
+        "doctorDelayMinutes": 45,
+        "expectedArrivalTime": "10:45 AM"
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Anand Kishore",
+          "degree": "MBBS, MD (Medicine), PG Diab.",
+          "specialty": "General Medicine",
+          "fee": 400,
+          "isMain": true,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300"
+        },
+        {
+          "id": "doc_2",
+          "name": "Dr. Priya Kishore",
+          "degree": "MBBS, MS",
+          "specialty": "Gynecologist",
+          "fee": 450,
+          "isMain": false
+        },
+        {
+          "id": "doc_3",
+          "name": "Dr. Amit Patel",
+          "degree": "BDS, MDS",
+          "specialty": "Dental Surgeon",
+          "fee": 350,
+          "isMain": false
+        }
+      ],
+      "leaves": {
+        "2026-10-28": {
+          "fullDay": true,
+          "reason": "Doctor Conference"
+        },
+        "2026-10-29": {
+          "fullDay": false,
+          "morningOff": true,
+          "eveningOff": false,
+          "blockedSlots": [
+            "05:30 PM"
+          ]
+        }
+      },
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:45:43.554Z",
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:58:35.411Z"
+    },
+    "clinic_limit_test_1794023163608": {
+      "id": "clinic_limit_test_1794023163608",
+      "name": "Limit Test Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Rajesh Sharma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-10-23T03:46:03.608Z",
+      "subscription": {
+        "plan": "free",
+        "status": "active",
+        "trialStartDate": "2026-10-23T03:46:03.608Z",
+        "billingCycle": "trial",
+        "amount": 0,
+        "updatedAt": "2026-11-07T03:46:06.329Z",
+        "renewalDate": "2026-12-07T03:46:06.326Z"
+      },
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:46:03.611Z"
+    },
+    "clinic_test_deep": {
+      "id": "clinic_test_deep",
+      "name": "Sanjeevani Family Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Rajesh Sharma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": true,
+        "doctorDelayMinutes": 45,
+        "expectedArrivalTime": "10:45 AM",
+        "isQRBookingPaused": true
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:46:21.364Z",
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:58:48.436Z"
+    },
+    "clinic_test_sync_check": {
+      "id": "clinic_test_sync_check",
+      "name": "Aarogya Multi-Specialty Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Anand Kishore",
+      "doctorDegree": "MBBS, MD (Medicine), PG Diab.",
+      "doctorRegNo": "BRMC-52194",
+      "experienceYears": 16,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "data:image/jpeg;base64,sampleDoctorPhoto123",
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Anand Kishore",
+          "degree": "MBBS, MD (Medicine), PG Diab.",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 400,
+          "photo": "data:image/jpeg;base64,sampleDoctorPhoto123",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:46:26.891Z",
+      "specialty": "General Medicine",
+      "isGoogleAuth": true,
+      "ownerUid": "uid_anand_kishore_123",
+      "updatedAt": "2026-11-07T03:58:52.675Z"
+    },
+    "clinic_new_doctor_1794023193478": {
+      "id": "clinic_new_doctor_1794023193478",
+      "name": "Dr. R. K. Verma Child Care Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. R. K. Verma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. R. K. Verma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "Child / Pediatric",
+          "regNo": "MCI-48291",
+          "fee": 400,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:46:33.412Z",
+      "specialty": "Child / Pediatric",
+      "ownerUid": "uid_dr_verma_123",
+      "ownerEmail": "verma@clinic.com",
+      "createdViaClinicPanel": true,
+      "updatedAt": "2026-11-07T03:46:33.478Z"
+    },
+    "clinic_verma_eye_1794023207511": {
+      "id": "clinic_verma_eye_1794023207511",
+      "name": "Dr. Verma Eye & Laser Hospital",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9876543210",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Neeraj Verma",
+      "doctorDegree": "MBBS, MS (Ophthalmology)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 500,
+        "report": 0,
+        "followup": 300,
+        "emergency": 800
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "evening": {
+          "end": "09:00 PM",
+          "start": "05:00 PM",
+          "enabled": true,
+          "maxTokens": 30,
+          "slotDurationMins": 15
+        },
+        "morning": {
+          "end": "02:00 PM",
+          "start": "10:00 AM",
+          "enabled": true,
+          "maxTokens": 25,
+          "slotDurationMins": 15
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Neeraj Verma",
+          "degree": "MBBS, MS (Ophthalmology)",
+          "specialty": "Eye Care",
+          "regNo": "MCI-48291",
+          "fee": 500,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:46:47.073762+00:00",
+      "specialty": "Eye Care",
+      "ownerUid": "google_uid_test_1794023207511",
+      "ownerEmail": "doctor.verma@example.com",
+      "isGoogleAuth": true,
+      "googleRegistered": true,
+      "updatedAt": "2026-11-07T03:46:47.516Z",
+      "clinicName": "Dr. Verma Eye & Laser Hospital",
+      "subscription": {
+        "plan": "annual_pro",
+        "status": "active",
+        "billingCycle": "annual",
+        "amount": 3999,
+        "renewalDate": "2026-12-07T03:46:49.960Z",
+        "updatedAt": "2026-11-07T03:46:49.963Z"
+      },
+      "trialStatus": "trial_active",
+      "trialDaysLeft": 7,
+      "stats": {
+        "totalBookings": 1,
+        "todayBookings": 1,
+        "monthBookings": 1,
+        "trialStatus": "trial_active",
+        "trialDaysLeft": 7
+      }
+    },
+    "clinic_e2e_verified_1794023884249": {
+      "id": "clinic_e2e_verified_1794023884249",
+      "name": "Verma Ortho & Polyclinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "Orthopedics",
+      "address": "Near Gandhi Chowk",
+      "city": "Ranchi, Jharkhand",
+      "phone": "9812345678",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Sudhir Verma",
+      "doctorDegree": "MBBS, MS (Ortho)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300",
+      "fees": {
+        "normal": 500,
+        "followup": 300,
+        "emergency": 700,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Sudhir Verma",
+          "degree": "MBBS, MS (Ortho)",
+          "specialty": "Orthopedic Surgeon",
+          "regNo": "MCI-48291",
+          "fee": 500,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:57:57.922Z",
+      "specialty": "Orthopedic Surgeon",
+      "updatedAt": "2026-11-07T03:58:04.251Z"
+    },
+    "clinic_limit_test_1794023905139": {
+      "id": "clinic_limit_test_1794023905139",
+      "name": "Limit Test Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Rajesh Sharma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 300,
+        "followup": 200,
+        "emergency": 500,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Rajesh Sharma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "General Medicine",
+          "regNo": "MCI-48291",
+          "fee": 300,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-10-23T03:58:25.139Z",
+      "subscription": {
+        "plan": "free",
+        "status": "active",
+        "trialStartDate": "2026-10-23T03:58:25.139Z",
+        "billingCycle": "trial",
+        "amount": 0,
+        "updatedAt": "2026-11-07T03:58:28.270Z",
+        "renewalDate": "2026-12-07T03:58:28.261Z"
+      },
+      "specialty": "General Medicine",
+      "updatedAt": "2026-11-07T03:58:25.143Z"
+    },
+    "clinic_new_doctor_1794023937791": {
+      "id": "clinic_new_doctor_1794023937791",
+      "name": "Dr. R. K. Verma Child Care Clinic",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9835012345",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. R. K. Verma",
+      "doctorDegree": "MBBS, MD (General Physician)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 400,
+        "followup": 250,
+        "emergency": 600,
+        "report": 0
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "morning": {
+          "enabled": true,
+          "start": "10:00 AM",
+          "end": "02:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 25
+        },
+        "evening": {
+          "enabled": true,
+          "start": "05:00 PM",
+          "end": "09:00 PM",
+          "slotDurationMins": 15,
+          "maxTokens": 30
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. R. K. Verma",
+          "degree": "MBBS, MD (General Physician)",
+          "specialty": "Child / Pediatric",
+          "regNo": "MCI-48291",
+          "fee": 400,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:58:57.733Z",
+      "specialty": "Child / Pediatric",
+      "ownerUid": "uid_dr_verma_123",
+      "ownerEmail": "verma@clinic.com",
+      "createdViaClinicPanel": true,
+      "updatedAt": "2026-11-07T03:58:57.792Z"
+    },
+    "clinic_verma_eye_1794023954442": {
+      "id": "clinic_verma_eye_1794023954442",
+      "name": "Dr. Verma Eye & Laser Hospital",
+      "tagline": "General Physician & Family Healthcare",
+      "category": "General Medicine",
+      "address": "Near Main Market Chowk, Station Road",
+      "city": "Patna, Bihar",
+      "phone": "9876543210",
+      "whatsapp": "9835012345",
+      "upiId": "sanjeevaniclinic@upi",
+      "doctorName": "Dr. Neeraj Verma",
+      "doctorDegree": "MBBS, MS (Ophthalmology)",
+      "doctorRegNo": "MCI-48291",
+      "experienceYears": 14,
+      "rating": 4.9,
+      "reviewCount": 148,
+      "doctorPhoto": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+      "fees": {
+        "normal": 500,
+        "report": 0,
+        "followup": 300,
+        "emergency": 800
+      },
+      "visitingReasons": [
+        "🤒 Bukhar / Cold",
+        "🩸 BP / Sugar",
+        "🤢 Pet / Gas",
+        "🔄 Follow-up",
+        "📋 Report Check",
+        "🤕 Dard / Injury"
+      ],
+      "visitingHours": {
+        "evening": {
+          "end": "09:00 PM",
+          "start": "05:00 PM",
+          "enabled": true,
+          "maxTokens": 30,
+          "slotDurationMins": 15
+        },
+        "morning": {
+          "end": "02:00 PM",
+          "start": "10:00 AM",
+          "enabled": true,
+          "maxTokens": 25,
+          "slotDurationMins": 15
+        },
+        "daysOpen": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "avgConsultationMins": 10
+      },
+      "liveStatus": {
+        "isDoctorLate": false,
+        "doctorDelayMinutes": 0,
+        "expectedArrivalTime": "10:00 AM",
+        "isQRBookingPaused": false
+      },
+      "doctors": [
+        {
+          "id": "doc_1",
+          "name": "Dr. Neeraj Verma",
+          "degree": "MBBS, MS (Ophthalmology)",
+          "specialty": "Eye Care",
+          "regNo": "MCI-48291",
+          "fee": 500,
+          "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80",
+          "isMain": true
+        }
+      ],
+      "leaves": {},
+      "onboarded": true,
+      "createdAt": "2026-11-07T03:59:14.008057+00:00",
+      "specialty": "Eye Care",
+      "ownerUid": "google_uid_test_1794023954442",
+      "ownerEmail": "doctor.verma@example.com",
+      "isGoogleAuth": true,
+      "googleRegistered": true,
+      "updatedAt": "2026-11-07T03:59:14.448Z",
+      "clinicName": "Dr. Verma Eye & Laser Hospital",
+      "subscription": {
+        "plan": "annual_pro",
+        "status": "active",
+        "billingCycle": "annual",
+        "amount": 3999,
+        "renewalDate": "2026-12-07T03:59:16.203Z",
+        "updatedAt": "2026-11-07T03:59:16.214Z"
+      },
+      "trialStatus": "trial_active",
+      "trialDaysLeft": 7,
+      "stats": {
+        "totalBookings": 1,
+        "todayBookings": 1,
+        "monthBookings": 1,
+        "trialStatus": "trial_active",
+        "trialDaysLeft": 7
+      }
     }
   },
-  "queue": []
+  "queue": [
+    {
+      "id": "q_1794023928388_806",
+      "clinicId": "clinic_test_deep",
+      "clinicName": "Sanjeevani Family Clinic",
+      "clinicAddress": "Near Main Market Chowk, Station Road",
+      "clinicPhone": "9835012345",
+      "token": 1,
+      "name": "Sunita Devi",
+      "age": 42,
+      "gender": "F",
+      "phone": "",
+      "reason": "General Consultation",
+      "visitType": "new",
+      "doctorId": "doc_1",
+      "doctorName": "Dr. Rajesh Sharma",
+      "fee": 300,
+      "payMode": "Baaki",
+      "status": "WAITING",
+      "source": "Walk-in",
+      "shift": "Morning",
+      "slotTime": "Online Booking",
+      "day": "Aaj (Today)",
+      "date": "2026-11-07",
+      "bp": "",
+      "weight": "",
+      "temp": "",
+      "sugar": "",
+      "spo2": "",
+      "customMetrics": [],
+      "followUpDays": null,
+      "followUpDate": "",
+      "hasParchiPhoto": false,
+      "notes": "",
+      "createdAt": "2026-11-07T03:58:48.406Z"
+    },
+    {
+      "id": "q_1794023938803_62",
+      "clinicId": "clinic_new_doctor_1794023937791",
+      "clinicName": "Dr. R. K. Verma Child Care Clinic",
+      "clinicAddress": "Near Main Market Chowk, Station Road",
+      "clinicPhone": "9835012345",
+      "token": 1,
+      "name": "Aman Deep",
+      "age": 8,
+      "gender": "M",
+      "phone": "9835001122",
+      "reason": "Sardi / Bukhar",
+      "visitType": "new",
+      "doctorId": "doc_1",
+      "doctorName": "Dr. R. K. Verma",
+      "fee": 400,
+      "payMode": "Baaki",
+      "status": "WAITING",
+      "source": "QR Booked",
+      "shift": "Morning",
+      "slotTime": "10:30 AM",
+      "day": "Aaj (Today)",
+      "date": "2026-11-07",
+      "bp": "",
+      "weight": "",
+      "temp": "",
+      "sugar": "",
+      "spo2": "",
+      "customMetrics": [],
+      "followUpDays": null,
+      "followUpDate": "",
+      "hasParchiPhoto": false,
+      "notes": "",
+      "createdAt": "2026-11-07T03:58:58.830Z"
+    },
+    {
+      "id": "q_1794023955253_254",
+      "clinicId": "clinic_verma_eye_1794023954442",
+      "clinicName": "Dr. Verma Eye & Laser Hospital",
+      "clinicAddress": "Near Main Market Chowk, Station Road",
+      "clinicPhone": "9876543210",
+      "token": 1,
+      "name": "Rameshwar Lal",
+      "age": 48,
+      "gender": "M",
+      "phone": "9835123456",
+      "reason": "Eye Checkup",
+      "visitType": "new",
+      "doctorId": "doc_1",
+      "doctorName": "Dr. Neeraj Verma",
+      "fee": 500,
+      "payMode": "UPI",
+      "status": "IN_CABIN",
+      "source": "Online QR",
+      "shift": "Morning",
+      "slotTime": "10:30 AM",
+      "day": "Aaj (Today)",
+      "date": "2026-11-07",
+      "bp": "120/80",
+      "weight": "68 kg",
+      "temp": "",
+      "sugar": "",
+      "spo2": "",
+      "customMetrics": [],
+      "followUpDays": null,
+      "followUpDate": "",
+      "hasParchiPhoto": false,
+      "notes": "",
+      "createdAt": "2026-11-07T03:59:15.274Z"
+    }
+  ]
 }

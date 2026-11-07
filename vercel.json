@@ -2,11 +2,17 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/book", "destination": "/index.html" },
+    { "source": "/book/(.*)", "destination": "/index.html" },
     { "source": "/clinic", "destination": "/index.html" },
+    { "source": "/clinic/(.*)", "destination": "/index.html" },
     { "source": "/signin", "destination": "/index.html" },
+    { "source": "/signin/(.*)", "destination": "/index.html" },
     { "source": "/login", "destination": "/index.html" },
+    { "source": "/login/(.*)", "destination": "/index.html" },
     { "source": "/onboard", "destination": "/index.html" },
+    { "source": "/onboard/(.*)", "destination": "/index.html" },
     { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/(.*)", "destination": "/index.html" },
     { "source": "/api/payment/(.*)", "destination": "/api/payment" },
     { "source": "/api/admin/(.*)", "destination": "/api/admin" },
     { "source": "/api/queue/:id", "destination": "/api/queue?id=:id" }

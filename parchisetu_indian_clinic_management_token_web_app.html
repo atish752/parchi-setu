@@ -7,6 +7,23 @@
   <!-- Favicon: Cute Smiling Parchi with Doctor Stethoscope -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.svg" />
+  <!-- Pre-render Route Check: Instantly hides Doctor Auth Gateway on patient QR scan / booking links before external assets finish downloading -->
+  <script>
+    (function() {
+      try {
+        var p = (window.location.pathname || '').toLowerCase();
+        var s = window.location.search || '';
+        var h = window.location.hash || '';
+        var isPatient = p.startsWith('/book') || s.includes('clinic=') || s.includes('clinicid=') || s.includes('id=') || s.includes('role=patient') || h.includes('clinic') || h.includes('book');
+        if (isPatient) {
+          var style = document.createElement('style');
+          style.id = 'parchi-patient-fouc-guard';
+          style.textContent = '#viewAuthGateway { display: none !important; } #viewPatientBooking { display: block !important; }';
+          document.head.appendChild(style);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons -->
@@ -13116,13 +13133,18 @@
       updatePatientTokenPassLiveStatus();
     }
 
-    function checkAndRestorePatientBooking() {
+    function checkAndRestorePatientBooking(forClinicId = null) {
       try {
-        const cId = clinicProfile ? clinicProfile.id : '';
-        const stored = localStorage.getItem('parchi_active_patient_booking') || localStorage.getItem('parchi_last_booking_' + cId);
+        const cId = forClinicId || (clinicProfile ? clinicProfile.id : '');
+        const stored = localStorage.getItem('parchi_active_patient_booking') || (cId ? localStorage.getItem('parchi_last_booking_' + cId) : null);
         if (!stored) return false;
         const b = JSON.parse(stored);
         if (!b || !b.token) return false;
+
+        // If a specific clinic is requested, do not restore an active booking for a different clinic
+        if (cId && b.clinicId && b.clinicId !== cId) {
+          return false;
+        }
 
         const todayStr = getLocalDateString();
         const isTodayOrFuture = !b.date || b.date >= todayStr || (b.day && (b.day.includes('Aaj') || b.day.includes('Kal') || b.day.includes('Parson')));
@@ -14188,9 +14210,10 @@
 
     function showPatientClinicBookingSection(clinicId) {
       if (clinicId) {
+        clinicProfile.id = clinicId;
         const list = (clinicsDirectory && clinicsDirectory.length > 0) ? clinicsDirectory : [];
         const c = list.find(item => item.id === clinicId) || (clinicProfile.id === clinicId ? clinicProfile : null);
-        if (c) {
+        if (c && c.name && !isDummyClinicName(c.name)) {
           clinicProfile = {
             ...clinicProfile,
             ...c,
@@ -15373,9 +15396,25 @@
 
     window.addEventListener('popstate', () => {
       const p = (window.location.pathname || '').toLowerCase();
+      const s = window.location.search || '';
+      const uParams = new URLSearchParams(s);
+      let cParam = uParams.get('clinic') || uParams.get('clinicId') || uParams.get('id');
+      const rParam = uParams.get('role') || uParams.get('view');
+      if (!cParam && window.location.hash) {
+        try {
+          const rawHash = window.location.hash.replace(/^[#\/]+/, '');
+          const hashQ = window.location.hash.includes('?') ? window.location.hash.slice(window.location.hash.indexOf('?')) : (rawHash.includes('=') ? '?' + rawHash : '');
+          if (hashQ) {
+            const hParams = new URLSearchParams(hashQ);
+            cParam = hParams.get('clinic') || hParams.get('clinicId') || hParams.get('id');
+          }
+        } catch (e) {}
+      }
+      const isExplicitPatient = p.startsWith('/book') || rParam === 'patient' || (Boolean(cParam) && rParam !== 'clinic');
+
       if (p.startsWith('/admin')) {
         openAdminPanel();
-      } else if (p.startsWith('/clinic') || p.startsWith('/signin') || p.startsWith('/login')) {
+      } else if (!isExplicitPatient && (p.startsWith('/clinic') || p.startsWith('/signin') || p.startsWith('/login'))) {
         if (currentAuthUser) {
           enterClinicWorkspace();
         } else {
@@ -15383,7 +15422,11 @@
         }
       } else {
         switchAppRole('patient');
-        showPatientDiscoverySection();
+        if (cParam) {
+          showPatientClinicBookingSection(cParam);
+        } else {
+          showPatientDiscoverySection();
+        }
       }
     });
 
@@ -15810,20 +15853,27 @@
 
       loadClinicsDirectory();
 
-      // Check URL query parameters (supports both query search and hash parameters)
+      // Check URL query parameters (supports query search, hash parameters, and /book/:id paths)
       let urlParams = new URLSearchParams(window.location.search);
       let roleParam = urlParams.get('role') || urlParams.get('view');
       let clinicParam = urlParams.get('clinic') || urlParams.get('clinicId') || urlParams.get('id');
       let onboardParam = urlParams.get('onboard');
 
-      if (!clinicParam && window.location.hash && window.location.hash.includes('?')) {
+      if (!clinicParam && window.location.hash) {
         try {
-          const hashQuery = window.location.hash.slice(window.location.hash.indexOf('?'));
-          const hashParams = new URLSearchParams(hashQuery);
-          if (hashParams.get('clinic') || hashParams.get('clinicId')) {
-            clinicParam = hashParams.get('clinic') || hashParams.get('clinicId');
-            if (!roleParam) roleParam = hashParams.get('role') || hashParams.get('view');
-            if (!onboardParam) onboardParam = hashParams.get('onboard');
+          const rawHash = window.location.hash.replace(/^[#\/]+/, '');
+          const hashQuery = window.location.hash.includes('?')
+            ? window.location.hash.slice(window.location.hash.indexOf('?'))
+            : (rawHash.includes('=') ? '?' + rawHash : '');
+          if (hashQuery) {
+            const hashParams = new URLSearchParams(hashQuery);
+            if (hashParams.get('clinic') || hashParams.get('clinicId') || hashParams.get('id')) {
+              clinicParam = hashParams.get('clinic') || hashParams.get('clinicId') || hashParams.get('id');
+              if (!roleParam) roleParam = hashParams.get('role') || hashParams.get('view');
+              if (!onboardParam) onboardParam = hashParams.get('onboard');
+            }
+          } else if (rawHash.startsWith('clinic_')) {
+            clinicParam = rawHash;
           }
         } catch (e) {}
       }
@@ -15839,6 +15889,15 @@
       // Resolve and apply role immediately for instant UI feedback (zero network delay)
       const currentPath = (window.location.pathname || '').toLowerCase();
       const currentHash = (window.location.hash || '').toLowerCase();
+      if (!clinicParam && currentPath.startsWith('/book/')) {
+        const pathPart = currentPath.replace(/^\/book\//, '').split(/[?#\/]/)[0];
+        if (pathPart && pathPart !== 'index.html') clinicParam = decodeURIComponent(pathPart);
+      }
+
+      if (clinicParam) {
+        clinicProfile.id = clinicParam;
+      }
+
       const isPatientPath = currentPath.startsWith('/book');
       const isExplicitPatientRoute = isPatientPath || roleParam === 'patient' || (Boolean(clinicParam) && roleParam !== 'clinic');
       const isAdminRoute = !isExplicitPatientRoute && (currentPath.startsWith('/admin') || currentHash === '#admin' || roleParam === 'admin');
@@ -15864,7 +15923,7 @@
         } else {
           showPatientDiscoverySection();
         }
-        checkAndRestorePatientBooking();
+        checkAndRestorePatientBooking(clinicParam);
       }
 
       // If a specific clinic ID is passed in the URL (e.g. from Google Maps or QR Code)

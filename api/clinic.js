@@ -82,7 +82,17 @@ module.exports = async (req, res) => {
     const updated = await store.setClinicAsync(body);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ success: true, clinic: updated }));
+    return res.end(JSON.stringify({
+      success: true,
+      clinic: {
+        ...updated,
+        network: {
+          port: 3000,
+          localIps: [],
+          lanUrl: `https://${req.headers.host || 'parchi-setu.vercel.app'}`
+        }
+      }
+    }));
   }
 
   res.statusCode = 405;

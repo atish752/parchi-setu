@@ -897,9 +897,17 @@ const requestHandler = async (req, res) => {
           }
         } catch (e) { console.warn('Supabase saveClinic server error:', e); }
       }
-      broadcastEvent('CLINIC_UPDATED', updatedClinic);
+      const ips = getLocalIpAddresses();
+      const clinicWithNetwork = {
+        ...updatedClinic,
+        network: {
+          port: PORT,
+          localIps: ips,
+          lanUrl: ips.length > 0 ? `http://${ips[0]}:${PORT}` : `http://localhost:${PORT}`
+        }
+      };
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, clinic: updatedClinic }));
+      res.end(JSON.stringify({ success: true, clinic: clinicWithNetwork }));
     } catch (err) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
