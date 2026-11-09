@@ -29,8 +29,9 @@ const DEFAULT_CLINIC = {
   doctorDegree: 'MBBS, MD (General Physician)',
   doctorRegNo: 'MCI-48291',
   experienceYears: 14,
-  rating: 4.9,
-  reviewCount: 148,
+  rating: 0,
+  reviewCount: 0,
+  ratingsByPhone: {},
   doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
   fees: {
     normal: 300,
@@ -515,8 +516,8 @@ module.exports = {
         specialty: docSpecialty,
         category: docCategory,
         doctors,
-        rating: c.rating || init.rating || 4.8,
-        reviewCount: c.reviewCount || init.reviewCount || 120
+        rating: c.rating !== undefined ? c.rating : (init && init.rating !== undefined ? init.rating : 0),
+        reviewCount: c.reviewCount !== undefined ? c.reviewCount : (init && init.reviewCount !== undefined ? init.reviewCount : 0)
       };
     });
     if (realOnly) {
@@ -590,8 +591,8 @@ module.exports = {
         specialty: docSpecialty,
         category: docCategory,
         doctors,
-        rating: c.rating || init.rating || 4.8,
-        reviewCount: c.reviewCount || init.reviewCount || 120
+        rating: c.rating !== undefined ? c.rating : (init && init.rating !== undefined ? init.rating : 0),
+        reviewCount: c.reviewCount !== undefined ? c.reviewCount : (init && init.reviewCount !== undefined ? init.reviewCount : 0)
       };
     });
 
@@ -894,6 +895,18 @@ module.exports = {
 
   resetQueue: () => {
     store.queue = [];
+    if (store.clinic) {
+      store.clinic.rating = 0;
+      store.clinic.reviewCount = 0;
+      store.clinic.ratingsByPhone = {};
+    }
+    if (store.clinics) {
+      Object.values(store.clinics).forEach(c => {
+        c.rating = 0;
+        c.reviewCount = 0;
+        c.ratingsByPhone = {};
+      });
+    }
     persistStore();
     if (supabase && typeof supabase.resetQueue === 'function') {
       supabase.resetQueue().catch(() => {});

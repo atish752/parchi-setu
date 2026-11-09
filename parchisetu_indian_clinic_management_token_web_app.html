@@ -7,6 +7,14 @@
   <!-- Favicon: Cute Smiling Parchi with Doctor Stethoscope -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate icon" href="/favicon.svg" />
+  <!-- PWA Manifest & App Meta Tags -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#075E54" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ParchiSetu" />
+  <link rel="apple-touch-icon" href="/logo.svg" />
   <!-- Pre-render Route Check: Instantly hides Doctor Auth Gateway on patient QR scan / booking links before external assets finish downloading -->
   <script>
     (function() {
@@ -105,13 +113,37 @@
       transform: translateY(2px);
     }
 
-    /* CLINIC DARK MODE HIGH-CONTRAST THEME */
+    /* LIVE PLUS BLINKING ANIMATION (HIGHLIGHT PRIMARY ACTION) */
+    @keyframes livePlusBlink {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 0 8px rgba(37, 211, 102, 0);
+      }
+    }
+    .live-plus-highlight {
+      animation: livePlusBlink 2s infinite ease-in-out !important;
+    }
+
+    /* CLINIC & PATIENT DARK MODE HIGH-CONTRAST THEME */
     body.clinic-dark-mode {
       background-color: #0b141a !important;
       background-image: radial-gradient(#1e293b 0.75px, transparent 0.75px), radial-gradient(#1e293b 0.75px, #0b141a 0.75px) !important;
       color: #f1f5f9 !important;
     }
-    body.clinic-dark-mode #viewClinicDesk {
+    body.clinic-dark-mode #viewClinicDesk,
+    body.clinic-dark-mode #viewPatientBooking,
+    body.clinic-dark-mode #patientDiscoverySection,
+    body.clinic-dark-mode #doctorProfileModal,
+    body.clinic-dark-mode #patientBookingModal,
+    body.clinic-dark-mode #viewPatientTokenPass,
+    body.clinic-dark-mode #clinicRatingModal,
+    body.clinic-dark-mode #pwaInstallGuideModal,
+    body.clinic-dark-mode #patientPhoneLookupCard,
+    body.clinic-dark-mode #phoneLookupResultsContainer {
       color: #f1f5f9 !important;
     }
     body.clinic-dark-mode #viewClinicDesk .bg-white,
@@ -131,12 +163,38 @@
     body.clinic-dark-mode #onlineBookingOverrideModal .bg-white,
     body.clinic-dark-mode #clinicOnboardingModal .bg-white,
     body.clinic-dark-mode #onboardingSuccessModal .bg-white,
-    body.clinic-dark-mode #clinicAccountModal .bg-white {
+    body.clinic-dark-mode #clinicAccountModal .bg-white,
+    body.clinic-dark-mode #viewPatientBooking .bg-white,
+    body.clinic-dark-mode #viewPatientBooking .bg-slate-50,
+    body.clinic-dark-mode #patientDiscoverySection .bg-white,
+    body.clinic-dark-mode #patientDiscoverySection .bg-slate-50,
+    body.clinic-dark-mode #doctorProfileModal .bg-white,
+    body.clinic-dark-mode #doctorProfileModal .bg-slate-50,
+    body.clinic-dark-mode #patientBookingModal .bg-white,
+    body.clinic-dark-mode #patientBookingModal .bg-slate-50,
+    body.clinic-dark-mode #viewPatientTokenPass .bg-white,
+    body.clinic-dark-mode #viewPatientTokenPass .bg-slate-50,
+    body.clinic-dark-mode #clinicRatingModal .bg-white,
+    body.clinic-dark-mode #clinicRatingModal .bg-slate-50,
+    body.clinic-dark-mode #pwaInstallGuideModal .bg-white,
+    body.clinic-dark-mode #pwaInstallGuideModal .bg-slate-50,
+    body.clinic-dark-mode #patientPhoneLookupCard .bg-white,
+    body.clinic-dark-mode #patientPhoneLookupCard .bg-slate-50,
+    body.clinic-dark-mode #phoneLookupResultsContainer .bg-white,
+    body.clinic-dark-mode #phoneLookupResultsContainer .bg-slate-50 {
       background-color: #111b21 !important;
       border-color: #22323d !important;
       color: #f1f5f9 !important;
     }
-    body.clinic-dark-mode #viewClinicDesk .bg-slate-100 {
+    body.clinic-dark-mode #viewClinicDesk .bg-slate-100,
+    body.clinic-dark-mode #viewPatientBooking .bg-slate-100,
+    body.clinic-dark-mode #patientDiscoverySection .bg-slate-100,
+    body.clinic-dark-mode #doctorProfileModal .bg-slate-100,
+    body.clinic-dark-mode #patientBookingModal .bg-slate-100,
+    body.clinic-dark-mode #viewPatientTokenPass .bg-slate-100,
+    body.clinic-dark-mode #clinicRatingModal .bg-slate-100,
+    body.clinic-dark-mode #patientPhoneLookupCard .bg-slate-100,
+    body.clinic-dark-mode #phoneLookupResultsContainer .bg-slate-100 {
       background-color: #1a252d !important;
       color: #cbd5e1 !important;
     }
@@ -148,7 +206,29 @@
     body.clinic-dark-mode #editAppointmentModal .text-slate-700,
     body.clinic-dark-mode #patientProfileModal .text-slate-900,
     body.clinic-dark-mode #patientProfileModal .text-slate-800,
-    body.clinic-dark-mode #patientProfileModal .text-slate-700 {
+    body.clinic-dark-mode #patientProfileModal .text-slate-700,
+    body.clinic-dark-mode #viewPatientBooking .text-slate-900,
+    body.clinic-dark-mode #viewPatientBooking .text-slate-800,
+    body.clinic-dark-mode #viewPatientBooking .text-slate-700,
+    body.clinic-dark-mode #patientDiscoverySection .text-slate-900,
+    body.clinic-dark-mode #patientDiscoverySection .text-slate-800,
+    body.clinic-dark-mode #patientDiscoverySection .text-slate-700,
+    body.clinic-dark-mode #doctorProfileModal .text-slate-900,
+    body.clinic-dark-mode #doctorProfileModal .text-slate-800,
+    body.clinic-dark-mode #doctorProfileModal .text-slate-700,
+    body.clinic-dark-mode #patientBookingModal .text-slate-900,
+    body.clinic-dark-mode #patientBookingModal .text-slate-800,
+    body.clinic-dark-mode #patientBookingModal .text-slate-700,
+    body.clinic-dark-mode #viewPatientTokenPass .text-slate-900,
+    body.clinic-dark-mode #viewPatientTokenPass .text-slate-800,
+    body.clinic-dark-mode #viewPatientTokenPass .text-slate-700,
+    body.clinic-dark-mode #clinicRatingModal .text-slate-900,
+    body.clinic-dark-mode #clinicRatingModal .text-slate-800,
+    body.clinic-dark-mode #clinicRatingModal .text-slate-700,
+    body.clinic-dark-mode #patientPhoneLookupCard .text-slate-900,
+    body.clinic-dark-mode #patientPhoneLookupCard .text-slate-800,
+    body.clinic-dark-mode #phoneLookupResultsContainer .text-slate-900,
+    body.clinic-dark-mode #phoneLookupResultsContainer .text-slate-800 {
       color: #f8fafc !important;
     }
     body.clinic-dark-mode #viewClinicDesk .text-slate-600,
@@ -156,12 +236,43 @@
     body.clinic-dark-mode #editAppointmentModal .text-slate-600,
     body.clinic-dark-mode #editAppointmentModal .text-slate-500,
     body.clinic-dark-mode #patientProfileModal .text-slate-600,
-    body.clinic-dark-mode #patientProfileModal .text-slate-500 {
+    body.clinic-dark-mode #patientProfileModal .text-slate-500,
+    body.clinic-dark-mode #viewPatientBooking .text-slate-600,
+    body.clinic-dark-mode #viewPatientBooking .text-slate-500,
+    body.clinic-dark-mode #viewPatientBooking .text-slate-400,
+    body.clinic-dark-mode #patientDiscoverySection .text-slate-600,
+    body.clinic-dark-mode #patientDiscoverySection .text-slate-500,
+    body.clinic-dark-mode #doctorProfileModal .text-slate-600,
+    body.clinic-dark-mode #doctorProfileModal .text-slate-500,
+    body.clinic-dark-mode #patientBookingModal .text-slate-600,
+    body.clinic-dark-mode #patientBookingModal .text-slate-500,
+    body.clinic-dark-mode #viewPatientTokenPass .text-slate-600,
+    body.clinic-dark-mode #viewPatientTokenPass .text-slate-500,
+    body.clinic-dark-mode #clinicRatingModal .text-slate-600,
+    body.clinic-dark-mode #clinicRatingModal .text-slate-500,
+    body.clinic-dark-mode #patientPhoneLookupCard .text-slate-600,
+    body.clinic-dark-mode #patientPhoneLookupCard .text-slate-500,
+    body.clinic-dark-mode #phoneLookupResultsContainer .text-slate-600,
+    body.clinic-dark-mode #phoneLookupResultsContainer .text-slate-500 {
       color: #94a3b8 !important;
     }
     body.clinic-dark-mode #viewClinicDesk .border-slate-200,
     body.clinic-dark-mode #viewClinicDesk .border-slate-100,
-    body.clinic-dark-mode #editAppointmentModal .border-slate-200 {
+    body.clinic-dark-mode #editAppointmentModal .border-slate-200,
+    body.clinic-dark-mode #viewPatientBooking .border-slate-200,
+    body.clinic-dark-mode #viewPatientBooking .border-slate-100,
+    body.clinic-dark-mode #viewPatientBooking .border-slate-300,
+    body.clinic-dark-mode #patientDiscoverySection .border-slate-200,
+    body.clinic-dark-mode #patientDiscoverySection .border-slate-100,
+    body.clinic-dark-mode #doctorProfileModal .border-slate-200,
+    body.clinic-dark-mode #doctorProfileModal .border-slate-100,
+    body.clinic-dark-mode #patientBookingModal .border-slate-200,
+    body.clinic-dark-mode #patientBookingModal .border-slate-100,
+    body.clinic-dark-mode #viewPatientTokenPass .border-slate-200,
+    body.clinic-dark-mode #viewPatientTokenPass .border-slate-100,
+    body.clinic-dark-mode #clinicRatingModal .border-slate-200,
+    body.clinic-dark-mode #patientPhoneLookupCard .border-slate-200,
+    body.clinic-dark-mode #phoneLookupResultsContainer .border-slate-200 {
       border-color: #22323d !important;
     }
     body.clinic-dark-mode #viewClinicDesk input,
@@ -173,26 +284,60 @@
     body.clinic-dark-mode #editAppointmentModal input,
     body.clinic-dark-mode #editAppointmentModal select,
     body.clinic-dark-mode #walkinModal input,
-    body.clinic-dark-mode #walkinModal select {
+    body.clinic-dark-mode #walkinModal select,
+    body.clinic-dark-mode #viewPatientBooking input,
+    body.clinic-dark-mode #viewPatientBooking select,
+    body.clinic-dark-mode #viewPatientBooking textarea,
+    body.clinic-dark-mode #doctorSearchInput,
+    body.clinic-dark-mode #patientBookingModal input,
+    body.clinic-dark-mode #patientBookingModal select,
+    body.clinic-dark-mode #patientBookingModal textarea,
+    body.clinic-dark-mode #clinicRatingModal textarea,
+    body.clinic-dark-mode #lookupPhoneInput {
       background-color: #1a252d !important;
       border-color: #2a3942 !important;
       color: #ffffff !important;
     }
+    body.clinic-dark-mode #doctorSearchInput::placeholder,
+    body.clinic-dark-mode #patientBookingModal input::placeholder,
+    body.clinic-dark-mode #lookupPhoneInput::placeholder {
+      color: #64748b !important;
+    }
     body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-50\/90:hover,
     body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-50:hover,
-    body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-100:hover {
+    body.clinic-dark-mode #viewClinicDesk .hover\:bg-slate-100:hover,
+    body.clinic-dark-mode #viewPatientBooking .hover\:bg-slate-50:hover,
+    body.clinic-dark-mode #patientDiscoverySection .hover\:bg-slate-50:hover {
       background-color: #162229 !important;
     }
-    body.clinic-dark-mode #viewClinicDesk .bg-emerald-50 {
-      background-color: rgba(6, 78, 59, 0.25) !important;
+    body.clinic-dark-mode #viewClinicDesk .bg-emerald-50,
+    body.clinic-dark-mode #viewPatientBooking .bg-emerald-50,
+    body.clinic-dark-mode #patientDiscoverySection .bg-emerald-50,
+    body.clinic-dark-mode #doctorProfileModal .bg-emerald-50,
+    body.clinic-dark-mode #patientBookingModal .bg-emerald-50,
+    body.clinic-dark-mode #viewPatientTokenPass .bg-emerald-50 {
+      background-color: rgba(6, 78, 59, 0.3) !important;
       border-color: rgba(16, 185, 129, 0.4) !important;
       color: #a7f3d0 !important;
     }
-    body.clinic-dark-mode #viewClinicDesk .text-[#075E54] {
+    body.clinic-dark-mode #viewClinicDesk .text-[#075E54],
+    body.clinic-dark-mode #viewPatientBooking .text-[#075E54],
+    body.clinic-dark-mode #patientDiscoverySection .text-[#075E54],
+    body.clinic-dark-mode #doctorProfileModal .text-[#075E54],
+    body.clinic-dark-mode #patientBookingModal .text-[#075E54],
+    body.clinic-dark-mode #viewPatientTokenPass .text-[#075E54] {
       color: #34d399 !important;
     }
     body.clinic-dark-mode #viewClinicDesk .border-[#128C7E] {
       border-color: #059669 !important;
+    }
+    body.clinic-dark-mode #viewPatientBooking .bg-amber-50,
+    body.clinic-dark-mode #patientDiscoverySection .bg-amber-50,
+    body.clinic-dark-mode #viewPatientTokenPass .bg-amber-50,
+    body.clinic-dark-mode #clinicRatingModal .bg-amber-50 {
+      background-color: rgba(120, 53, 15, 0.25) !important;
+      border-color: rgba(245, 158, 11, 0.4) !important;
+      color: #fde68a !important;
     }
     body.clinic-dark-mode #parchiDrawerContent {
       background-color: #111b21 !important;
@@ -227,9 +372,16 @@
           <span class="font-black text-sm sm:text-lg tracking-tight leading-none text-white">
             ParchiSetu
           </span>
-          <span class="bg-[#25D366]/20 border border-[#25D366]/50 text-[#a7f3d0] text-[8px] sm:text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
-            Live
-          </span>
+          <button 
+            type="button" 
+            id="pwaInstallHeaderBtn" 
+            onclick="installPWAApp(event)" 
+            class="btn-tactile bg-emerald-950/80 hover:bg-[#25D366] text-[#25D366] hover:text-slate-950 border border-[#25D366]/60 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black flex items-center gap-1 shadow-xs transition active:scale-95 shrink-0" 
+            title="Download / Install ParchiSetu App (PWA)"
+          >
+            <i class="fa-solid fa-download text-[10px] sm:text-[11px] animate-bounce"></i>
+            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider">Install</span>
+          </button>
         </div>
         <!-- Preserved elements for JS binding & test suites without taking space -->
         <span id="headerClinicName" class="hidden">Sanjeevani Family Clinic</span>
@@ -682,10 +834,6 @@
             <i class="fa-solid fa-calendar-days text-[#075E54]"></i>
             <span>📅 Booked Appointments</span>
           </button>
-          <button type="button" onclick="switchAppRole('patient'); showPatientDiscoverySection();" class="btn-tactile px-3 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white font-black text-xs flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-house text-[#25D366]"></i>
-            <span>← Patient Home</span>
-          </button>
         </div>
       </div>
 
@@ -790,23 +938,24 @@
             <strong id="nextAvailableTokenPreview" class="text-sm sm:text-base font-black text-emerald-900">#15</strong>
           </div>
 
-          <!-- Center: 3-Second Fast Walk-in Entry Text (Tap to open pop-up) -->
-          <div 
-            onclick="toggleFastWalkinCollapse()" 
-            class="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-slate-800 cursor-pointer hover:text-[#075E54] transition truncate px-1 select-none"
-            role="button"
-            tabindex="0"
+          <!-- Center: Booked Appointments Button -->
+          <button 
+            type="button" 
+            onclick="openBookedAppointmentsModal()" 
+            id="btnLiveTabBookedAppointments"
+            class="btn-tactile flex-1 max-w-sm px-3 py-2 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-200 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-md border-2 border-amber-500 flex items-center justify-center gap-1.5 transition active:scale-95 truncate mx-1"
+            title="Monthly Interactive Calendar of All Booked Appointments"
           >
-            <i class="fa-solid fa-bolt text-amber-500 text-sm"></i>
-            <span data-i18n="fastEntryTitle">⚡ 3-Sec Fast Walk-In Entry (Naya Mareez)</span>
-          </div>
+            <i class="fa-solid fa-calendar-days text-[#075E54]"></i>
+            <span>📅 Booked Appointments</span>
+          </button>
 
-          <!-- Right: Powerful Plus Button (Opens Dedicated Pop-up Modal) -->
+          <!-- Right: Highlighted Blinking Plus Button (Opens Dedicated Pop-up Modal) -->
           <button 
             type="button" 
             onclick="toggleFastWalkinCollapse()" 
             id="walkinToggleBtn" 
-            class="btn-tactile w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:scale-95 text-white font-black text-lg sm:text-xl flex items-center justify-center shadow-md transition flex-shrink-0"
+            class="btn-tactile live-plus-highlight w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:scale-95 text-white font-black text-lg sm:text-xl flex items-center justify-center shadow-lg transition flex-shrink-0 ring-4 ring-[#25D366]/60"
             title="Add New Patient Parchi (Pop-up)"
           >
             <i class="fa-solid fa-plus"></i>
@@ -1541,403 +1690,618 @@
           </div>
         </div>
 
-        <!-- Doctor Profile Photo Settings Card -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
-          <div>
-            <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-camera text-[#128C7E]"></i>
-              <span>Doctor Profile Photo (फ़ोटो / अवतार)</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">Yeh photo patient discovery card aur online token booking screen par dikhai degi.</p>
-          </div>
-
-          <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-            <div class="w-16 h-16 rounded-full border-2 border-emerald-500 overflow-hidden bg-white shadow-inner flex items-center justify-center shrink-0">
-              <img id="profileDoctorPhotoPreview" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80" alt="Doctor" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'" />
-            </div>
-            <div class="flex-1 w-full space-y-2">
-              <input type="hidden" id="profileDoctorPhotoUrl" />
-              <label class="btn-tactile w-full py-2.5 px-3 bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black rounded-xl cursor-pointer transition flex items-center justify-center gap-2 shadow-xs">
-                <i class="fa-solid fa-camera text-sm"></i>
-                <span>Direct Photo Upload / Camera Se Dalein</span>
-                <input type="file" id="profileDoctorPhotoFile" accept="image/*" class="hidden" onchange="handleDoctorPhotoUpload(event, 'profile')" />
-              </label>
-              <p class="text-[11px] text-slate-500 text-center sm:text-left">Gallery ya camera se doctor ki photo chunein (JPG, PNG, WebP)</p>
-            </div>
-          </div>
-
-          <button 
-            type="button" 
-            onclick="saveDoctorPhotoSetting()" 
-            class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
-          >
-            <i class="fa-solid fa-floppy-disk"></i>
-            <span>Save Doctor Photo / फ़ोटो सुरक्षित करें</span>
-          </button>
-        </div>
-
-        <!-- Highlighted Pricing & Membership Plan Section -->
-        <div class="bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-teal-500/15 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-amber-400 space-y-2.5">
-          <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div class="flex items-center gap-2.5">
-              <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-base shadow-xs">
-                <i class="fa-solid fa-crown text-slate-950"></i>
-              </div>
-              <div>
-                <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">ParchiSetu Membership & Pricing Plans</h3>
-                <p class="text-xs text-slate-600 font-semibold mt-0.5">Monthly Pro: ₹399/mo • Annual Pro: ₹3,999/yr (Save ₹789) • 🔄 Autopay Enabled</p>
-              </div>
-            </div>
-            <button 
-              type="button" 
-              onclick="openClinicAccountModal()" 
-              id="profilePricingOpenBtn"
-              class="btn-tactile px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition shrink-0"
-            >
-              <i class="fa-solid fa-tag"></i>
-              <span>Plans Dekhein ➔</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 7-Day Trial Countdown Timer & Membership Card -->
-        <div id="profileTrialTimerCard" class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-500/30 space-y-3">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
-            <div class="flex items-center gap-2.5">
-              <div id="profileTrialBadgeIcon" class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-lg shadow-xs">
-                <i class="fa-solid fa-hourglass-half"></i>
-              </div>
-              <div>
-                <h3 id="profileTrialCardTitle" class="font-black text-sm sm:text-base text-slate-900 leading-tight">7-Day Free Trial Timer</h3>
-                <p id="profileTrialCardSubtitle" class="text-xs text-slate-500 font-semibold mt-0.5">Trial period mein unlimited appointments le sakte hain.</p>
-              </div>
-            </div>
-            <button 
-              type="button" 
-              onclick="openClinicAccountModal()" 
-              id="profileTrialUpgradeBtn"
-              class="btn-tactile px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-xs transition"
-            >
-              <i class="fa-solid fa-crown"></i>
-              <span>Upgrade to Pro</span>
-            </button>
-          </div>
-
-          <!-- Countdown Timer Numbers Box -->
-          <div id="profileTrialCountdownContainer" class="grid grid-cols-4 gap-2 text-center py-2 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-inner">
-            <div class="p-1.5">
-              <span id="trialTimerDays" class="block font-black text-xl sm:text-2xl text-amber-300">07</span>
-              <span class="block text-[10px] font-bold text-slate-300 uppercase">Days</span>
-            </div>
-            <div class="p-1.5 border-l border-slate-700">
-              <span id="trialTimerHours" class="block font-black text-xl sm:text-2xl text-amber-300">00</span>
-              <span class="block text-[10px] font-bold text-slate-300 uppercase">Hours</span>
-            </div>
-            <div class="p-1.5 border-l border-slate-700">
-              <span id="trialTimerMinutes" class="block font-black text-xl sm:text-2xl text-amber-300">00</span>
-              <span class="block text-[10px] font-bold text-slate-300 uppercase">Mins</span>
-            </div>
-            <div class="p-1.5 border-l border-slate-700">
-              <span id="trialTimerSeconds" class="block font-black text-xl sm:text-2xl text-emerald-400">00</span>
-              <span class="block text-[10px] font-bold text-slate-300 uppercase">Secs</span>
-            </div>
-          </div>
-
-          <!-- Pro Active Status Box (Toggled when Pro is active) -->
-          <div id="profileProStatusBox" class="hidden p-3 bg-gradient-to-br from-emerald-900 to-teal-900 text-white rounded-xl text-center shadow-inner">
-            <div class="text-emerald-200 text-xs font-black uppercase tracking-wider">Plan Status</div>
-            <div id="profileProPlanTitle" class="text-xl font-black text-white mt-0.5">👑 Pro Plan Active</div>
-            <div class="text-[11px] text-emerald-300 mt-1">Unlimited Appointments • Autopay Active</div>
-          </div>
-
-          <div id="profileTrialStatusNotice" class="text-xs font-bold text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
-            <i class="fa-solid fa-circle-info text-blue-600"></i>
-            <span id="profileTrialStatusNoticeText">7-Day Trial Active: 100 appointments/month limit applies only after 7 days.</span>
-          </div>
-        </div>
-
-        <!-- Monthly Appointment Usage & Metrics Card -->
-        <div id="profileMonthlyUsageCard" class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
-            <div class="flex items-center gap-2.5">
-              <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-lg shadow-xs">
-                <i class="fa-solid fa-chart-line"></i>
-              </div>
-              <div>
-                <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">Monthly Appointments Usage</h3>
-                <p id="profileMonthlyPeriodText" class="text-xs text-slate-500 font-semibold mt-0.5">Current Month Metrics</p>
-              </div>
-            </div>
-            <span id="profilePlanTypeBadge" class="bg-slate-100 text-slate-700 text-xs font-black px-2.5 py-1 rounded-full border border-slate-300">
-              Free Plan (100 Limit)
+        <!-- PROFILE CATEGORY NAVIGATION HUB (Grid of 2 or 3 buttons per horizontal line) -->
+        <div class="bg-white rounded-2xl p-3.5 sm:p-4 shadow-md border border-slate-200 space-y-3" id="profileCategoryHubCard">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-layer-group text-[#128C7E]"></i>
+              <span>Profile Categories & Settings</span>
+            </span>
+            <span class="text-[11px] text-[#075E54] font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              ⚡ 1-Tap Sections
             </span>
           </div>
 
-          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-            <div class="flex items-center justify-between text-xs font-bold text-slate-700">
-              <span>Appointments This Month:</span>
-              <span class="font-black text-slate-900 text-sm">
-                <span id="profileMonthlyUsageCount">0</span> / <span id="profileMonthlyUsageMax">100</span> used
-              </span>
-            </div>
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
-              <div id="profileMonthlyProgressBar" class="h-full bg-[#075E54] rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <p id="profileMonthlyLimitDescription" class="text-[11px] text-slate-500 font-medium pt-1">
-              * Compounder manual walk-ins aur patient self QR bookings dono count hote hain. 100 ke baad agle mahine tak naye appointments ruk jate hain. Pro plan me unlimited appointments hain.
-            </p>
-          </div>
-        </div>
+          <!-- 2 or 3 Buttons in One Horizontal Line Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5" id="profileCategoryGrid">
+            
+            <!-- 1. Edit Clinic Details (Main Button) -->
+            <button 
+              type="button" 
+              onclick="openClinicOnboardingModal()" 
+              id="profCatBtn-edit"
+              class="btn-tactile p-3 rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/70 hover:from-emerald-100 hover:to-teal-100 border-2 border-emerald-400 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="Edit Clinic Profile, Timings, Slots & QR"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center text-sm font-black shadow-xs">
+                  <i class="fa-solid fa-hospital-user"></i>
+                </div>
+                <span class="text-[9px] font-black uppercase bg-emerald-200 text-emerald-950 px-1.5 py-0.2 rounded-md">Main</span>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-[#075E54] leading-tight">Edit Clinic Detail</h4>
+                <p class="text-[10px] text-slate-600 font-semibold mt-0.5 leading-tight">Doctor, Timings & QR</p>
+              </div>
+            </button>
 
-        <!-- Official Support & Help Card -->
-        <div id="profileSupportCard" class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/60 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-400 space-y-3">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
-            <div class="flex items-center gap-2.5">
-              <div class="w-10 h-10 rounded-2xl bg-[#075E54] text-white flex items-center justify-center font-black text-lg shadow-xs">
+            <!-- 2. Doctor Photo & Avatar -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('photo')" 
+              id="profCatBtn-photo"
+              class="btn-tactile p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="Upload Doctor Photo"
+            >
+              <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center text-sm font-black shadow-xs mb-2">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-[#075E54] leading-tight">Doctor Photo</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">Camera & Gallery</p>
+              </div>
+            </button>
+
+            <!-- 3. Pro Plan & Pricing -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('pricing')" 
+              id="profCatBtn-pricing"
+              class="btn-tactile p-3 rounded-2xl bg-amber-50/60 hover:bg-amber-100/60 border border-amber-300 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="View Plans & Upgrade to Pro"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center text-sm font-black shadow-xs">
+                  <i class="fa-solid fa-crown"></i>
+                </div>
+                <span class="text-[9px] font-black uppercase bg-amber-200 text-amber-950 px-1.5 py-0.2 rounded-md">Pro</span>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-amber-950 leading-tight">Pro Plan & Pricing</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">Current Price & Upgrade</p>
+              </div>
+            </button>
+
+            <!-- 4. Consultation Fees -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('fees')" 
+              id="profCatBtn-fees"
+              class="btn-tactile p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="Set Doctor Fees"
+            >
+              <div class="w-9 h-9 rounded-xl bg-green-100 text-green-800 flex items-center justify-center text-sm font-black shadow-xs mb-2">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-[#075E54] leading-tight">Consultation Fee</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">New & Follow-up Fees</p>
+              </div>
+            </button>
+
+            <!-- 5. Visiting Reasons (Kya Takleef Hai) -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('reasons')" 
+              id="profCatBtn-reasons"
+              class="btn-tactile p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="Custom Visiting Reasons & Presets"
+            >
+              <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center text-sm font-black shadow-xs mb-2">
+                <i class="fa-solid fa-stethoscope"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-blue-900 leading-tight">Visiting Reasons</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">Kya Takleef Hai & Presets</p>
+              </div>
+            </button>
+
+            <!-- 6. QR Code & Standee -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('qr')" 
+              id="profCatBtn-qr"
+              class="btn-tactile p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="Print QR Standee & Copy Link"
+            >
+              <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center text-sm font-black shadow-xs mb-2">
+                <i class="fa-solid fa-qrcode"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-purple-900 leading-tight">QR & Standee</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">Print Standee & Links</p>
+              </div>
+            </button>
+
+            <!-- 7. Help & Support -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('support')" 
+              id="profCatBtn-support"
+              class="btn-tactile p-3 rounded-2xl bg-rose-50/60 hover:bg-rose-100/60 border border-rose-200 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="24/7 Helpline, WhatsApp & Email"
+            >
+              <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center text-sm font-black shadow-xs mb-2">
                 <i class="fa-solid fa-headset"></i>
               </div>
               <div>
-                <h3 class="font-black text-sm sm:text-base text-[#075E54] leading-tight">ParchiSetu Official Help & Support</h3>
-                <p class="text-xs text-slate-600 font-semibold mt-0.5">Direct 24/7 Support for Clinics & Doctors</p>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-rose-900 leading-tight">Help & Support</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">WhatsApp, Phone & Email</p>
               </div>
-            </div>
-            <span class="bg-[#25D366] text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-full shadow-xs">
-              Direct Helpline ✓
-            </span>
-          </div>
+            </button>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-            <a 
-              href="tel:9798482404" 
-              class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition"
-            >
-              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-phone"></i>
-              </div>
-              <div class="overflow-hidden">
-                <span class="block text-[10px] text-slate-500 font-semibold">Phone Helpline</span>
-                <span class="block font-black text-slate-900 text-sm">9798482404</span>
-              </div>
-            </a>
-
-            <a 
-              href="https://wa.me/919798482404?text=Namaste%20ParchiSetu%20Support!%20Mujhe%20apne%20clinic%20ke%20liye%20madad%20chahiye." 
-              target="_blank" 
-              class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition"
-            >
-              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-[#25D366] flex items-center justify-center flex-shrink-0">
-                <i class="fa-brands fa-whatsapp text-lg"></i>
-              </div>
-              <div class="overflow-hidden">
-                <span class="block text-[10px] text-slate-500 font-semibold">WhatsApp Support</span>
-                <span class="block font-black text-[#075E54] text-sm">9798482404</span>
-              </div>
-            </a>
-
-            <a 
-              href="mailto:atish2k22@gmail.com?subject=ParchiSetu%20Clinic%20Support%20Request" 
-              class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition sm:col-span-2"
-            >
-              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-envelope"></i>
-              </div>
-              <div class="overflow-hidden">
-                <span class="block text-[10px] text-slate-500 font-semibold">Official Email</span>
-                <span class="block font-black text-blue-900 text-sm">atish2k22@gmail.com</span>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- Display & Theme Settings (Dark Mode) -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
-          <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div class="flex items-center gap-2.5">
-              <div class="w-10 h-10 rounded-2xl bg-slate-900 text-amber-300 flex items-center justify-center font-black text-lg shadow-xs">
-                <i class="fa-solid fa-moon"></i>
-              </div>
-              <div>
-                <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">Clinic Dark Mode (आंखों को आराम)</h3>
-                <p class="text-xs text-slate-500 font-semibold mt-0.5">Din bhar continuous screen dekhne wale compounder/doctor ke liye dark theme.</p>
-              </div>
-            </div>
+            <!-- 8. Display & Theme -->
             <button 
               type="button" 
               onclick="toggleClinicDarkMode()" 
-              id="profileDarkModeBtn" 
-              class="btn-tactile px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-amber-300 font-black text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition"
+              id="profCatBtn-theme"
+              class="btn-tactile p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition flex flex-col justify-between shadow-2xs group"
+              title="Toggle Dark Mode"
             >
-              <i class="fa-solid fa-circle-half-stroke"></i>
-              <span>Toggle Dark Mode</span>
+              <div class="w-9 h-9 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center text-sm font-black shadow-xs mb-2">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 leading-tight">Display Theme</h4>
+                <p class="text-[10px] text-slate-500 font-medium mt-0.5 leading-tight">Toggle Dark Mode</p>
+              </div>
             </button>
+
+            <!-- 9. Account & Logout -->
+            <button 
+              type="button" 
+              onclick="openProfileSubSection('account')" 
+              id="profCatBtn-account"
+              class="btn-tactile p-3 rounded-2xl bg-red-50/60 hover:bg-red-100/60 border border-red-200 text-left transition flex flex-col justify-between shadow-2xs group sm:col-span-1"
+              title="Account Settings & Logout"
+            >
+              <div class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center text-sm font-black shadow-xs mb-2">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-xs sm:text-sm text-red-900 leading-tight">Account & Sign Out</h4>
+                <p class="text-[10px] text-red-700 font-medium mt-0.5 leading-tight">Sign Out & Reset</p>
+              </div>
+            </button>
+
           </div>
         </div>
 
-        <!-- Consultation & Follow-Up Fees Configuration Card -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
-          <div>
-            <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-money-bill-wave text-[#128C7E]"></i>
-              <span>Doctor Consultation & Follow-up Fees</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">Set different fees for first-time visitors vs follow-up patients</p>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <label for="settingFeeNormal" class="block text-xs font-black text-slate-700 uppercase mb-1">
-                🌟 First-Time Visit Fee (Pahli Baar) ₹
-              </label>
-              <input 
-                type="number" 
-                id="settingFeeNormal" 
-                value="300" 
-                class="w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-xl font-black text-base text-slate-900 focus:outline-none focus:border-[#128C7E]"
-              />
-            </div>
-
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <label for="settingFeeFollowup" class="block text-xs font-black text-slate-700 uppercase mb-1">
-                🔄 Follow-up Visit Fee (Dobara Dikhana) ₹
-              </label>
-              <input 
-                type="number" 
-                id="settingFeeFollowup" 
-                value="200" 
-                class="w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-xl font-black text-base text-slate-900 focus:outline-none focus:border-[#128C7E]"
-              />
-            </div>
-          </div>
-
-          <button 
-            type="button" 
-            onclick="saveClinicFeesSettings()" 
-            class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
-          >
-            <i class="fa-solid fa-floppy-disk"></i>
-            <span>Save Fees / फ़ीस सुरक्षित करें</span>
-          </button>
-        </div>
-
-        <!-- Customizable Visiting Reasons (Kya Takleef Hai) Settings Card -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
-          <div>
-            <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-stethoscope text-[#128C7E]"></i>
-              <span>Kya Takleef Hai? (Visiting Reasons & Services Editor)</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">
-              Doctor can customize reasons and services shown to patients when booking. Choose a domain preset or type your own comma-separated list!
-            </p>
-          </div>
-
-          <!-- 1-Tap Specialty Domain Presets -->
-          <div>
-            <span class="block text-[11px] font-black text-slate-500 uppercase mb-1.5">1-Tap Specialty Presets:</span>
-            <div class="flex flex-wrap gap-1.5">
-              <button type="button" onclick="setReasonPreset('general')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#075E54] border border-emerald-300 font-bold text-xs transition">🩺 General Medicine</button>
-              <button type="button" onclick="setReasonPreset('derma')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 font-bold text-xs transition">🌸 Skin / Dermatology</button>
-              <button type="button" onclick="setReasonPreset('ortho')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold text-xs transition">🦴 Bone / Orthopedic</button>
-              <button type="button" onclick="setReasonPreset('pediatric')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs transition">👶 Child / Pediatric</button>
-              <button type="button" onclick="setReasonPreset('dental')" class="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-300 font-bold text-xs transition">🦷 Dental / Dentist</button>
-            </div>
-          </div>
-
-          <!-- Custom Reasons Textarea -->
-          <div>
-            <label for="settingVisitingReasonsText" class="block text-xs font-black text-slate-700 uppercase mb-1">
-              Takleef / Services (Separate with commas):
-            </label>
-            <textarea 
-              id="settingVisitingReasonsText" 
-              rows="3" 
-              class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-xs text-slate-800 focus:outline-none focus:border-[#128C7E]"
-              placeholder="e.g. 🤒 Bukhar / Cold, 🩸 BP / Sugar, 🤢 Pet / Gas, 🔄 Follow-up, 📋 Report Check, 🤕 Dard / Injury"
-            ></textarea>
-          </div>
-
-          <button 
-            type="button" 
-            onclick="saveVisitingReasonsSettings()" 
-            class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
-          >
-            <i class="fa-solid fa-check"></i>
-            <span>Save Reasons / तकलीफ़ लिस्ट सुरक्षित करें</span>
-          </button>
-        </div>
-
-        <!-- Quick Patient Link & QR Standee Card -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
-          <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-qrcode text-[#128C7E]"></i>
-            <span>Clinic QR Code & Patient Booking Link</span>
-          </h3>
-          <p class="text-xs text-slate-500">Patients scan this QR code or click this link to view live tokens and book appointments.</p>
+        <!-- PROFILE SUB-SECTIONS CONTAINER (Opened conditionally upon category button click) -->
+        <div id="profileSubSectionsContainer" class="space-y-4">
           
-          <div class="flex items-center gap-2">
-            <input 
-              type="text" 
-              id="profilePatientLinkInput" 
-              readonly 
-              class="flex-1 px-3 py-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-mono text-slate-700 truncate"
-            />
+          <!-- SUB-SECTION 1: DOCTOR PHOTO -->
+          <div id="profileSubSection-photo" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-camera text-[#128C7E]"></i>
+                <span>Doctor Profile Photo (फ़ोटो / अवतार)</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Yeh photo patient discovery card aur online token booking screen par dikhai degi.</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+              <div class="w-16 h-16 rounded-full border-2 border-emerald-500 overflow-hidden bg-white shadow-inner flex items-center justify-center shrink-0">
+                <img id="profileDoctorPhotoPreview" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80" alt="Doctor" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'" />
+              </div>
+              <div class="flex-1 w-full space-y-2">
+                <input type="hidden" id="profileDoctorPhotoUrl" />
+                <label class="btn-tactile w-full py-2.5 px-3 bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-black rounded-xl cursor-pointer transition flex items-center justify-center gap-2 shadow-xs">
+                  <i class="fa-solid fa-camera text-sm"></i>
+                  <span>Direct Photo Upload / Camera Se Dalein</span>
+                  <input type="file" id="profileDoctorPhotoFile" accept="image/*" class="hidden" onchange="handleDoctorPhotoUpload(event, 'profile')" />
+                </label>
+                <p class="text-[11px] text-slate-500 text-center sm:text-left">Gallery ya camera se doctor ki photo chunein (JPG, PNG, WebP)</p>
+              </div>
+            </div>
+
             <button 
               type="button" 
-              onclick="copyProfilePatientLink()" 
-              class="btn-tactile px-3.5 py-2 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center gap-1.5 shadow-xs"
+              onclick="saveDoctorPhotoSetting()" 
+              class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
             >
-              <i class="fa-solid fa-copy"></i>
-              <span>Copy</span>
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Save Doctor Photo / फ़ोटो सुरक्षित करें</span>
             </button>
           </div>
 
-          <div class="flex items-center gap-2 pt-1">
+          <!-- SUB-SECTION 2: PRO PLAN & PRICING -->
+          <div id="profileSubSection-pricing" class="hidden space-y-3">
+            <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <!-- Highlighted Pricing & Membership Plan Section -->
+            <div class="bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-teal-500/15 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-amber-400 space-y-2.5">
+              <div class="flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-base shadow-xs">
+                    <i class="fa-solid fa-crown text-slate-950"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">ParchiSetu Membership & Pricing Plans</h3>
+                    <p class="text-xs text-slate-600 font-semibold mt-0.5">Monthly Pro: ₹399/mo • Annual Pro: ₹3,999/yr (Save ₹789) • 🔄 Autopay Enabled</p>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  onclick="openClinicAccountModal()" 
+                  id="profilePricingOpenBtn"
+                  class="btn-tactile px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition shrink-0"
+                >
+                  <i class="fa-solid fa-tag"></i>
+                  <span>Plans Dekhein ➔</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 7-Day Trial Countdown Timer & Membership Card -->
+            <div id="profileTrialTimerCard" class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-500/30 space-y-3">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-center gap-2.5">
+                  <div id="profileTrialBadgeIcon" class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-lg shadow-xs">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                  </div>
+                  <div>
+                    <h3 id="profileTrialCardTitle" class="font-black text-sm sm:text-base text-slate-900 leading-tight">7-Day Free Trial Timer</h3>
+                    <p id="profileTrialCardSubtitle" class="text-xs text-slate-500 font-semibold mt-0.5">Trial period mein unlimited appointments le sakte hain.</p>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  onclick="openClinicAccountModal()" 
+                  id="profileTrialUpgradeBtn"
+                  class="btn-tactile px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-xs transition"
+                >
+                  <i class="fa-solid fa-crown"></i>
+                  <span>Upgrade to Pro</span>
+                </button>
+              </div>
+
+              <!-- Countdown Timer Numbers Box -->
+              <div id="profileTrialCountdownContainer" class="grid grid-cols-4 gap-2 text-center py-2 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-inner">
+                <div class="p-1.5">
+                  <span id="trialTimerDays" class="block font-black text-xl sm:text-2xl text-amber-300">07</span>
+                  <span class="block text-[10px] font-bold text-slate-300 uppercase">Days</span>
+                </div>
+                <div class="p-1.5 border-l border-slate-700">
+                  <span id="trialTimerHours" class="block font-black text-xl sm:text-2xl text-amber-300">00</span>
+                  <span class="block text-[10px] font-bold text-slate-300 uppercase">Hours</span>
+                </div>
+                <div class="p-1.5 border-l border-slate-700">
+                  <span id="trialTimerMinutes" class="block font-black text-xl sm:text-2xl text-amber-300">00</span>
+                  <span class="block text-[10px] font-bold text-slate-300 uppercase">Mins</span>
+                </div>
+                <div class="p-1.5 border-l border-slate-700">
+                  <span id="trialTimerSeconds" class="block font-black text-xl sm:text-2xl text-emerald-400">00</span>
+                  <span class="block text-[10px] font-bold text-slate-300 uppercase">Secs</span>
+                </div>
+              </div>
+
+              <!-- Pro Active Status Box (Toggled when Pro is active) -->
+              <div id="profileProStatusBox" class="hidden p-3 bg-gradient-to-br from-emerald-900 to-teal-900 text-white rounded-xl text-center shadow-inner">
+                <div class="text-emerald-200 text-xs font-black uppercase tracking-wider">Plan Status</div>
+                <div id="profileProPlanTitle" class="text-xl font-black text-white mt-0.5">👑 Pro Plan Active</div>
+                <div class="text-[11px] text-emerald-300 mt-1">Unlimited Appointments • Autopay Active</div>
+              </div>
+
+              <div id="profileTrialStatusNotice" class="text-xs font-bold text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-blue-600"></i>
+                <span id="profileTrialStatusNoticeText">7-Day Trial Active: 100 appointments/month limit applies only after 7 days.</span>
+              </div>
+            </div>
+
+            <!-- Monthly Appointment Usage & Metrics Card -->
+            <div id="profileMonthlyUsageCard" class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-lg shadow-xs">
+                    <i class="fa-solid fa-chart-line"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-black text-sm sm:text-base text-slate-900 leading-tight">Monthly Appointments Usage</h3>
+                    <p id="profileMonthlyPeriodText" class="text-xs text-slate-500 font-semibold mt-0.5">Current Month Metrics</p>
+                  </div>
+                </div>
+                <span id="profilePlanTypeBadge" class="bg-slate-100 text-slate-700 text-xs font-black px-2.5 py-1 rounded-full border border-slate-300">
+                  Free Plan (100 Limit)
+                </span>
+              </div>
+
+              <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+                  <span>Appointments This Month:</span>
+                  <span class="font-black text-slate-900 text-sm">
+                    <span id="profileMonthlyUsageCount">0</span> / <span id="profileMonthlyUsageMax">100</span> used
+                  </span>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+                  <div id="profileMonthlyProgressBar" class="h-full bg-[#075E54] rounded-full transition-all duration-300" style="width: 0%;"></div>
+                </div>
+                <p id="profileMonthlyLimitDescription" class="text-[11px] text-slate-500 font-medium pt-1">
+                  * Compounder manual walk-ins aur patient self QR bookings dono count hote hain. 100 ke baad agle mahine tak naye appointments ruk jate hain. Pro plan me unlimited appointments hain.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-SECTION 3: DOCTOR CONSULTATION FEES -->
+          <div id="profileSubSection-fees" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-wave text-[#128C7E]"></i>
+                <span>Doctor Consultation & Follow-up Fees</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Set different fees for first-time visitors vs follow-up patients</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <label for="settingFeeNormal" class="block text-xs font-black text-slate-700 uppercase mb-1">
+                  🌟 First-Time Visit Fee (Pahli Baar) ₹
+                </label>
+                <input 
+                  type="number" 
+                  id="settingFeeNormal" 
+                  value="300" 
+                  class="w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-xl font-black text-base text-slate-900 focus:outline-none focus:border-[#128C7E]"
+                />
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <label for="settingFeeFollowup" class="block text-xs font-black text-slate-700 uppercase mb-1">
+                  🔄 Follow-up Visit Fee (Dobara Dikhana) ₹
+                </label>
+                <input 
+                  type="number" 
+                  id="settingFeeFollowup" 
+                  value="200" 
+                  class="w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-xl font-black text-base text-slate-900 focus:outline-none focus:border-[#128C7E]"
+                />
+              </div>
+            </div>
+
             <button 
               type="button" 
-              onclick="printClinicQRStandee()" 
-              class="btn-tactile flex-1 py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-sm"
+              onclick="saveClinicFeesSettings()" 
+              class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
             >
-              <i class="fa-solid fa-print"></i>
-              <span>Print QR Standee</span>
-            </button>
-            <button 
-              type="button" 
-              onclick="openOnboardingSuccessModal()" 
-              class="btn-tactile py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs"
-            >
-              <i class="fa-solid fa-up-right-from-square"></i>
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Save Fees / फ़ीस सुरक्षित करें</span>
             </button>
           </div>
+
+          <!-- SUB-SECTION 4: VISITING REASONS & SERVICES (KYA TAKLEEF HAI) -->
+          <div id="profileSubSection-reasons" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-stethoscope text-[#128C7E]"></i>
+                <span>Kya Takleef Hai? (Visiting Reasons & Services Editor)</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Doctor can customize reasons and services shown to patients when booking. Choose a domain preset or type your own comma-separated list!
+              </p>
+            </div>
+
+            <!-- 1-Tap Specialty Domain Presets -->
+            <div>
+              <span class="block text-[11px] font-black text-slate-500 uppercase mb-1.5">1-Tap Specialty Presets:</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="setReasonPreset('general')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#075E54] border border-emerald-300 font-bold text-xs transition">🩺 General Medicine</button>
+                <button type="button" onclick="setReasonPreset('derma')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 font-bold text-xs transition">🌸 Skin / Dermatology</button>
+                <button type="button" onclick="setReasonPreset('ortho')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold text-xs transition">🦴 Bone / Orthopedic</button>
+                <button type="button" onclick="setReasonPreset('pediatric')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs transition">👶 Child / Pediatric</button>
+                <button type="button" onclick="setReasonPreset('dental')" class="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-300 font-bold text-xs transition">🦷 Dental / Dentist</button>
+              </div>
+            </div>
+
+            <!-- Custom Reasons Textarea -->
+            <div>
+              <label for="settingVisitingReasonsText" class="block text-xs font-black text-slate-700 uppercase mb-1">
+                Takleef / Services (Separate with commas):
+              </label>
+              <textarea 
+                id="settingVisitingReasonsText" 
+                rows="3" 
+                class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-xs text-slate-800 focus:outline-none focus:border-[#128C7E]"
+                placeholder="e.g. 🤒 Bukhar / Cold, 🩸 BP / Sugar, 🤢 Pet / Gas, 🔄 Follow-up, 📋 Report Check, 🤕 Dard / Injury"
+              ></textarea>
+            </div>
+
+            <button 
+              type="button" 
+              onclick="saveVisitingReasonsSettings()" 
+              class="btn-tactile w-full py-2.5 px-4 rounded-xl bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition"
+            >
+              <i class="fa-solid fa-check"></i>
+              <span>Save Reasons / तकलीफ़ लिस्ट सुरक्षित करें</span>
+            </button>
+          </div>
+
+          <!-- SUB-SECTION 5: QR CODE & STANDEE -->
+          <div id="profileSubSection-qr" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-qrcode text-[#128C7E]"></i>
+              <span>Clinic QR Code & Patient Booking Link</span>
+            </h3>
+            <p class="text-xs text-slate-500">Patients scan this QR code or click this link to view live tokens and book appointments.</p>
+            
+            <div class="flex items-center gap-2">
+              <input 
+                type="text" 
+                id="profilePatientLinkInput" 
+                readonly 
+                class="flex-1 px-3 py-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-mono text-slate-700 truncate"
+              />
+              <button 
+                type="button" 
+                onclick="copyProfilePatientLink()" 
+                class="btn-tactile px-3.5 py-2 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center gap-1.5 shadow-xs"
+              >
+                <i class="fa-solid fa-copy"></i>
+                <span>Copy</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+              <button 
+                type="button" 
+                onclick="printClinicQRStandee()" 
+                class="btn-tactile flex-1 py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-print"></i>
+                <span>Print QR Standee</span>
+              </button>
+              <button 
+                type="button" 
+                onclick="openOnboardingSuccessModal()" 
+                class="btn-tactile py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs"
+              >
+                <i class="fa-solid fa-up-right-from-square"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- SUB-SECTION 6: OFFICIAL HELP & SUPPORT -->
+          <div id="profileSubSection-support" class="hidden space-y-3">
+            <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <div id="profileSupportCard" class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/60 rounded-2xl p-4 sm:p-5 shadow-md border-2 border-emerald-400 space-y-3">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-10 h-10 rounded-2xl bg-[#075E54] text-white flex items-center justify-center font-black text-lg shadow-xs">
+                    <i class="fa-solid fa-headset"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-black text-sm sm:text-base text-[#075E54] leading-tight">ParchiSetu Official Help & Support</h3>
+                    <p class="text-xs text-slate-600 font-semibold mt-0.5">Direct 24/7 Support for Clinics & Doctors</p>
+                  </div>
+                </div>
+                <span class="bg-[#25D366] text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-full shadow-xs">
+                  Direct Helpline ✓
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                <a 
+                  href="tel:9798482404" 
+                  class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition"
+                >
+                  <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-phone"></i>
+                  </div>
+                  <div class="overflow-hidden">
+                    <span class="block text-[10px] text-slate-500 font-semibold">Phone Helpline</span>
+                    <span class="block font-black text-slate-900 text-sm">9798482404</span>
+                  </div>
+                </a>
+
+                <a 
+                  href="https://wa.me/919798482404?text=Namaste%20ParchiSetu%20Support!%20Mujhe%20apne%20clinic%20ke%20liye%20madad%20chahiye." 
+                  target="_blank" 
+                  class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition"
+                >
+                  <div class="w-8 h-8 rounded-lg bg-emerald-100 text-[#25D366] flex items-center justify-center flex-shrink-0">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                  </div>
+                  <div class="overflow-hidden">
+                    <span class="block text-[10px] text-slate-500 font-semibold">WhatsApp Support</span>
+                    <span class="block font-black text-[#075E54] text-sm">9798482404</span>
+                  </div>
+                </a>
+
+                <a 
+                  href="mailto:atish2k22@gmail.com?subject=ParchiSetu%20Clinic%20Support%20Request" 
+                  class="btn-tactile p-3 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 shadow-xs flex items-center gap-2.5 text-xs font-bold text-slate-800 transition sm:col-span-2"
+                >
+                  <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-envelope"></i>
+                  </div>
+                  <div class="overflow-hidden">
+                    <span class="block text-[10px] text-slate-500 font-semibold">Official Email</span>
+                    <span class="block font-black text-blue-900 text-sm">atish2k22@gmail.com</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-SECTION 7: ACCOUNT & DANGER ZONE -->
+          <div id="profileSubSection-account" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-red-200 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <button type="button" onclick="closeProfileSubSection()" class="btn-tactile text-xs font-black text-[#075E54] hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>← Back to Categories (वापस जाएं)</span>
+              </button>
+              <button type="button" onclick="closeProfileSubSection()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" title="Close section">✕</button>
+            </div>
+            <h3 class="font-black text-sm text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-red-600"></i>
+              <span>Account & Session Control</span>
+            </h3>
+            
+            <!-- Red Sign Out Button Moved to Profile -->
+            <button 
+              type="button" 
+              onclick="handleUserSignOut()" 
+              id="profileTabSignOutBtn"
+              class="btn-tactile w-full py-3.5 px-4 rounded-xl bg-[#8B0000] hover:bg-[#6b0000] active:bg-[#4a0000] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition"
+            >
+              <i class="fa-solid fa-right-from-bracket text-red-200"></i>
+              <span>Sign Out of Clinic Account / लॉगआउट</span>
+            </button>
+
+            <button 
+              type="button" 
+              onclick="resetTodayQueue()" 
+              class="btn-tactile w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-bold text-xs border border-slate-200 transition"
+            >
+              <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+              <span>Reset Today's Queue to 0 (Fresh Morning Start)</span>
+            </button>
+          </div>
+
         </div>
 
-        <!-- Account & Danger Zone (Sign Out moved here!) -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-red-200 space-y-3">
-          <h3 class="font-black text-sm text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-shield-halved text-red-600"></i>
-            <span>Account & Session Control</span>
-          </h3>
-          
-          <!-- Red Sign Out Button Moved to Profile -->
-          <button 
-            type="button" 
-            onclick="handleUserSignOut()" 
-            id="profileTabSignOutBtn"
-            class="btn-tactile w-full py-3.5 px-4 rounded-xl bg-[#8B0000] hover:bg-[#6b0000] active:bg-[#4a0000] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition"
-          >
-            <i class="fa-solid fa-right-from-bracket text-red-200"></i>
-            <span>Sign Out of Clinic Account / लॉगआउट</span>
-          </button>
-
-          <button 
-            type="button" 
-            onclick="resetTodayQueue()" 
-            class="btn-tactile w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-bold text-xs border border-slate-200 transition"
-          >
-            <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
-            <span>Reset Today's Queue to 0 (Fresh Morning Start)</span>
-          </button>
-        </div>
+        <!-- Hidden profileDarkModeBtn element for test suite compatibility -->
+        <button type="button" onclick="toggleClinicDarkMode()" id="profileDarkModeBtn" class="hidden"></button>
 
       </section>
 
@@ -1994,16 +2358,8 @@
                 <i class="fa-solid fa-ticket"></i>
                 <span data-i18n="navMeraToken">Mera Token</span>
               </button>
-              <button 
-                type="button" 
-                onclick="showAuthGatewayScreen()" 
-                id="discoveryClinicAuthBtn"
-                class="btn-tactile px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
-                title="Clinic Staff & Doctors Portal Sign In / Register"
-              >
-                <i class="fa-solid fa-hospital text-[#25D366]"></i>
-                <span class="font-black">Clinic Sign Up / Login</span>
-              </button>
+              <!-- Preserved hidden discoveryClinicAuthBtn for script safety while removed from UI -->
+              <button type="button" onclick="showAuthGatewayScreen()" id="discoveryClinicAuthBtn" class="hidden"></button>
             </div>
           </div>
 
@@ -2687,6 +3043,33 @@
               <div>
                 <strong>Phone Search View (Privacy Protected):</strong>
                 <p class="text-[10px] text-amber-800 mt-0.5">Personal mobile number aur private records surakshit rakhe gaye hain.</p>
+              </div>
+            </div>
+
+            <!-- Genuine Star Rating Card for Booked Patients -->
+            <div id="passRatingCard" class="mt-3 p-3 bg-amber-50/80 rounded-2xl border border-amber-300 text-left space-y-1.5 shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black uppercase text-amber-900 flex items-center gap-1.5">
+                  <i class="fa-solid fa-star text-amber-500"></i>
+                  <span>Doctor & Clinic Feedback</span>
+                </span>
+                <span id="passRatingStatusBadge" class="text-[10px] font-extrabold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                  Genuine Rating
+                </span>
+              </div>
+              <p id="passRatingCardDescription" class="text-xs text-amber-950 font-medium">
+                Aapka clinic visit kaisa raha? Apna genuine experience share karein.
+              </p>
+              <div id="passRatingActionArea">
+                <button 
+                  type="button" 
+                  onclick="openClinicRatingModalForCurrentPass()" 
+                  id="btnPassRateClinic"
+                  class="btn-tactile w-full py-2.5 px-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95"
+                >
+                  <i class="fa-solid fa-star text-slate-950"></i>
+                  <span>⭐ Rate Clinic (Star Rating Dein)</span>
+                </button>
               </div>
             </div>
 
@@ -5549,6 +5932,115 @@
   </div>
 
   <!-- ===================================================================== -->
+  <!-- MODAL: GENUINE STAR RATING (BOOKED PATIENTS ONLY)                     -->
+  <!-- ===================================================================== -->
+  <div id="clinicRatingModal" onclick="if(event.target===this)closeClinicRatingModal()" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border-2 border-amber-400 w-full max-w-md overflow-hidden flex flex-col my-auto">
+      <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 p-4 relative flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-xl bg-white text-amber-600 flex items-center justify-center text-lg font-black shadow-xs">
+            ⭐
+          </span>
+          <div>
+            <h3 class="font-black text-base leading-tight">Rate Doctor & Clinic</h3>
+            <p id="ratingModalClinicName" class="text-xs font-bold text-amber-950 mt-0.5">Sanjeevani Family Clinic</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeClinicRatingModal()" class="w-8 h-8 rounded-full bg-slate-950/15 hover:bg-slate-950/25 flex items-center justify-center text-slate-950 font-black text-sm transition">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-5 space-y-4">
+        <input type="hidden" id="ratingModalClinicId" />
+        <input type="hidden" id="ratingModalPhone" />
+        
+        <div class="text-center space-y-1.5">
+          <p class="text-xs text-slate-600 font-bold">Aapka consultation kaisa raha? (1 se 5 stars chunein)</p>
+          
+          <!-- 5 Interactive Star Icons -->
+          <div class="flex items-center justify-center gap-2 py-1" id="starRatingSelector">
+            <button type="button" onclick="selectStarRating(1)" class="star-btn text-3xl sm:text-4xl text-amber-400 hover:scale-110 transition active:scale-95" data-star="1">★</button>
+            <button type="button" onclick="selectStarRating(2)" class="star-btn text-3xl sm:text-4xl text-amber-400 hover:scale-110 transition active:scale-95" data-star="2">★</button>
+            <button type="button" onclick="selectStarRating(3)" class="star-btn text-3xl sm:text-4xl text-amber-400 hover:scale-110 transition active:scale-95" data-star="3">★</button>
+            <button type="button" onclick="selectStarRating(4)" class="star-btn text-3xl sm:text-4xl text-amber-400 hover:scale-110 transition active:scale-95" data-star="4">★</button>
+            <button type="button" onclick="selectStarRating(5)" class="star-btn text-3xl sm:text-4xl text-amber-400 hover:scale-110 transition active:scale-95" data-star="5">★</button>
+          </div>
+          
+          <input type="hidden" id="selectedStarValue" value="5" />
+          <p id="starRatingLabel" class="text-xs font-black text-amber-700 uppercase tracking-wide">5 Stars • Excellent (Bahut Accha)</p>
+        </div>
+
+        <!-- Optional Feedback Comment -->
+        <div>
+          <label for="ratingCommentInput" class="block text-xs font-black text-slate-700 uppercase mb-1">
+            Feedback / Review (Optional):
+          </label>
+          <textarea 
+            id="ratingCommentInput" 
+            rows="2" 
+            maxlength="200" 
+            placeholder="Doctor sahab ka treatment, timings ya experience kaisa tha..." 
+            class="w-full p-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-amber-500"
+          ></textarea>
+        </div>
+
+        <div class="p-2.5 bg-emerald-50 rounded-xl text-[11px] text-emerald-900 font-medium flex items-center gap-2 border border-emerald-200">
+          <i class="fa-solid fa-shield-halved text-emerald-600 text-sm"></i>
+          <span>Genuine Rating: Sirf verified appointment wale patients hi rate kar sakte hain (1 number = 1 rating).</span>
+        </div>
+
+        <button 
+          type="button" 
+          onclick="submitClinicRating()" 
+          id="btnSubmitRatingModal"
+          class="btn-tactile w-full py-3 px-4 bg-[#075E54] hover:bg-[#128C7E] text-white font-black text-xs sm:text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition"
+        >
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Submit Genuine Rating / रेटिंग सबमिट करें</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: PWA INSTALLATION HELPER                                        -->
+  <!-- ===================================================================== -->
+  <div id="pwaInstallGuideModal" onclick="if(event.target===this)closePwaInstallGuideModal()" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border-2 border-emerald-500 w-full max-w-sm overflow-hidden flex flex-col my-auto">
+      <div class="bg-[#075E54] text-white p-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <img src="/logo.svg" alt="ParchiSetu" class="w-7 h-7 rounded-lg" onerror="this.src='/favicon.svg'" />
+          <h3 class="font-black text-sm">Install ParchiSetu App</h3>
+        </div>
+        <button type="button" onclick="closePwaInstallGuideModal()" class="w-7 h-7 rounded-full bg-white/20 text-white font-bold flex items-center justify-center text-xs">
+          ✕
+        </button>
+      </div>
+      <div class="p-4 space-y-3 text-slate-800 text-xs">
+        <p class="font-bold">Apne smartphone par ParchiSetu web app install karein:</p>
+        <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <div class="flex items-start gap-2">
+            <span class="font-black text-emerald-700">1.</span>
+            <span>Browser menu (<i class="fa-solid fa-ellipsis-vertical"></i> Chrome mein ya <i class="fa-solid fa-arrow-up-from-bracket"></i> Safari mein share icon) dabayein.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="font-black text-emerald-700">2.</span>
+            <span><strong>"Add to Home Screen"</strong> (होम स्क्रीन पर जोड़ें) ya <strong>"Install App"</strong> chunein.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="font-black text-emerald-700">3.</span>
+            <span>Phone home screen par icon ban jayega aur 1 click mein khulega!</span>
+          </div>
+        </div>
+        <button type="button" onclick="closePwaInstallGuideModal()" class="btn-tactile w-full py-2.5 bg-[#25D366] text-slate-950 font-black rounded-xl">
+          Theek Hai, Samajh Gaya ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- FLOATING TOAST NOTIFICATION                                           -->
   <!-- ===================================================================== -->
   <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-full max-w-md px-4"></div>
@@ -5627,8 +6119,9 @@
       doctorDegree: 'MBBS, MD (General Physician)',
       doctorRegNo: 'MCI-48291',
       experienceYears: 14,
-      rating: 4.9,
-      reviewCount: 148,
+      rating: 0,
+      reviewCount: 0,
+      ratingsByPhone: {},
       doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
       doctors: [
         {
@@ -9951,6 +10444,58 @@
         showToast('📋 ' + link);
       });
     }
+
+    function openProfileSubSection(name) {
+      if (!name) return;
+      if (name === 'edit') {
+        openClinicOnboardingModal();
+        return;
+      }
+      const sectionIds = [
+        'profileSubSection-photo',
+        'profileSubSection-pricing',
+        'profileSubSection-fees',
+        'profileSubSection-reasons',
+        'profileSubSection-qr',
+        'profileSubSection-support',
+        'profileSubSection-account'
+      ];
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const targetEl = document.getElementById(`profileSubSection-${name}`);
+      if (targetEl) {
+        targetEl.classList.remove('hidden');
+        try {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (e) {}
+      }
+    }
+
+    function closeProfileSubSection() {
+      const sectionIds = [
+        'profileSubSection-photo',
+        'profileSubSection-pricing',
+        'profileSubSection-fees',
+        'profileSubSection-reasons',
+        'profileSubSection-qr',
+        'profileSubSection-support',
+        'profileSubSection-account'
+      ];
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const hub = document.getElementById('profileCategoryHubCard');
+      if (hub) {
+        try {
+          hub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (e) {}
+      }
+    }
+    window.openProfileSubSection = openProfileSubSection;
+    window.closeProfileSubSection = closeProfileSubSection;
 
     function switchClinicTab(tabName) {
       const tabs = ['queue', 'calendar', 'register', 'galla', 'profile'];
@@ -14589,6 +15134,7 @@
 
       renderPatientMultiTokenSwitcher(savedBooking);
       updatePatientTokenPassLiveStatus();
+      updatePassRatingUI(savedBooking);
     }
 
     function checkAndRestorePatientBooking(forClinicId = null) {
@@ -15395,8 +15941,15 @@
         const docDegree = clinic.doctorDegree || mainDoc.degree || 'MBBS';
         const docSpecialty = clinic.specialty || clinic.category || mainDoc.specialty || 'General Physician';
         const photoUrl = clinic.doctorPhoto || mainDoc.photo || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80';
-        const rating = clinic.rating || 4.8;
-        const reviewCount = clinic.reviewCount || 120;
+        const hasGenuineRating = Boolean(clinic.reviewCount && clinic.reviewCount > 0 && clinic.rating && clinic.rating > 0);
+        const ratingBadgeHtml = hasGenuineRating
+          ? `<span class="text-xs font-black text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 shrink-0">
+               ⭐ ${Number(clinic.rating).toFixed(1)} (${clinic.reviewCount})
+             </span>`
+          : '';
+        const reviewBadgeHtml = hasGenuineRating
+          ? `<span class="text-slate-400">•</span><span class="text-slate-500 font-semibold">${clinic.reviewCount} Ratings</span>`
+          : `<span class="text-slate-400">•</span><span class="text-emerald-700 font-semibold">New Clinic</span>`;
         const feeVal = clinic.fees?.normal ?? mainDoc.fee ?? 300;
         const expYears = clinic.experienceYears || 10;
         const status = getClinicDiscoveryStatus(clinic);
@@ -15426,17 +15979,14 @@
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-1 flex-wrap">
                   <h4 class="font-black text-slate-900 text-sm truncate hover:text-[#075E54] transition">${docName}</h4>
-                  <span class="text-xs font-black text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 shrink-0">
-                    ⭐ ${rating}
-                  </span>
+                  ${ratingBadgeHtml}
                 </div>
                 <p class="text-xs text-slate-600 font-medium truncate">${docDegree || 'MBBS'}</p>
                 <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[11px]">
                   <span class="bg-emerald-50 text-[#075E54] font-bold px-1.5 py-0.2 rounded-md border border-emerald-200">${specText}</span>
                   <span class="text-slate-400">•</span>
                   <span class="text-slate-500 font-semibold">${expYears}+ Yrs Exp</span>
-                  <span class="text-slate-400">•</span>
-                  <span class="text-slate-500 font-semibold">${reviewCount}+ Mareez</span>
+                  ${reviewBadgeHtml}
                 </div>
               </div>
             </div>
@@ -15516,11 +16066,18 @@
       const regEl = document.getElementById('detailDocRegNo');
       if (regEl) regEl.textContent = `Reg. No: ${clinic.doctorRegNo || 'BRMC-48291'}`;
 
+      const hasGenuineRating = Boolean(clinic.reviewCount && clinic.reviewCount > 0 && clinic.rating && clinic.rating > 0);
       const ratingEl = document.getElementById('detailDocRating');
-      if (ratingEl) ratingEl.textContent = `⭐ ${clinic.rating || 4.9} / 5.0`;
+      if (ratingEl) {
+        ratingEl.textContent = hasGenuineRating
+          ? `⭐ ${Number(clinic.rating).toFixed(1)} / 5.0 (${clinic.reviewCount} Ratings)`
+          : 'No ratings yet (New Clinic)';
+      }
 
       const patEl = document.getElementById('detailDocPatients');
-      if (patEl) patEl.textContent = `${clinic.reviewCount || 140}+ Seen`;
+      if (patEl) {
+        patEl.textContent = hasGenuineRating ? `${clinic.reviewCount} Ratings` : '0 Ratings';
+      }
 
       const feeEl = document.getElementById('detailDocFee');
       if (feeEl) feeEl.textContent = `₹${docFee}`;
@@ -17821,9 +18378,353 @@
             closeAdminDoctorDetailModal();
             return;
           }
+          const ratingModal = document.getElementById('clinicRatingModal');
+          if (ratingModal && !ratingModal.classList.contains('hidden')) {
+            closeClinicRatingModal();
+            return;
+          }
+          const pwaModal = document.getElementById('pwaInstallGuideModal');
+          if (pwaModal && !pwaModal.classList.contains('hidden')) {
+            closePwaInstallGuideModal();
+            return;
+          }
         }
       });
     };
+
+    // =========================================================================
+    // 17. PWA INSTALLATION ENGINE & SERVICE WORKER
+    // =========================================================================
+    let deferredPwaPrompt = null;
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        try { e.preventDefault(); } catch (err) {}
+        deferredPwaPrompt = e;
+        const installBtn = document.getElementById('pwaInstallHeaderBtn');
+        if (installBtn) {
+          installBtn.classList.remove('hidden');
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredPwaPrompt = null;
+        showToast('🎉 ParchiSetu App kamyabi se install ho gayi!');
+      });
+
+      if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.warn('ParchiSetu SW registration notice:', err);
+          });
+        });
+      }
+    }
+
+    async function installPWAApp(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      if (deferredPwaPrompt) {
+        try {
+          deferredPwaPrompt.prompt();
+          const choice = await deferredPwaPrompt.userChoice;
+          if (choice && choice.outcome === 'accepted') {
+            showToast('📱 ParchiSetu App install ho rahi hai...');
+          }
+          deferredPwaPrompt = null;
+        } catch (err) {
+          openPwaInstallGuideModal();
+        }
+      } else {
+        openPwaInstallGuideModal();
+      }
+    }
+
+    function openPwaInstallGuideModal() {
+      const modal = document.getElementById('pwaInstallGuideModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closePwaInstallGuideModal() {
+      const modal = document.getElementById('pwaInstallGuideModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+    window.installPWAApp = installPWAApp;
+    window.openPwaInstallGuideModal = openPwaInstallGuideModal;
+    window.closePwaInstallGuideModal = closePwaInstallGuideModal;
+
+    // =========================================================================
+    // 18. GENUINE PATIENT STAR RATING SYSTEM (VERIFIED APPOINTMENTS ONLY)
+    // =========================================================================
+    let currentRatingClinicId = null;
+    let currentRatingPhone = null;
+
+    function selectStarRating(num) {
+      const starVal = Math.max(1, Math.min(5, parseInt(num, 10) || 5));
+      const hiddenInput = document.getElementById('selectedStarValue');
+      if (hiddenInput) hiddenInput.value = String(starVal);
+
+      const labels = {
+        1: '1 Star • Bahut Kharab (Poor)',
+        2: '2 Stars • Theek Nahi (Fair)',
+        3: '3 Stars • Theek-Thaak (Good)',
+        4: '4 Stars • Accha (Very Good)',
+        5: '5 Stars • Excellent (Bahut Accha)'
+      };
+      const labelEl = document.getElementById('starRatingLabel');
+      if (labelEl) labelEl.textContent = labels[starVal] || `${starVal} Stars`;
+
+      const btns = document.querySelectorAll('#starRatingPicker .star-btn');
+      btns.forEach(b => {
+        const s = parseInt(b.getAttribute('data-star'), 10);
+        if (s <= starVal) {
+          b.className = 'star-btn text-3xl sm:text-4xl text-amber-400 hover:scale-110 transition active:scale-95';
+        } else {
+          b.className = 'star-btn text-3xl sm:text-4xl text-slate-300 hover:scale-110 transition active:scale-95';
+        }
+      });
+    }
+
+    function openClinicRatingModal(clinicId, phone, clinicName) {
+      currentRatingClinicId = clinicId || (clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01');
+      currentRatingPhone = phone || (lastPatientBooking ? lastPatientBooking.phone : '');
+      const nameEl = document.getElementById('ratingModalClinicName');
+      if (nameEl) {
+        nameEl.textContent = clinicName || (clinicProfile ? clinicProfile.name : 'Doctor / Clinic');
+      }
+      selectStarRating(5);
+      const commentInput = document.getElementById('ratingCommentInput');
+      if (commentInput) commentInput.value = '';
+
+      const modal = document.getElementById('clinicRatingModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function openClinicRatingModalForCurrentPass() {
+      const booking = lastPatientBooking || (function() {
+        try {
+          const s = localStorage.getItem('parchi_active_patient_booking');
+          return s ? JSON.parse(s) : null;
+        } catch (e) { return null; }
+      })();
+
+      if (!booking) {
+        showToast('⚠️ Koi active appointment pass nahi mila!', 'warning');
+        return;
+      }
+      const cId = booking.clinicId || (clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01');
+      const cName = booking.clinicName || (clinicProfile ? clinicProfile.name : 'Doctor Clinic');
+      openClinicRatingModal(cId, booking.phone, cName);
+    }
+
+    function closeClinicRatingModal() {
+      const modal = document.getElementById('clinicRatingModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    async function submitClinicRating() {
+      const clinicId = currentRatingClinicId || (clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01');
+      let phone = currentRatingPhone || (lastPatientBooking ? lastPatientBooking.phone : '');
+      if (!phone) {
+        phone = prompt('Apna 10-digit registered mobile number dalein:');
+      }
+      phone = String(phone || '').replace(/\D/g, '').slice(-10);
+      if (!phone || phone.length < 10) {
+        showToast('⚠️ Kripya valid 10-digit mobile number dalein!', 'warning');
+        return;
+      }
+
+      const ratingVal = parseInt(document.getElementById('selectedStarValue')?.value, 10) || 5;
+      const comment = (document.getElementById('ratingCommentInput')?.value || '').trim();
+      const btn = document.getElementById('btnSubmitRatingModal');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting genuine rating...';
+      }
+
+      try {
+        let isSuccess = false;
+        let newRating = ratingVal;
+        let newCount = 1;
+
+        if (window.location.protocol.startsWith('http')) {
+          const res = await fetch('/api/rate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clinicId,
+              phone,
+              rating: ratingVal,
+              comment
+            })
+          });
+
+          if (res.status === 409) {
+            showToast('⚠️ Is phone number se is clinic ko pehle hi rating di ja chuki hai.', 'warning');
+            try {
+              localStorage.setItem(`parchi_rated_${clinicId}_${phone}`, String(ratingVal));
+            } catch (e) {}
+            closeClinicRatingModal();
+            updatePassRatingUI(lastPatientBooking);
+            return;
+          }
+
+          if (res.status === 403) {
+            const errData = await res.json().catch(() => ({}));
+            showToast(errData.error || '⚠️ Sirf verified appointment wale patients hi rating de sakte hain!', 'warning');
+            return;
+          }
+
+          if (res.ok) {
+            const resData = await res.json();
+            isSuccess = true;
+            newRating = resData.rating;
+            newCount = resData.reviewCount;
+          } else {
+            showToast('⚠️ Rating submit nahi ho saki. Kripya punah prayas karein.', 'warning');
+            return;
+          }
+        } else {
+          isSuccess = true;
+        }
+
+        if (isSuccess) {
+          try {
+            localStorage.setItem(`parchi_rated_${clinicId}_${phone}`, String(ratingVal));
+          } catch (e) {}
+
+          if (clinicProfile && clinicProfile.id === clinicId) {
+            clinicProfile.rating = newRating;
+            clinicProfile.reviewCount = newCount;
+            if (!clinicProfile.ratingsByPhone) clinicProfile.ratingsByPhone = {};
+            clinicProfile.ratingsByPhone[phone] = {
+              rating: ratingVal,
+              comment,
+              date: new Date().toISOString()
+            };
+            saveLocalClinic();
+          }
+
+          if (Array.isArray(clinicsDirectory)) {
+            const match = clinicsDirectory.find(c => c.id === clinicId);
+            if (match) {
+              match.rating = newRating;
+              match.reviewCount = newCount;
+              renderDoctorDiscoveryFeed();
+            }
+          }
+
+          showToast('🎉 Dhanyawad! Aapki genuine rating darj ho gayi hai!');
+          closeClinicRatingModal();
+          updatePassRatingUI(lastPatientBooking);
+        }
+      } catch (err) {
+        showToast('⚠️ Server connection error. Kripya punah prayas karein.', 'warning');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i><span>Submit Genuine Rating / रेटिंग सबमिट करें</span>';
+        }
+      }
+    }
+
+    async function updatePassRatingUI(booking) {
+      if (!booking || !booking.phone) return;
+      const rawPhone = String(booking.phone).replace(/\D/g, '').slice(-10);
+      const cId = booking.clinicId || (clinicProfile ? clinicProfile.id : 'clinic_sanjeevani_01');
+
+      let hasRated = false;
+      let existingScore = 5;
+
+      try {
+        const localRated = localStorage.getItem(`parchi_rated_${cId}_${rawPhone}`);
+        if (localRated) {
+          hasRated = true;
+          existingScore = parseInt(localRated, 10) || 5;
+        }
+      } catch (e) {}
+
+      if (!hasRated && clinicProfile && clinicProfile.id === cId && clinicProfile.ratingsByPhone && clinicProfile.ratingsByPhone[rawPhone]) {
+        hasRated = true;
+        existingScore = clinicProfile.ratingsByPhone[rawPhone].rating || 5;
+      }
+
+      if (!hasRated && window.location.protocol.startsWith('http')) {
+        try {
+          const checkRes = await fetch(`/api/rate?clinic=${encodeURIComponent(cId)}&phone=${encodeURIComponent(rawPhone)}`);
+          if (checkRes.ok) {
+            const statusData = await checkRes.json();
+            if (statusData.hasRated) {
+              hasRated = true;
+              existingScore = statusData.rating || 5;
+              try {
+                localStorage.setItem(`parchi_rated_${cId}_${rawPhone}`, String(existingScore));
+              } catch (e) {}
+            }
+          }
+        } catch (e) {}
+      }
+
+      const badge = document.getElementById('passRatingStatusBadge');
+      const desc = document.getElementById('passRatingCardDescription');
+      const actionArea = document.getElementById('passRatingActionArea');
+
+      if (hasRated) {
+        if (badge) {
+          badge.className = 'text-[10px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300';
+          badge.textContent = 'Rating Submitted ✓';
+        }
+        if (desc) {
+          desc.textContent = `Aapne is visit ki genuine rating pehle hi darj kar di hai (${'⭐'.repeat(existingScore)} ${existingScore}/5). Shukriya!`;
+        }
+        if (actionArea) {
+          actionArea.innerHTML = `
+            <div class="w-full py-2 px-3 bg-emerald-100/80 text-emerald-900 border border-emerald-300 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-2xs">
+              <i class="fa-solid fa-circle-check text-emerald-700"></i>
+              <span>✓ Aapki Genuine Rating Pehle Se Darj Hai</span>
+            </div>
+          `;
+        }
+      } else {
+        if (badge) {
+          badge.className = 'text-[10px] font-extrabold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300';
+          badge.textContent = 'Genuine Rating';
+        }
+        if (desc) {
+          desc.textContent = 'Aapka clinic visit kaisa raha? Apna genuine experience share karein.';
+        }
+        if (actionArea) {
+          actionArea.innerHTML = `
+            <button 
+              type="button" 
+              onclick="openClinicRatingModalForCurrentPass()" 
+              id="btnPassRateClinic"
+              class="btn-tactile w-full py-2.5 px-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95"
+            >
+              <i class="fa-solid fa-star text-slate-950"></i>
+              <span>⭐ Rate Clinic (Star Rating Dein)</span>
+            </button>
+          `;
+        }
+      }
+    }
+    window.selectStarRating = selectStarRating;
+    window.openClinicRatingModal = openClinicRatingModal;
+    window.openClinicRatingModalForCurrentPass = openClinicRatingModalForCurrentPass;
+    window.closeClinicRatingModal = closeClinicRatingModal;
+    window.submitClinicRating = submitClinicRating;
+    window.updatePassRatingUI = updatePassRatingUI;
   </script>
 </body>
 </html>

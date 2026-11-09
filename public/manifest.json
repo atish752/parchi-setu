@@ -1,0 +1,26 @@
+{
+  "name": "ParchiSetu - Clinic Management & Live Token Web App",
+  "short_name": "ParchiSetu",
+  "description": "Smart Indian Clinic Management, Live Cabin OPD Queue & Token Web App",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#075E54",
+  "theme_color": "#075E54",
+  "categories": ["medical", "health", "productivity"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "48x48 96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -57,8 +57,9 @@ const DEFAULT_CLINIC = {
   doctorDegree: 'MBBS, MD (General Physician)',
   doctorRegNo: 'MCI-48291',
   experienceYears: 14,
-  rating: 4.9,
-  reviewCount: 148,
+  rating: 0,
+  reviewCount: 0,
+  ratingsByPhone: {},
   doctorPhoto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&auto=format&fit=crop&q=80',
   fees: {
     normal: 300,
@@ -651,6 +652,121 @@ const requestHandler = async (req, res) => {
     return;
   }
 
+  // Clinic Star Rating API (Genuine rating only by booked patients, strictly 1 rating per phone per clinic)
+  if ((pathname === '/api/rate' || pathname === '/api/clinic/rate') && method === 'GET') {
+    const clinicId = parsedUrl.searchParams.get('clinicId') || parsedUrl.searchParams.get('clinic') || (appData.clinic && appData.clinic.id) || 'clinic_sanjeevani_01';
+    const rawPhone = String(parsedUrl.searchParams.get('phone') || '').trim();
+    const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10);
+    const targetClinic = (appData.clinics && appData.clinics[clinicId]) ||
+                         (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null) ||
+                         DEFAULT_CLINIC;
+    const hasRated = Boolean(cleanPhone && targetClinic.ratingsByPhone && targetClinic.ratingsByPhone[cleanPhone]);
+    const userRating = hasRated ? (typeof targetClinic.ratingsByPhone[cleanPhone] === 'object' ? targetClinic.ratingsByPhone[cleanPhone].rating : targetClinic.ratingsByPhone[cleanPhone]) : null;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      clinicId,
+      rating: targetClinic.rating || 0,
+      reviewCount: targetClinic.reviewCount || 0,
+      hasRated,
+      rating: targetClinic.rating || 0,
+      userRating
+    }));
+    return;
+  }
+
+  if ((pathname === '/api/rate' || pathname === '/api/clinic/rate') && method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const clinicId = body.clinicId || (appData.clinic && appData.clinic.id) || 'clinic_sanjeevani_01';
+      const rawPhone = String(body.phone || '').trim();
+      const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10);
+      const rating = parseInt(body.rating, 10);
+      const comment = String(body.comment || '').trim();
+
+      if (!cleanPhone || cleanPhone.length < 10) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Valid 10-digit phone number is required to submit a rating.' }));
+        return;
+      }
+
+      if (isNaN(rating) || rating < 1 || rating > 5) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Rating must be an integer between 1 and 5 stars.' }));
+        return;
+      }
+
+      // Verification: Check if patient has booked an appointment with this clinic
+      const hasBooking = (appData.queue && appData.queue.some(q => {
+        const qPhone = String(q.phone || '').replace(/\D/g, '').slice(-10);
+        return qPhone === cleanPhone && (!q.clinicId || q.clinicId === clinicId);
+      })) || (appData.patientRegister && appData.patientRegister.some(p => {
+        const pPhone = String(p.phone || '').replace(/\D/g, '').slice(-10);
+        return pPhone === cleanPhone && (!p.clinicId || p.clinicId === clinicId);
+      })) || Boolean(body.bookingId);
+
+      if (!hasBooking) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Only patients who have booked an appointment can rate this clinic.' }));
+        return;
+      }
+
+      // Check if target clinic exists
+      appData.clinics = appData.clinics || {};
+      let targetClinic = appData.clinics[clinicId] ||
+                         (appData.clinic && appData.clinic.id === clinicId ? appData.clinic : null);
+      if (!targetClinic) {
+        targetClinic = { ...DEFAULT_CLINIC, id: clinicId };
+        appData.clinics[clinicId] = targetClinic;
+      }
+
+      // Enforce 1 rating per patient phone number
+      targetClinic.ratingsByPhone = targetClinic.ratingsByPhone || {};
+      if (targetClinic.ratingsByPhone[cleanPhone]) {
+        res.writeHead(409, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Aap pehle hi is clinic ko rate kar chuke hain (One rating per patient).' }));
+        return;
+      }
+
+      // Record genuine rating
+      targetClinic.ratingsByPhone[cleanPhone] = {
+        rating: rating,
+        comment: comment,
+        ratedAt: new Date().toISOString()
+      };
+
+      const allRatings = Object.values(targetClinic.ratingsByPhone).map(r => r.rating);
+      targetClinic.reviewCount = allRatings.length;
+      targetClinic.rating = +(allRatings.reduce((sum, v) => sum + v, 0) / allRatings.length).toFixed(1);
+
+      appData.clinics[targetClinic.id] = targetClinic;
+      if (appData.clinic && appData.clinic.id === targetClinic.id) {
+        appData.clinic = targetClinic;
+      }
+      saveData();
+
+      if (store && typeof store.setClinic === 'function') {
+        store.setClinic(targetClinic);
+      }
+      if (supabase && typeof supabase.saveClinic === 'function') {
+        try { await supabase.saveClinic(targetClinic); } catch(e) {}
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        clinicId: targetClinic.id,
+        rating: targetClinic.rating,
+        reviewCount: targetClinic.reviewCount,
+        message: 'Rating submitted successfully!'
+      }));
+      return;
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+      return;
+    }
+  }
+
   // Get all clinics list for Discovery
   if ((pathname === '/api/clinics' || (pathname === '/api/clinic' && (parsedUrl.searchParams.get('list') === '1' || parsedUrl.searchParams.get('action') === 'list'))) && method === 'GET') {
     const realOnly = parsedUrl.searchParams.get('realOnly') === '1' || parsedUrl.searchParams.get('realOnly') === 'true';
@@ -704,8 +820,8 @@ const requestHandler = async (req, res) => {
         specialty: docSpecialty,
         category: docCategory,
         doctors,
-        rating: c.rating || init.rating || 4.8,
-        reviewCount: c.reviewCount || init.reviewCount || 120
+        rating: c.rating !== undefined ? c.rating : (init && init.rating !== undefined ? init.rating : 0),
+        reviewCount: c.reviewCount !== undefined ? c.reviewCount : (init && init.reviewCount !== undefined ? init.reviewCount : 0)
       };
     });
     if (realOnly) {
@@ -1059,6 +1175,18 @@ const requestHandler = async (req, res) => {
   if (pathname === '/api/queue/reset' && method === 'POST') {
     try {
       appData.queue = [];
+      if (appData.clinic) {
+        appData.clinic.rating = 0;
+        appData.clinic.reviewCount = 0;
+        appData.clinic.ratingsByPhone = {};
+      }
+      if (appData.clinics) {
+        Object.values(appData.clinics).forEach(c => {
+          c.rating = 0;
+          c.reviewCount = 0;
+          c.ratingsByPhone = {};
+        });
+      }
       saveData();
       if (store && typeof store.resetQueue === 'function') {
         store.resetQueue();
@@ -1396,6 +1524,7 @@ const requestHandler = async (req, res) => {
       '.js': 'text/javascript',
       '.css': 'text/css',
       '.json': 'application/json',
+      '.webmanifest': 'application/manifest+json',
       '.png': 'image/png',
       '.jpg': 'image/jpeg',
       '.svg': 'image/svg+xml'
