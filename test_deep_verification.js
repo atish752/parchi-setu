@@ -177,6 +177,18 @@ async function run() {
     console.log('\n======================================================');
     console.log('🎉 ALL 10/10 DEEP VERIFICATION SUITES PASSED PERFECTLY!');
     console.log('======================================================\n');
+    try {
+      await makeRequest('POST', '/api/queue/reset');
+      await makeRequest('POST', '/api/clinic', {
+        id: 'clinic_sanjeevani_01',
+        liveStatus: {
+          isDoctorLate: false,
+          doctorDelayMinutes: 0,
+          expectedArrivalTime: '10:00 AM',
+          isQRBookingPaused: false
+        }
+      });
+    } catch (e) {}
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 100);
   } finally {

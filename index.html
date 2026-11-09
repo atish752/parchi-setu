@@ -983,12 +983,13 @@
           <!-- Dynamically populated by JS -->
         </div>
 
-        <!-- Mobile Floating Action Button: + Naya Mareez (WhatsApp Style) -->
+        <!-- Mobile Floating Action Button: + Naya Mareez (WhatsApp Style - Hidden as top walk-in button is used) -->
         <button 
           type="button" 
           onclick="onFabWalkinClick()" 
           id="mobileFabNewPatient"
-          class="sm:hidden fixed bottom-5 right-4 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] active:scale-90 text-slate-950 font-black shadow-2xl flex items-center justify-center text-xl z-30 transition border-2 border-white cursor-pointer"
+          class="hidden"
+          style="display: none !important;"
           title="+ Naya Mareez (Walk-in)"
         >
           <i class="fa-solid fa-plus text-2xl"></i>
@@ -1078,107 +1079,165 @@
             </button>
           </div>
 
-          <!-- Doctor Arrival Setter Row (Compact, Powerful Dropdown + Time Picker + Plus/Minus) -->
-          <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <!-- Doctor Arrival Setter: Divided into Subah (Morning) and Dopahar/Shaam (Afternoon/Evening) -->
+          <div class="space-y-3">
             
-            <div class="flex items-center gap-2 flex-wrap">
-              <label for="doctorArrivalDropdown" class="text-xs font-black text-slate-700 whitespace-nowrap">
-                Doctor Aane Ka Samay:
-              </label>
+            <!-- Morning Shift Row -->
+            <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <label for="doctorArrivalDropdown" class="text-xs font-black text-slate-800 whitespace-nowrap flex items-center gap-1.5">
+                  <span>☀️ Subah (Morning):</span>
+                  <span id="morningDefaultTimeLabel" class="text-[11px] font-normal text-slate-500">(Opening: 10:00 AM)</span>
+                </label>
 
-              <!-- Arrival Dropdown with Early Access on Top & Delays Below -->
-              <select 
-                id="doctorArrivalDropdown" 
-                onchange="onDoctorArrivalDropdownChange(this.value)" 
-                class="px-3 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:outline-none focus:border-[#128C7E] shadow-xs cursor-pointer"
-              >
-                <optgroup label="⚡ Early Access (Pehle Arrival)">
-                  <option value="-90">⚡ 1 Hour 30 Mins Early Arrival (-90m)</option>
-                  <option value="-60">⚡ 1 Hour Early Arrival (-60m)</option>
-                  <option value="-45">⚡ 45 Mins Early Arrival (-45m)</option>
-                  <option value="-30">⚡ 30 Mins Early Arrival (-30m)</option>
-                  <option value="-15">⚡ 15 Mins Early Arrival (-15m)</option>
-                </optgroup>
-                <option value="0" selected>🟢 Samay Par / On Time (0 min)</option>
-                <optgroup label="⏳ Doctor Delay (Late Arrival)">
-                  <option value="15">⏳ 15 Mins Delay (+15m)</option>
-                  <option value="30">⏳ 30 Mins Delay (+30m)</option>
-                  <option value="45">⏳ 45 Mins Delay (+45m)</option>
-                  <option value="60">⏳ 1 Hour Delay (+60m)</option>
-                  <option value="90">⏳ 1 Hour 30 Mins Delay (+90m)</option>
-                  <option value="120">⏳ 2 Hours Delay (+120m)</option>
-                  <option value="150">⏳ 2 Hours 30 Mins Delay (+150m)</option>
-                  <option value="180">⏳ 3 Hours Delay (+180m)</option>
-                </optgroup>
-              </select>
+                <select 
+                  id="doctorArrivalDropdown" 
+                  onchange="onDoctorArrivalDropdownChange('Morning', this.value)" 
+                  class="px-3 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:outline-none focus:border-[#128C7E] shadow-xs cursor-pointer"
+                >
+                  <optgroup label="⚡ Early Access (Pehle Arrival)">
+                    <option value="-90">⚡ 1 Hour 30 Mins Early (-90m)</option>
+                    <option value="-60">⚡ 1 Hour Early (-60m)</option>
+                    <option value="-45">⚡ 45 Mins Early (-45m)</option>
+                    <option value="-30">⚡ 30 Mins Early (-30m)</option>
+                    <option value="-15">⚡ 15 Mins Early (-15m)</option>
+                  </optgroup>
+                  <option value="0" selected>🟢 Samay Par / On Time (Default)</option>
+                  <optgroup label="⏳ Doctor Delay (Late Arrival)">
+                    <option value="15">⏳ 15 Mins Delay (+15m)</option>
+                    <option value="30">⏳ 30 Mins Delay (+30m)</option>
+                    <option value="45">⏳ 45 Mins Delay (+45m)</option>
+                    <option value="60">⏳ 1 Hour Delay (+60m)</option>
+                    <option value="90">⏳ 1 Hour 30 Mins Delay (+90m)</option>
+                    <option value="120">⏳ 2 Hours Delay (+120m)</option>
+                    <option value="150">⏳ 2 Hours 30 Mins Delay (+150m)</option>
+                    <option value="180">⏳ 3 Hours Delay (+180m)</option>
+                  </optgroup>
+                </select>
 
-              <!-- Plus / Minus Stepper Controls -->
-              <div class="flex items-center gap-1">
-                <button 
-                  type="button" 
-                  onclick="adjustDoctorDelayMinutes(-15)" 
-                  class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
-                  title="15 Mins Pehle (-15m)"
-                >
-                  -15
-                </button>
-                <button 
-                  type="button" 
-                  onclick="adjustDoctorDelayMinutes(15)" 
-                  class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
-                  title="15 Mins Late (+15m)"
-                >
-                  +15
-                </button>
+                <!-- Plus / Minus Stepper Controls for Morning -->
+                <div class="flex items-center gap-1">
+                  <button 
+                    type="button" 
+                    onclick="adjustDoctorDelayMinutes(-15)" 
+                    class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
+                    title="15 Mins Pehle (-15m)"
+                  >
+                    -15
+                  </button>
+                  <button 
+                    type="button" 
+                    onclick="adjustDoctorDelayMinutes(15)" 
+                    class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
+                    title="15 Mins Late (+15m)"
+                  >
+                    +15
+                  </button>
+                </div>
+
+                <!-- Direct Time Input for Morning -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold text-slate-500">Ya Time:</span>
+                  <input 
+                    type="time" 
+                    id="customDoctorArrivalTimeInput" 
+                    onchange="setCustomDoctorArrivalTimeFromInput('Morning')" 
+                    class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]" 
+                  />
+                </div>
               </div>
 
-              <!-- Direct Time Input -->
-              <div class="flex items-center gap-1.5">
-                <span class="text-[11px] font-bold text-slate-500">Ya Time:</span>
-                <input 
-                  type="time" 
-                  id="customDoctorArrivalTimeInput" 
-                  onchange="setCustomDoctorArrivalTimeFromInput()" 
-                  class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]" 
-                />
+              <!-- Live Status Indicator Badge for Morning -->
+              <div id="doctorArrivalLiveBadge" class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-emerald-300 shadow-xs whitespace-nowrap">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span id="doctorArrivalLiveBadgeText">🟢 Subah: Samay Par (10:00 AM)</span>
               </div>
             </div>
 
-            <!-- Live Status Indicator Badge -->
-            <div id="doctorArrivalLiveBadge" class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-emerald-300 shadow-xs whitespace-nowrap">
-              <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-              <span id="doctorArrivalLiveBadgeText">🟢 Samay Par (Expected: 10:00 AM)</span>
+            <!-- Afternoon / Evening Shift Row -->
+            <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <label for="doctorArrivalDropdownEvening" class="text-xs font-black text-slate-800 whitespace-nowrap flex items-center gap-1.5">
+                  <span>🌙 Shaam (Evening):</span>
+                  <span id="eveningDefaultTimeLabel" class="text-[11px] font-normal text-slate-500">(Opening: 05:00 PM)</span>
+                </label>
+
+                <select 
+                  id="doctorArrivalDropdownEvening" 
+                  onchange="onDoctorArrivalDropdownChange('Evening', this.value)" 
+                  class="px-3 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:outline-none focus:border-[#128C7E] shadow-xs cursor-pointer"
+                >
+                  <optgroup label="⚡ Early Access (Pehle Arrival)">
+                    <option value="-90">⚡ 1 Hour 30 Mins Early (-90m)</option>
+                    <option value="-60">⚡ 1 Hour Early (-60m)</option>
+                    <option value="-45">⚡ 45 Mins Early (-45m)</option>
+                    <option value="-30">⚡ 30 Mins Early (-30m)</option>
+                    <option value="-15">⚡ 15 Mins Early (-15m)</option>
+                  </optgroup>
+                  <option value="0" selected>🟢 Samay Par / On Time (Default)</option>
+                  <optgroup label="⏳ Doctor Delay (Late Arrival)">
+                    <option value="15">⏳ 15 Mins Delay (+15m)</option>
+                    <option value="30">⏳ 30 Mins Delay (+30m)</option>
+                    <option value="45">⏳ 45 Mins Delay (+45m)</option>
+                    <option value="60">⏳ 1 Hour Delay (+60m)</option>
+                    <option value="90">⏳ 1 Hour 30 Mins Delay (+90m)</option>
+                    <option value="120">⏳ 2 Hours Delay (+120m)</option>
+                    <option value="150">⏳ 2 Hours 30 Mins Delay (+150m)</option>
+                    <option value="180">⏳ 3 Hours Delay (+180m)</option>
+                  </optgroup>
+                </select>
+
+                <!-- Plus / Minus Stepper Controls for Evening -->
+                <div class="flex items-center gap-1">
+                  <button 
+                    type="button" 
+                    onclick="adjustDoctorDelayMinutes(-15, 'Evening')" 
+                    class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
+                    title="15 Mins Pehle (-15m)"
+                  >
+                    -15
+                  </button>
+                  <button 
+                    type="button" 
+                    onclick="adjustDoctorDelayMinutes(15, 'Evening')" 
+                    class="btn-tactile w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-black text-xs flex items-center justify-center transition" 
+                    title="15 Mins Late (+15m)"
+                  >
+                    +15
+                  </button>
+                </div>
+
+                <!-- Direct Time Input for Evening -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold text-slate-500">Ya Time:</span>
+                  <input 
+                    type="time" 
+                    id="customDoctorArrivalTimeInputEvening" 
+                    onchange="setCustomDoctorArrivalTimeFromInput('Evening')" 
+                    class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]" 
+                  />
+                </div>
+              </div>
+
+              <!-- Live Status Indicator Badge for Evening -->
+              <div id="doctorArrivalLiveBadgeEvening" class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-emerald-300 shadow-xs whitespace-nowrap">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span id="doctorArrivalLiveBadgeEveningText">🟢 Shaam: Samay Par (05:00 PM)</span>
+              </div>
+            </div>
+
+            <!-- Hidden backward-compatibility elements for tests & automated scripts -->
+            <div class="hidden" style="display: none;">
+              <input type="number" id="customDoctorDelayMinutesInput" placeholder="45" />
+              <button type="button" onclick="setDoctorDelayMinutes(0)">0m</button>
+              <button type="button" onclick="setDoctorDelayMinutes(30)">30m</button>
+              <button type="button" onclick="setDoctorDelayMinutes(45)">45m</button>
+              <button type="button" onclick="setDoctorDelayMinutes(60)">60m</button>
+              <button type="button" onclick="setDoctorDelayMinutes(-30)">-30m</button>
             </div>
 
           </div>
-
-            <!-- 1-Tap Quick Delay & Early Preset Chips -->
-            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/80">
-              <span class="text-[11px] font-bold text-slate-600 mr-1">Quick Presets:</span>
-              <button type="button" onclick="setDoctorDelayMinutes(0)" id="delayPreset-0" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">🟢 On-Time (0m)</button>
-              <button type="button" onclick="setDoctorDelayMinutes(30)" id="delayPreset-30" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⏳ 30m Late</button>
-              <button type="button" onclick="setDoctorDelayMinutes(45)" id="delayPreset-45" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⏳ 45m Late</button>
-              <button type="button" onclick="setDoctorDelayMinutes(60)" id="delayPreset-60" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⏳ 60m Late</button>
-              <button type="button" onclick="setDoctorDelayMinutes(-30)" id="delayPreset-minus30" class="delay-preset-chip px-2.5 py-1 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">⚡ 30m Early</button>
-
-              <div class="flex items-center gap-1.5 ml-auto sm:ml-0 pt-1 sm:pt-0">
-                <input 
-                  type="number" 
-                  id="customDoctorDelayMinutesInput" 
-                  placeholder="Minutes (+/-)" 
-                  class="w-24 px-2 py-1 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#128C7E]"
-                />
-                <button 
-                  type="button" 
-                  onclick="setCustomDoctorDelayFromInput()" 
-                  class="btn-tactile px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl"
-                >
-                  Set Mins
-                </button>
-              </div>
-            </div>
-
-          </div>
+        </div>
 
         <!-- 7-Day Horizontal Date Strip & Vacation Controls -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/90 space-y-3">
@@ -2547,6 +2606,9 @@
               </button>
             </div>
           </div>
+
+          <!-- Multi-Token Switcher Bar (Shown when multiple bookings exist for same phone) -->
+          <div id="patientMultiTokenSwitcher" class="hidden"></div>
 
           <!-- Main Live Visual Token Card -->
           <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-emerald-400 shadow-lg text-center space-y-3.5 relative overflow-hidden">
@@ -5505,6 +5567,37 @@
       return `${year}-${month}-${day}`;
     }
 
+    let currentSessionDate = getLocalDateString();
+
+    function isTodayAppointment(p) {
+      if (!p) return false;
+      const todayStr = getLocalDateString();
+      const pDate = p.date ? String(p.date).slice(0, 10) : '';
+      if (pDate) {
+        return pDate === todayStr;
+      }
+      if (p.createdAt) {
+        try {
+          const d = new Date(p.createdAt);
+          if (!isNaN(d.getTime())) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const createdDate = `${y}-${m}-${day}`;
+            if (createdDate !== todayStr) return false;
+            const dayStr = String(p.day || '').trim().toLowerCase();
+            if (dayStr && !dayStr.startsWith('aaj') && !dayStr.startsWith('today')) {
+              return false;
+            }
+            return true;
+          }
+        } catch (e) {}
+      }
+      const dayStr = String(p.day || '').trim().toLowerCase();
+      if (dayStr.startsWith('aaj') || dayStr.startsWith('today')) return true;
+      return false;
+    }
+
     let currentLang = 'english'; // 'english' (Default) | 'hinglish' | 'hindi'
     try {
       const savedLang = localStorage.getItem('klinicq_lang') || localStorage.getItem('parchisetu_lang');
@@ -6266,15 +6359,41 @@
         } catch (e) {}
         const todayStr = getLocalDateString();
         todayQueue.forEach(p => {
-          if (p.date && p.date < todayStr) {
-            if (p.day === 'Aaj (Today)') p.day = p.date;
+          if (!isTodayAppointment(p)) {
+            if (p.day === 'Aaj (Today)') p.day = p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayStr);
             if (p.status === 'WAITING') {
               p.status = 'NO_SHOW';
               p.noShow = true;
               p.noShowAt = p.noShowAt || new Date().toISOString();
             }
+            if (Array.isArray(patientRegister)) {
+              const regIdx = patientRegister.findIndex(r => r.id === p.id || (p.phone && r.phone === p.phone && r.appointmentDate === (p.date || p.createdAt)));
+              if (regIdx < 0) {
+                patientRegister.unshift({
+                  id: p.id,
+                  name: p.name,
+                  age: p.age,
+                  gender: p.gender,
+                  phone: p.phone,
+                  lastReason: p.reason,
+                  fee: p.fee,
+                  payMode: p.payMode,
+                  status: p.status,
+                  appointmentDate: p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayStr),
+                  lastVisit: p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayStr),
+                  notes: p.notes || '',
+                  bp: p.bp || '',
+                  createdAt: p.createdAt || new Date().toISOString()
+                });
+              }
+            }
           }
         });
+        // Purge past appointments from todayQueue so Live tab starts completely clean
+        todayQueue = todayQueue.filter(p => isTodayAppointment(p));
+        saveLocalQueue();
+        if (typeof saveLocalRegister === 'function') saveLocalRegister();
+        if (typeof checkDoctorDelayDailyReset === 'function') checkDoctorDelayDailyReset();
         if (clinicProfile?.liveStatus?.qrOverrideExpiresAt && Date.now() >= clinicProfile.liveStatus.qrOverrideExpiresAt) {
           const orig = clinicProfile.liveStatus.qrOverrideOriginalState !== undefined ? clinicProfile.liveStatus.qrOverrideOriginalState : false;
           isQRBookingPaused = orig;
@@ -6322,20 +6441,30 @@
     }
 
     function getCurrentCabinPatient() {
-      return todayQueue.find(p => p.status === 'IN_CABIN') || null;
+      return todayQueue.find(p => isTodayAppointment(p) && p.status === 'IN_CABIN') || null;
     }
 
     function getNextWaitingPatient() {
-      // 1. Prioritize active on-time waiting patients in ascending token order
+      // 1. Prioritize active on-time waiting patients in ascending slot timeline order
       const activeWaiting = todayQueue
-        .filter(p => p.status === 'WAITING' && !isPatientLate(p))
-        .sort((a, b) => (a.token || 0) - (b.token || 0));
+        .filter(p => isTodayAppointment(p) && p.status === 'WAITING' && !isPatientLate(p))
+        .sort((a, b) => {
+          const minsA = (typeof getSlotTimelineMinutes === 'function') ? getSlotTimelineMinutes(a.slotTime, a.shift, a.createdAt) : 0;
+          const minsB = (typeof getSlotTimelineMinutes === 'function') ? getSlotTimelineMinutes(b.slotTime, b.shift, b.createdAt) : 0;
+          if (minsA !== minsB) return minsA - minsB;
+          return (a.token || 0) - (b.token || 0);
+        });
       if (activeWaiting.length > 0) return activeWaiting[0];
 
-      // 2. Then attend late / pending waiting patients in ascending token order
+      // 2. Then attend late / pending waiting patients in ascending slot timeline order
       const lateWaiting = todayQueue
-        .filter(p => p.status === 'WAITING' && isPatientLate(p))
-        .sort((a, b) => (a.token || 0) - (b.token || 0));
+        .filter(p => isTodayAppointment(p) && p.status === 'WAITING' && isPatientLate(p))
+        .sort((a, b) => {
+          const minsA = (typeof getSlotTimelineMinutes === 'function') ? getSlotTimelineMinutes(a.slotTime, a.shift, a.createdAt) : 0;
+          const minsB = (typeof getSlotTimelineMinutes === 'function') ? getSlotTimelineMinutes(b.slotTime, b.shift, b.createdAt) : 0;
+          if (minsA !== minsB) return minsA - minsB;
+          return (a.token || 0) - (b.token || 0);
+        });
       return lateWaiting.length > 0 ? lateWaiting[0] : null;
     }
 
@@ -9327,7 +9456,36 @@
           }
         }
       });
-      todayQueue = Array.from(queueMap.values());
+      // Archive any past non-today appointments into patientRegister
+      const remotePast = Array.from(queueMap.values()).filter(p => !isTodayAppointment(p));
+      remotePast.forEach(p => {
+        if (Array.isArray(patientRegister)) {
+          const regIdx = patientRegister.findIndex(r => r.id === p.id || (p.phone && r.phone === p.phone && r.appointmentDate === (p.date || p.createdAt)));
+          if (regIdx < 0) {
+            patientRegister.unshift({
+              id: p.id,
+              name: p.name,
+              age: p.age,
+              gender: p.gender,
+              phone: p.phone,
+              lastReason: p.reason,
+              fee: p.fee,
+              payMode: p.payMode,
+              status: p.status,
+              appointmentDate: p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayStr),
+              lastVisit: p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayStr),
+              notes: p.notes || '',
+              bp: p.bp || '',
+              createdAt: p.createdAt || new Date().toISOString()
+            });
+          }
+        }
+      });
+      if (remotePast.length > 0 && typeof saveLocalRegister === 'function') {
+        saveLocalRegister();
+      }
+
+      todayQueue = Array.from(queueMap.values()).filter(p => isTodayAppointment(p));
       if (typeof reassignTimelineTokens === 'function') {
         reassignTimelineTokens(todayQueue);
       }
@@ -9489,8 +9647,7 @@
         updateHeaderAuthUI(currentAuthUser);
         const fab = document.getElementById('mobileFabNewPatient');
         if (fab) {
-          if (currentTab === 'queue') fab.classList.remove('hidden');
-          else fab.classList.add('hidden');
+          fab.classList.add('hidden');
         }
         document.title = `ParchiSetu • ${clinicProfile.name || 'Compounder Desk'}`;
         if (typeof window !== 'undefined' && window.history && window.history.pushState && !window.location.pathname.startsWith('/clinic')) {
@@ -9826,8 +9983,7 @@
       }
       const fab = document.getElementById('mobileFabNewPatient');
       if (fab) {
-        if (targetTab === 'queue' && currentRole === 'clinic') fab.classList.remove('hidden');
-        else fab.classList.add('hidden');
+        fab.classList.add('hidden');
       }
       refreshAllViews();
     }
@@ -9885,8 +10041,8 @@
     function renderLiveCabinHero() {
       const inCabin = getCurrentCabinPatient();
       const nextWait = getNextWaitingPatient();
-      const waitingCount = todayQueue.filter(p => p.status === 'WAITING').length;
-      const baakiCount = todayQueue.filter(p => p.status === 'WAITING' && p.payMode === 'Baaki').length;
+      const waitingCount = todayQueue.filter(p => isTodayAppointment(p) && p.status === 'WAITING').length;
+      const baakiCount = todayQueue.filter(p => isTodayAppointment(p) && p.status === 'WAITING' && p.payMode === 'Baaki').length;
 
       document.getElementById('navBadgeWaiting').textContent = waitingCount;
       const navBaaki = document.getElementById('navBadgeBaaki');
@@ -10269,6 +10425,7 @@
         shift: 'Morning',
         slotTime: 'Walk-in Now',
         day: 'Aaj (Today)',
+        date: getLocalDateString(),
         bp: '',
         weight: '',
         temp: '',
@@ -10718,14 +10875,14 @@
     }
 
     function renderQueueFilterPills() {
-      const activeQueue = todayQueue.filter(p => p.status !== 'CANCELLED');
+      const activeQueue = todayQueue.filter(p => isTodayAppointment(p) && p.status !== 'CANCELLED');
       const counts = {
         ALL: activeQueue.filter(p => p.status !== 'NO_SHOW').length,
-        WAITING: todayQueue.filter(p => p.status === 'WAITING').length,
-        IN_CABIN: todayQueue.filter(p => p.status === 'IN_CABIN').length,
-        DONE: todayQueue.filter(p => p.status === 'DONE').length,
-        BAAKI: todayQueue.filter(p => p.status === 'WAITING' && p.payMode === 'Baaki').length,
-        NO_SHOW: todayQueue.filter(p => p.status === 'NO_SHOW').length
+        WAITING: todayQueue.filter(p => isTodayAppointment(p) && p.status === 'WAITING').length,
+        IN_CABIN: todayQueue.filter(p => isTodayAppointment(p) && p.status === 'IN_CABIN').length,
+        DONE: todayQueue.filter(p => isTodayAppointment(p) && p.status === 'DONE').length,
+        BAAKI: todayQueue.filter(p => isTodayAppointment(p) && p.status === 'WAITING' && p.payMode === 'Baaki').length,
+        NO_SHOW: todayQueue.filter(p => isTodayAppointment(p) && p.status === 'NO_SHOW').length
       };
 
       const pills = [
@@ -10779,11 +10936,11 @@
     }
 
     function getPatientQueueTier(p) {
+      if (!p) return 99;
       if (p.status === 'IN_CABIN') return 0;
-      if (p.status === 'WAITING') {
-        return isPatientLate(p) ? 2 : 1; // Tier 1: Active Waiting, Tier 2: Late / Pending
-      }
-      if (p.status === 'DONE') return 3;
+      if (p.status === 'WAITING') return 1;
+      if (p.status === 'DONE') return 2;
+      if (p.status === 'NO_SHOW') return 3;
       if (p.status === 'CANCELLED') return 4;
       return 5;
     }
@@ -10795,7 +10952,9 @@
       const searchQ = (document.getElementById('queueSearchInput')?.value || '').toLowerCase().trim();
       const container = document.getElementById('queueListContainer');
 
-      let filtered = todayQueue.filter(p => {
+      const todayLiveQueue = todayQueue.filter(p => isTodayAppointment(p));
+
+      let filtered = todayLiveQueue.filter(p => {
         if (currentQueueFilter === 'ALL' && !searchQ && (p.status === 'CANCELLED' || p.status === 'NO_SHOW')) return false;
         if (currentQueueFilter === 'WAITING' && p.status !== 'WAITING') return false;
         if (currentQueueFilter === 'IN_CABIN' && p.status !== 'IN_CABIN') return false;
@@ -10815,6 +10974,9 @@
         const tierA = getPatientQueueTier(a);
         const tierB = getPatientQueueTier(b);
         if (tierA !== tierB) return tierA - tierB;
+        const minsA = (typeof getSlotTimelineMinutes === 'function') ? getSlotTimelineMinutes(a.slotTime, a.shift, a.createdAt) : 0;
+        const minsB = (typeof getSlotTimelineMinutes === 'function') ? getSlotTimelineMinutes(b.slotTime, b.shift, b.createdAt) : 0;
+        if (minsA !== minsB) return minsA - minsB;
         return (a.token || 0) - (b.token || 0);
       });
 
@@ -10835,191 +10997,202 @@
         const isLate = isPatientLate(p);
         let tokenCircleClass = 'bg-emerald-50 text-[#075E54] border-2 border-[#128C7E]';
         let rowBgClass = 'bg-white';
-        let statusBadge = `<span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded">${p.slotTime}</span>`;
-
         const revisedSlot = (typeof getRevisedSlotInfo === 'function') ? getRevisedSlotInfo(p.slotTime) : null;
-        const slotDisplay = (revisedSlot && revisedSlot.hasChange) ? revisedSlot.displayText : (p.slotTime || 'Slot');
+        let timingBadge = '';
+        if (revisedSlot && revisedSlot.hasChange) {
+          timingBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded inline-flex items-center gap-1">⏰ ${revisedSlot.displayText}</span>`;
+        } else {
+          timingBadge = `<span class="bg-emerald-50 text-emerald-900 border border-emerald-300 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded inline-flex items-center gap-1">⏰ ${p.slotTime || 'Slot'}</span>`;
+        }
 
+        let statusBadge = '';
         if (p.status === 'IN_CABIN') {
           tokenCircleClass = 'bg-[#25D366] text-slate-950 ring-4 ring-[#25D366]/40 live-token-pulse font-black';
           rowBgClass = 'bg-gradient-to-r from-emerald-100/90 via-emerald-50 to-teal-50 border-2 border-[#25D366] shadow-sm rounded-2xl';
-          statusBadge = `<span class="bg-[#075E54] text-[#25D366] text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5 shadow-xs"><span class="w-2 h-2 rounded-full bg-[#25D366] animate-ping"></span> ⚡ ANDAR HAI (In-Process)</span>`;
+          statusBadge = `<span class="bg-[#075E54] text-[#25D366] text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded inline-flex items-center gap-1 shadow-xs"><span class="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-ping"></span> ⚡ ANDAR HAI (In-Process)</span>`;
         } else if (p.status === 'NO_SHOW') {
           tokenCircleClass = 'bg-amber-100 text-amber-900 border border-amber-300';
           rowBgClass = 'bg-amber-50/40 opacity-80';
-          statusBadge = `<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">🚫 No-Show</span>`;
+          statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded inline-flex items-center gap-1">🚫 No-Show</span>`;
         } else if (p.status === 'WAITING' && isLate) {
           tokenCircleClass = 'bg-amber-50 text-amber-950 border-2 border-amber-400 font-black';
           rowBgClass = 'bg-amber-50/30';
-          statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">⚠️ Late / Pending (Slot: ${slotDisplay})</span>`;
-        } else if (p.status === 'WAITING') {
-          tokenCircleClass = 'bg-emerald-50 text-[#075E54] border-2 border-[#128C7E]';
-          rowBgClass = 'bg-white';
-          if (revisedSlot && revisedSlot.hasChange) {
-            statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-1">⏰ ${revisedSlot.displayText}</span>`;
-          } else {
-            statusBadge = `<span class="bg-emerald-50 text-emerald-900 border border-emerald-200 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">⏰ Slot: ${p.slotTime}</span>`;
-          }
+          statusBadge = `<span class="bg-amber-100 text-amber-950 border border-amber-300 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded inline-flex items-center gap-1">⚠️ Late / Pending (Slot: ${p.slotTime || ''})</span>`;
         } else if (p.status === 'DONE') {
           tokenCircleClass = 'bg-slate-100 text-slate-500 border border-slate-200';
           rowBgClass = 'bg-white opacity-75';
-          statusBadge = `<span class="text-slate-500 text-[11px] font-semibold inline-flex items-center gap-1"><i class="fa-solid fa-check-double text-[10px] text-sky-600"></i> Done</span>`;
+          statusBadge = `<span class="text-slate-600 bg-slate-100 border border-slate-200 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded inline-flex items-center gap-1"><i class="fa-solid fa-check-double text-[10px] text-sky-600"></i> Done</span>`;
         } else if (p.status === 'CANCELLED') {
           tokenCircleClass = 'bg-rose-50 text-rose-500 border border-rose-200 line-through';
           rowBgClass = 'bg-slate-50 opacity-60';
-          statusBadge = `<span class="text-rose-600 text-[11px] font-bold inline-flex items-center gap-1"><i class="fa-solid fa-ban text-[10px]"></i> Cancelled</span>`;
+          statusBadge = `<span class="text-rose-600 bg-rose-50 border border-rose-200 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded inline-flex items-center gap-1"><i class="fa-solid fa-ban text-[10px]"></i> Cancelled</span>`;
         }
 
-        let feePillClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
         let feeText = `₹${p.fee} Cash ✓`;
         if (p.payMode === 'UPI') {
-          feePillClass = 'bg-sky-50 text-sky-800 border-sky-200';
           feeText = `₹${p.fee} UPI ✓`;
         } else if (p.payMode === 'Baaki') {
-          feePillClass = 'bg-amber-100 text-amber-950 border-amber-400';
           feeText = `₹${p.fee} Baaki ⚠️`;
         }
 
-        const sourceTag = p.source === 'QR Booked' ? '📱 Online' : '🚶 Walk-in';
+        const isOnlineBooking = (p.source === 'QR Booked' || p.source === 'Online Booking');
+        const bookingModeBadge = isOnlineBooking
+          ? `<span class="bg-sky-100 text-sky-900 border border-sky-300 text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded">Online</span>`
+          : `<span class="bg-indigo-100 text-indigo-900 border border-indigo-300 text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded">Clinic</span>`;
+
         const bpTag = p.bp ? `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-semibold text-[10px]">BP: ${p.bp}</span>` : '';
         const parchiTag = (p.hasParchiPhoto || p.bp || p.sugar || p.notes || (p.customMetrics && p.customMetrics.length)) ? `<span class="text-emerald-700 text-xs" title="Digital Prescription Saved"><i class="fa-solid fa-file-prescription"></i></span>` : '';
         const visitTag = p.visitType === 'followup' ? `<span class="bg-purple-100 text-purple-800 px-1.5 py-0.2 rounded font-bold text-[10px]">Dobara</span>` : '';
         const agLabel = formatPatientAgeGender(p.age, p.gender);
 
         return `
-          <div class="p-2.5 sm:p-3 hover:bg-slate-50/90 active:bg-slate-100 transition flex items-center justify-between gap-2 sm:gap-3 ${rowBgClass} border-b border-slate-100">
+          <div class="p-2.5 sm:p-3 hover:bg-slate-50/90 active:bg-slate-100 transition ${rowBgClass} border-b border-slate-100">
             
-            <!-- Left Info Cluster: Token Avatar on Left + Patient Info using all White Space -->
-            <div onclick="openParchiDrawer('${p.id}')" class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer select-none">
-              <!-- Token Badge (Compact & High Contrast) -->
-              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-sm sm:text-base shadow-xs">
-                #${p.token}
+            <!-- Top Section: Left Info + Right Action Controls -->
+            <div class="flex items-start justify-between gap-2 sm:gap-3">
+              
+              <!-- Left Info: Token Avatar + Patient Name + Booking Mode + Phone + Timing -->
+              <div onclick="openParchiDrawer('${p.id}')" class="flex items-start gap-2 sm:gap-2.5 min-w-0 flex-1 cursor-pointer select-none">
+                <!-- Token Badge (Left) -->
+                <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full ${tokenCircleClass} flex items-center justify-center font-black flex-shrink-0 text-xs sm:text-sm shadow-xs mt-0.5">
+                  #${p.token}
+                </div>
+
+                <!-- Text Cluster -->
+                <div class="min-w-0 flex-1">
+                  <!-- Top Row: Patient Name, Booking Mode Badge, Phone Number -->
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 truncate leading-snug">${escapeHtml(p.name)}</h4>
+                    ${agLabel ? `<span class="text-[11px] sm:text-xs font-semibold text-slate-500">(${agLabel})</span>` : ''}
+                    ${bookingModeBadge}
+                    ${p.phone ? `<span class="text-[11px] sm:text-xs text-slate-600 font-semibold whitespace-nowrap">📞 ${escapeHtml(p.phone)}</span>` : ''}
+                  </div>
+
+                  <!-- Middle Row: Timing / Revised Timing with Square Background (rounded) + Status + Reason + Vitals -->
+                  <div class="flex items-center gap-1.5 flex-wrap mt-1">
+                    ${timingBadge}
+                    ${statusBadge}
+                    <span class="text-[11px] sm:text-xs font-medium text-slate-600 truncate">${escapeHtml(p.reason || 'OPD')}</span>
+                    ${visitTag}
+                    ${bpTag}
+                    ${parchiTag}
+                  </div>
+                </div>
               </div>
 
-              <!-- Contact & Details - Utilizing all Available Horizontal Space -->
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap">
-                  <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 truncate leading-snug">${escapeHtml(p.name)}</h4>
-                  ${agLabel ? `<span class="text-[11px] sm:text-xs font-semibold text-slate-500">(${agLabel})</span>` : ''}
-                  ${statusBadge}
-                </div>
-
-                <div class="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1 sm:gap-1.5 flex-wrap">
-                  <span class="font-medium text-slate-700">${escapeHtml(p.reason || 'OPD')}</span>
-                  <span>•</span>
-                  <span>${sourceTag}</span>
-                  ${p.phone ? `<span>• 📞 ${escapeHtml(p.phone)}</span>` : ''}
-                  ${visitTag}
-                  ${bpTag}
-                  ${parchiTag}
-                  ${
-                    p.payMode !== 'Baaki'
-                      ? `<span>•</span> <button type="button" onclick="event.stopPropagation(); togglePatientFeeStatus('${p.id}')" class="font-bold text-emerald-700 hover:underline" title="Tap to toggle payment mode">${feeText}</button>`
-                      : ''
-                  }
-                </div>
-
+              <!-- Right Side: Top Bulao Button, Just Below: No-Show, Cross X, Edit -->
+              <div class="flex flex-col items-end gap-1 flex-shrink-0 self-start sm:self-center">
                 ${
-                  p.payMode === 'Baaki' && p.status === 'WAITING'
+                  p.status === 'WAITING'
                     ? `
-                      <div class="flex items-center gap-1 sm:gap-1.5 mt-1 flex-wrap">
-                        <span class="text-[9px] sm:text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-1.5 py-0.2 rounded">₹${p.fee} Baaki:</span>
+                      <!-- Top Right: Bulao Button -->
+                      <button 
+                        type="button" 
+                        onclick="event.stopPropagation(); sendPatientInsideCabin('${p.id}')" 
+                        class="btn-tactile px-3 py-1 sm:py-1.5 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1 shadow-xs transition whitespace-nowrap w-full"
+                        title="Call Patient Inside Cabin"
+                      >
+                        <span>Bulao</span>
+                        <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                      </button>
+
+                      <!-- Just below Bulao: No-Show, Cross X, Edit -->
+                      <div class="flex items-center gap-1 mt-0.5">
                         <button 
                           type="button" 
-                          onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'Cash')" 
-                          class="btn-tactile px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-[10px] sm:text-xs flex items-center gap-1 shadow-2xs transition"
-                          title="Cash Vasool Hua"
+                          onclick="event.stopPropagation(); markPatientNoShow('${p.id}')" 
+                          class="px-2 py-0.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 font-bold text-[10px] sm:text-xs transition whitespace-nowrap"
+                          title="Mark as No-Show (Nahi Aaye)"
                         >
-                          <i class="fa-solid fa-money-bill-wave text-[9px]"></i>
-                          <span>Cash</span>
+                          No-Show
                         </button>
                         <button 
                           type="button" 
-                          onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'UPI')" 
-                          class="btn-tactile px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-black text-[10px] sm:text-xs flex items-center gap-1 shadow-2xs transition"
-                          title="UPI Online Payment Hua"
+                          onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
+                          class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 active:scale-95 flex items-center justify-center text-xs font-black shadow-2xs transition"
+                          title="Cancel Appointment"
                         >
-                          <i class="fa-solid fa-mobile-screen-button text-[9px]"></i>
-                          <span>UPI</span>
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button 
+                          type="button" 
+                          onclick="event.stopPropagation(); openEditAppointmentModal('${p.id}')" 
+                          class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center text-xs font-black shadow-2xs transition"
+                          title="Edit Details (Naam, Phone, Samay, Takleef)"
+                        >
+                          <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
                         </button>
                       </div>
                     `
-                    : ''
+                    : p.status === 'IN_CABIN'
+                    ? `
+                      <div class="flex items-center gap-1">
+                        <span class="bg-[#25D366] text-slate-950 font-black text-[10px] sm:text-xs px-2.5 py-1 rounded-xl uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
+                          <i class="fa-solid fa-circle text-[6px]"></i> Andar
+                        </span>
+                        <button 
+                          type="button" 
+                          onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
+                          class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
+                          title="Cancel In-Cabin Appointment"
+                        >
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    `
+                    : p.status === 'NO_SHOW'
+                    ? `
+                      <span class="text-amber-900 bg-amber-100 border border-amber-300 font-bold text-[10px] sm:text-xs px-2 py-0.5 rounded inline-flex items-center gap-1">
+                        <i class="fa-solid fa-user-slash text-[9px]"></i> No-Show
+                      </span>
+                    `
+                    : p.status === 'CANCELLED'
+                    ? `
+                      <span class="text-rose-500 font-bold text-[10px] sm:text-xs inline-flex items-center gap-1">
+                        <i class="fa-solid fa-ban text-[10px]"></i> Cancelled
+                      </span>
+                    `
+                    : `
+                      <span class="text-slate-400 font-bold text-[10px] sm:text-xs inline-flex items-center gap-1">
+                        <i class="fa-solid fa-check-double text-[#53bdeb] text-[10px]"></i> Done
+                      </span>
+                    `
                 }
               </div>
+
             </div>
 
-            <!-- Very Right Side: Action Buttons (Stacked Vertically on Mobile, Horizontal on Desktop) -->
-            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 flex-shrink-0 self-center">
-              ${
-                p.status === 'WAITING'
-                  ? `
-                    <!-- 1-Tap Bulao Button -->
-                    <button 
-                      type="button" 
-                      onclick="event.stopPropagation(); sendPatientInsideCabin('${p.id}')" 
-                      class="btn-tactile px-2.5 sm:px-3.5 py-1 sm:py-2 rounded-xl bg-[#075E54] hover:bg-[#128C7E] active:bg-[#05433c] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1 shadow-xs transition whitespace-nowrap w-full sm:w-auto"
-                      title="Call Patient Inside Cabin"
-                    >
-                      <span>Bulao</span>
-                      <i class="fa-solid fa-arrow-right text-[9px]"></i>
-                    </button>
+            <!-- Bottom Strip: Amount left or paid status + 1-Click Cash & UPI quick update buttons -->
+            <div class="mt-2 pt-1.5 border-t border-slate-100/90 flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-1.5">
+                ${
+                  p.payMode === 'Baaki'
+                    ? `<span class="text-[10px] sm:text-xs font-black text-amber-950 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded">₹${p.fee} Baaki ⚠️</span>`
+                    : `<button type="button" onclick="event.stopPropagation(); togglePatientFeeStatus('${p.id}')" class="text-[10px] sm:text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded hover:underline" title="Tap to toggle payment mode">${feeText}</button>`
+                }
+              </div>
 
-                    <!-- Compact Sub-row: No-Show, X Cancel, Edit in one tight row below Bulao on mobile -->
-                    <div class="flex items-center gap-1 mt-0.5 sm:mt-0">
-                      <button 
-                        type="button" 
-                        onclick="event.stopPropagation(); markPatientNoShow('${p.id}')" 
-                        class="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-[10px] sm:text-xs transition whitespace-nowrap"
-                        title="Mark as No-Show (Nahi Aaye)"
-                      >
-                        No-Show
-                      </button>
-                      <button 
-                        type="button" 
-                        onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
-                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 active:scale-95 flex items-center justify-center text-xs font-black shadow-2xs transition"
-                        title="Cancel Appointment"
-                      >
-                        <i class="fa-solid fa-xmark"></i>
-                      </button>
-                      <button 
-                        type="button" 
-                        onclick="event.stopPropagation(); openEditAppointmentModal('${p.id}')" 
-                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center text-xs font-black shadow-2xs transition"
-                        title="Edit Details (Naam, Phone, Samay, Takleef)"
-                      >
-                        <i class="fa-solid fa-pen-to-square text-[#075E54]"></i>
-                      </button>
-                    </div>`
-                  : p.status === 'IN_CABIN'
-                  ? `<div class="flex items-center gap-1">
-                      <span class="bg-[#25D366] text-slate-950 font-black text-[10px] sm:text-xs px-2 py-1 rounded-full uppercase tracking-wide inline-flex items-center gap-1 shadow-xs">
-                        <i class="fa-solid fa-circle text-[6px]"></i> Andar
-                      </span>
-                      <button 
-                        type="button" 
-                        onclick="event.stopPropagation(); promptCancelPatient('${p.id}')" 
-                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center text-xs font-black shadow-xs transition"
-                        title="Cancel In-Cabin Appointment"
-                      >
-                        <i class="fa-solid fa-xmark"></i>
-                      </button>
-                    </div>`
-                  : p.status === 'NO_SHOW'
-                  ? `<div class="flex items-center gap-1">
-                      <span class="text-amber-800 bg-amber-100 border border-amber-300 font-bold text-[10px] sm:text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                        <i class="fa-solid fa-user-slash text-[10px]"></i> No-Show
-                      </span>
-                    </div>`
-                  : p.status === 'CANCELLED'
-                  ? `<span class="text-rose-400 font-bold text-[10px] sm:text-xs inline-flex items-center gap-1">
-                      <i class="fa-solid fa-ban text-xs"></i> Cancelled
-                    </span>`
-                  : `<span class="text-slate-400 font-bold text-[10px] sm:text-xs inline-flex items-center gap-1">
-                      <i class="fa-solid fa-check-double text-[#53bdeb] text-xs"></i> Done
-                    </span>`
-              }
+              <!-- Quick Update Buttons: 1-Click Cash & UPI -->
+              <div class="flex items-center gap-1">
+                <button 
+                  type="button" 
+                  onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'Cash')" 
+                  class="btn-tactile px-2.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-[10px] sm:text-xs flex items-center gap-1 shadow-2xs transition ${p.payMode === 'Cash' ? 'ring-2 ring-emerald-300' : ''}"
+                  title="Cash Payment Received"
+                >
+                  <i class="fa-solid fa-money-bill-wave text-[9px]"></i>
+                  <span>Cash</span>
+                </button>
+                <button 
+                  type="button" 
+                  onclick="event.stopPropagation(); setPatientPaymentMode('${p.id}', 'UPI')" 
+                  class="btn-tactile px-2.5 py-0.5 rounded bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-black text-[10px] sm:text-xs flex items-center gap-1 shadow-2xs transition ${p.payMode === 'UPI' ? 'ring-2 ring-sky-300' : ''}"
+                  title="UPI Online Payment Received"
+                >
+                  <i class="fa-solid fa-mobile-screen-button text-[9px]"></i>
+                  <span>UPI</span>
+                </button>
+              </div>
             </div>
 
           </div>
@@ -11500,8 +11673,49 @@
       { label: 'Day 7', dateStr: 'Day 7', count: 0 }
     ];
 
-    function getDoctorDelayMinutes() {
+    function checkDoctorDelayDailyReset() {
+      const todayStr = getLocalDateString();
       if (clinicProfile && clinicProfile.liveStatus) {
+        if (clinicProfile.liveStatus.overrideDate && clinicProfile.liveStatus.overrideDate !== todayStr) {
+          // Date changed! Reset daily doctor delays back to default 0 (clinic opening time)
+          clinicProfile.liveStatus.overrideDate = todayStr;
+          clinicProfile.liveStatus.doctorDelayMinutes = 0;
+          clinicProfile.liveStatus.doctorDelayMinutesMorning = 0;
+          clinicProfile.liveStatus.doctorDelayMinutesEvening = 0;
+          clinicProfile.liveStatus.isDoctorLate = false;
+          clinicProfile.liveStatus.expectedArrivalTime = null;
+          clinicProfile.liveStatus.expectedArrivalTimeMorning = null;
+          clinicProfile.liveStatus.expectedArrivalTimeEvening = null;
+          doctorDelayMinutes = 0;
+          isDoctorLate = false;
+          expectedDoctorArrivalTime = null;
+          saveLocalClinic();
+          if (window.location.protocol.startsWith('http')) {
+            fetch('/api/clinic', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ liveStatus: clinicProfile.liveStatus })
+            }).catch(() => {});
+          }
+          if (window.ParchiFirebase && clinicProfile.id) {
+            window.ParchiFirebase.syncClinic(clinicProfile);
+          }
+        } else if (!clinicProfile.liveStatus.overrideDate) {
+          clinicProfile.liveStatus.overrideDate = todayStr;
+        }
+      }
+    }
+
+    function getDoctorDelayMinutes(shift = null) {
+      if (typeof checkDoctorDelayDailyReset === 'function') checkDoctorDelayDailyReset();
+      const targetShift = shift || getActiveClinicShift();
+      if (clinicProfile && clinicProfile.liveStatus) {
+        if (targetShift === 'Evening' && typeof clinicProfile.liveStatus.doctorDelayMinutesEvening === 'number') {
+          return clinicProfile.liveStatus.doctorDelayMinutesEvening;
+        }
+        if (targetShift === 'Morning' && typeof clinicProfile.liveStatus.doctorDelayMinutesMorning === 'number') {
+          return clinicProfile.liveStatus.doctorDelayMinutesMorning;
+        }
         if (typeof clinicProfile.liveStatus.doctorDelayMinutes === 'number') {
           return clinicProfile.liveStatus.doctorDelayMinutes;
         }
@@ -11522,15 +11736,23 @@
       return 'Morning';
     }
 
-    function getDoctorExpectedArrivalTime() {
-      const shift = getActiveClinicShift();
-      if (clinicProfile && clinicProfile.liveStatus && clinicProfile.liveStatus.expectedArrivalTime && clinicProfile.liveStatus.expectedArrivalTimeShift === shift) {
-        return clinicProfile.liveStatus.expectedArrivalTime;
+    function getDoctorExpectedArrivalTime(shift = null) {
+      const targetShift = shift || getActiveClinicShift();
+      if (clinicProfile && clinicProfile.liveStatus) {
+        if (targetShift === 'Evening' && clinicProfile.liveStatus.expectedArrivalTimeEvening) {
+          return clinicProfile.liveStatus.expectedArrivalTimeEvening;
+        }
+        if (targetShift === 'Morning' && clinicProfile.liveStatus.expectedArrivalTimeMorning) {
+          return clinicProfile.liveStatus.expectedArrivalTimeMorning;
+        }
+        if (clinicProfile.liveStatus.expectedArrivalTime && clinicProfile.liveStatus.expectedArrivalTimeShift === targetShift) {
+          return clinicProfile.liveStatus.expectedArrivalTime;
+        }
       }
-      const delay = getDoctorDelayMinutes();
-      const shiftConfig = shift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
-      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (shift === 'Evening' ? '05:00 PM' : '10:00 AM');
-      const startMins = parseSlotTimeToMinutes(startStr) || (shift === 'Evening' ? 1020 : 600);
+      const delay = getDoctorDelayMinutes(targetShift);
+      const shiftConfig = targetShift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
+      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (targetShift === 'Evening' ? '05:00 PM' : '10:00 AM');
+      const startMins = parseSlotTimeToMinutes(startStr) || (targetShift === 'Evening' ? 1020 : 600);
       return formatMinutesToTime(startMins + delay);
     }
 
@@ -11554,8 +11776,9 @@
           displayText: slotStr
         };
       }
-      const delay = getDoctorDelayMinutes();
       const slotMins = parseSlotTimeToMinutes(slotStr);
+      const slotShift = (slotMins !== null && slotMins >= 900) ? 'Evening' : 'Morning';
+      const delay = getDoctorDelayMinutes(slotShift);
       if (slotMins === null || delay === 0) {
         return {
           original: slotStr,
@@ -11579,27 +11802,41 @@
       };
     }
 
-    function setDoctorDelayMinutes(mins, arrivalTimeStr = null) {
+    function setDoctorDelayMinutes(mins, arrivalTimeStr = null, targetShift = null) {
       const delay = parseInt(mins, 10) || 0;
-      doctorDelayMinutes = delay;
-      isDoctorLate = delay > 0;
-
-      const shift = getActiveClinicShift();
+      const shift = targetShift || getActiveClinicShift();
       const shiftConfig = shift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
       const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (shift === 'Evening' ? '05:00 PM' : '10:00 AM');
       const startMins = parseSlotTimeToMinutes(startStr) || (shift === 'Evening' ? 1020 : 600);
       const computedArrival = arrivalTimeStr || formatMinutesToTime(startMins + delay);
-      expectedDoctorArrivalTime = computedArrival;
 
+      const todayStr = getLocalDateString();
       clinicProfile.liveStatus = {
         ...(clinicProfile.liveStatus || {}),
-        isDoctorLate,
-        doctorDelayMinutes: delay,
-        expectedArrivalTime: computedArrival,
-        expectedArrivalTimeShift: shift,
+        overrideDate: todayStr,
         isQRBookingPaused,
         updatedAt: new Date().toISOString()
       };
+
+      if (shift === 'Evening') {
+        clinicProfile.liveStatus.doctorDelayMinutesEvening = delay;
+        clinicProfile.liveStatus.expectedArrivalTimeEvening = computedArrival;
+      } else {
+        clinicProfile.liveStatus.doctorDelayMinutesMorning = delay;
+        clinicProfile.liveStatus.expectedArrivalTimeMorning = computedArrival;
+      }
+
+      // Also set current active shift fields for backward compatibility
+      const activeShift = getActiveClinicShift();
+      if (shift === activeShift) {
+        doctorDelayMinutes = delay;
+        isDoctorLate = delay > 0;
+        expectedDoctorArrivalTime = computedArrival;
+        clinicProfile.liveStatus.doctorDelayMinutes = delay;
+        clinicProfile.liveStatus.isDoctorLate = delay > 0;
+        clinicProfile.liveStatus.expectedArrivalTime = computedArrival;
+        clinicProfile.liveStatus.expectedArrivalTimeShift = shift;
+      }
 
       saveLocalClinic();
 
@@ -11620,30 +11857,32 @@
       updateDoctorArrivalControlsUI();
       refreshAllViews();
 
+      const shiftLabel = shift === 'Evening' ? 'Shaam (Evening)' : 'Subah (Morning)';
       if (delay === 0) {
-        showToast(`🟢 Doctor On-Time set ho gaya (Expected: ${computedArrival})`);
+        showToast(`🟢 Doctor On-Time set ho gaya for ${shiftLabel} (Expected: ${computedArrival})`);
       } else if (delay > 0) {
-        showToast(`⏳ Doctor ${delay} Minute Late set kiya gaya (Expected: ${computedArrival})`);
+        showToast(`⏳ Doctor ${delay} Minute Late set kiya gaya for ${shiftLabel} (Expected: ${computedArrival})`);
       } else {
-        showToast(`⚡ Doctor ${Math.abs(delay)} Minute Pehle set kiya gaya (Expected: ${computedArrival})`);
+        showToast(`⚡ Doctor ${Math.abs(delay)} Minute Pehle set kiya gaya for ${shiftLabel} (Expected: ${computedArrival})`);
       }
     }
 
-    function setCustomDoctorArrivalTimeFromInput() {
-      const input = document.getElementById('customDoctorArrivalTimeInput');
+    function setCustomDoctorArrivalTimeFromInput(shift = null) {
+      const targetShift = shift || getActiveClinicShift();
+      const inputId = targetShift === 'Evening' ? 'customDoctorArrivalTimeInputEvening' : 'customDoctorArrivalTimeInput';
+      const input = document.getElementById(inputId);
       if (!input || !input.value) {
         showToast('⚠️ Kripya expected arrival samay chunein.', 'warning');
         return;
       }
       const [hStr, mStr] = input.value.split(':');
       const targetMins = parseInt(hStr, 10) * 60 + parseInt(mStr, 10);
-      const shift = getActiveClinicShift();
-      const shiftConfig = shift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
-      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (shift === 'Evening' ? '05:00 PM' : '10:00 AM');
-      const startMins = parseSlotTimeToMinutes(startStr) || (shift === 'Evening' ? 1020 : 600);
+      const shiftConfig = targetShift === 'Evening' ? clinicProfile?.visitingHours?.evening : clinicProfile?.visitingHours?.morning;
+      const startStr = (shiftConfig && shiftConfig.enabled && shiftConfig.start) || (targetShift === 'Evening' ? '05:00 PM' : '10:00 AM');
+      const startMins = parseSlotTimeToMinutes(startStr) || (targetShift === 'Evening' ? 1020 : 600);
       const offset = targetMins - startMins;
       const formattedArrival = formatMinutesToTime(targetMins);
-      setDoctorDelayMinutes(offset, formattedArrival);
+      setDoctorDelayMinutes(offset, formattedArrival, targetShift);
     }
 
     function setCustomDoctorDelayFromInput() {
@@ -11657,65 +11896,108 @@
       setDoctorDelayMinutes(mins);
     }
 
-    function updateDoctorArrivalControlsUI() {
-      const badge = document.getElementById('doctorArrivalLiveBadge');
-      const badgeText = document.getElementById('doctorArrivalLiveBadgeText');
-      const delay = getDoctorDelayMinutes();
-      const arrival = getDoctorExpectedArrivalTime();
+    function onDoctorArrivalDropdownChange(shiftOrVal, maybeVal) {
+      if (maybeVal !== undefined) {
+        const mins = parseInt(maybeVal, 10) || 0;
+        setDoctorDelayMinutes(mins, null, shiftOrVal);
+      } else {
+        const mins = parseInt(shiftOrVal, 10) || 0;
+        setDoctorDelayMinutes(mins);
+      }
+    }
 
-      const timeInput = document.getElementById('customDoctorArrivalTimeInput');
-      if (timeInput && document.activeElement !== timeInput) {
-        const arrMins = parseSlotTimeToMinutes(arrival);
+    function adjustDoctorDelayMinutes(delta, shift = null) {
+      const targetShift = shift || getActiveClinicShift();
+      const curDelay = getDoctorDelayMinutes(targetShift);
+      setDoctorDelayMinutes(curDelay + delta, null, targetShift);
+    }
+
+    function updateDoctorArrivalControlsUI() {
+      if (typeof checkDoctorDelayDailyReset === 'function') checkDoctorDelayDailyReset();
+
+      // Morning Controls
+      const morningConfig = clinicProfile?.visitingHours?.morning;
+      const morningDefault = (morningConfig && morningConfig.enabled && morningConfig.start) || '10:00 AM';
+      const morningDelay = getDoctorDelayMinutes('Morning');
+      const morningArrival = getDoctorExpectedArrivalTime('Morning');
+
+      const morningLabel = document.getElementById('morningDefaultTimeLabel');
+      if (morningLabel) morningLabel.textContent = `(Opening: ${morningDefault})`;
+
+      const morningDropdown = document.getElementById('doctorArrivalDropdown');
+      if (morningDropdown) morningDropdown.value = String(morningDelay);
+
+      const morningTimeInput = document.getElementById('customDoctorArrivalTimeInput');
+      if (morningTimeInput && document.activeElement !== morningTimeInput) {
+        const arrMins = parseSlotTimeToMinutes(morningArrival);
         if (arrMins !== null) {
           const hh = String(Math.floor(arrMins / 60)).padStart(2, '0');
           const mm = String(arrMins % 60).padStart(2, '0');
-          timeInput.value = `${hh}:${mm}`;
+          morningTimeInput.value = `${hh}:${mm}`;
         }
       }
 
-      if (badge && badgeText) {
-        if (delay === 0) {
-          badge.className = 'bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-emerald-300 shadow-xs';
-          badgeText.textContent = `🟢 Samay Par (Expected: ${arrival})`;
-        } else if (delay > 0) {
-          badge.className = 'bg-amber-100 text-amber-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-amber-400 shadow-xs';
-          badgeText.textContent = `⏳ ${delay}m Late (Expected: ${arrival})`;
+      const morningBadge = document.getElementById('doctorArrivalLiveBadge');
+      const morningBadgeText = document.getElementById('doctorArrivalLiveBadgeText');
+      if (morningBadge && morningBadgeText) {
+        if (morningDelay === 0) {
+          morningBadge.className = 'bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-emerald-300 shadow-xs whitespace-nowrap';
+          morningBadgeText.textContent = `🟢 Subah: Samay Par (${morningArrival})`;
+        } else if (morningDelay > 0) {
+          morningBadge.className = 'bg-amber-100 text-amber-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-amber-400 shadow-xs whitespace-nowrap';
+          morningBadgeText.textContent = `⏳ Subah: ${morningDelay}m Late (${morningArrival})`;
         } else {
-          badge.className = 'bg-sky-100 text-sky-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start sm:self-auto border border-sky-300 shadow-xs';
-          badgeText.textContent = `⚡ ${Math.abs(delay)}m Pehle (Expected: ${arrival})`;
+          morningBadge.className = 'bg-sky-100 text-sky-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-sky-300 shadow-xs whitespace-nowrap';
+          morningBadgeText.textContent = `⚡ Subah: ${Math.abs(morningDelay)}m Pehle (${morningArrival})`;
         }
       }
 
-      const presetIds = [
-        { id: 'delayPreset-0', val: 0 },
-        { id: 'delayPreset-30', val: 30 },
-        { id: 'delayPreset-45', val: 45 },
-        { id: 'delayPreset-60', val: 60 },
-        { id: 'delayPreset-90', val: 90 },
-        { id: 'delayPreset-120', val: 120 },
-        { id: 'delayPreset-180', val: 180 },
-        { id: 'delayPreset-minus30', val: -30 },
-        { id: 'delayPreset-minus60', val: -60 }
-      ];
+      // Evening Controls
+      const eveningConfig = clinicProfile?.visitingHours?.evening;
+      const eveningDefault = (eveningConfig && eveningConfig.enabled && eveningConfig.start) || '05:00 PM';
+      const eveningDelay = getDoctorDelayMinutes('Evening');
+      const eveningArrival = getDoctorExpectedArrivalTime('Evening');
 
-      presetIds.forEach(p => {
-        const el = document.getElementById(p.id);
-        if (el) {
-          if (p.val === delay) {
-            el.className = 'delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-black border-2 transition bg-emerald-600 text-white border-emerald-700 shadow-xs';
-          } else {
-            el.className = 'delay-preset-chip px-2.5 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50';
-          }
+      const eveningLabel = document.getElementById('eveningDefaultTimeLabel');
+      if (eveningLabel) eveningLabel.textContent = `(Opening: ${eveningDefault})`;
+
+      const eveningDropdown = document.getElementById('doctorArrivalDropdownEvening');
+      if (eveningDropdown) eveningDropdown.value = String(eveningDelay);
+
+      const eveningTimeInput = document.getElementById('customDoctorArrivalTimeInputEvening');
+      if (eveningTimeInput && document.activeElement !== eveningTimeInput) {
+        const arrMins = parseSlotTimeToMinutes(eveningArrival);
+        if (arrMins !== null) {
+          const hh = String(Math.floor(arrMins / 60)).padStart(2, '0');
+          const mm = String(arrMins % 60).padStart(2, '0');
+          eveningTimeInput.value = `${hh}:${mm}`;
         }
-      });
+      }
 
+      const eveningBadge = document.getElementById('doctorArrivalLiveBadgeEvening');
+      const eveningBadgeText = document.getElementById('doctorArrivalLiveBadgeEveningText');
+      if (eveningBadge && eveningBadgeText) {
+        if (eveningDelay === 0) {
+          eveningBadge.className = 'bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-emerald-300 shadow-xs whitespace-nowrap';
+          eveningBadgeText.textContent = `🟢 Shaam: Samay Par (${eveningArrival})`;
+        } else if (eveningDelay > 0) {
+          eveningBadge.className = 'bg-amber-100 text-amber-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-amber-400 shadow-xs whitespace-nowrap';
+          eveningBadgeText.textContent = `⏳ Shaam: ${eveningDelay}m Late (${eveningArrival})`;
+        } else {
+          eveningBadge.className = 'bg-sky-100 text-sky-950 px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 self-start md:self-auto border border-sky-300 shadow-xs whitespace-nowrap';
+          eveningBadgeText.textContent = `⚡ Shaam: ${Math.abs(eveningDelay)}m Pehle (${eveningArrival})`;
+        }
+      }
+
+      // Legacy toggle sync
       const legacyBtn = document.getElementById('btnDoctorLateToggle');
       const legacyPill = document.getElementById('doctorLateStatusPill');
+      const activeDelay = getDoctorDelayMinutes();
       if (legacyBtn && legacyPill) {
-        if (delay > 0) {
+        if (activeDelay > 0) {
           legacyBtn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-amber-100 border-amber-500 text-amber-950';
           legacyPill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-amber-500 text-slate-950 font-black';
-          legacyPill.textContent = `ON (+${delay}m)`;
+          legacyPill.textContent = `ON (+${activeDelay}m)`;
         } else {
           legacyBtn.className = 'btn-tactile px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border-2 flex items-center gap-2 transition bg-slate-50 border-slate-300 text-slate-700';
           legacyPill.className = 'px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black';
@@ -11723,21 +12005,7 @@
         }
       }
 
-      const dropdown = document.getElementById('doctorArrivalDropdown');
-      if (dropdown) {
-        dropdown.value = String(delay);
-      }
       updatePauseQRUI();
-    }
-
-    function onDoctorArrivalDropdownChange(val) {
-      const mins = parseInt(val, 10);
-      setDoctorDelayMinutes(mins);
-    }
-
-    function adjustDoctorDelayMinutes(delta) {
-      const curDelay = getDoctorDelayMinutes();
-      setDoctorDelayMinutes(curDelay + delta);
     }
 
     function updatePauseQRUI() {
@@ -12579,6 +12847,7 @@
         shift: 'Morning',
         slotTime: 'Follow-up Walk-in',
         day: 'Aaj (Today)',
+        date: getLocalDateString(),
         bp: p.lastBp && p.lastBp !== '--' ? p.lastBp : '',
         weight: '',
         temp: '',
@@ -12897,18 +13166,18 @@
           }
         }
       }
+      const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
       if (createdAt) {
         try {
           const d = new Date(createdAt);
           if (!isNaN(d.getTime())) {
             const totalUtcMins = d.getUTCHours() * 60 + d.getUTCMinutes();
             const istMins = (totalUtcMins + 330) % 1440;
-            return istMins;
+            return isEvening ? Math.max(1021, istMins) : Math.max(616, istMins);
           }
         } catch (e) {}
       }
-      const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
-      return isEvening ? 1020 : 600;
+      return isEvening ? 1021 : 616;
     }
 
     function reassignTimelineTokens(bookings) {
@@ -13321,9 +13590,9 @@
       }
 
       const mStart = mOpen ? parseTimeString(morning.start) : -1;
-      const mEnd = mOpen ? parseTimeString(morning.end) : -1;
+      const mEnd = mOpen ? parseTimeString(morning.end || '02:00 PM') : -1;
       const eStart = eOpen ? parseTimeString(evening.start) : -1;
-      const eEnd = eOpen ? parseTimeString(evening.end) : -1;
+      const eEnd = eOpen ? parseTimeString(evening.end || '09:00 PM') : -1;
       // Check temporary compounder override to OPEN outside scheduled hours
       if (clinicProfile?.liveStatus?.qrOverrideAction === 'open' && clinicProfile?.liveStatus?.qrOverrideExpiresAt && Date.now() < clinicProfile.liveStatus.qrOverrideExpiresAt) {
         const remainingMins = Math.ceil((clinicProfile.liveStatus.qrOverrideExpiresAt - Date.now()) / 60000);
@@ -13521,6 +13790,7 @@
       if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        modal.style.display = 'none';
       }
     }
 
@@ -13634,9 +13904,17 @@
 
     function viewMyActivePass() {
       if (lastPatientBooking) {
+        closePatientBookingModal();
         (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
-        document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
+        const passBox = document.getElementById('patientTokenPassBox');
+        if (passBox) {
+          passBox.classList.remove('hidden');
+          passBox.style.display = 'block';
+        }
         renderTokenPassDetails(lastPatientBooking);
+        try {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (e) {}
       }
     }
 
@@ -14118,8 +14396,12 @@
       }
 
       // Sync to Firebase Cloud if available
-      if (window.ParchiFirebase && clinicProfile && clinicProfile.id) {
-        window.ParchiFirebase.saveBooking(clinicProfile.id, savedBooking);
+      try {
+        if (window.ParchiFirebase && clinicProfile && clinicProfile.id) {
+          window.ParchiFirebase.saveBooking(clinicProfile.id, savedBooking);
+        }
+      } catch (e) {
+        console.warn('Firebase booking sync notice:', e);
       }
 
       // Add to todayQueue if booked for today
@@ -14140,9 +14422,11 @@
         saveLocalQueue();
       }
 
-      if (typeof syncChannel !== 'undefined' && syncChannel) {
-        syncChannel.postMessage({ type: 'NEW_BOOKING', booking: savedBooking });
-      }
+      try {
+        if (typeof syncChannel !== 'undefined' && syncChannel) {
+          syncChannel.postMessage({ type: 'NEW_BOOKING', booking: savedBooking });
+        }
+      } catch (e) {}
 
       lastPatientBooking = savedBooking;
       patientPassViewMode = 'direct';
@@ -14153,12 +14437,96 @@
 
       closePatientBookingModal();
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
-      document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
+      const passBoxEl = document.getElementById('patientTokenPassBox');
+      if (passBoxEl) {
+        passBoxEl.classList.remove('hidden');
+        passBoxEl.style.display = 'block';
+      }
 
       renderTokenPassDetails(savedBooking);
-      playClinicBellSound();
+      try { playClinicBellSound(); } catch (e) {}
       showToast(`🎉 Token #${savedBooking.token} Book Ho Gaya!`);
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (e) {}
     }
+
+    function renderPatientMultiTokenSwitcher(savedBooking) {
+      const switcher = document.getElementById('patientMultiTokenSwitcher');
+      if (!switcher || !savedBooking) return;
+
+      const rawPhone = (savedBooking.phone || '').replace(/\D/g, '');
+      const last10 = rawPhone.length >= 10 ? rawPhone.slice(-10) : rawPhone;
+
+      let phoneBookings = [];
+      if (last10 && last10.length >= 10) {
+        phoneBookings = todayQueue.filter(p => {
+          const pPhone = (p.phone || '').replace(/\D/g, '');
+          return pPhone.endsWith(last10);
+        });
+      }
+
+      if (!phoneBookings.some(p => p.id === savedBooking.id)) {
+        phoneBookings.unshift(savedBooking);
+      }
+
+      if (phoneBookings.length > 1) {
+        switcher.className = 'block';
+        switcher.innerHTML = `
+          <div class="bg-white rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-300 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-xs font-black text-slate-800">
+              <span class="flex items-center gap-1.5 text-[#075E54]">
+                <i class="fa-solid fa-list-check text-[#25D366]"></i>
+                <span>Is Phone Se ${phoneBookings.length} Bookings Hain:</span>
+              </span>
+              <span class="text-[10px] bg-emerald-100 text-[#075E54] px-2 py-0.5 rounded-full font-bold">Token Switch Karein</span>
+            </div>
+            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+              ${phoneBookings.map(b => {
+                const isCurrent = (b.id === savedBooking.id || (b.token && b.token === savedBooking.token));
+                const shortName = (b.name || 'Patient').split(' ')[0];
+                const isCancelled = b.status === 'CANCELLED';
+                const statusTag = isCancelled ? ' • Cancelled' : (b.status === 'DONE' ? ' • Done' : (b.status === 'NO_SHOW' ? ' • No-Show' : ''));
+                return `
+                  <button 
+                    type="button" 
+                    onclick="switchPatientTokenPass('${b.id || b.token}')" 
+                    class="btn-tactile px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 whitespace-nowrap shadow-xs ${
+                      isCurrent
+                        ? 'bg-[#075E54] text-white border-2 border-emerald-600'
+                        : (isCancelled ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-300')
+                    }"
+                  >
+                    <span>Token #${b.token}</span>
+                    <span class="text-[10px] opacity-90 font-bold">(${shortName}${statusTag})</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      } else {
+        switcher.className = 'hidden';
+        switcher.innerHTML = '';
+      }
+    }
+
+    function switchPatientTokenPass(idOrToken) {
+      if (!idOrToken) return;
+      let target = todayQueue.find(p => p.id === idOrToken) || todayQueue.find(p => String(p.token) === String(idOrToken));
+      if (!target && lastPatientBooking && (lastPatientBooking.id === idOrToken || String(lastPatientBooking.token) === String(idOrToken))) {
+        target = lastPatientBooking;
+      }
+      if (target) {
+        lastPatientBooking = target;
+        try {
+          localStorage.setItem('parchi_active_patient_booking', JSON.stringify(target));
+        } catch (e) {}
+        renderTokenPassDetails(target);
+        showToast(`Token #${target.token} (${target.name}) ka live status khul gaya!`);
+      }
+    }
+    window.switchPatientTokenPass = switchPatientTokenPass;
 
     function renderTokenPassDetails(savedBooking) {
       if (!savedBooking) return;
@@ -14210,11 +14578,16 @@
       if (passFee) passFee.textContent = `₹${savedBooking.fee}`;
 
       (document.getElementById('patientBookingLandingHero') || document.getElementById('patientLandingHeroSection'))?.classList.add('hidden');
-      document.getElementById('patientTokenPassBox')?.classList.remove('hidden');
+      const passBox = document.getElementById('patientTokenPassBox');
+      if (passBox) {
+        passBox.classList.remove('hidden');
+        passBox.style.display = 'block';
+      }
       document.getElementById('patientClinicHeaderBlock')?.classList.add('hidden');
       document.getElementById('patientViewLiveStatusCard')?.classList.add('hidden');
       document.getElementById('patientViewPausedBox')?.classList.add('hidden');
 
+      renderPatientMultiTokenSwitcher(savedBooking);
       updatePatientTokenPassLiveStatus();
     }
 
@@ -14283,11 +14656,12 @@
       const passDelayAlert = document.getElementById('passDoctorDelayAlert');
 
       // Doctor Expected Arrival / Delay Alert Banner on Token Pass (High-contrast, never dark green on red)
-      const delay = getDoctorDelayMinutes();
-      const expectedArr = getDoctorExpectedArrivalTime();
+      const bookingShift = (lastPatientBooking && lastPatientBooking.shift) ? lastPatientBooking.shift : getActiveClinicShift();
+      const delay = getDoctorDelayMinutes(bookingShift);
+      const expectedArr = getDoctorExpectedArrivalTime(bookingShift);
       const docName = (clinicProfile && clinicProfile.doctorName) ? `Dr. ${clinicProfile.doctorName.replace(/^Dr\.?\s*/i, '')}` : 'Doctor Sahab';
       if (passDelayAlert) {
-        if (!statusInfo.isOpen) {
+        if (statusInfo.isHoliday) {
           passDelayAlert.classList.add('hidden');
         } else if (delay > 0) {
           passDelayAlert.classList.remove('hidden');
@@ -15524,32 +15898,45 @@
         let found = null;
         const todayStr = getLocalDateString();
 
-        // 1. Check local todayQueue (prefer active non-cancelled, but fall back to cancelled/no-show)
+        // 1. Check local todayQueue
         const localMatches = todayQueue.filter(p => p.phone && p.phone.replace(/\D/g, '').endsWith(phone));
-        found = localMatches.find(p => p.status !== 'CANCELLED' && p.status !== 'NO_SHOW') 
-             || localMatches.find(p => p.status !== 'CANCELLED') 
-             || localMatches[0];
+        let serverMatches = [];
 
-        // 2. Check local lastPatientBooking
-        if (!found && lastPatientBooking && lastPatientBooking.phone) {
-          if (lastPatientBooking.phone.replace(/\D/g, '').endsWith(phone)) {
-            found = lastPatientBooking;
-          }
-        }
-
-        // 3. Query server /api/queue?phone=...
-        if (!found && window.location.protocol.startsWith('http')) {
+        // 2. Query server /api/queue?phone=... for all matching bookings
+        if (window.location.protocol.startsWith('http')) {
           try {
             const res = await fetch(`/api/queue?phone=${encodeURIComponent(phone)}`);
             if (res.ok) {
               const qList = await res.json();
-              if (Array.isArray(qList) && qList.length > 0) {
-                found = qList.find(p => p.status !== 'CANCELLED' && p.status !== 'NO_SHOW') 
-                     || qList.find(p => p.status !== 'CANCELLED') 
-                     || qList[0];
-              }
+              if (Array.isArray(qList)) serverMatches = qList;
             }
           } catch (e) {}
+        }
+
+        // Combine all unique matches
+        const matchMap = new Map();
+        localMatches.forEach(p => matchMap.set(p.id, p));
+        serverMatches.forEach(p => {
+          if (!matchMap.has(p.id)) matchMap.set(p.id, p);
+        });
+        if (lastPatientBooking && lastPatientBooking.phone && lastPatientBooking.phone.replace(/\D/g, '').endsWith(phone)) {
+          if (!matchMap.has(lastPatientBooking.id)) matchMap.set(lastPatientBooking.id, lastPatientBooking);
+        }
+
+        const allMatches = Array.from(matchMap.values());
+
+        if (allMatches.length > 0) {
+          // Sync into todayQueue so switcher works smoothly
+          allMatches.forEach(p => {
+            const idx = todayQueue.findIndex(item => item.id === p.id);
+            if (idx >= 0) todayQueue[idx] = p;
+            else if (isTodayAppointment(p)) todayQueue.push(p);
+          });
+          saveLocalQueue();
+
+          found = allMatches.find(p => p.status !== 'CANCELLED' && p.status !== 'NO_SHOW') 
+               || allMatches.find(p => p.status !== 'CANCELLED') 
+               || allMatches[0];
         }
 
         if (found) {
@@ -15585,7 +15972,14 @@
             } catch (e) {}
           }
 
-          if (found.status === 'CANCELLED') {
+          if (allMatches.length > 1) {
+            if (alertBox) {
+              alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-emerald-100 text-emerald-900 border border-emerald-300';
+              alertBox.innerHTML = `🎉 <strong>${allMatches.length} Tokens</strong> mile! Token Switcher se kisi bhi token ka live status dekhein.`;
+              alertBox.classList.remove('hidden');
+            }
+            showToast(`🎉 ${allMatches.length} Tokens mile! Live pass khul raha hai...`);
+          } else if (found.status === 'CANCELLED') {
             if (alertBox) {
               alertBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-rose-100 text-rose-900 border border-rose-300';
               alertBox.textContent = `⚠️ Token #${found.token} Clinic dwara cancel kar diya gaya hai (Cancelled by Clinic).`;
@@ -17228,6 +17622,48 @@
       // Real-time periodic heartbeat (every 3.5s) to keep live clinic status & queue synced for waiting patients
       setInterval(async () => {
         try {
+          // Check midnight / day change
+          const todayNow = getLocalDateString();
+          if (typeof currentSessionDate !== 'undefined' && currentSessionDate !== todayNow) {
+            currentSessionDate = todayNow;
+            if (typeof checkDoctorDelayDailyReset === 'function') checkDoctorDelayDailyReset();
+            todayQueue.forEach(p => {
+              if (typeof isTodayAppointment === 'function' && !isTodayAppointment(p)) {
+                if (p.status === 'WAITING') {
+                  p.status = 'NO_SHOW';
+                  p.noShow = true;
+                  p.noShowAt = p.noShowAt || new Date().toISOString();
+                }
+                if (Array.isArray(patientRegister)) {
+                  const regIdx = patientRegister.findIndex(r => r.id === p.id || (p.phone && r.phone === p.phone && r.appointmentDate === (p.date || p.createdAt)));
+                  if (regIdx < 0) {
+                    patientRegister.unshift({
+                      id: p.id,
+                      name: p.name,
+                      age: p.age,
+                      gender: p.gender,
+                      phone: p.phone,
+                      lastReason: p.reason,
+                      fee: p.fee,
+                      payMode: p.payMode,
+                      status: p.status,
+                      appointmentDate: p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayNow),
+                      lastVisit: p.date || (p.createdAt ? p.createdAt.slice(0, 10) : todayNow),
+                      notes: p.notes || '',
+                      bp: p.bp || '',
+                      createdAt: p.createdAt || new Date().toISOString()
+                    });
+                  }
+                }
+              }
+            });
+            // Purge past appointments from todayQueue so next day starts completely clean
+            todayQueue = todayQueue.filter(p => isTodayAppointment(p));
+            saveLocalQueue();
+            if (typeof saveLocalRegister === 'function') saveLocalRegister();
+            refreshAllViews();
+          }
+
           // Check temporary online booking override expiry
           if (clinicProfile?.liveStatus?.qrOverrideExpiresAt) {
             if (Date.now() >= clinicProfile.liveStatus.qrOverrideExpiresAt) {

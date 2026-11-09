@@ -482,6 +482,9 @@ async function run() {
     console.log('🎉 ALL 10 TARGETED QR & PATIENT BOOKING TESTS PASSED!');
     console.log('========================================================\n');
   } finally {
+    try {
+      await makeRequest('POST', '/api/queue/reset');
+    } catch (e) {}
     server.close();
     process.exit(0);
   }

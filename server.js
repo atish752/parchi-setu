@@ -255,18 +255,33 @@ function getSlotTimelineMinutes(slotTime, shift, createdAt) {
       }
     }
   }
+  const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
   if (createdAt) {
     try {
       const d = new Date(createdAt);
       if (!isNaN(d.getTime())) {
         const totalUtcMins = d.getUTCHours() * 60 + d.getUTCMinutes();
         const istMins = (totalUtcMins + 330) % 1440;
-        return istMins;
+        return isEvening ? Math.max(1021, istMins) : Math.max(616, istMins);
       }
     } catch (e) {}
   }
-  const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
-  return isEvening ? 1020 : 600;
+  return isEvening ? 1021 : 616;
+}
+
+function checkClinicDailyReset(c) {
+  if (!c || !c.liveStatus) return;
+  const todayIST = getISTDateString();
+  if (c.liveStatus.overrideDate && c.liveStatus.overrideDate !== todayIST) {
+    c.liveStatus.overrideDate = todayIST;
+    c.liveStatus.doctorDelayMinutes = 0;
+    c.liveStatus.doctorDelayMinutesMorning = 0;
+    c.liveStatus.doctorDelayMinutesEvening = 0;
+    c.liveStatus.isDoctorLate = false;
+    c.liveStatus.expectedArrivalTime = null;
+    c.liveStatus.expectedArrivalTimeMorning = null;
+    c.liveStatus.expectedArrivalTimeEvening = null;
+  }
 }
 
 function reassignTimelineTokens(bookings) {
@@ -881,6 +896,7 @@ const requestHandler = async (req, res) => {
         res.end(JSON.stringify({ error: 'Clinic not found', clinicId }));
         return;
       }
+      checkClinicDailyReset(match);
       if (appData.clinics) appData.clinics[clinicId] = match;
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
@@ -894,6 +910,7 @@ const requestHandler = async (req, res) => {
       return;
     }
 
+    if (appData.clinic) checkClinicDailyReset(appData.clinic);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       ...appData.clinic,

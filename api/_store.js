@@ -292,28 +292,31 @@ function normalizeSlotString(slot) {
 function getSlotTimelineMinutes(slotTime, shift, createdAt) {
   if (slotTime) {
     const clean = String(slotTime).replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
-    const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
-    if (m) {
-      let h = parseInt(m[1], 10);
-      const min = parseInt(m[2], 10);
-      const ap = (m[3] || '').toLowerCase();
-      if (ap === 'pm' && h < 12) h += 12;
-      if (ap === 'am' && h === 12) h = 0;
-      return h * 60 + min;
+    const isWalkin = ['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(clean);
+    if (!isWalkin) {
+      const m = clean.match(/^0?(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+      if (m) {
+        let h = parseInt(m[1], 10);
+        const min = parseInt(m[2], 10);
+        const ap = (m[3] || '').toLowerCase();
+        if (ap === 'pm' && h < 12) h += 12;
+        if (ap === 'am' && h === 12) h = 0;
+        return h * 60 + min;
+      }
     }
   }
+  const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
   if (createdAt) {
     try {
       const d = new Date(createdAt);
       if (!isNaN(d.getTime())) {
         const totalUtcMins = d.getUTCHours() * 60 + d.getUTCMinutes();
         const istMins = (totalUtcMins + 330) % 1440;
-        return istMins;
+        return isEvening ? Math.max(1021, istMins) : Math.max(616, istMins);
       }
     } catch (e) {}
   }
-  const isEvening = shift === 'Evening' || (typeof slotTime === 'string' && slotTime.toLowerCase().includes('evening'));
-  return isEvening ? 1020 : 600;
+  return isEvening ? 1021 : 616;
 }
 
 function reassignTimelineTokens(bookings) {
@@ -362,23 +365,46 @@ module.exports = {
   getClinicMonthlyAppointmentsCount,
   getISTMonthString,
 
+  checkClinicDailyReset: (c) => {
+    if (!c || !c.liveStatus) return;
+    const todayIST = getISTDateString();
+    if (c.liveStatus.overrideDate && c.liveStatus.overrideDate !== todayIST) {
+      c.liveStatus.overrideDate = todayIST;
+      c.liveStatus.doctorDelayMinutes = 0;
+      c.liveStatus.doctorDelayMinutesMorning = 0;
+      c.liveStatus.doctorDelayMinutesEvening = 0;
+      c.liveStatus.isDoctorLate = false;
+      c.liveStatus.expectedArrivalTime = null;
+      c.liveStatus.expectedArrivalTimeMorning = null;
+      c.liveStatus.expectedArrivalTimeEvening = null;
+    }
+  },
+
   getClinic: (id) => {
     loadStore();
     if (id === 'razorpay_test' || id === 'clinic_razorpay_verification' || id === 'razorpay.test@parchisetu.in') {
-      return (store.clinics && store.clinics['clinic_razorpay_verification']) || getRazorpayVerificationClinic();
+      const rz = (store.clinics && store.clinics['clinic_razorpay_verification']) || getRazorpayVerificationClinic();
+      module.exports.checkClinicDailyReset(rz);
+      return rz;
     }
     if (id && store.clinics && store.clinics[id]) {
+      module.exports.checkClinicDailyReset(store.clinics[id]);
       return store.clinics[id];
     }
-    return store.clinic || DEFAULT_CLINIC;
+    const def = store.clinic || DEFAULT_CLINIC;
+    module.exports.checkClinicDailyReset(def);
+    return def;
   },
 
   getClinicAsync: async (id) => {
     loadStore();
     if (id === 'razorpay_test' || id === 'clinic_razorpay_verification' || id === 'razorpay.test@parchisetu.in') {
-      return (store.clinics && store.clinics['clinic_razorpay_verification']) || getRazorpayVerificationClinic();
+      const rz = (store.clinics && store.clinics['clinic_razorpay_verification']) || getRazorpayVerificationClinic();
+      module.exports.checkClinicDailyReset(rz);
+      return rz;
     }
     if (id && store.clinics && store.clinics[id]) {
+      module.exports.checkClinicDailyReset(store.clinics[id]);
       return store.clinics[id];
     }
     if (id && supabase && typeof supabase.isConfigured === 'function' && supabase.isConfigured()) {
@@ -388,15 +414,21 @@ module.exports = {
           store.clinics = store.clinics || {};
           store.clinics[sbClinic.id] = sbClinic;
           persistStore();
+          module.exports.checkClinicDailyReset(sbClinic);
           return sbClinic;
         }
       } catch (e) {}
     }
     if (id) {
-      if (store.clinic && store.clinic.id === id) return store.clinic;
+      if (store.clinic && store.clinic.id === id) {
+        module.exports.checkClinicDailyReset(store.clinic);
+        return store.clinic;
+      }
       return null;
     }
-    return store.clinic || DEFAULT_CLINIC;
+    const def = store.clinic || DEFAULT_CLINIC;
+    module.exports.checkClinicDailyReset(def);
+    return def;
   },
 
   getClinicByOwner: (uid, email = '') => {
@@ -696,7 +728,7 @@ module.exports = {
     const targetClinic = (booking.clinicId && store.clinics && store.clinics[booking.clinicId])
       ? store.clinics[booking.clinicId]
       : (INITIAL_CLINICS[booking.clinicId] || store.clinic);
-    const clinicId = booking.clinicId || (targetClinic ? targetClinic.id : store.clinic.id);
+    const clinicId = booking.clinicId || (targetClinic ? targetClinic.id : (store.clinic ? store.clinic.id : 'clinic_default'));
     const targetDate = booking.date || getISTDateString();
     const normSlot = normalizeSlotString(booking.slotTime);
     const isScheduledSlot = normSlot && !['walk-in', 'walk-in now', 'immediate', 'online booking', 'follow-up walk-in'].includes(normSlot);
@@ -752,7 +784,7 @@ module.exports = {
       ? store.clinics[booking.clinicId]
       : (INITIAL_CLINICS[booking.clinicId] || store.clinic);
 
-    const clinicId = booking.clinicId || (targetClinic ? targetClinic.id : store.clinic.id);
+    const clinicId = booking.clinicId || (targetClinic ? targetClinic.id : (store.clinic ? store.clinic.id : 'clinic_default'));
 
     // Enforce 100 appointments/month limit on Free plan after 7-day trial
     if (isClinicMonthlyLimitReached(clinicId)) {
@@ -792,9 +824,9 @@ module.exports = {
     const finalBooking = {
       id: bookingId,
       clinicId: clinicId,
-      clinicName: booking.clinicName || (targetClinic ? targetClinic.name : store.clinic.name),
-      clinicAddress: booking.clinicAddress || (targetClinic ? targetClinic.address : store.clinic.address),
-      clinicPhone: booking.clinicPhone || (targetClinic ? targetClinic.phone : store.clinic.phone),
+      clinicName: booking.clinicName || (targetClinic ? targetClinic.name : (store.clinic ? store.clinic.name : 'Doctor Clinic')),
+      clinicAddress: booking.clinicAddress || (targetClinic ? targetClinic.address : (store.clinic ? store.clinic.address : '')),
+      clinicPhone: booking.clinicPhone || (targetClinic ? targetClinic.phone : (store.clinic ? store.clinic.phone : '')),
       token: explicitToken || 1,
       name: (booking.name || '').trim(),
       age: parseInt(booking.age, 10) || 30,
@@ -803,8 +835,8 @@ module.exports = {
       reason: booking.reason || 'General Consultation',
       visitType: booking.visitType || 'new', // 'new' (Pahli Baar) or 'followup' (Dobara)
       doctorId: booking.doctorId || 'doc_1',
-      doctorName: booking.doctorName || (targetClinic ? targetClinic.doctorName : store.clinic.doctorName),
-      fee: booking.fee !== undefined ? booking.fee : (targetClinic && targetClinic.fees ? targetClinic.fees.normal : (store.clinic.fees ? store.clinic.fees.normal : 300)),
+      doctorName: booking.doctorName || (targetClinic ? targetClinic.doctorName : (store.clinic ? store.clinic.doctorName : 'Doctor Sahab')),
+      fee: booking.fee !== undefined ? booking.fee : (targetClinic && targetClinic.fees ? targetClinic.fees.normal : (store.clinic && store.clinic.fees ? store.clinic.fees.normal : 300)),
       payMode: booking.payMode || 'Baaki',
       status: booking.status || 'WAITING',
       source: booking.source || 'QR Booked',
